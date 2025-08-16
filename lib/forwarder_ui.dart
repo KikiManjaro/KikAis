@@ -1,12 +1,13 @@
-import 'dart:typed_data';
-
+import 'package:KikAis/port_input_formatter.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'boat_animation.dart';
 import 'forwarder_service.dart';
+import 'ip_address_input_formatter.dart';
 
 class ForwarderUI extends StatefulWidget {
   @override
@@ -176,14 +177,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
                       ),
                     ],
                   ),
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        boat,
-                        MoveWindow(),
-                      ],
-                    ),
-                  ),
+                  Expanded(child: Stack(children: [boat, MoveWindow()])),
                   const WindowButtons(),
                 ],
               ),
@@ -227,6 +221,14 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                                   Icons.computer,
                                                 ),
                                               ),
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter.allow(
+                                                  RegExp(r'[0-9.]'),
+                                                ),
+                                                IpAddressInputFormatter(),
+                                              ],
                                             ),
                                             TextField(
                                               controller: portController,
@@ -236,6 +238,13 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                               ),
                                               keyboardType:
                                                   TextInputType.number,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .digitsOnly,
+                                                // only digits
+                                                PortInputFormatter(),
+                                                // valid port range
+                                              ],
                                             ),
                                             Row(
                                               crossAxisAlignment:
