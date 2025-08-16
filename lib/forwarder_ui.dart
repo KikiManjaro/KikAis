@@ -30,15 +30,19 @@ class _ForwarderUIState extends State<ForwarderUI> {
   bool isRunning = false;
   bool usFeed = true;
   bool norwegianFeed = true;
+  bool gpsd1 = true;
+  bool gpsd2 = true;
 
   @override
   void initState() {
     super.initState();
     forwarderService = ForwarderService(
-      onLog: (message, starter) {
+      onLog: (message, starter, name) {
         setState(() {
           setState(() {
-            logEntries.add(LogEntry(message: message, starter: starter));
+            logEntries.add(
+              LogEntry(message: message, starter: starter, name: name),
+            );
           });
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _scrollController.jumpTo(
@@ -70,6 +74,24 @@ class _ForwarderUIState extends State<ForwarderUI> {
     if (norwegianFeed) {
       await forwarderService.addFeed("Norwegian", "NO", "153.44.253.27", 5631);
     }
+    if (gpsd1) {
+      await forwarderService.addFeed(
+        "Sinagot 2947 (GPSD1)",
+        "GPSD1",
+        "5.39.78.33",
+        2947,
+        header: "?WATCH={\"enable\":true,\"raw\":1}",
+      );
+    }
+    if (gpsd2) {
+      await forwarderService.addFeed(
+        "Sinagot 2948 (GPSD2)",
+        "GPSD2",
+        "5.39.78.33",
+        2948,
+        header: "?WATCH={\"enable\":true,\"raw\":1}",
+      );
+    }
   }
 
   void stopForwarder() async {
@@ -81,6 +103,8 @@ class _ForwarderUIState extends State<ForwarderUI> {
     setState(() {
       if (feedName == "US") usFeed = value;
       if (feedName == "NO") norwegianFeed = value;
+      if (feedName == "GPSD1") gpsd1 = value;
+      if (feedName == "GPSD2") gpsd2 = value;
     });
 
     if (!isRunning) return;
@@ -108,6 +132,32 @@ class _ForwarderUIState extends State<ForwarderUI> {
         );
       } else {
         await forwarderService.removeFeed("Norwegian");
+      }
+    }
+    if (feedName == "GPSD1") {
+      if (value) {
+        await forwarderService.addFeed(
+          "Sinagot 2947 (GPSD1)",
+          "GPSD1",
+          "5.39.78.33",
+          2947,
+          header: "?WATCH={\"enable\":true,\"raw\":1}",
+        );
+      } else {
+        await forwarderService.removeFeed("Sinagot 2947 (GPSD1)");
+      }
+    }
+    if (feedName == "GPSD2") {
+      if (value) {
+        await forwarderService.addFeed(
+          "Sinagot 2948 (GPSD2)",
+          "GPSD2",
+          "5.39.78.33",
+          2948,
+          header: "?WATCH={\"enable\":true,\"raw\":1}",
+        );
+      } else {
+        await forwarderService.removeFeed("Sinagot 2948 (GPSD2)");
       }
     }
   }
@@ -208,85 +258,92 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                       ),
                                       child: Text("Configuration"),
                                     ),
-                                    Card(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          children: [
-                                            TextField(
-                                              controller: hostController,
-                                              decoration: InputDecoration(
-                                                labelText: "Target Host",
-                                                prefixIcon: Icon(
-                                                  Icons.computer,
-                                                ),
-                                              ),
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter.allow(
-                                                  RegExp(r'[0-9.]'),
-                                                ),
-                                                IpAddressInputFormatter(),
-                                              ],
-                                            ),
-                                            TextField(
-                                              controller: portController,
-                                              decoration: InputDecoration(
-                                                labelText: "Target Port",
-                                                prefixIcon: Icon(Icons.numbers),
-                                              ),
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                                // only digits
-                                                PortInputFormatter(),
-                                                // valid port range
-                                              ],
-                                            ),
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                SizedBox(width: 8),
-                                                Icon(Icons.link),
-                                                SizedBox(width: 12),
-                                                Text(
-                                                  "Protocol",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
+                                    Expanded(
+                                      child: Card(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            children: [
+                                              TextField(
+                                                controller: hostController,
+                                                decoration: InputDecoration(
+                                                  labelText: "Target Host",
+                                                  prefixIcon: Icon(
+                                                    Icons.computer,
                                                   ),
                                                 ),
-                                                SizedBox(width: 20),
-                                                DropdownButton<ForwardProtocol>(
-                                                  value:
-                                                      forwarderService.protocol,
-                                                  items: ForwardProtocol.values
-                                                      .map((p) {
-                                                        return DropdownMenuItem(
-                                                          value: p,
-                                                          child: Text(
-                                                            p ==
-                                                                    ForwardProtocol
-                                                                        .udp
-                                                                ? "UDP"
-                                                                : "TCP",
-                                                          ),
-                                                        );
-                                                      })
-                                                      .toList(),
-                                                  onChanged: (p) {
-                                                    setState(() {
-                                                      forwarderService
-                                                          .setProtocol(p!);
-                                                    });
-                                                  },
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter.allow(
+                                                    RegExp(r'[0-9.]'),
+                                                  ),
+                                                  IpAddressInputFormatter(),
+                                                ],
+                                              ),
+                                              TextField(
+                                                controller: portController,
+                                                decoration: InputDecoration(
+                                                  labelText: "Target Port",
+                                                  prefixIcon: Icon(
+                                                    Icons.numbers,
+                                                  ),
                                                 ),
-                                              ],
-                                            ),
-                                          ],
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly,
+                                                  // only digits
+                                                  PortInputFormatter(),
+                                                  // valid port range
+                                                ],
+                                              ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(width: 8),
+                                                  Icon(Icons.link),
+                                                  SizedBox(width: 12),
+                                                  Text(
+                                                    "Protocol",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 20),
+                                                  DropdownButton<
+                                                    ForwardProtocol
+                                                  >(
+                                                    value: forwarderService
+                                                        .protocol,
+                                                    items: ForwardProtocol
+                                                        .values
+                                                        .map((p) {
+                                                          return DropdownMenuItem(
+                                                            value: p,
+                                                            child: Text(
+                                                              p ==
+                                                                      ForwardProtocol
+                                                                          .udp
+                                                                  ? "UDP"
+                                                                  : "TCP",
+                                                            ),
+                                                          );
+                                                        })
+                                                        .toList(),
+                                                    onChanged: (p) {
+                                                      setState(() {
+                                                        forwarderService
+                                                            .setProtocol(p!);
+                                                      });
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -334,6 +391,34 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                             secondary:
                                                 CountryFlag.fromCountryCode(
                                                   "NO",
+                                                  width: 30,
+                                                  height: 18,
+                                                ),
+                                          ),
+                                          CheckboxListTile(
+                                            title: Text("Sinagot 2947 (GPSD1)"),
+                                            value: gpsd1,
+                                            onChanged: (val) => toggleFeed(
+                                              "GPSD1",
+                                              val ?? false,
+                                            ),
+                                            secondary:
+                                                CountryFlag.fromCountryCode(
+                                                  "GPSD1",
+                                                  width: 30,
+                                                  height: 18,
+                                                ),
+                                          ),
+                                          CheckboxListTile(
+                                            title: Text("Sinagot 2948 (GPSD2)"),
+                                            value: gpsd2,
+                                            onChanged: (val) => toggleFeed(
+                                              "GPSD2",
+                                              val ?? false,
+                                            ),
+                                            secondary:
+                                                CountryFlag.fromCountryCode(
+                                                  "GPSD2",
                                                   width: 30,
                                                   height: 18,
                                                 ),
@@ -434,7 +519,11 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                               starterWidget,
                                               SizedBox(width: 5),
                                               Expanded(
-                                                child: Text(entry.message),
+                                                child: Text(
+                                                  entry.name != null
+                                                      ? "[${entry.name}] ${entry.message}"
+                                                      : entry.message,
+                                                ),
                                               ),
                                             ],
                                           );
@@ -492,8 +581,9 @@ class _ForwarderUIState extends State<ForwarderUI> {
 class LogEntry {
   final String message;
   final String? starter;
+  final String? name;
 
-  LogEntry({required this.message, this.starter});
+  LogEntry({required this.message, this.starter, this.name});
 }
 
 final buttonColors = WindowButtonColors(

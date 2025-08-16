@@ -7,8 +7,8 @@ void main() {
   runApp(MyApp());
 
   doWhenWindowReady(() {
-    appWindow.minSize = Size(510, 364);
-    appWindow.size = Size(644, 420);
+    appWindow.minSize = Size(670, 410);
+    appWindow.size = Size(680, 460);
     appWindow.alignment = Alignment.center;
     appWindow.title = "KikAis";
     appWindow.show();

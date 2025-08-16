@@ -3,7 +3,8 @@ import 'dart:io';
 
 enum ForwardProtocol { udp, tcp }
 
-typedef LogCallback = void Function(String message, String? starter);
+typedef LogCallback =
+    void Function(String message, String? starter, String? name);
 
 class ForwarderService {
   String targetHost = "127.0.0.1";
@@ -26,13 +27,17 @@ class ForwarderService {
   }
 
   Future<void> start() async {
-    onLog("Forwarder starting with protocol: $protocol", null);
+    onLog("Forwarder starting with protocol: $protocol", null, null);
     if (protocol == ForwardProtocol.udp) {
       _udpSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
-      onLog("UDP socket bound to ${_udpSocket!.address.address}:${_udpSocket!.port}", null);
+      onLog(
+        "UDP socket bound to ${_udpSocket!.address.address}:${_udpSocket!.port}",
+        null,
+        null,
+      );
     } else if (protocol == ForwardProtocol.tcp) {
       _tcpSocket = await Socket.connect(targetHost, targetPort);
-      onLog("TCP socket connected to $targetHost:$targetPort", null);
+      onLog("TCP socket connected to $targetHost:$targetPort", null, null);
     }
 
     for (var feed in _feeds.values) {
@@ -41,7 +46,7 @@ class ForwarderService {
   }
 
   Future<void> stop() async {
-    onLog("Stopping forwarder...", null);
+    onLog("Stopping forwarder...", null, null);
     for (var feed in _feeds.values) {
       await feed.disconnect();
     }
@@ -53,24 +58,30 @@ class ForwarderService {
     _tcpSocket?.destroy();
     _tcpSocket = null;
 
-    onLog("Forwarder stopped.", null);
+    onLog("Forwarder stopped.", null, null);
   }
 
-  Future<void> addFeed(String name, String flag, String host, int port) async {
+  Future<void> addFeed(
+    String name,
+    String flag,
+    String host,
+    int port, {
+    String? header = null,
+  }) async {
     if (_feeds.containsKey(name)) return;
-    var feed = _FeedConnection(name,flag, host, port);
+    var feed = _FeedConnection(name, flag, host, port, header);
     _feeds[name] = feed;
     if (_udpSocket != null || _tcpSocket != null) {
       await feed.connect(_handleData);
     }
-    onLog("Feed added: $name ($host:$port)", null);
+    onLog("Feed added: $name ($host:$port)", null, null);
   }
 
   Future<void> removeFeed(String name) async {
     var feed = _feeds.remove(name);
     if (feed != null) {
       await feed.disconnect();
-      onLog("Feed removed: $name", null);
+      onLog("Feed removed: $name", null, null);
     }
   }
 
@@ -95,9 +106,8 @@ class ForwarderService {
       _tcpSocket!.write(cleanLine + "\n");
     }
 
-    onLog("$cleanLine", flag);
+    onLog("$cleanLine", flag, feedName);
   }
-
 }
 
 // ----------------------
@@ -108,26 +118,36 @@ class _FeedConnection {
   final String flag;
   final String host;
   final int port;
+  final String? header;
 
   Socket? _socket;
   StreamSubscription<List<int>>? _subscription;
 
-  _FeedConnection(this.name, this.flag, this.host, this.port);
+  _FeedConnection(this.name, this.flag, this.host, this.port, this.header);
 
-  Future<void> connect(void Function(String feedName, String flag, String line) onData) async {
+  Future<void> connect(
+    void Function(String feedName, String flag, String line) onData,
+  ) async {
     _socket = await Socket.connect(host, port);
-    _subscription = _socket!.listen((data) {
-      final chunk = String.fromCharCodes(data);
-      chunk.split('\n').forEach((line) {
-        if (line.trim().isNotEmpty) {
-          onData(name, flag,  line.trim());
-        }
-      });
-    }, onError: (e) {
-      onData(name, flag, "Error: $e");
-    }, onDone: () {
-      onData(name, flag, "Feed disconnected");
-    });
+    if (header != null) {
+      _socket!.write(header!);
+    }
+    _subscription = _socket!.listen(
+      (data) {
+        final chunk = String.fromCharCodes(data);
+        chunk.split('\n').forEach((line) {
+          if (line.trim().isNotEmpty) {
+            onData(name, flag, line.trim());
+          }
+        });
+      },
+      onError: (e) {
+        onData(name, flag, "Error: $e");
+      },
+      onDone: () {
+        onData(name, flag, "Feed disconnected");
+      },
+    );
   }
 
   Future<void> disconnect() async {
