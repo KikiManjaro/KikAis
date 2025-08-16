@@ -32,6 +32,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
   bool norwegianFeed = true;
   bool gpsd1 = true;
   bool gpsd2 = true;
+  bool simulatedSinagot = false;
 
   @override
   void initState() {
@@ -92,6 +93,14 @@ class _ForwarderUIState extends State<ForwarderUI> {
         header: "?WATCH={\"enable\":true,\"raw\":1}",
       );
     }
+    if (simulatedSinagot) {
+      await forwarderService.addFeed(
+        "Sinagot 5121 (simulated)",
+        "Sinagot 5121 (simulated)",
+        "5.39.78.33",
+        5121,
+      );
+    }
   }
 
   void stopForwarder() async {
@@ -105,6 +114,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
       if (feedName == "NO") norwegianFeed = value;
       if (feedName == "GPSD1") gpsd1 = value;
       if (feedName == "GPSD2") gpsd2 = value;
+      if (feedName == "Sinagot 5121 (simulated)") simulatedSinagot = value;
     });
 
     if (!isRunning) return;
@@ -158,6 +168,18 @@ class _ForwarderUIState extends State<ForwarderUI> {
         );
       } else {
         await forwarderService.removeFeed("Sinagot 2948 (GPSD2)");
+      }
+    }
+    if (feedName == "Sinagot 5121 (simulated)") {
+      if (value) {
+        await forwarderService.addFeed(
+          "Sinagot 5121 (simulated)",
+          "Sinagot 5121 (simulated)",
+          "5.39.78.33",
+          5121,
+        );
+      } else {
+        await forwarderService.removeFeed("Sinagot 5121 (simulated)");
       }
     }
   }
@@ -422,6 +444,20 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                                   width: 30,
                                                   height: 18,
                                                 ),
+                                          ),
+                                          CheckboxListTile(
+                                            title: Text("Sinagot 5121 (simulated)"),
+                                            value: simulatedSinagot,
+                                            onChanged: (val) => toggleFeed(
+                                              "Sinagot 5121 (simulated)",
+                                              val ?? false,
+                                            ),
+                                            secondary:
+                                            CountryFlag.fromCountryCode(
+                                              "Sinagot 5121 (simulated)",
+                                              width: 30,
+                                              height: 18,
+                                            ),
                                           ),
                                         ],
                                       ),
