@@ -2,28 +2,40 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class BoatAnimation extends StatefulWidget {
+  BoatAnimation({Key? key}) : super(key: key);
+
+  final _BoatAnimationState _state = _BoatAnimationState();
+
+  // Public methods
+  void start() => _state.startAnimation();
+  void stop() => _state.stopAnimation();
+
   @override
-  _BoatAnimationState createState() => _BoatAnimationState();
+  _BoatAnimationState createState() => _state;
 }
 
 class _BoatAnimationState extends State<BoatAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  bool _showBoat = false;
   double _lastParentWidth = 0;
-  final double shipWidth = 30;
+  final double shipWidth = 22;
   final double speed = 30; // pixels per second
+
+  void startAnimation() {
+    setState(() => _showBoat = true);
+    _controller.repeat(reverse: true);
+  }
+
+  void stopAnimation() {
+    _controller.stop();
+    setState(() => _showBoat = false);
+  }
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 6),
-    )..repeat(
-      reverse: true,
-      period: const Duration(seconds: 6), // explicitly set period
-    );
-
+    _controller = AnimationController(vsync: this);
   }
 
   void _updateControllerDuration(double parentWidth) {
@@ -33,7 +45,7 @@ class _BoatAnimationState extends State<BoatAnimation>
       Duration duration = Duration(milliseconds: (distance / speed * 1000).round());
       _controller.stop();
       _controller.duration = duration;
-      _controller.repeat(reverse: true);
+      if (_showBoat) _controller.repeat(reverse: true);
     }
   }
 
@@ -50,40 +62,36 @@ class _BoatAnimationState extends State<BoatAnimation>
         double parentWidth = constraints.maxWidth;
         double parentHeight = constraints.maxHeight;
 
-        // Update animation speed based on parent width
         _updateControllerDuration(parentWidth);
 
         return Stack(
           children: [
-            AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                double dx = _controller.value * (parentWidth - shipWidth);
+            if (_showBoat)
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  double dx = _controller.value * (parentWidth - shipWidth);
+                  bool goingRight = _controller.status == AnimationStatus.forward;
+                  double scaleX = goingRight ? 1.0 : -1.0;
+                  double tilt = math.sin(_controller.value * 2 * math.pi * 8) * 0.10;
 
-                bool goingRight = _controller.status == AnimationStatus.forward;
-                double scaleX = goingRight ? 1.0 : -1.0;
-
-                double tiltSpeed = 4;
-                double tilt =
-                    math.sin(_controller.value * 2 * math.pi * tiltSpeed) * 0.10;
-
-                return Positioned(
-                  left: dx,
-                  top: (parentHeight - shipWidth) / 2,
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.identity()
-                      ..scale(scaleX, 1.0)
-                      ..rotateZ(tilt),
-                    child: child,
-                  ),
-                );
-              },
-              child: ImageIcon(
-                AssetImage('resources/ship.png'),
-                size: shipWidth,
+                  return Positioned(
+                    left: dx,
+                    top: (parentHeight - shipWidth) / 2,
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.identity()
+                        ..scale(scaleX, 1.0)
+                        ..rotateZ(tilt),
+                      child: child,
+                    ),
+                  );
+                },
+                child: ImageIcon(
+                  AssetImage('resources/ship.png'),
+                  size: shipWidth,
+                ),
               ),
-            ),
           ],
         );
       },

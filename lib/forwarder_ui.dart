@@ -14,6 +14,7 @@ class ForwarderUI extends StatefulWidget {
 }
 
 class _ForwarderUIState extends State<ForwarderUI> {
+  final BoatAnimation boat = BoatAnimation();
   final ScrollController _scrollController = ScrollController();
   late ForwarderService forwarderService;
 
@@ -161,7 +162,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
                       Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: ImageIcon(
-                          AssetImage("resources/FireBoaT2.png"),
+                          AssetImage("resources/FireBoat2.png"),
                           size: 26,
                         ),
                       ),
@@ -178,8 +179,8 @@ class _ForwarderUIState extends State<ForwarderUI> {
                   Expanded(
                     child: Stack(
                       children: [
-                        Positioned.fill(child: BoatAnimation()),
-                        Positioned.fill(child: MoveWindow()),
+                        boat,
+                        MoveWindow(),
                       ],
                     ),
                   ),
@@ -367,8 +368,10 @@ class _ForwarderUIState extends State<ForwarderUI> {
                             onPressed: () {
                               if (isRunning) {
                                 stopForwarder();
+                                boat.stop();
                               } else {
                                 startForwarder();
+                                boat.start();
                               }
                             },
                           ),
