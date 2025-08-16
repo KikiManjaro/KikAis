@@ -5,6 +5,7 @@ import 'package:country_flags/country_flags.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 
+import 'boat_animation.dart';
 import 'forwarder_service.dart';
 
 class ForwarderUI extends StatefulWidget {
@@ -154,7 +155,6 @@ class _ForwarderUIState extends State<ForwarderUI> {
           children: [
             WindowTitleBarBox(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
@@ -175,7 +175,14 @@ class _ForwarderUIState extends State<ForwarderUI> {
                       ),
                     ],
                   ),
-                  Expanded(child: MoveWindow()),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(child: BoatAnimation()),
+                        Positioned.fill(child: MoveWindow()),
+                      ],
+                    ),
+                  ),
                   const WindowButtons(),
                 ],
               ),
