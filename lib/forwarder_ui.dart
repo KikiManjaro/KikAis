@@ -335,30 +335,33 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                                     ),
                                                   ),
                                                   SizedBox(width: 20),
-                                                  DropdownButton<
-                                                    ForwardProtocol
-                                                  >(
-                                                    value: forwarderService
-                                                        .protocol,
-                                                    items: ForwardProtocol
-                                                        .values
-                                                        .map((p) {
-                                                          return DropdownMenuItem(
-                                                            value: p,
-                                                            child: Text(
-                                                              p ==
-                                                                      ForwardProtocol
-                                                                          .udp
-                                                                  ? "UDP"
-                                                                  : "TCP",
-                                                            ),
-                                                          );
-                                                        })
-                                                        .toList(),
+                                                  DropdownButton<ForwardProtocol>(
+                                                    value: forwarderService.protocol,
+                                                    items: ForwardProtocol.values.map((p) {
+                                                      String label;
+                                                      switch (p) {
+                                                        case ForwardProtocol.tcpClient:
+                                                          label = "TCP Client";
+                                                          break;
+                                                        case ForwardProtocol.tcpServer:
+                                                          label = "TCP Server";
+                                                          break;
+                                                        case ForwardProtocol.udpClient:
+                                                          label = "UDP Client";
+                                                          break;
+                                                        case ForwardProtocol.udpServer:
+                                                          label = "UDP Server";
+                                                          break;
+                                                      }
+
+                                                      return DropdownMenuItem(
+                                                        value: p,
+                                                        child: Text(label),
+                                                      );
+                                                    }).toList(),
                                                     onChanged: (p) {
                                                       setState(() {
-                                                        forwarderService
-                                                            .setProtocol(p!);
+                                                        forwarderService.setProtocol(p!);
                                                       });
                                                     },
                                                   ),
