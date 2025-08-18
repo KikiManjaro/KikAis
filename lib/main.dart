@@ -1,18 +1,9 @@
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 
 import 'forwarder_ui.dart';
 
 void main() {
   runApp(MyApp());
-
-  doWhenWindowReady(() {
-    appWindow.minSize = Size(720, 470);
-    appWindow.size = Size(740, 520);
-    appWindow.alignment = Alignment.center;
-    appWindow.title = "KikAis";
-    appWindow.show();
-  });
 }
 
 class MyApp extends StatelessWidget {
