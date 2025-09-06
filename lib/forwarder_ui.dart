@@ -28,11 +28,12 @@ class _ForwarderUIState extends State<ForwarderUI> {
 
   List<LogEntry> logEntries = [];
   bool isRunning = false;
-  bool usFeed = true;
+  bool usFeed = false;
   bool norwegianFeed = true;
   bool gpsd1 = true;
   bool gpsd2 = true;
   bool simulatedSinagot = false;
+  bool kikistreamio = false;
 
   @override
   void initState() {
@@ -101,6 +102,14 @@ class _ForwarderUIState extends State<ForwarderUI> {
         5121,
       );
     }
+    if (kikistreamio) {
+      await forwarderService.addFeed(
+        "Kikistream.io",
+        "Kikistream.io",
+        "88.181.60.160",
+        20000,
+      );
+    }
   }
 
   void stopForwarder() async {
@@ -115,6 +124,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
       if (feedName == "GPSD1") gpsd1 = value;
       if (feedName == "GPSD2") gpsd2 = value;
       if (feedName == "Sinagot 5121 (simulated)") simulatedSinagot = value;
+      if (feedName == "Kikistream.io") kikistreamio = value;
     });
 
     if (!isRunning) return;
@@ -180,6 +190,18 @@ class _ForwarderUIState extends State<ForwarderUI> {
         );
       } else {
         await forwarderService.removeFeed("Sinagot 5121 (simulated)");
+      }
+    }
+    if (feedName == "Kikistream.io") {
+      if (value) {
+        await forwarderService.addFeed(
+          "Kikistream.io",
+          "Kikistream.io",
+          "88.181.60.160",
+          20000,
+        );
+      } else {
+        await forwarderService.removeFeed("Kikistream.io");
       }
     }
   }
@@ -335,33 +357,48 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                                     ),
                                                   ),
                                                   SizedBox(width: 20),
-                                                  DropdownButton<ForwardProtocol>(
-                                                    value: forwarderService.protocol,
-                                                    items: ForwardProtocol.values.map((p) {
-                                                      String label;
-                                                      switch (p) {
-                                                        case ForwardProtocol.tcpClient:
-                                                          label = "TCP Client";
-                                                          break;
-                                                        case ForwardProtocol.tcpServer:
-                                                          label = "TCP Server";
-                                                          break;
-                                                        case ForwardProtocol.udpClient:
-                                                          label = "UDP Client";
-                                                          break;
-                                                        case ForwardProtocol.udpServer:
-                                                          label = "UDP Server";
-                                                          break;
-                                                      }
+                                                  DropdownButton<
+                                                    ForwardProtocol
+                                                  >(
+                                                    value: forwarderService
+                                                        .protocol,
+                                                    items: ForwardProtocol
+                                                        .values
+                                                        .map((p) {
+                                                          String label;
+                                                          switch (p) {
+                                                            case ForwardProtocol
+                                                                .tcpClient:
+                                                              label =
+                                                                  "TCP Client";
+                                                              break;
+                                                            case ForwardProtocol
+                                                                .tcpServer:
+                                                              label =
+                                                                  "TCP Server";
+                                                              break;
+                                                            case ForwardProtocol
+                                                                .udpClient:
+                                                              label =
+                                                                  "UDP Client";
+                                                              break;
+                                                            case ForwardProtocol
+                                                                .udpServer:
+                                                              label =
+                                                                  "UDP Server";
+                                                              break;
+                                                          }
 
-                                                      return DropdownMenuItem(
-                                                        value: p,
-                                                        child: Text(label),
-                                                      );
-                                                    }).toList(),
+                                                          return DropdownMenuItem(
+                                                            value: p,
+                                                            child: Text(label),
+                                                          );
+                                                        })
+                                                        .toList(),
                                                     onChanged: (p) {
                                                       setState(() {
-                                                        forwarderService.setProtocol(p!);
+                                                        forwarderService
+                                                            .setProtocol(p!);
                                                       });
                                                     },
                                                   ),
@@ -396,17 +433,21 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceEvenly,
                                         children: [
-                                          CheckboxListTile(
-                                            title: Text("US East Coast Feed"),
-                                            value: usFeed,
-                                            onChanged: (val) =>
-                                                toggleFeed("US", val ?? false),
-                                            secondary:
-                                                CountryFlag.fromCountryCode(
-                                                  "US",
-                                                  width: 30,
-                                                  height: 18,
-                                                ),
+                                          Tooltip(
+                                            message:
+                                                "Kikistream.io is based on a public AIS feed (aisstream.io),\neach message is transformed to a standard NMEA0183 AIS sentence\n(messages could be wrong or malformed)",
+                                            child: CheckboxListTile(
+                                              title: Text("Kikistream.io"),
+                                              value: kikistreamio,
+                                              onChanged: (val) => toggleFeed(
+                                                "Kikistream.io",
+                                                val ?? false,
+                                              ),
+                                              secondary: Icon(
+                                                Icons.public,
+                                                size: 30,
+                                              ),
+                                            ),
                                           ),
                                           CheckboxListTile(
                                             title: Text("Norwegian Feed"),
@@ -449,18 +490,34 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                                 ),
                                           ),
                                           CheckboxListTile(
-                                            title: Text("Sinagot 5121 (simulated)"),
+                                            title: Text(
+                                              "Sinagot 5121 (simulated)",
+                                            ),
                                             value: simulatedSinagot,
                                             onChanged: (val) => toggleFeed(
                                               "Sinagot 5121 (simulated)",
                                               val ?? false,
                                             ),
                                             secondary:
-                                            CountryFlag.fromCountryCode(
-                                              "Sinagot 5121 (simulated)",
-                                              width: 30,
-                                              height: 18,
+                                                CountryFlag.fromCountryCode(
+                                                  "Sinagot 5121 (simulated)",
+                                                  width: 30,
+                                                  height: 18,
+                                                ),
+                                          ),
+                                          CheckboxListTile(
+                                            title: Text(
+                                              "US East Coast Feed (simulated)",
                                             ),
+                                            value: usFeed,
+                                            onChanged: (val) =>
+                                                toggleFeed("US", val ?? false),
+                                            secondary:
+                                                CountryFlag.fromCountryCode(
+                                                  "US",
+                                                  width: 30,
+                                                  height: 18,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -538,12 +595,28 @@ class _ForwarderUIState extends State<ForwarderUI> {
 
                                           if (entry.starter != null) {
                                             try {
-                                              starterWidget =
-                                                  CountryFlag.fromCountryCode(
-                                                    entry.starter!,
-                                                    width: 20,
-                                                    height: 12,
-                                                  );
+                                              if (entry.starter ==
+                                                  "Kikistream.io") {
+                                                starterWidget = Icon(
+                                                  Icons.public,
+                                                  size: 16,
+                                                );
+                                              } else if (entry
+                                                      .starter!
+                                                      .length ==
+                                                  2) {
+                                                starterWidget =
+                                                    CountryFlag.fromCountryCode(
+                                                      entry.starter!,
+                                                      width: 16,
+                                                      height: 10,
+                                                    );
+                                              } else {
+                                                starterWidget = Icon(
+                                                  Icons.directions_boat,
+                                                  size: 16,
+                                                );
+                                              }
                                             } catch (e) {
                                               starterWidget = Text(
                                                 entry.starter!,
@@ -554,6 +627,8 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                           }
 
                                           return Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
                                             children: [
                                               starterWidget,
                                               SizedBox(width: 5),

@@ -18,6 +18,10 @@ class ForwarderService {
   RawDatagramSocket? _udpSocket;
   Socket? _tcpSocket;
 
+  ServerSocket? _tcpServer;
+  final List<Socket> _tcpClients = [];
+  RawDatagramSocket? _udpClientSocket;
+
   // ----------------------
   // Public API
   // ----------------------
@@ -27,34 +31,46 @@ class ForwarderService {
   }
 
   Future<void> start() async {
-    if (protocol == ForwardProtocol.tcpServer) {
-      await startTcpServer(targetPort);
-    } else if (protocol == ForwardProtocol.tcpClient) {
-      _tcpSocket = await Socket.connect(targetHost, targetPort);
-    } else if (protocol == ForwardProtocol.udpClient) {
-      await startUdpClient();
-    } else if (protocol == ForwardProtocol.udpServer) {
-      _udpSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+    try {
+      if (protocol == ForwardProtocol.tcpServer) {
+        await startTcpServer(targetPort);
+      } else if (protocol == ForwardProtocol.tcpClient) {
+        _tcpSocket = await Socket.connect(targetHost, targetPort);
+      } else if (protocol == ForwardProtocol.udpClient) {
+        await startUdpClient();
+      } else if (protocol == ForwardProtocol.udpServer) {
+        _udpSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+      }
+    } catch (e) {
+      onLog("Error starting protocol $protocol: $e", null, null);
     }
 
-
+    // Lancer chaque feed de façon indépendante
     for (var feed in _feeds.values) {
-      await feed.connect(_handleData);
+      _connectFeed(feed);
     }
   }
 
-  ServerSocket? _tcpServer;
-  final List<Socket> _tcpClients = [];
+  Future<void> _connectFeed(_FeedConnection feed) async {
+    while (true) {
+      try {
+        await feed.connect(_handleData);
+        onLog("Feed ${feed.name} connected.", null, null);
+        break; // connecté, sortir de la boucle
+      } catch (e) {
+        onLog("Failed to connect feed ${feed.name}: $e. Retrying in 5s...", null, null);
+        await Future.delayed(Duration(seconds: 5));
+      }
+    }
+  }
 
   Future<void> startTcpServer(int port) async {
     _tcpServer = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    onLog("TCP Server listening on ${_tcpServer!.address.address}:$port", null,
-        null);
+    onLog("TCP Server listening on ${_tcpServer!.address.address}:$port", null, null);
 
     _tcpServer!.listen((clientSocket) {
       _tcpClients.add(clientSocket);
-      onLog("TCP client connected: ${clientSocket.remoteAddress
-          .address}:${clientSocket.remotePort}", null, null);
+      onLog("TCP client connected: ${clientSocket.remoteAddress.address}:${clientSocket.remotePort}", null, null);
 
       clientSocket.listen(
             (data) {
@@ -70,16 +86,13 @@ class ForwarderService {
     });
   }
 
-  RawDatagramSocket? _udpClientSocket;
-
   Future<void> startUdpClient() async {
     _udpClientSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
     onLog("UDP client ready, sending to $targetHost:$targetPort", null, null);
   }
 
   void sendUdpMessage(String message) {
-    _udpClientSocket?.send(
-        message.codeUnits, InternetAddress(targetHost), targetPort);
+    _udpClientSocket?.send(message.codeUnits, InternetAddress(targetHost), targetPort);
   }
 
   Future<void> stop() async {
@@ -98,18 +111,17 @@ class ForwarderService {
     onLog("Forwarder stopped.", null, null);
   }
 
-  Future<void> addFeed(String name,
-      String flag,
-      String host,
-      int port, {
-        String? header = null,
-      }) async {
+  Future<void> addFeed(String name, String flag, String host, int port, {String? header}) async {
     if (_feeds.containsKey(name)) return;
+
     var feed = _FeedConnection(name, flag, host, port, header);
     _feeds[name] = feed;
+
+    // Connecter immédiatement si le service est déjà démarré
     if (_udpSocket != null || _tcpSocket != null || _tcpServer != null || _udpClientSocket != null) {
-      await feed.connect(_handleData);
+      _connectFeed(feed); // non bloquant
     }
+
     onLog("Feed added: $name ($host:$port)", null, null);
   }
 
@@ -126,31 +138,23 @@ class ForwarderService {
   // ----------------------
 
   void _handleData(String feedName, String flag, String line) {
-    // Keep only the part starting with '!'
     final index = line.indexOf('!');
-    if (index == -1) return; // ignore lines without '!'
+    if (index == -1) return; // ignore lines sans '!'
 
     final cleanLine = line.substring(index);
 
     switch (protocol) {
       case ForwardProtocol.udpServer:
         if (_udpSocket != null) {
-          _udpSocket!.send(
-            cleanLine.codeUnits,
-            InternetAddress(targetHost),
-            targetPort,
-          );
+          _udpSocket!.send(cleanLine.codeUnits, InternetAddress(targetHost), targetPort);
         }
         break;
-
       case ForwardProtocol.tcpClient:
         _tcpSocket?.write(cleanLine + "\n");
         break;
-
       case ForwardProtocol.udpClient:
         sendUdpMessage(cleanLine);
         break;
-
       case ForwardProtocol.tcpServer:
         for (var client in _tcpClients) {
           client.write(cleanLine + "\n");
@@ -161,6 +165,7 @@ class ForwarderService {
     onLog(cleanLine, flag, feedName);
   }
 }
+
 
 // ----------------------
 // Helper class for each feed

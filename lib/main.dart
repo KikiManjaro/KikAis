@@ -7,8 +7,8 @@ void main() {
   runApp(MyApp());
 
   doWhenWindowReady(() {
-    appWindow.minSize = Size(720, 470);
-    appWindow.size = Size(740, 520);
+    appWindow.minSize = Size(810, 520);
+    appWindow.size = Size(820, 600);
     appWindow.alignment = Alignment.center;
     appWindow.title = "KikAis";
     appWindow.show();
@@ -36,6 +36,19 @@ class MyApp extends StatelessWidget {
           bodyLarge: TextStyle(color: Colors.white),
           bodyMedium: TextStyle(color: Colors.white70),
           bodySmall: TextStyle(color: Colors.white60),
+        ),
+        tooltipTheme: TooltipThemeData(
+          textStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: BorderRadius.circular(8),
+            border: BoxBorder.all(color: Colors.lightBlueAccent, width: 1),
+          ),
+          waitDuration: Duration(milliseconds: 500),
+          showDuration: Duration(seconds: 5),
         ),
       ),
 
