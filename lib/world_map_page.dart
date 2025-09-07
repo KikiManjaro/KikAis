@@ -41,7 +41,9 @@ class _WorldMapPageState extends State<WorldMapPage> {
           IconButton(
             icon: Icon(clusterEnabled ? Icons.scatter_plot : Icons.group_work),
             onPressed: toggleMarkers,
-            tooltip: clusterEnabled ? "Disable clustering" : "Enable clustering",
+            tooltip: clusterEnabled
+                ? "Disable clustering"
+                : "Enable clustering",
           ),
           IconButton(
             icon: Icon(
@@ -83,30 +85,65 @@ class _WorldMapPageState extends State<WorldMapPage> {
                   );
                 },
                 markers: boatManager.boats
-                    .where((boat) => boat.lat != null && boat.lon != null)
-                    .map(
-                      (boat) => Marker(
-                        point: LatLng(boat.lat!, boat.lon!),
-                        width: 80,
-                        height: 50,
-                        child: BoatMarkerWithInfo(boat: boat),
-                      ),
+                    .where(
+                      (boat) =>
+                          boat.lat != null &&
+                          boat.lon != null &&
+                          boat.lat! >= -90 &&
+                          boat.lat! <= 90 &&
+                          boat.lon! >= -180 &&
+                          boat.lon! <= 180,
                     )
+                    .map((boat) {
+                      try {
+                        return Marker(
+                          point: LatLng(boat.lat!, boat.lon!),
+                          width: 80,
+                          height: 50,
+                          child: BoatMarkerWithInfo(boat: boat),
+                        );
+                      } catch (e, stack) {
+                        // Optionnel : afficher une erreur dans la console
+                        debugPrint(
+                          'Error creating marker for boat ${boat.mmsi}: $e\n$stack',
+                        );
+                        return null; // retourne null si le marker ne peut pas être créé
+                      }
+                    })
+                    .where((marker) => marker != null) // supprime les null
+                    .cast<Marker>() // cast pour garder le type correct
                     .toList(),
               ),
             )
           else
             MarkerLayer(
               markers: boatManager.boats
-                  .where((boat) => boat.lat != null && boat.lon != null)
-                  .map(
-                    (boat) => Marker(
-                      point: LatLng(boat.lat!, boat.lon!),
-                      width: 80,
-                      height: 50,
-                      child: BoatMarkerWithInfo(boat: boat),
-                    ),
+                  .where(
+                    (boat) =>
+                        boat.lat != null &&
+                        boat.lon != null &&
+                        boat.lat! >= -90 &&
+                        boat.lat! <= 90 &&
+                        boat.lon! >= -180 &&
+                        boat.lon! <= 180,
                   )
+                  .map((boat) {
+                    try {
+                      return Marker(
+                        point: LatLng(boat.lat!, boat.lon!),
+                        width: 80,
+                        height: 50,
+                        child: BoatMarkerWithInfo(boat: boat),
+                      );
+                    } catch (e, stack) {
+                      debugPrint(
+                        'Error creating marker for boat ${boat.mmsi}: $e\n$stack',
+                      );
+                      return null;
+                    }
+                  })
+                  .where((marker) => marker != null)
+                  .cast<Marker>()
                   .toList(),
             ),
         ],

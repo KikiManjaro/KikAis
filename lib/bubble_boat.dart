@@ -7,10 +7,17 @@ class BoatInfoBubble extends StatelessWidget {
 
   const BoatInfoBubble({Key? key, required this.boat}) : super(key: key);
 
+  Widget buildRow(String title, dynamic value) {
+    return Text(
+      "$title: ${value ?? "-"}",
+      style: TextStyle(fontSize: 12),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent, // nécessaire sinon bulle invisible
+      color: Colors.transparent,
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -30,17 +37,38 @@ class BoatInfoBubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "MMSI: ${boat.mmsi}",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text("Nom: ${boat.name ?? "Inconnu"}"),
-              Text("Lat: ${boat.lat?.toStringAsFixed(5) ?? "-"}"),
-              Text("Lon: ${boat.lon?.toStringAsFixed(5) ?? "-"}"),
-              Text("COG: ${boat.cog?.toStringAsFixed(1) ?? "-"}°"),
-              Text("SOG: ${boat.sog?.toStringAsFixed(1) ?? "-"} kn"),
-              Text("Heading: ${boat.heading?.toStringAsFixed(0) ?? "-"}°"),
-              Text("Nav. Status: ${boat.navigationStatus ?? "-"}"),
+              Text("General Information", style: TextStyle(fontWeight: FontWeight.bold)),
+              buildRow("MMSI", boat.mmsi),
+              buildRow("Name", boat.name),
+              buildRow("Call Sign", boat.callSign),
+              buildRow("IMO", boat.imoNumber),
+              SizedBox(height: 4),
+
+              Text("Position & Navigation", style: TextStyle(fontWeight: FontWeight.bold)),
+              buildRow("Latitude", boat.lat?.toStringAsFixed(5)),
+              buildRow("Longitude", boat.lon?.toStringAsFixed(5)),
+              buildRow("Heading", boat.heading != null ? "${boat.heading!.toStringAsFixed(0)}°" : null),
+              buildRow("COG", boat.cog != null ? "${boat.cog!.toStringAsFixed(1)}°" : null),
+              buildRow("SOG", boat.sog != null ? "${boat.sog!.toStringAsFixed(1)} kn" : null),
+              buildRow("Navigation Status", boat.navigationStatus),
+              buildRow("Timestamp", boat.timestamp),
+              buildRow("RAIM", boat.raimFlag),
+              SizedBox(height: 4),
+
+              Text("Vessel Details", style: TextStyle(fontWeight: FontWeight.bold)),
+              buildRow("Type", boat.vesselType),
+              buildRow("Type (Int)", boat.vesselTypeInt),
+              buildRow("Dimensions Bow/Stern", "${boat.dimensionBow ?? "-"} / ${boat.dimensionStern ?? "-"}"),
+              buildRow("Dimensions Port/Starboard", "${boat.dimensionPort ?? "-"} / ${boat.dimensionStarboard ?? "-"}"),
+              buildRow("EPFD Fix Type", boat.epfdFixType),
+              buildRow("Regional Reserved", boat.regionalReserved),
+              buildRow("Assigned Mode", boat.assignedMode),
+              buildRow("DTE", boat.dte),
+              buildRow("Spare", boat.spare),
+              buildRow("Draught", boat.draught),
+              buildRow("Destination", boat.destination),
+              buildRow("ETA", "${boat.etaDay ?? "-"} / ${boat.etaMonth ?? "-"} ${boat.etaHour ?? "-"}:${boat.etaMinute ?? "-"}"),
+
             ],
           ),
         ),
