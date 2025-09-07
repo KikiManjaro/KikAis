@@ -1,10 +1,17 @@
+import 'package:KikAis/swipper.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'forwarder_ui.dart';
+import 'boatmanager.dart';
 
-void main() {
-  runApp(MyApp());
+Future<void> main() async {
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => BoatManager(),
+      child: MyApp(),
+    ),
+  );
 
   doWhenWindowReady(() {
     appWindow.minSize = Size(810, 520);
@@ -38,10 +45,7 @@ class MyApp extends StatelessWidget {
           bodySmall: TextStyle(color: Colors.white60),
         ),
         tooltipTheme: TooltipThemeData(
-          textStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-          ),
+          textStyle: TextStyle(color: Colors.white, fontSize: 12),
           decoration: BoxDecoration(
             color: Colors.grey[900],
             borderRadius: BorderRadius.circular(8),
@@ -55,7 +59,7 @@ class MyApp extends StatelessWidget {
       // Force dark mode
       themeMode: ThemeMode.dark,
 
-      home: ForwarderUI(),
+      home: SwipperUi(),
     );
   }
 }
