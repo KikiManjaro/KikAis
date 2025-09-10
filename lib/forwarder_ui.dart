@@ -209,7 +209,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
         await forwarderService.addFeed(
           "Kikistream.io",
           "Kikistream.io",
-          "http://kikimanjaro.hd.free.fr/",
+          "kikimanjaro.hd.free.fr",
           20000,
         );
       } else {
