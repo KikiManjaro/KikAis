@@ -13,16 +13,21 @@ class BoatManager extends ChangeNotifier {
 
   List<Boat> get boats => _boats.values.toList();
 
-  void processMessage(String msg) {
-    try {
-      AISMessage message = AISMessage.fromString(msg);
-      if (!_boats.containsKey(message.mmsi)) {
-        _boats[message.mmsi] = Boat(mmsi: message.mmsi.toString());
+  Future<void> processMessage(String msg) async {
+    await Future(() {
+      try {
+        AISMessage message = AISMessage.fromString(msg);
+
+        _boats.putIfAbsent(
+          message.mmsi,
+              () => Boat(mmsi: message.mmsi.toString()),
+        );
+
+        updateFromMessage(_boats[message.mmsi]!, message);
+      } catch (e, stack) {
+        print("Error processing message: $e\n$stack");
       }
-      updateFromMessage(_boats[message.mmsi]!, message);
-    } catch (e) {
-      print("Error processing message: $e");
-    }
+    });
   }
 
   void updateFromMessage(Boat boat, AISMessage message) {
@@ -33,7 +38,6 @@ class BoatManager extends ChangeNotifier {
       boat.cog = message.courseOverGround;
       boat.heading = message.heading;
       boat.navigationStatus = message.navigationStatus;
-      notifyListeners();
     } else if (message is ExtendedClassBCSPositionReport) {
       boat.lat = message.latitude;
       boat.lon = message.longitude;
@@ -90,5 +94,6 @@ class BoatManager extends ChangeNotifier {
       boat.imoNumber = message.imoNumber;
       boat.callSign = message.callSign;
     }
+    notifyListeners();
   }
 }

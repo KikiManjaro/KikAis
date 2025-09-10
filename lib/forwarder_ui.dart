@@ -34,9 +34,9 @@ class _ForwarderUIState extends State<ForwarderUI> {
   List<LogEntry> logEntries = [];
   bool isRunning = false;
   bool usFeed = false;
-  bool norwegianFeed = true;
-  bool gpsd1 = true;
-  bool gpsd2 = true;
+  bool norwegianFeed = false;
+  bool gpsd1 = false;
+  bool gpsd2 = false;
   bool simulatedSinagot = false;
   bool kikistreamio = false;
 
@@ -118,7 +118,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
       await forwarderService.addFeed(
         "Kikistream.io",
         "Kikistream.io",
-        "88.181.60.160",
+        "kikimanjaro.hd.free.fr",
         20000,
       );
     }
@@ -209,7 +209,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
         await forwarderService.addFeed(
           "Kikistream.io",
           "Kikistream.io",
-          "88.181.60.160",
+          "http://kikimanjaro.hd.free.fr/",
           20000,
         );
       } else {
