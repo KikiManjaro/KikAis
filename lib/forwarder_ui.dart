@@ -69,14 +69,12 @@ class _ForwarderUIState extends State<ForwarderUI> {
   }
 
   void startForwarder() async {
-    // Set host/port dynamically before starting
     forwarderService.targetHost = hostController.text;
     forwarderService.targetPort = int.tryParse(portController.text) ?? 33333;
 
     await forwarderService.start();
     setState(() => isRunning = true);
 
-    // Automatically add selected feeds on start
     if (usFeed) {
       await forwarderService.addFeed(
         "US East Coast",
@@ -209,7 +207,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
         await forwarderService.addFeed(
           "Kikistream.io",
           "Kikistream.io",
-          "http://kikimanjaro.hd.free.fr/",
+          "kikimanjaro.hd.free.fr",
           20000,
         );
       } else {
@@ -267,10 +265,8 @@ class _ForwarderUIState extends State<ForwarderUI> {
                   IntrinsicHeight(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      // make children take full height
                       children: [
                         Expanded(
-                          // Host / Port / Protocol Card
                           child: AbsorbPointer(
                             absorbing: isRunning,
                             child: Opacity(
@@ -318,9 +314,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                               inputFormatters: [
                                                 FilteringTextInputFormatter
                                                     .digitsOnly,
-                                                // only digits
                                                 PortInputFormatter(),
-                                                // valid port range
                                               ],
                                             ),
                                             Row(
@@ -392,7 +386,6 @@ class _ForwarderUIState extends State<ForwarderUI> {
                           ),
                         ),
                         Expanded(
-                          // Feeds selection Card
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -504,7 +497,6 @@ class _ForwarderUIState extends State<ForwarderUI> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  // Control buttons and status
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -540,7 +532,6 @@ class _ForwarderUIState extends State<ForwarderUI> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  // Log display
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

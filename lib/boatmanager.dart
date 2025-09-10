@@ -8,7 +8,7 @@ import 'ais/src/messages/static/static_voyage_data.dart';
 import 'boat.dart';
 
 class BoatManager extends ChangeNotifier {
-  final Map<int, Boat> _boats = {}; // MMSI -> Boat
+  final Map<int, Boat> _boats = {};
   bool createMarkers = true;
 
   List<Boat> get boats => _boats.values.toList();

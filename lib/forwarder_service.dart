@@ -22,10 +22,6 @@ class ForwarderService {
   final List<Socket> _tcpClients = [];
   RawDatagramSocket? _udpClientSocket;
 
-  // ----------------------
-  // Public API
-  // ----------------------
-
   void setProtocol(ForwardProtocol p) {
     protocol = p;
   }
@@ -45,7 +41,6 @@ class ForwarderService {
       onLog("Error starting protocol $protocol: $e", null, null);
     }
 
-    // Lancer chaque feed de façon indépendante
     for (var feed in _feeds.values) {
       _connectFeed(feed);
     }
@@ -56,7 +51,7 @@ class ForwarderService {
       try {
         await feed.connect(_handleData);
         onLog("Feed ${feed.name} connected.", null, null);
-        break; // connecté, sortir de la boucle
+        break;
       } catch (e) {
         onLog("Failed to connect feed ${feed.name}: $e. Retrying in 5s...", null, null);
         await Future.delayed(Duration(seconds: 5));
@@ -117,9 +112,8 @@ class ForwarderService {
     var feed = _FeedConnection(name, flag, host, port, header);
     _feeds[name] = feed;
 
-    // Connecter immédiatement si le service est déjà démarré
     if (_udpSocket != null || _tcpSocket != null || _tcpServer != null || _udpClientSocket != null) {
-      _connectFeed(feed); // non bloquant
+      _connectFeed(feed);
     }
 
     onLog("Feed added: $name ($host:$port)", null, null);
@@ -133,13 +127,9 @@ class ForwarderService {
     }
   }
 
-  // ----------------------
-  // Internal
-  // ----------------------
-
   void _handleData(String feedName, String flag, String line) {
     final index = line.indexOf('!');
-    if (index == -1) return; // ignore lines sans '!'
+    if (index == -1) return;
 
     final cleanLine = line.substring(index);
 
@@ -166,10 +156,6 @@ class ForwarderService {
   }
 }
 
-
-// ----------------------
-// Helper class for each feed
-// ----------------------
 class _FeedConnection {
   final String name;
   final String flag;

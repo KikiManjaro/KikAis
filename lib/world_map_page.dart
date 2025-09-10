@@ -103,15 +103,14 @@ class _WorldMapPageState extends State<WorldMapPage> {
                           child: BoatMarkerWithInfo(boat: boat),
                         );
                       } catch (e, stack) {
-                        // Optionnel : afficher une erreur dans la console
                         debugPrint(
                           'Error creating marker for boat ${boat.mmsi}: $e\n$stack',
                         );
-                        return null; // retourne null si le marker ne peut pas être créé
+                        return null;
                       }
                     })
-                    .where((marker) => marker != null) // supprime les null
-                    .cast<Marker>() // cast pour garder le type correct
+                    .where((marker) => marker != null)
+                    .cast<Marker>()
                     .toList(),
               ),
             )

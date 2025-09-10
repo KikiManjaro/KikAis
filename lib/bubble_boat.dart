@@ -95,7 +95,7 @@ class _BoatMarkerWithInfoState extends State<BoatMarkerWithInfo> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: Stack(
-        clipBehavior: Clip.none, // permet à la bulle de dépasser
+        clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
           Icon(
@@ -105,7 +105,7 @@ class _BoatMarkerWithInfoState extends State<BoatMarkerWithInfo> {
           ),
           if (_hovered)
             Positioned(
-              bottom: 24, // distance au-dessus du bateau
+              bottom: 24,
               child: BoatInfoBubble(boat: widget.boat),
             ),
         ],

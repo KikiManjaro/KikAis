@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'KikAis',
-      // Dark theme
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         colorScheme: ColorScheme.dark(
@@ -56,7 +55,6 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      // Force dark mode
       themeMode: ThemeMode.dark,
 
       home: SwipperUi(),

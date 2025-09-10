@@ -22,7 +22,6 @@ class _SwipperUiState extends State<SwipperUi> {
   @override
   void initState() {
     super.initState();
-    // Crée les pages une seule fois
     forwarderPage = ForwarderUI(boat, key: PageStorageKey('forwarder_ui'));
     mapPage = WorldMapPage(key: PageStorageKey('world_map'));
   }
@@ -96,7 +95,6 @@ class _SwipperUiState extends State<SwipperUi> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Zone cliquable gauche
                       Positioned.fill(
                         left: 0,
                         right: MediaQuery.of(context).size.width / 2,
@@ -105,7 +103,6 @@ class _SwipperUiState extends State<SwipperUi> {
                           child: Container(color: Colors.transparent),
                         ),
                       ),
-                      // Zone cliquable droite
                       Positioned.fill(
                         left: MediaQuery.of(context).size.width / 2,
                         right: 0,

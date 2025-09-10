@@ -6,7 +6,6 @@ class BoatAnimation extends StatefulWidget {
 
   final _BoatAnimationState _state = _BoatAnimationState();
 
-  // Public methods
   void start() => _state.startAnimation();
   void stop() => _state.stopAnimation();
 
@@ -20,7 +19,7 @@ class _BoatAnimationState extends State<BoatAnimation>
   bool _showBoat = false;
   double _lastParentWidth = 0;
   final double shipWidth = 22;
-  final double speed = 30; // pixels per second
+  final double speed = 30;
 
   void startAnimation() {
     setState(() => _showBoat = true);
