@@ -1,0 +1,140 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: true
+
+jobs:
+  version:
+    name: Read version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from pubspec.yaml
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(sed -n 's/^version: //p' pubspec.yaml | head -1)
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not find a version in pubspec.yaml"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check tag matches version
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          EXPECTED="v${{ steps.version.outputs.version }}"
+          if [ "$TAG" != "$EXPECTED" ]; then
+            echo "::error::Tag '$TAG' does not match pubspec version '${{ steps.version.outputs.version }}' (expected '$EXPECTED'). Bump the version in pubspec.yaml first, then tag accordingly."
+            exit 1
+          fi
+
+  build-windows:
+    name: Build Windows
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Package release folder as zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/windows/x64/runner/Release/* `
+            -DestinationPath "kikais-windows-${{ needs.version.outputs.version }}.zip"
+
+      - name: Build portable executable
+        shell: pwsh
+        run: |
+          ./scripts/make_portable.ps1 `
+            -ReleaseDir "build/windows/x64/runner/Release" `
+            -OutputExe "kikais-windows-${{ needs.version.outputs.version }}-portable.exe"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            kikais-windows-*.zip
+            kikais-windows-*-portable.exe
+
+  build-linux:
+    name: Build Linux
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install GTK dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev ninja-build
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Linux release
+        run: flutter build linux --release
+
+      - name: Package bundle as tar.gz
+        run: |
+          tar -czf "kikais-linux-${{ needs.version.outputs.version }}.tar.gz" -C build/linux/x64/release/bundle .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: kikais-linux-*.tar.gz
+
+  release:
+    name: Create GitHub Release
+    needs: [version, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.version.outputs.version }}
+          name: KikAis ${{ needs.version.outputs.version }}
+          generate_release_notes: true
+          files: release-assets/**

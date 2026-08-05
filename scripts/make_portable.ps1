@@ -1,0 +1,125 @@
+<#
+.SYNOPSIS
+Builds a single-file portable Windows executable for KikAis using a
+7-Zip self-extracting archive (no external GUI tools required).
+
+.DESCRIPTION
+Takes a Flutter Windows release folder (build/windows/x64/runner/Release)
+and produces one .exe that self-extracts the whole bundle into a temporary
+directory at launch and runs KikAis.exe. This replaces the manual
+Enigma Virtual Box step.
+
+The 7zS.sfx self-extracting stub ships only in the official 7-Zip 9.20
+"extra" package (it was dropped from newer packages); the archive is
+created with the system-installed 7-Zip. Both come from the official
+7-Zip distribution.
+
+.PARAMETER ReleaseDir
+Path to the Flutter release output folder (contains KikAis.exe, DLLs, data/).
+
+.PARAMETER OutputExe
+Path of the portable executable to produce.
+
+.PARAMETER AppName
+Name of the launcher executable inside the bundle (default: KikAis.exe).
+
+.PARAMETER SevenZipSfxUrl
+URL of the 7-Zip 9.20 "extra" package (provides the 7zS.sfx stub).
+
+.EXAMPLE
+./scripts/make_portable.ps1 `
+  -ReleaseDir build/windows/x64/runner/Release `
+  -OutputExe KikAis-portable.exe
+#>
+param(
+  [Parameter(Mandatory = $true)]
+  [string]$ReleaseDir,
+
+  [Parameter(Mandatory = $true)]
+  [string]$OutputExe,
+
+  [string]$AppName = "KikAis.exe",
+
+  [string]$SevenZipSfxUrl = "https://www.7-zip.org/a/7z920_extra.7z"
+)
+
+$ErrorActionPreference = "Stop"
+
+if (-not (Test-Path -LiteralPath $ReleaseDir)) {
+  throw "Release directory not found: $ReleaseDir"
+}
+if (-not (Test-Path -LiteralPath (Join-Path $ReleaseDir $AppName))) {
+  throw "Executable '$AppName' not found in $ReleaseDir"
+}
+
+$work = Join-Path $env:TEMP ("kikais_portable_" + [guid]::NewGuid().ToString("N"))
+New-Item -ItemType Directory -Path $work | Out-Null
+
+try {
+  # --- 1. Resolve a 7-Zip binary able to create archives ---
+  $sevenZip = $null
+  foreach ($candidate in @(
+      "C:\Program Files\7-Zip\7z.exe",
+      "C:\Program Files (x86)\7-Zip\7z.exe"
+    )) {
+    if (Test-Path -LiteralPath $candidate) {
+      $sevenZip = $candidate
+      break
+    }
+  }
+
+  if (-not $sevenZip) {
+    throw "7-Zip not found. Install it (https://www.7-zip.org/) or run this script on a GitHub Windows runner."
+  }
+
+  # --- 2. Fetch the 7zS.sfx stub (official 9.20 extra package) ---
+  Write-Host "Downloading 7zS.sfx stub..."
+  $sfxDir = Join-Path $work "sfx"
+  New-Item -ItemType Directory -Path $sfxDir | Out-Null
+  $sfxArchive = Join-Path $work "sfx-extra.7z"
+  Invoke-WebRequest -Uri $SevenZipSfxUrl -OutFile $sfxArchive -UseBasicParsing
+
+  Write-Host "Extracting 7zS.sfx..."
+  & $sevenZip x $sfxArchive "-o$sfxDir" -y | Out-Null
+  if ($LASTEXITCODE -ne 0) {
+    throw "Failed to extract the SFX stub package"
+  }
+  $sfxStub = Get-ChildItem -Path $sfxDir -Filter "7zS.sfx" -Recurse -ErrorAction SilentlyContinue |
+    Select-Object -First 1
+  if (-not $sfxStub) {
+    throw "7zS.sfx not found in the 7-Zip SFX package"
+  }
+
+  # --- 3. Compress the release bundle (contents at archive root) ---
+  Write-Host "Compressing release bundle..."
+  $archive = Join-Path $work "app.7z"
+  Push-Location -LiteralPath $ReleaseDir
+  try {
+    & $sevenZip a $archive * -mx9 | Out-Null
+  } finally {
+    Pop-Location
+  }
+  if ($LASTEXITCODE -ne 0) {
+    throw "Failed to create the 7z archive"
+  }
+
+  # --- 4. Assemble: stub + config + archive ---
+  Write-Host "Building portable executable..."
+  $config = Join-Path $work "config.txt"
+  Set-Content -LiteralPath $config -Value @(
+    ";!@Install@!UTF-8!",
+    "RunProgram=`"$AppName`"",
+    ";!@InstallEnd@!"
+  ) -Encoding Ascii
+
+  $OutputExe = [System.IO.Path]::GetFullPath($OutputExe)
+  Copy-Item -LiteralPath $sfxStub.FullName -Destination $OutputExe
+  cmd /c "copy /b `"$OutputExe`"+`"$config`"+`"$archive`" `"$OutputExe`" >nul"
+  if ($LASTEXITCODE -ne 0) {
+    throw "Failed to assemble the self-extracting archive"
+  }
+
+  Write-Host "Done: $OutputExe"
+} finally {
+  Remove-Item -LiteralPath $work -Recurse -Force -ErrorAction SilentlyContinue
+}
