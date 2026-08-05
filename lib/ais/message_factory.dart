@@ -1,6 +1,5 @@
 import 'src/messages/specialized/basestation_report.dart';
 import 'src/utils/convert_char_to_bin.dart';
-import 'src/utils/debug_prints.dart';
 import 'src/exceptions/ais_exceptions.dart';
 import 'src/messages/base/ais_message.dart';
 import 'src/messages/position/class_b_position.dart';
@@ -24,12 +23,7 @@ class MessageFactory {
     }
 
     if(input.contains("!AIVDM") || input.contains("!AIVDO")) {
-      print("Supplied !AIVDM String - Converting...");
-
       List<String> fields = input.split(',');
-
-      // When logging is enabled print logging
-      if(logging) DebugPrinter(fields: fields).debugPrint();
 
       for (String char in fields[5].split('')) {
         binary += convertCharToBinary(char);

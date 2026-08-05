@@ -1,4 +1,4 @@
-import 'package:KikAis/swipper.dart';
+import 'package:kik_ais/swipper.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,16 +6,19 @@ import 'package:provider/provider.dart';
 import 'boatmanager.dart';
 
 Future<void> main() async {
+  final boatManager = BoatManager();
+  await boatManager.startDecoder();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => BoatManager(),
-      child: MyApp(),
+    ChangeNotifierProvider.value(
+      value: boatManager,
+      child: const MyApp(),
     ),
   );
 
   doWhenWindowReady(() {
-    appWindow.minSize = Size(810, 520);
-    appWindow.size = Size(820, 600);
+    appWindow.minSize = const Size(890, 540);
+    appWindow.size = const Size(900, 600);
     appWindow.alignment = Alignment.center;
     appWindow.title = "KikAis";
     appWindow.show();
@@ -23,6 +26,8 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,31 +38,30 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.dark(
           primary: Colors.lightBlueAccent,
           secondary: Colors.blue,
-          background: Colors.grey[900]!,
           surface: Colors.grey[800]!,
         ),
         scaffoldBackgroundColor: Colors.grey[900],
         cardColor: Colors.grey[800],
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           bodyLarge: TextStyle(color: Colors.white),
           bodyMedium: TextStyle(color: Colors.white70),
           bodySmall: TextStyle(color: Colors.white60),
         ),
         tooltipTheme: TooltipThemeData(
-          textStyle: TextStyle(color: Colors.white, fontSize: 12),
+          textStyle: const TextStyle(color: Colors.white, fontSize: 12),
           decoration: BoxDecoration(
             color: Colors.grey[900],
             borderRadius: BorderRadius.circular(8),
-            border: BoxBorder.all(color: Colors.lightBlueAccent, width: 1),
+            border: Border.all(color: Colors.lightBlueAccent, width: 1),
           ),
-          waitDuration: Duration(milliseconds: 500),
-          showDuration: Duration(seconds: 5),
+          waitDuration: const Duration(milliseconds: 500),
+          showDuration: const Duration(seconds: 5),
         ),
       ),
 
       themeMode: ThemeMode.dark,
 
-      home: SwipperUi(),
+      home: const SwipperUi(),
     );
   }
 }

@@ -504,13 +504,13 @@ class BinaryConverter {
   }
 
   ///Check if RAIM (Receiver Autonomous Integrity Monitoring) is enabled.
-  String? RAIMInfo(String binaryRAIMFlag) {
-    int RAIMFlag = int.parse(binaryRAIMFlag);
+  String? raimInfo(String binaryRAIMFlag) {
+    int raimFlag = int.parse(binaryRAIMFlag);
 
-    if(RAIMFlag == 0) {
+    if(raimFlag == 0) {
       return "RAIM not enabled (default)";
     }
-    if(RAIMFlag == 1) {
+    if(raimFlag == 1) {
       return "RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)";
     } else {
       return "Unknown (Please Contact: )";

@@ -1,5 +1,3 @@
-library ais_decoder;
-
 // base exports
 export 'src/messages/base/ais_message.dart';
 export 'src/exceptions/ais_exceptions.dart';

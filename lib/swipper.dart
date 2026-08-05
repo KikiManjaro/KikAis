@@ -7,27 +7,35 @@ import 'forwarder_ui.dart';
 import 'world_map_page.dart';
 
 class SwipperUi extends StatefulWidget {
+  const SwipperUi({super.key});
+
   @override
   State<SwipperUi> createState() => _SwipperUiState();
 }
 
 class _SwipperUiState extends State<SwipperUi> {
-  final BoatAnimation boat = BoatAnimation();
+  final BoatAnimationController boatController = BoatAnimationController();
+  final PageController _pageController = PageController();
+  late final BoatAnimation boat;
   late final ForwarderUI forwarderPage;
   late final WorldMapPage mapPage;
 
-  PageController _pageController = PageController();
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    forwarderPage = ForwarderUI(boat, key: PageStorageKey('forwarder_ui'));
-    mapPage = WorldMapPage(key: PageStorageKey('world_map'));
+    boat = BoatAnimation(controller: boatController);
+    forwarderPage = ForwarderUI(
+      boatController,
+      key: const PageStorageKey('forwarder_ui'),
+    );
+    mapPage = WorldMapPage(key: const PageStorageKey('world_map'));
   }
 
   @override
   void dispose() {
+    boatController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -38,7 +46,7 @@ class _SwipperUiState extends State<SwipperUi> {
       width: 3,
       color: Theme.of(context).colorScheme.surface,
       child: Container(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           children: [
             WindowTitleBarBox(
@@ -46,14 +54,14 @@ class _SwipperUiState extends State<SwipperUi> {
                 children: [
                   Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(4.0),
+                      const Padding(
+                        padding: EdgeInsets.all(4.0),
                         child: ImageIcon(
                           AssetImage("resources/FireBoat2.png"),
                           size: 26,
                         ),
                       ),
-                      Text(
+                      const Text(
                         "KikAis",
                         style: TextStyle(
                           fontSize: 16,
@@ -116,8 +124,8 @@ class _SwipperUiState extends State<SwipperUi> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(2, (index) {
                             return AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              margin: EdgeInsets.symmetric(horizontal: 4),
+                              duration: const Duration(milliseconds: 300),
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
                               width: _currentIndex == index ? 30 : 8,
                               height: 8,
                               decoration: BoxDecoration(
@@ -158,7 +166,7 @@ final closeButtonColors = WindowButtonColors(
 );
 
 class WindowButtons extends StatelessWidget {
-  const WindowButtons({Key? key}) : super(key: key);
+  const WindowButtons({super.key});
 
   @override
   Widget build(BuildContext context) {

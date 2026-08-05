@@ -1,36 +1,108 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:isolate';
+
+import 'package:flutter/foundation.dart';
 
 import 'ais/src/messages/base/ais_message.dart';
 import 'ais/src/messages/position/class_b_position.dart';
 import 'ais/src/messages/position/extended_class_b.dart';
+import 'ais/src/messages/position/long_range_broadcast.dart';
 import 'ais/src/messages/position/position_message.dart';
+import 'ais/src/messages/specialized/basestation_report.dart';
 import 'ais/src/messages/static/static_voyage_data.dart';
 import 'boat.dart';
 
 class BoatManager extends ChangeNotifier {
+  static const Duration boatTtl = Duration(minutes: 30);
+  static const Duration purgeInterval = Duration(minutes: 1);
+  static const Duration notifyThrottle = Duration(milliseconds: 200);
+
   final Map<int, Boat> _boats = {};
-  bool createMarkers = true;
+  bool sendToMap = false;
+
+  Isolate? _decoderIsolate;
+  SendPort? _decoderSendPort;
+  final ReceivePort _decoderControl = ReceivePort();
+
+  DateTime _lastNotify = DateTime.fromMillisecondsSinceEpoch(0);
+  bool _pendingNotify = false;
+  Timer? _purgeTimer;
 
   List<Boat> get boats => _boats.values.toList();
 
-  Future<void> processMessage(String msg) async {
-    await Future(() {
+  BoatManager() {
+    _purgeTimer = Timer.periodic(purgeInterval, (_) => purgeStaleBoats());
+  }
+
+  @override
+  void dispose() {
+    _purgeTimer?.cancel();
+    _decoderControl.close();
+    _decoderIsolate?.kill(priority: Isolate.immediate);
+    super.dispose();
+  }
+
+  void setSendToMap(bool value) {
+    if (sendToMap == value) return;
+    sendToMap = value;
+    notifyListeners();
+  }
+
+  /// Spawns a dedicated isolate used to decode AIS messages so that the UI
+  /// thread never blocks, even on high-volume streams.
+  Future<void> startDecoder() async {
+    if (_decoderIsolate != null) return;
+
+    _decoderControl.listen((message) {
+      if (message is SendPort) {
+        _decoderSendPort = message;
+      } else if (message is AISMessage) {
+        updateFromMessage(message);
+      }
+    });
+
+    try {
+      _decoderIsolate = await Isolate.spawn(
+        _decoderEntry,
+        _decoderControl.sendPort,
+      );
+    } catch (e) {
+      debugPrint('Failed to start AIS decoder isolate: $e');
+    }
+  }
+
+  static void _decoderEntry(SendPort control) {
+    final ReceivePort commandPort = ReceivePort();
+    control.send(commandPort.sendPort);
+    commandPort.listen((message) {
       try {
-        AISMessage message = AISMessage.fromString(msg);
-
-        _boats.putIfAbsent(
-          message.mmsi,
-              () => Boat(mmsi: message.mmsi.toString()),
-        );
-
-        updateFromMessage(_boats[message.mmsi]!, message);
-      } catch (e, stack) {
-        print("Error processing message: $e\n$stack");
+        final decoded = AISMessage.fromString(message as String);
+        control.send(decoded);
+      } catch (_) {
+        // Malformed or unsupported sentences are silently ignored.
       }
     });
   }
 
-  void updateFromMessage(Boat boat, AISMessage message) {
+  Future<void> processMessage(String msg) async {
+    if (_decoderSendPort != null) {
+      _decoderSendPort!.send(msg);
+      return;
+    }
+    try {
+      updateFromMessage(AISMessage.fromString(msg));
+    } catch (e) {
+      debugPrint('Error processing message: $e');
+    }
+  }
+
+  void updateFromMessage(AISMessage message) {
+    final boat = _boats.putIfAbsent(
+      message.mmsi,
+      () => Boat(mmsi: message.mmsi.toString()),
+    );
+    boat.lastUpdate = DateTime.now();
+
     if (message is PositionMessage) {
       boat.lat = message.latitude;
       boat.lon = message.longitude;
@@ -66,14 +138,19 @@ class BoatManager extends ChangeNotifier {
       boat.heading = message.heading;
       boat.timestamp = message.timestamp;
       boat.raimFlag = message.raimFlag;
-    } else if (message is StandardClassBCSPositionReport) {
+    } else if (message is LongRangeAISBroadcastMessage) {
       boat.lat = message.latitude;
       boat.lon = message.longitude;
       boat.sog = message.speedOverGround;
       boat.cog = message.courseOverGround;
-      boat.heading = message.heading;
-      boat.timestamp = message.timestamp;
-      boat.raimFlag = message.raimFlag;
+      boat.navigationStatus = message.navigationStatus;
+      boat.raimFlag = message.raimEnabled;
+    } else if (message is BaseStationReport) {
+      boat.lat = message.latitude;
+      boat.lon = message.longitude;
+      boat.epfdFixType = message.epfdFixType;
+      boat.raimFlag = message.raim;
+      boat.spare = message.spare;
     } else if (message is StaticAndVoyageRelatedData) {
       boat.name = message.vesselName;
       boat.vesselTypeInt = message.vesselTypeInt;
@@ -94,6 +171,36 @@ class BoatManager extends ChangeNotifier {
       boat.imoNumber = message.imoNumber;
       boat.callSign = message.callSign;
     }
-    notifyListeners();
+
+    _notifyThrottled();
+  }
+
+  void _notifyThrottled() {
+    final now = DateTime.now();
+    if (now.difference(_lastNotify) >= notifyThrottle) {
+      _lastNotify = now;
+      notifyListeners();
+    } else if (!_pendingNotify) {
+      _pendingNotify = true;
+      final remaining = notifyThrottle - now.difference(_lastNotify);
+      Timer(remaining, () {
+        _pendingNotify = false;
+        _lastNotify = DateTime.now();
+        notifyListeners();
+      });
+    }
+  }
+
+  void purgeStaleBoats() {
+    if (_boats.isEmpty) return;
+    final cutoff = DateTime.now().subtract(boatTtl);
+    final before = _boats.length;
+    _boats.removeWhere((_, boat) {
+      final last = boat.lastUpdate;
+      return last == null || last.isBefore(cutoff);
+    });
+    if (_boats.length != before) {
+      notifyListeners();
+    }
   }
 }

@@ -5,7 +5,7 @@ import 'boat.dart';
 class BoatInfoBubble extends StatelessWidget {
   final Boat boat;
 
-  const BoatInfoBubble({Key? key, required this.boat}) : super(key: key);
+  const BoatInfoBubble({super.key, required this.boat});
 
   Widget buildRow(String title, dynamic value) {
     return Text(
@@ -80,7 +80,7 @@ class BoatInfoBubble extends StatelessWidget {
 class BoatMarkerWithInfo extends StatefulWidget {
   final Boat boat;
 
-  const BoatMarkerWithInfo({Key? key, required this.boat}) : super(key: key);
+  const BoatMarkerWithInfo({super.key, required this.boat});
 
   @override
   State<BoatMarkerWithInfo> createState() => _BoatMarkerWithInfoState();

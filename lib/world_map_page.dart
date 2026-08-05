@@ -4,12 +4,12 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
+import 'boat.dart';
 import 'boatmanager.dart';
 import 'bubble_boat.dart';
-import 'global.dart';
 
 class WorldMapPage extends StatefulWidget {
-  WorldMapPage({Key? key}) : super(key: key);
+  const WorldMapPage({super.key});
 
   @override
   State<WorldMapPage> createState() => _WorldMapPageState();
@@ -24,35 +24,65 @@ class _WorldMapPageState extends State<WorldMapPage> {
     });
   }
 
-  void toggleCompute() {
-    setState(() {
-      GlobalVariables.sendToMap = !GlobalVariables.sendToMap;
-    });
+  void toggleCompute(BoatManager boatManager) {
+    boatManager.setSendToMap(!boatManager.sendToMap);
+  }
+
+  List<Marker> _buildMarkers(List<Boat> boats) {
+    return boats
+        .where(
+          (boat) =>
+              boat.lat != null &&
+              boat.lon != null &&
+              boat.lat! >= -90 &&
+              boat.lat! <= 90 &&
+              boat.lon! >= -180 &&
+              boat.lon! <= 180,
+        )
+        .map((boat) {
+          try {
+            return Marker(
+              point: LatLng(boat.lat!, boat.lon!),
+              width: 80,
+              height: 50,
+              child: BoatMarkerWithInfo(boat: boat),
+            );
+          } catch (e, stack) {
+            debugPrint(
+              'Error creating marker for boat ${boat.mmsi}: $e\n$stack',
+            );
+            return null;
+          }
+        })
+        .where((marker) => marker != null)
+        .cast<Marker>()
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final boatManager = context.watch<BoatManager>();
+    final markers = _buildMarkers(boatManager.boats);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Map"),
+        title: const Text("Map"),
         actions: [
           IconButton(
-            icon: Icon(clusterEnabled ? Icons.scatter_plot : Icons.group_work),
+            icon: Icon(
+              clusterEnabled ? Icons.scatter_plot : Icons.group_work,
+            ),
             onPressed: toggleMarkers,
-            tooltip: clusterEnabled
-                ? "Disable clustering"
-                : "Enable clustering",
+            tooltip: clusterEnabled ? "Disable clustering" : "Enable clustering",
           ),
           IconButton(
             icon: Icon(
-              GlobalVariables.sendToMap
+              boatManager.sendToMap
                   ? Icons.directions_boat
                   : Icons.hide_source_rounded,
             ),
-            onPressed: toggleCompute,
-            tooltip: GlobalVariables.sendToMap
+            onPressed: () => toggleCompute(boatManager),
+            tooltip: boatManager.sendToMap
                 ? "Don't compute boats"
                 : "Compute boats",
           ),
@@ -60,7 +90,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
       ),
       body: FlutterMap(
         options: MapOptions(
-          initialCenter: LatLng(48.8566, 2.3522),
+          initialCenter: const LatLng(48.8566, 2.3522),
           initialZoom: 5.0,
         ),
         children: [
@@ -72,7 +102,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
             MarkerClusterLayerWidget(
               options: MarkerClusterLayerOptions(
                 maxClusterRadius: 45,
-                size: Size(40, 40),
+                size: const Size(40, 40),
                 polygonOptions: PolygonOptions(
                   borderColor: Colors.blueAccent,
                   color: Colors.black12,
@@ -80,71 +110,15 @@ class _WorldMapPageState extends State<WorldMapPage> {
                 ),
                 builder: (context, markers) {
                   return FloatingActionButton(
-                    child: Text(markers.length.toString()),
                     onPressed: null,
+                    child: Text(markers.length.toString()),
                   );
                 },
-                markers: boatManager.boats
-                    .where(
-                      (boat) =>
-                          boat.lat != null &&
-                          boat.lon != null &&
-                          boat.lat! >= -90 &&
-                          boat.lat! <= 90 &&
-                          boat.lon! >= -180 &&
-                          boat.lon! <= 180,
-                    )
-                    .map((boat) {
-                      try {
-                        return Marker(
-                          point: LatLng(boat.lat!, boat.lon!),
-                          width: 80,
-                          height: 50,
-                          child: BoatMarkerWithInfo(boat: boat),
-                        );
-                      } catch (e, stack) {
-                        debugPrint(
-                          'Error creating marker for boat ${boat.mmsi}: $e\n$stack',
-                        );
-                        return null;
-                      }
-                    })
-                    .where((marker) => marker != null)
-                    .cast<Marker>()
-                    .toList(),
+                markers: markers,
               ),
             )
           else
-            MarkerLayer(
-              markers: boatManager.boats
-                  .where(
-                    (boat) =>
-                        boat.lat != null &&
-                        boat.lon != null &&
-                        boat.lat! >= -90 &&
-                        boat.lat! <= 90 &&
-                        boat.lon! >= -180 &&
-                        boat.lon! <= 180,
-                  )
-                  .map((boat) {
-                    try {
-                      return Marker(
-                        point: LatLng(boat.lat!, boat.lon!),
-                        width: 80,
-                        height: 50,
-                        child: BoatMarkerWithInfo(boat: boat),
-                      );
-                    } catch (e, stack) {
-                      debugPrint(
-                        'Error creating marker for boat ${boat.mmsi}: $e\n$stack',
-                      );
-                      return null;
-                    }
-                  })
-                  .where((marker) => marker != null)
-                  .cast<Marker>()
-                  .toList(),
-            ),
+            MarkerLayer(markers: markers),
         ],
       ),
     );

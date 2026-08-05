@@ -1,6 +1,5 @@
-import 'package:KikAis/boat_animation.dart';
-import 'package:KikAis/global.dart';
-import 'package:KikAis/port_input_formatter.dart';
+import 'package:kik_ais/boat_animation.dart';
+import 'package:kik_ais/port_input_formatter.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
@@ -11,16 +10,80 @@ import 'boatmanager.dart';
 import 'forwarder_service.dart';
 import 'ip_address_input_formatter.dart';
 
-class ForwarderUI extends StatefulWidget {
-  final BoatAnimation boat;
+class FeedDef {
+  final String key;
+  final String displayName;
+  final String host;
+  final int port;
+  final String? header;
+  final String? tooltip;
 
-  ForwarderUI(this.boat, {Key? key}) : super(key: key);
-
-  @override
-  _ForwarderUIState createState() => _ForwarderUIState();
+  const FeedDef({
+    required this.key,
+    required this.displayName,
+    required this.host,
+    required this.port,
+    this.header,
+    this.tooltip,
+  });
 }
 
-class _ForwarderUIState extends State<ForwarderUI> {
+const List<FeedDef> kFeedDefs = [
+  FeedDef(
+    key: "Kikistream.io",
+    displayName: "Kikistream.io",
+    host: "kikimanjaro.hd.free.fr",
+    port: 20000,
+    tooltip: "Kikistream.io is based on a public AIS feed (aisstream.io),\n"
+        "each message is transformed to a standard NMEA0183 AIS sentence\n"
+        "(messages could be wrong or malformed)",
+  ),
+  FeedDef(
+    key: "NO",
+    displayName: "Norwegian Feed",
+    host: "153.44.253.27",
+    port: 5631,
+  ),
+  FeedDef(
+    key: "GPSD1",
+    displayName: "Sinagot 2947 (GPSD1)",
+    host: "5.39.78.33",
+    port: 2947,
+    header: '?WATCH={"enable":true,"raw":1}',
+  ),
+  FeedDef(
+    key: "GPSD2",
+    displayName: "Sinagot 2948 (GPSD2)",
+    host: "5.39.78.33",
+    port: 2948,
+    header: '?WATCH={"enable":true,"raw":1}',
+  ),
+  FeedDef(
+    key: "Sinagot 5121 (simulated)",
+    displayName: "Sinagot 5121 (simulated)",
+    host: "5.39.78.33",
+    port: 5121,
+  ),
+  FeedDef(
+    key: "US",
+    displayName: "US East Coast Feed (simulated)",
+    host: "ssia-ais.erau.edu",
+    port: 4000,
+  ),
+];
+
+class ForwarderUI extends StatefulWidget {
+  final BoatAnimationController boat;
+
+  const ForwarderUI(this.boat, {super.key});
+
+  @override
+  State<ForwarderUI> createState() => ForwarderUIState();
+}
+
+class ForwarderUIState extends State<ForwarderUI> {
+  static const int maxLogEntries = 2000;
+
   final ScrollController _scrollController = ScrollController();
   late ForwarderService forwarderService;
 
@@ -31,14 +94,11 @@ class _ForwarderUIState extends State<ForwarderUI> {
     text: "33333",
   );
 
-  List<LogEntry> logEntries = [];
+  final List<LogEntry> logEntries = [];
+  final Map<String, bool> feedEnabled = {
+    for (final feed in kFeedDefs) feed.key: false,
+  };
   bool isRunning = false;
-  bool usFeed = false;
-  bool norwegianFeed = false;
-  bool gpsd1 = false;
-  bool gpsd2 = false;
-  bool simulatedSinagot = false;
-  bool kikistreamio = false;
 
   late BoatManager boatManager;
 
@@ -50,18 +110,21 @@ class _ForwarderUIState extends State<ForwarderUI> {
     forwarderService = ForwarderService(
       onLog: (message, starter, name) {
         setState(() {
-          setState(() {
-            logEntries.add(
-              LogEntry(message: message, starter: starter, name: name),
-            );
-          });
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_scrollController.hasClients) {
-              _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-            }
-          });
+          logEntries.add(
+            LogEntry(message: message, starter: starter, name: name),
+          );
+          if (logEntries.length > maxLogEntries) {
+            logEntries.removeRange(0, logEntries.length - maxLogEntries);
+          }
         });
-        if (GlobalVariables.sendToMap && message.startsWith("!")) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController.jumpTo(
+              _scrollController.position.maxScrollExtent,
+            );
+          }
+        });
+        if (boatManager.sendToMap && message.startsWith("!")) {
           boatManager.processMessage(message);
         }
       },
@@ -75,50 +138,16 @@ class _ForwarderUIState extends State<ForwarderUI> {
     await forwarderService.start();
     setState(() => isRunning = true);
 
-    if (usFeed) {
-      await forwarderService.addFeed(
-        "US East Coast",
-        "US",
-        "ssia-ais.erau.edu",
-        4000,
-      );
-    }
-    if (norwegianFeed) {
-      await forwarderService.addFeed("Norwegian", "NO", "153.44.253.27", 5631);
-    }
-    if (gpsd1) {
-      await forwarderService.addFeed(
-        "Sinagot 2947 (GPSD1)",
-        "GPSD1",
-        "5.39.78.33",
-        2947,
-        header: "?WATCH={\"enable\":true,\"raw\":1}",
-      );
-    }
-    if (gpsd2) {
-      await forwarderService.addFeed(
-        "Sinagot 2948 (GPSD2)",
-        "GPSD2",
-        "5.39.78.33",
-        2948,
-        header: "?WATCH={\"enable\":true,\"raw\":1}",
-      );
-    }
-    if (simulatedSinagot) {
-      await forwarderService.addFeed(
-        "Sinagot 5121 (simulated)",
-        "Sinagot 5121 (simulated)",
-        "5.39.78.33",
-        5121,
-      );
-    }
-    if (kikistreamio) {
-      await forwarderService.addFeed(
-        "Kikistream.io",
-        "Kikistream.io",
-        "kikimanjaro.hd.free.fr",
-        20000,
-      );
+    for (final feed in kFeedDefs) {
+      if (feedEnabled[feed.key] ?? false) {
+        await forwarderService.addFeed(
+          feed.displayName,
+          feed.key,
+          feed.host,
+          feed.port,
+          header: feed.header,
+        );
+      }
     }
   }
 
@@ -127,93 +156,30 @@ class _ForwarderUIState extends State<ForwarderUI> {
     setState(() => isRunning = false);
   }
 
-  void toggleFeed(String feedName, bool value) async {
-    setState(() {
-      if (feedName == "US") usFeed = value;
-      if (feedName == "NO") norwegianFeed = value;
-      if (feedName == "GPSD1") gpsd1 = value;
-      if (feedName == "GPSD2") gpsd2 = value;
-      if (feedName == "Sinagot 5121 (simulated)") simulatedSinagot = value;
-      if (feedName == "Kikistream.io") kikistreamio = value;
-    });
+  void toggleFeed(FeedDef feed, bool value) async {
+    setState(() => feedEnabled[feed.key] = value);
 
     if (!isRunning) return;
 
-    if (feedName == "US") {
-      if (value) {
-        await forwarderService.addFeed(
-          "US East Coast",
-          "US",
-          "ssia-ais.erau.edu",
-          4000,
-        );
-      } else {
-        await forwarderService.removeFeed("US East Coast");
-      }
+    if (value) {
+      await forwarderService.addFeed(
+        feed.displayName,
+        feed.key,
+        feed.host,
+        feed.port,
+        header: feed.header,
+      );
+    } else {
+      await forwarderService.removeFeed(feed.displayName);
     }
+  }
 
-    if (feedName == "NO") {
-      if (value) {
-        await forwarderService.addFeed(
-          "Norwegian",
-          "NO",
-          "153.44.253.27",
-          5631,
-        );
-      } else {
-        await forwarderService.removeFeed("Norwegian");
-      }
+  Widget feedIcon(String key) {
+    if (key == "Kikistream.io") return const Icon(Icons.public, size: 30);
+    if (key.length == 2) {
+      return CountryFlag.fromCountryCode(key, width: 30, height: 18);
     }
-    if (feedName == "GPSD1") {
-      if (value) {
-        await forwarderService.addFeed(
-          "Sinagot 2947 (GPSD1)",
-          "GPSD1",
-          "5.39.78.33",
-          2947,
-          header: "?WATCH={\"enable\":true,\"raw\":1}",
-        );
-      } else {
-        await forwarderService.removeFeed("Sinagot 2947 (GPSD1)");
-      }
-    }
-    if (feedName == "GPSD2") {
-      if (value) {
-        await forwarderService.addFeed(
-          "Sinagot 2948 (GPSD2)",
-          "GPSD2",
-          "5.39.78.33",
-          2948,
-          header: "?WATCH={\"enable\":true,\"raw\":1}",
-        );
-      } else {
-        await forwarderService.removeFeed("Sinagot 2948 (GPSD2)");
-      }
-    }
-    if (feedName == "Sinagot 5121 (simulated)") {
-      if (value) {
-        await forwarderService.addFeed(
-          "Sinagot 5121 (simulated)",
-          "Sinagot 5121 (simulated)",
-          "5.39.78.33",
-          5121,
-        );
-      } else {
-        await forwarderService.removeFeed("Sinagot 5121 (simulated)");
-      }
-    }
-    if (feedName == "Kikistream.io") {
-      if (value) {
-        await forwarderService.addFeed(
-          "Kikistream.io",
-          "Kikistream.io",
-          "kikimanjaro.hd.free.fr",
-          20000,
-        );
-      } else {
-        await forwarderService.removeFeed("Kikistream.io");
-      }
-    }
+    return const Icon(Icons.directions_boat, size: 30);
   }
 
   @override
@@ -251,6 +217,26 @@ class _ForwarderUIState extends State<ForwarderUI> {
     await textFile.saveTo(result.path);
   }
 
+  Widget _buildStarterWidget(LogEntry entry) {
+    if (entry.starter == null) return const SizedBox.shrink();
+
+    if (entry.starter == "Kikistream.io") {
+      return const Icon(Icons.public, size: 16);
+    }
+    if (entry.starter!.length == 2) {
+      try {
+        return CountryFlag.fromCountryCode(
+          entry.starter!,
+          width: 16,
+          height: 10,
+        );
+      } catch (_) {
+        return Text(entry.starter!);
+      }
+    }
+    return const Icon(Icons.directions_boat, size: 16);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -278,7 +264,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                     padding: EdgeInsetsGeometry.directional(
                                       start: 10,
                                     ),
-                                    child: Text("Configuration"),
+                                    child: const Text("Configuration"),
                                   ),
                                   Expanded(
                                     child: Card(
@@ -288,7 +274,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                           children: [
                                             TextField(
                                               controller: hostController,
-                                              decoration: InputDecoration(
+                                              decoration: const InputDecoration(
                                                 labelText: "Target Host",
                                                 prefixIcon: Icon(
                                                   Icons.computer,
@@ -305,7 +291,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                             ),
                                             TextField(
                                               controller: portController,
-                                              decoration: InputDecoration(
+                                              decoration: const InputDecoration(
                                                 labelText: "Target Port",
                                                 prefixIcon: Icon(Icons.numbers),
                                               ),
@@ -321,17 +307,19 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.center,
                                               children: [
-                                                SizedBox(width: 8),
-                                                Icon(Icons.link),
-                                                SizedBox(width: 12),
+                                                const SizedBox(width: 8),
+                                                const Icon(Icons.link),
+                                                const SizedBox(width: 12),
                                                 Text(
                                                   "Protocol",
                                                   style: TextStyle(
                                                     color: Colors.white,
                                                   ),
                                                 ),
-                                                SizedBox(width: 20),
-                                                DropdownButton<ForwardProtocol>(
+                                                const SizedBox(width: 20),
+                                                DropdownButton<
+                                                  ForwardProtocol
+                                                >(
                                                   value:
                                                       forwarderService.protocol,
                                                   items: ForwardProtocol.values
@@ -393,7 +381,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                 padding: EdgeInsetsGeometry.directional(
                                   start: 10,
                                 ),
-                                child: Text("Feeds"),
+                                child: const Text("Feeds"),
                               ),
                               Expanded(
                                 child: Card(
@@ -402,90 +390,24 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Tooltip(
-                                          message:
-                                              "Kikistream.io is based on a public AIS feed (aisstream.io),\neach message is transformed to a standard NMEA0183 AIS sentence\n(messages could be wrong or malformed)",
-                                          child: CheckboxListTile(
-                                            title: Text("Kikistream.io"),
-                                            value: kikistreamio,
-                                            onChanged: (val) => toggleFeed(
-                                              "Kikistream.io",
-                                              val ?? false,
-                                            ),
-                                            secondary: Icon(
-                                              Icons.public,
-                                              size: 30,
-                                            ),
-                                          ),
-                                        ),
-                                        CheckboxListTile(
-                                          title: Text("Norwegian Feed"),
-                                          value: norwegianFeed,
-                                          onChanged: (val) =>
-                                              toggleFeed("NO", val ?? false),
-                                          secondary:
-                                              CountryFlag.fromCountryCode(
-                                                "NO",
-                                                width: 30,
-                                                height: 18,
-                                              ),
-                                        ),
-                                        CheckboxListTile(
-                                          title: Text("Sinagot 2947 (GPSD1)"),
-                                          value: gpsd1,
-                                          onChanged: (val) =>
-                                              toggleFeed("GPSD1", val ?? false),
-                                          secondary:
-                                              CountryFlag.fromCountryCode(
-                                                "GPSD1",
-                                                width: 30,
-                                                height: 18,
-                                              ),
-                                        ),
-                                        CheckboxListTile(
-                                          title: Text("Sinagot 2948 (GPSD2)"),
-                                          value: gpsd2,
-                                          onChanged: (val) =>
-                                              toggleFeed("GPSD2", val ?? false),
-                                          secondary:
-                                              CountryFlag.fromCountryCode(
-                                                "GPSD2",
-                                                width: 30,
-                                                height: 18,
-                                              ),
-                                        ),
-                                        CheckboxListTile(
-                                          title: Text(
-                                            "Sinagot 5121 (simulated)",
-                                          ),
-                                          value: simulatedSinagot,
+                                      children: kFeedDefs.map((feed) {
+                                        final tile = CheckboxListTile(
+                                          title: Text(feed.displayName),
+                                          value: feedEnabled[feed.key],
                                           onChanged: (val) => toggleFeed(
-                                            "Sinagot 5121 (simulated)",
+                                            feed,
                                             val ?? false,
                                           ),
-                                          secondary:
-                                              CountryFlag.fromCountryCode(
-                                                "Sinagot 5121 (simulated)",
-                                                width: 30,
-                                                height: 18,
-                                              ),
-                                        ),
-                                        CheckboxListTile(
-                                          title: Text(
-                                            "US East Coast Feed (simulated)",
-                                          ),
-                                          value: usFeed,
-                                          onChanged: (val) =>
-                                              toggleFeed("US", val ?? false),
-                                          secondary:
-                                              CountryFlag.fromCountryCode(
-                                                "US",
-                                                width: 30,
-                                                height: 18,
-                                              ),
-                                        ),
-                                      ],
+                                          secondary: feedIcon(feed.key),
+                                        );
+                                        if (feed.tooltip != null) {
+                                          return Tooltip(
+                                            message: feed.tooltip!,
+                                            child: tile,
+                                          );
+                                        }
+                                        return tile;
+                                      }).toList(),
                                     ),
                                   ),
                                 ),
@@ -496,12 +418,12 @@ class _ForwarderUIState extends State<ForwarderUI> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       AnimatedSwitcher(
-                        duration: Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 300),
                         transitionBuilder: (child, animation) {
                           return ScaleTransition(
                             scale: animation,
@@ -531,14 +453,14 @@ class _ForwarderUIState extends State<ForwarderUI> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
                           padding: EdgeInsetsGeometry.directional(start: 10),
-                          child: Text("Logs"),
+                          child: const Text("Logs"),
                         ),
                         Expanded(
                           child: Stack(
@@ -553,45 +475,13 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                       itemCount: logEntries.length,
                                       itemBuilder: (context, index) {
                                         final entry = logEntries[index];
-                                        Widget starterWidget;
-
-                                        if (entry.starter != null) {
-                                          try {
-                                            if (entry.starter ==
-                                                "Kikistream.io") {
-                                              starterWidget = Icon(
-                                                Icons.public,
-                                                size: 16,
-                                              );
-                                            } else if (entry.starter!.length ==
-                                                2) {
-                                              starterWidget =
-                                                  CountryFlag.fromCountryCode(
-                                                    entry.starter!,
-                                                    width: 16,
-                                                    height: 10,
-                                                  );
-                                            } else {
-                                              starterWidget = Icon(
-                                                Icons.directions_boat,
-                                                size: 16,
-                                              );
-                                            }
-                                          } catch (e) {
-                                            starterWidget = Text(
-                                              entry.starter!,
-                                            );
-                                          }
-                                        } else {
-                                          starterWidget = SizedBox.shrink();
-                                        }
 
                                         return Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            starterWidget,
-                                            SizedBox(width: 5),
+                                            _buildStarterWidget(entry),
+                                            const SizedBox(width: 5),
                                             Expanded(
                                               child: Text(
                                                 entry.name != null
@@ -610,7 +500,7 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                 top: 6,
                                 right: 10,
                                 child: IconButton(
-                                  icon: Icon(Icons.delete_outline),
+                                  icon: const Icon(Icons.delete_outline),
                                   iconSize: 20,
                                   onPressed: () {
                                     setState(() {
@@ -625,13 +515,9 @@ class _ForwarderUIState extends State<ForwarderUI> {
                                 top: 6,
                                 right: 40,
                                 child: IconButton(
-                                  icon: Icon(Icons.save_outlined),
+                                  icon: const Icon(Icons.save_outlined),
                                   iconSize: 20,
-                                  onPressed: () {
-                                    setState(() {
-                                      saveLogs();
-                                    });
-                                  },
+                                  onPressed: saveLogs,
                                   tooltip: "save",
                                 ),
                               ),

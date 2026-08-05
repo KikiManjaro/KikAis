@@ -1,5 +1,6 @@
 class Boat {
   final String mmsi;
+  DateTime? lastUpdate;
   String? name;
   double? lat;
   double? lon;
