@@ -31,6 +31,9 @@ class BoatManager extends ChangeNotifier {
   int invalidChecksumCount = 0;
   int droppedFragmentCount = 0;
   int parseErrorCount = 0;
+  int pendingFragmentCount = 0;
+  int fragmentsSeen = 0;
+  int multiPartCompleted = 0;
 
   Isolate? _decoderIsolate;
   SendPort? _decoderSendPort;
@@ -110,6 +113,13 @@ class BoatManager extends ChangeNotifier {
         decoder.validateChecksum = message;
         return;
       }
+      if (message is String) {
+        if (message == 'reset') {
+          decoder.reset();
+        }
+        control.send(decoder.report());
+        return;
+      }
       if (message is List) {
         final feed = message[0] as String?;
         final line = message[1] as String;
@@ -135,18 +145,30 @@ class BoatManager extends ChangeNotifier {
   void _applyReport(DecoderReport report) {
     final changed = invalidChecksumCount != report.invalidChecksums ||
         droppedFragmentCount != report.droppedFragments ||
-        parseErrorCount != report.parseErrors;
+        parseErrorCount != report.parseErrors ||
+        pendingFragmentCount != report.pendingFragments ||
+        fragmentsSeen != report.fragmentsSeen ||
+        multiPartCompleted != report.multiPartCompleted;
     if (!changed) return;
     invalidChecksumCount = report.invalidChecksums;
     droppedFragmentCount = report.droppedFragments;
     parseErrorCount = report.parseErrors;
+    pendingFragmentCount = report.pendingFragments;
+    fragmentsSeen = report.fragmentsSeen;
+    multiPartCompleted = report.multiPartCompleted;
     notifyListeners();
   }
 
   void resetCounters() {
+    _fallbackDecoder.reset();
+    _applyReport(_fallbackDecoder.report());
+    _decoderSendPort?.send('reset');
     invalidChecksumCount = 0;
     droppedFragmentCount = 0;
     parseErrorCount = 0;
+    pendingFragmentCount = 0;
+    fragmentsSeen = 0;
+    multiPartCompleted = 0;
     notifyListeners();
   }
 

@@ -3,16 +3,22 @@ import '../messages/base/ais_message.dart';
 import 'fragment_assembler.dart';
 import 'nmea_sentence.dart';
 
-/// Snapshot of the decoder error counters, sent back to the main isolate.
+/// Snapshot of the decoder counters, sent back to the main isolate.
 class DecoderReport {
   final int invalidChecksums;
   final int droppedFragments;
   final int parseErrors;
+  final int pendingFragments;
+  final int fragmentsSeen;
+  final int multiPartCompleted;
 
   const DecoderReport({
     this.invalidChecksums = 0,
     this.droppedFragments = 0,
     this.parseErrors = 0,
+    this.pendingFragments = 0,
+    this.fragmentsSeen = 0,
+    this.multiPartCompleted = 0,
   });
 }
 
@@ -31,6 +37,15 @@ class AisNmeaDecoder {
   AisNmeaDecoder({this.validateChecksum = true});
 
   int get droppedFragments => _assembler.dropped;
+
+  /// Multi-fragment messages received but still awaiting their remaining parts.
+  int get pendingFragments => _assembler.pending;
+
+  /// Multi-part sentences (fragmentCount > 1) seen so far.
+  int get fragmentsSeen => _assembler.fragmentsSeen;
+
+  /// Multi-part messages fully reassembled so far.
+  int get multiPartCompleted => _assembler.multiPartCompleted;
 
   AISMessage? decode(String rawLine) {
     final sentence = NmeaSentence.tryParse(rawLine);
@@ -60,5 +75,16 @@ class AisNmeaDecoder {
         invalidChecksums: invalidChecksums,
         droppedFragments: droppedFragments,
         parseErrors: parseErrors,
+        pendingFragments: pendingFragments,
+        fragmentsSeen: fragmentsSeen,
+        multiPartCompleted: multiPartCompleted,
       );
+
+  /// Resets all counters and clears the fragment buffer.
+  void reset() {
+    invalidChecksums = 0;
+    parseErrors = 0;
+    decodedCount = 0;
+    _assembler.reset();
+  }
 }

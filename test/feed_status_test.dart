@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kik_ais/forwarder_service.dart';
-import 'package:kik_ais/forwarder_ui.dart';
+import 'package:kik_ais/reception_page.dart';
 
 void main() {
   final now = DateTime(2026, 1, 1, 12, 0, 0);

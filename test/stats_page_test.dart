@@ -47,4 +47,40 @@ void main() {
     boatManager.dispose();
     stats.dispose();
   });
+
+  testWidgets('stats page shows a reconciled accounting', (tester) async {
+    final stats = MessageStats();
+    final boatManager = BoatManager(stats: stats);
+    final settings = AppSettings();
+
+    stats.recordReceived('US');
+    stats.recordReceived('US');
+    stats.recordReceived('NO');
+    stats.recordDecoded(1, feed: 'US');
+
+    boatManager.invalidChecksumCount = 1;
+    boatManager.parseErrorCount = 1;
+    boatManager.fragmentsSeen = 1;
+    boatManager.multiPartCompleted = 1;
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: boatManager),
+          ChangeNotifierProvider.value(value: stats),
+          ChangeNotifierProvider.value(value: settings),
+        ],
+        child: const MaterialApp(home: StatsPage()),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 1100));
+
+    // Received 3 = 1 decoded + 1 invalid + 1 parse error.
+    expect(find.text('Accounting'), findsOneWidget);
+    expect(find.text('Received 3 = 3'), findsOneWidget);
+    expect(find.text('Received and decoded reconcile.'), findsOneWidget);
+
+    boatManager.dispose();
+    stats.dispose();
+  });
 }

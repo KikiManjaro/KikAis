@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
+import 'target_config.dart';
+
 enum ForwardProtocol { udpServer, tcpClient, udpClient, tcpServer }
 
 typedef LogCallback =
@@ -42,47 +44,119 @@ class FeedStatus {
       );
 }
 
+/// Receives AIS frames from feeds (reception) and forwards them to every
+/// enabled [TargetConfig] (send).
 class ForwarderService {
-  String targetHost = "127.0.0.1";
-  int targetPort = 3000;
-  ForwardProtocol protocol = ForwardProtocol.udpServer;
   final LogCallback onLog;
 
   ForwarderService({required this.onLog});
 
   final Map<String, _FeedConnection> _feeds = {};
   final ValueNotifier<Map<String, FeedStatus>> feedStatuses = ValueNotifier({});
-  RawDatagramSocket? _udpSocket;
-  Socket? _tcpSocket;
+  final Map<String, _TargetConnection> _targets = {};
 
-  ServerSocket? _tcpServer;
-  final List<Socket> _tcpClients = [];
-  RawDatagramSocket? _udpClientSocket;
-
+  List<TargetConfig> configuredTargets = [];
+  bool _running = false;
   bool _stopping = false;
 
-  void setProtocol(ForwardProtocol p) {
-    protocol = p;
+  /// Stores the configured destinations and, while running, connects /
+  /// disconnects the corresponding transports.
+  Future<void> setTargets(List<TargetConfig> list) async {
+    configuredTargets = List.of(list);
+    if (!_running) return;
+
+    for (final id in List.of(_targets.keys)) {
+      final found = configuredTargets.where((c) => c.id == id).toList();
+      if (found.isEmpty || !found.first.enabled) {
+        await _targets.remove(id)?.disconnect();
+      }
+    }
+    for (final t in configuredTargets) {
+      if (t.enabled && !_targets.containsKey(t.id)) {
+        final conn = _TargetConnection(t, onLog);
+        _targets[t.id] = conn;
+        try {
+          await conn.connect();
+          onLog(
+            'Target ${t.name} connected '
+            '(${protocolLabel(t.protocol)} ${t.host}:${t.port}).',
+            null,
+            null,
+          );
+        } catch (e) {
+          onLog('Failed to connect target ${t.name}: $e', null, null);
+          _targets.remove(t.id);
+        }
+      }
+    }
   }
 
   Future<void> start() async {
     _stopping = false;
-    try {
-      if (protocol == ForwardProtocol.tcpServer) {
-        await startTcpServer(targetPort);
-      } else if (protocol == ForwardProtocol.tcpClient) {
-        _tcpSocket = await Socket.connect(targetHost, targetPort);
-      } else if (protocol == ForwardProtocol.udpClient) {
-        await startUdpClient();
-      } else if (protocol == ForwardProtocol.udpServer) {
-        _udpSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
-      }
-    } catch (e) {
-      onLog("Error starting protocol $protocol: $e", null, null);
-    }
-
+    _running = true;
+    await setTargets(configuredTargets);
     for (var feed in _feeds.values) {
       unawaited(_connectFeed(feed));
+    }
+  }
+
+  Future<void> stop() async {
+    _stopping = true;
+    _running = false;
+    onLog("Stopping forwarder...", null, null);
+    for (var feed in _feeds.values) {
+      await feed.disconnect();
+    }
+    _feeds.clear();
+    for (final t in _targets.values) {
+      await t.disconnect();
+    }
+    _targets.clear();
+    feedStatuses.value = {};
+    onLog("Forwarder stopped.", null, null);
+  }
+
+  /// Forwards a raw NMEA line to every connected target.
+  Future<void> _send(String line) async {
+    final clean = line.trim();
+    if (clean.isEmpty) return;
+    for (final t in _targets.values) {
+      await t.send(clean);
+    }
+  }
+
+  Future<void> sendRaw(String nmea) => _send(nmea);
+
+  Future<void> addFeed(
+    String name,
+    String flag,
+    String host,
+    int port, {
+    String? header,
+  }) async {
+    if (_feeds.containsKey(name)) return;
+
+    var feed = _FeedConnection(name, flag, host, port, header);
+    _feeds[name] = feed;
+    feedStatuses.value = {...feedStatuses.value, name: feed.status};
+    feed.statusNotifier.addListener(() {
+      feedStatuses.value = {...feedStatuses.value, name: feed.status};
+    });
+
+    if (_running && !_stopping) {
+      unawaited(_connectFeed(feed));
+    }
+
+    onLog("Feed added: $name ($host:$port)", null, null);
+  }
+
+  Future<void> removeFeed(String name) async {
+    var feed = _feeds.remove(name);
+    if (feed != null) {
+      await feed.disconnect();
+      feed.statusNotifier.dispose();
+      feedStatuses.value = Map.of(feedStatuses.value)..remove(name);
+      onLog("Feed removed: $name", null, null);
     }
   }
 
@@ -111,150 +185,6 @@ class ForwarderService {
     }
   }
 
-  Future<void> startTcpServer(int port) async {
-    _tcpServer = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    onLog(
-      "TCP Server listening on ${_tcpServer!.address.address}:$port",
-      null,
-      null,
-    );
-
-    _tcpServer!.listen((clientSocket) {
-      _tcpClients.add(clientSocket);
-      onLog(
-        "TCP client connected: "
-        "${clientSocket.remoteAddress.address}:${clientSocket.remotePort}",
-        null,
-        null,
-      );
-
-      clientSocket.listen(
-        (data) {
-          final message = String.fromCharCodes(data).trim();
-          if (message.isNotEmpty) _handleData("tcp-client", "TCP", message);
-        },
-        onDone: () {
-          _tcpClients.remove(clientSocket);
-          onLog("TCP client disconnected", null, null);
-        },
-        onError: (e) => onLog("TCP client error: $e", null, null),
-      );
-    });
-  }
-
-  Future<void> startUdpClient() async {
-    _udpClientSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
-    onLog("UDP client ready, sending to $targetHost:$targetPort", null, null);
-  }
-
-  void sendUdpMessage(String message) {
-    _udpClientSocket?.send(
-      message.codeUnits,
-      InternetAddress(targetHost),
-      targetPort,
-    );
-  }
-
-  Future<void> stop() async {
-    _stopping = true;
-    onLog("Stopping forwarder...", null, null);
-    for (var feed in _feeds.values) {
-      await feed.disconnect();
-    }
-    _feeds.clear();
-
-    for (final client in _tcpClients) {
-      client.destroy();
-    }
-    _tcpClients.clear();
-
-    _udpSocket?.close();
-    _udpSocket = null;
-
-    _tcpSocket?.destroy();
-    _tcpSocket = null;
-
-    _tcpServer?.close();
-    _tcpServer = null;
-
-    _udpClientSocket?.close();
-    _udpClientSocket = null;
-
-    feedStatuses.value = {};
-    onLog("Forwarder stopped.", null, null);
-  }
-
-  Future<void> addFeed(
-    String name,
-    String flag,
-    String host,
-    int port, {
-    String? header,
-  }) async {
-    if (_feeds.containsKey(name)) return;
-
-    var feed = _FeedConnection(name, flag, host, port, header);
-    _feeds[name] = feed;
-    feedStatuses.value = {...feedStatuses.value, name: feed.status};
-    feed.statusNotifier.addListener(() {
-      feedStatuses.value = {...feedStatuses.value, name: feed.status};
-    });
-
-    if (_udpSocket != null ||
-        _tcpSocket != null ||
-        _tcpServer != null ||
-        _udpClientSocket != null) {
-      unawaited(_connectFeed(feed));
-    }
-
-    onLog("Feed added: $name ($host:$port)", null, null);
-  }
-
-  Future<void> removeFeed(String name) async {
-    var feed = _feeds.remove(name);
-    if (feed != null) {
-      await feed.disconnect();
-      feed.statusNotifier.dispose();
-      feedStatuses.value = Map.of(feedStatuses.value)..remove(name);
-      onLog("Feed removed: $name", null, null);
-    }
-  }
-
-  /// Sends a raw NMEA sentence through the currently selected protocol,
-  /// without decoding or logging it.
-  Future<void> sendRaw(String nmea) => _send(nmea);
-
-  Future<void> _send(String line) async {
-    final clean = line.trim();
-    if (clean.isEmpty) return;
-    try {
-      switch (protocol) {
-        case ForwardProtocol.udpServer:
-          _udpSocket?.send(
-            clean.codeUnits,
-            InternetAddress(targetHost),
-            targetPort,
-          );
-          break;
-        case ForwardProtocol.tcpClient:
-          _tcpSocket?.write("$clean\n");
-          await _tcpSocket?.flush();
-          break;
-        case ForwardProtocol.udpClient:
-          sendUdpMessage(clean);
-          break;
-        case ForwardProtocol.tcpServer:
-          for (var client in List<Socket>.of(_tcpClients)) {
-            client.write("$clean\n");
-            await client.flush();
-          }
-          break;
-      }
-    } catch (e) {
-      onLog("Forwarding error: $e", null, null);
-    }
-  }
-
   Future<void> _handleData(String feedName, String flag, String line) async {
     final index = line.indexOf('!');
     if (index == -1) return;
@@ -262,6 +192,88 @@ class ForwarderService {
     final cleanLine = line.substring(index);
     await _send(cleanLine);
     onLog(cleanLine, flag, feedName);
+  }
+}
+
+class _TargetConnection {
+  final TargetConfig config;
+  final LogCallback onLog;
+
+  RawDatagramSocket? _udp;
+  Socket? _tcp;
+  ServerSocket? _server;
+  final List<Socket> _clients = [];
+
+  _TargetConnection(this.config, this.onLog);
+
+  Future<void> connect() async {
+    switch (config.protocol) {
+      case ForwardProtocol.udpServer || ForwardProtocol.udpClient:
+        _udp = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+      case ForwardProtocol.tcpClient:
+        _tcp = await Socket.connect(config.host, config.port);
+      case ForwardProtocol.tcpServer:
+        _server = await ServerSocket.bind(InternetAddress.anyIPv4, config.port);
+        onLog(
+          'Target ${config.name}: TCP server listening on port ${config.port}',
+          null,
+          null,
+        );
+        _server!.listen((client) {
+          _clients.add(client);
+          onLog(
+            'Target ${config.name}: client connected '
+            '${client.remoteAddress.address}:${client.remotePort}',
+            null,
+            null,
+          );
+          client.listen(
+            (_) {},
+            onDone: () {
+              _clients.remove(client);
+              onLog('Target ${config.name}: client disconnected', null, null);
+            },
+            onError: (e) =>
+                onLog('Target ${config.name}: client error $e', null, null),
+          );
+        });
+    }
+  }
+
+  Future<void> send(String line) async {
+    try {
+      switch (config.protocol) {
+        case ForwardProtocol.udpServer || ForwardProtocol.udpClient:
+          _udp?.send(
+            line.codeUnits,
+            InternetAddress(config.host),
+            config.port,
+          );
+        case ForwardProtocol.tcpClient:
+          _tcp?.write('$line\n');
+          await _tcp?.flush();
+        case ForwardProtocol.tcpServer:
+          for (var client in List<Socket>.of(_clients)) {
+            client.write('$line\n');
+            await client.flush();
+          }
+      }
+    } catch (e) {
+      onLog('Target ${config.name} send error: $e', null, null);
+    }
+  }
+
+  Future<void> disconnect() async {
+    for (final c in _clients) {
+      c.destroy();
+    }
+    _clients.clear();
+    _udp?.close();
+    _udp = null;
+    _tcp?.destroy();
+    _tcp = null;
+    _server?.close();
+    _server = null;
   }
 }
 

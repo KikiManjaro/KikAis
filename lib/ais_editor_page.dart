@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'ais_editor_specs.dart';
@@ -23,7 +22,6 @@ class AisEditorPage extends StatefulWidget {
 
 class _AisEditorPageState extends State<AisEditorPage> {
   int _type = 1;
-  bool _showPreview = true;
   final Map<String, TextEditingController> _controllers = {};
 
   String? _sentence;
@@ -202,7 +200,7 @@ class _AisEditorPageState extends State<AisEditorPage> {
                       message: running
                           ? 'Send this NMEA sentence to the configured target'
                           : 'Start the forwarder first to send this sentence',
-                      child: FilledButton.tonalIcon(
+                      child: FilledButton.icon(
                         onPressed: enabled ? _sendToTarget : null,
                         icon: const Icon(Icons.send),
                         label: const Text('Send to target'),
@@ -227,51 +225,28 @@ class _AisEditorPageState extends State<AisEditorPage> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.copy, size: 18),
-                          visualDensity: VisualDensity.compact,
-                          onPressed: _sentence == null
-                              ? null
-                              : () {
-                                  Clipboard.setData(
-                                    ClipboardData(text: _sentence!),
-                                  );
-                                  ScaffoldMessenger.of(context)
-                                    ..hideCurrentSnackBar()
-                                    ..showSnackBar(
-                                      const SnackBar(
-                                        content: Text('NMEA copied'),
-                                        duration: Duration(seconds: 1),
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
-                                },
+                        CopyIconButton(
+                          text: _sentence ?? '',
+                          message: 'NMEA copied',
+                          padding: EdgeInsets.zero,
                           tooltip: 'Copy the NMEA sentence',
-                        ),
-                        TextButton(
-                          onPressed: () => setState(
-                            () => _showPreview = !_showPreview,
-                          ),
-                          child: Text(_showPreview ? 'Hide' : 'Show'),
                         ),
                       ],
                     ),
-                    if (_showPreview) ...[
-                      const SizedBox(height: 4),
-                      SelectableText(
-                        _sentence ?? _error ?? '',
-                        style: TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                    const SizedBox(height: 4),
+                    SelectableText(
+                      _sentence ?? _error ?? '',
+                      style: TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      if (_error != null)
-                        Text(
-                          _error!,
-                          style: const TextStyle(color: Colors.redAccent),
-                        ),
-                    ],
+                    ),
+                    if (_error != null)
+                      Text(
+                        _error!,
+                        style: const TextStyle(color: Colors.redAccent),
+                      ),
                   ],
                 ),
               ),

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -76,9 +78,17 @@ class _StatsPageState extends State<StatsPage> {
     final decoded = filter == null
         ? stats.totalDecoded
         : (stats.byFeedDecoded[filter] ?? 0);
-    final rate = filter == null
-        ? stats.messagesPerSecond
-        : (stats.rateByFeed[filter] ?? 0);
+    final decodedRate = stats.decodedHistory.isEmpty
+        ? 0.0
+        : stats.decodedHistory.last;
+    final fragmentsSeen = boatManager.fragmentsSeen;
+    final multiPartCompleted = boatManager.multiPartCompleted;
+    final pending = boatManager.pendingFragmentCount;
+    final dropped = boatManager.droppedFragmentCount;
+    final multiOverhead = math.max(
+      0,
+      fragmentsSeen - multiPartCompleted - pending - dropped,
+    );
     final byType = filter == null
         ? stats.byType
         : (stats.byTypePerFeed[filter] ?? const <int, int>{});
@@ -135,7 +145,14 @@ class _StatsPageState extends State<StatsPage> {
                   child: Text('All feeds'),
                 ),
                 for (final f in feeds)
-                  DropdownMenuItem<String?>(value: f, child: Text(f)),
+                  DropdownMenuItem<String?>(
+                    value: f,
+                    child: _FeedOption(
+                      name: f,
+                      hasData: stats.byFeed.containsKey(f) ||
+                          stats.byFeedDecoded.containsKey(f),
+                    ),
+                  ),
               ],
               onChanged: (v) => setState(() => _feedFilter = v),
             ),
@@ -149,8 +166,8 @@ class _StatsPageState extends State<StatsPage> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 200,
-                  mainAxisExtent: 104,
+                  maxCrossAxisExtent: 280,
+                  mainAxisExtent: 176,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
@@ -160,23 +177,30 @@ class _StatsPageState extends State<StatsPage> {
                     value: received.toDouble(),
                     icon: Icons.south,
                     accent: appColors.info,
+                    subtitle: filter == null
+                        ? '${stats.messagesPerSecond.toStringAsFixed(1)}/s'
+                        : '(all feeds)',
+                    live: stats.messagesPerSecond > 0,
                     tooltip: 'NMEA sentences received from the feeds',
+                    chart: _MiniLineChart(
+                      data: stats.rateHistory,
+                      color: appColors.info,
+                    ),
                   ),
                   _KpiCard(
                     label: 'Decoded',
                     value: decoded.toDouble(),
                     icon: Icons.check_circle_outline,
                     accent: appColors.success,
+                    subtitle: filter == null
+                        ? '${decodedRate.toStringAsFixed(1)}/s'
+                        : '(all feeds)',
+                    live: decodedRate > 0,
                     tooltip: 'Messages successfully decoded',
-                  ),
-                  _KpiCard(
-                    label: 'Rate',
-                    value: rate,
-                    decimals: 1,
-                    icon: Icons.speed,
-                    accent: appColors.warning,
-                    live: rate > 0,
-                    tooltip: 'Received messages per second',
+                    chart: _MiniLineChart(
+                      data: stats.decodedHistory,
+                      color: appColors.success,
+                    ),
                   ),
                   _KpiCard(
                     label: 'Invalid checksums',
@@ -202,9 +226,80 @@ class _StatsPageState extends State<StatsPage> {
                     subtitle: filter == null ? null : '(all feeds)',
                     tooltip: 'Sentences that failed to decode',
                   ),
+                  _KpiCard(
+                    label: 'Pending fragments',
+                    value: boatManager.pendingFragmentCount.toDouble(),
+                    icon: Icons.hourglass_bottom,
+                    accent: appColors.warning,
+                    live: boatManager.pendingFragmentCount > 0,
+                    tooltip: 'Multi-part messages still awaiting their '
+                        'remaining fragments',
+                  ),
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+            Text(
+              'Received vs Decoded (last 60 s)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        _LegendDot(color: appColors.info),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Received',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        const SizedBox(width: 16),
+                        _LegendDot(color: appColors.success),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Decoded',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        const Spacer(),
+                        Text(
+                          filter == null ? 'per second' : '(all feeds)',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    _DualLineChart(
+                      received: stats.rateHistory,
+                      decoded: stats.decodedHistory,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (filter == null) ...[
+              const SizedBox(height: 16),
+              Text(
+                'Accounting',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              _ReconciliationCard(
+                received: received,
+                decoded: decoded,
+                invalid: boatManager.invalidChecksumCount,
+                parseErrors: boatManager.parseErrorCount,
+                multiOverhead: multiOverhead,
+                pending: pending,
+                dropped: dropped,
+              ),
+            ],
             const SizedBox(height: 16),
             Text(
               'By message type',
@@ -335,15 +430,50 @@ class _StatsPageState extends State<StatsPage> {
   }
 }
 
+class _FeedOption extends StatelessWidget {
+  final String name;
+  final bool hasData;
+
+  const _FeedOption({required this.name, required this.hasData});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: hasData ? scheme.primary : Colors.transparent,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            name,
+            overflow: TextOverflow.ellipsis,
+            style: hasData
+                ? const TextStyle(fontWeight: FontWeight.bold)
+                : null,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _KpiCard extends StatelessWidget {
   final String label;
   final double value;
-  final int decimals;
   final IconData icon;
   final Color accent;
   final String? subtitle;
   final bool live;
   final String tooltip;
+  final Widget? chart;
 
   const _KpiCard({
     required this.label,
@@ -351,14 +481,12 @@ class _KpiCard extends StatelessWidget {
     required this.icon,
     required this.accent,
     required this.tooltip,
-    this.decimals = 0,
     this.subtitle,
     this.live = false,
+    this.chart,
   });
 
-  String _format(double v) => decimals == 0
-      ? _group(v.round())
-      : v.toStringAsFixed(decimals);
+  String _format(double v) => _group(v.round());
 
   @override
   Widget build(BuildContext context) {
@@ -369,62 +497,69 @@ class _KpiCard extends StatelessWidget {
       child: TintedCard(
         accent: accent,
         padding: const EdgeInsets.all(12),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AccentBadge(icon: icon, accent: accent),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TweenAnimationBuilder<double>(
-                    tween: Tween(end: value),
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeOutCubic,
-                    builder: (context, v, _) => Text(
-                      _format(v),
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                        height: 1.1,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Row(
+            Row(
+              children: [
+                AccentBadge(icon: icon, accent: accent),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Flexible(
-                        child: Text(
-                          label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      TweenAnimationBuilder<double>(
+                        tween: Tween(end: value),
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeOutCubic,
+                        builder: (context, v, _) => Text(
+                          _format(v),
                           style: TextStyle(
-                            fontSize: 12,
-                            color: textColor.withValues(alpha: 0.75),
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                            height: 1.1,
                           ),
                         ),
                       ),
-                      if (subtitle != null) ...[
-                        const SizedBox(width: 4),
-                        Text(
-                          subtitle!,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: textColor.withValues(alpha: 0.5),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: textColor.withValues(alpha: 0.75),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                      if (live) ...[
-                        const Spacer(),
-                        _PulseDot(color: accent, size: 7),
-                      ],
+                          if (subtitle != null) ...[
+                            const SizedBox(width: 4),
+                            Text(
+                              subtitle!,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: textColor.withValues(alpha: 0.5),
+                              ),
+                            ),
+                          ],
+                          if (live) ...[
+                            const SizedBox(width: 6),
+                            _PulseDot(color: accent, size: 7),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+            if (chart != null) ...[
+              const SizedBox(height: 10),
+              Expanded(child: chart!),
+            ],
           ],
         ),
       ),
@@ -487,4 +622,350 @@ class _PulseDotState extends State<_PulseDot>
       ),
     );
   }
+}
+
+/// Overlaid lines comparing received and decoded rates over the last 60 s.
+class _DualLineChart extends StatelessWidget {
+  final List<double> received;
+  final List<double> decoded;
+
+  const _DualLineChart({required this.received, required this.decoded});
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+    return SizedBox(
+      height: 130,
+      child: CustomPaint(
+        size: Size.infinite,
+        painter: _DualLinePainter(
+          received: received,
+          decoded: decoded,
+          receivedColor: appColors.info,
+          decodedColor: appColors.success,
+        ),
+      ),
+    );
+  }
+}
+
+class _DualLinePainter extends CustomPainter {
+  final List<double> received;
+  final List<double> decoded;
+  final Color receivedColor;
+  final Color decodedColor;
+
+  _DualLinePainter({
+    required this.received,
+    required this.decoded,
+    required this.receivedColor,
+    required this.decodedColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (received.length < 2 && decoded.length < 2) {
+      final painter = TextPainter(
+        text: TextSpan(
+          text: 'collecting…',
+          style: TextStyle(
+            fontSize: 10,
+            color: receivedColor.withValues(alpha: 0.6),
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      painter.paint(
+        canvas,
+        Offset(
+          (size.width - painter.width) / 2,
+          (size.height - painter.height) / 2,
+        ),
+      );
+      return;
+    }
+
+    double maxOf(List<double> data) =>
+        data.fold(0.0, (m, v) => v > m ? v : m);
+    final maxV = math.max(maxOf(received), maxOf(decoded));
+    final top = maxV == 0 ? 1.0 : maxV;
+    final left = 2.0;
+    final right = size.width - 2;
+    final bottom = size.height - 2;
+    final topY = 3.0;
+
+    Offset point(List<double> data, int i) {
+      final x = left + (right - left) * (i / (data.length - 1));
+      final y = bottom - (bottom - topY) * (data[i] / top);
+      return Offset(x, y);
+    }
+
+    void drawSeries(List<double> data, Color color) {
+      if (data.length < 2) return;
+      final path = Path();
+      for (var i = 0; i < data.length; i++) {
+        final p = point(data, i);
+        if (i == 0) {
+          path.moveTo(p.dx, p.dy);
+        } else {
+          path.lineTo(p.dx, p.dy);
+        }
+      }
+      final fill = Path.from(path)
+        ..lineTo(right, bottom)
+        ..lineTo(left, bottom)
+        ..close();
+      canvas.drawPath(
+        fill,
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              color.withValues(alpha: 0.25),
+              color.withValues(alpha: 0.02),
+            ],
+          ).createShader(Offset.zero & size),
+      );
+      canvas.drawPath(
+        path,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2
+          ..strokeCap = StrokeCap.round
+          ..color = color,
+      );
+    }
+
+    drawSeries(received, receivedColor);
+    drawSeries(decoded, decodedColor);
+  }
+
+  @override
+  bool shouldRepaint(_DualLinePainter oldDelegate) =>
+      oldDelegate.received.length != received.length ||
+      oldDelegate.decoded.length != decoded.length ||
+      (received.isNotEmpty &&
+          oldDelegate.received.isNotEmpty &&
+          oldDelegate.received.last != received.last) ||
+      (decoded.isNotEmpty &&
+          oldDelegate.decoded.isNotEmpty &&
+          oldDelegate.decoded.last != decoded.last);
+}
+
+class _LegendDot extends StatelessWidget {
+  final Color color;
+
+  const _LegendDot({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 8,
+      height: 8,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
+  }
+}
+
+/// Exact accounting of the received/decoded counters.
+class _ReconciliationCard extends StatelessWidget {
+  final int received;
+  final int decoded;
+  final int invalid;
+  final int parseErrors;
+  final int multiOverhead;
+  final int pending;
+  final int dropped;
+
+  const _ReconciliationCard({
+    required this.received,
+    required this.decoded,
+    required this.invalid,
+    required this.parseErrors,
+    required this.multiOverhead,
+    required this.pending,
+    required this.dropped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+    final sum =
+        decoded + invalid + parseErrors + multiOverhead + pending + dropped;
+    final balanced = sum == received;
+
+    Widget row(IconData icon, Color color, String label, int value) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(label, style: const TextStyle(fontSize: 12)),
+            ),
+            Text(
+              _KpiCard._group(value),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Received ${_KpiCard._group(received)} = ${_KpiCard._group(sum)}',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: scheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 4),
+            row(Icons.check_circle_outline, appColors.success, 'Decoded',
+                decoded),
+            row(Icons.error_outline, appColors.danger, 'Invalid checksums',
+                invalid),
+            row(Icons.bug_report_outlined, appColors.danger, 'Parse errors',
+                parseErrors),
+            row(Icons.call_split, appColors.info, 'Multi-part parts',
+                multiOverhead),
+            row(Icons.hourglass_bottom, appColors.warning, 'Pending', pending),
+            row(Icons.delete_outline, appColors.warning, 'Dropped', dropped),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(
+                  balanced ? Icons.check_circle : Icons.info_outline,
+                  size: 14,
+                  color: balanced ? appColors.success : appColors.warning,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    balanced
+                        ? 'Received and decoded reconcile.'
+                        : 'Gap includes sentences received while decoding '
+                            'was paused.',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Sparkline for the rate history.
+class _MiniLineChart extends StatelessWidget {
+  final List<double> data;
+  final Color color;
+
+  const _MiniLineChart({required this.data, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size.infinite,
+      painter: _MiniLinePainter(data: data, color: color),
+    );
+  }
+}
+
+class _MiniLinePainter extends CustomPainter {
+  final List<double> data;
+  final Color color;
+
+  _MiniLinePainter({required this.data, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (data.length < 2) {
+      final painter = TextPainter(
+        text: TextSpan(
+          text: 'collecting…',
+          style: TextStyle(fontSize: 10, color: color.withValues(alpha: 0.6)),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      painter.paint(
+        canvas,
+        Offset((size.width - painter.width) / 2, (size.height - painter.height) / 2),
+      );
+      return;
+    }
+
+    final maxV = data.fold(0.0, (m, v) => v > m ? v : m);
+    final top = maxV == 0 ? 1.0 : maxV;
+    final left = 2.0;
+    final right = size.width - 2;
+    final bottom = size.height - 2;
+    final topY = 3.0;
+
+    Offset point(int i) {
+      final x = left + (right - left) * (i / (data.length - 1));
+      final y = bottom - (bottom - topY) * (data[i] / top);
+      return Offset(x, y);
+    }
+
+    final path = Path();
+    for (var i = 0; i < data.length; i++) {
+      final p = point(i);
+      if (i == 0) {
+        path.moveTo(p.dx, p.dy);
+      } else {
+        path.lineTo(p.dx, p.dy);
+      }
+    }
+
+    final fill = Path.from(path)
+      ..lineTo(right, bottom)
+      ..lineTo(left, bottom)
+      ..close();
+    canvas.drawPath(
+      fill,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.02)],
+        ).createShader(Offset.zero & size),
+    );
+
+    canvas.drawPath(
+      path,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2
+        ..strokeCap = StrokeCap.round
+        ..color = color,
+    );
+
+    final last = point(data.length - 1);
+    canvas.drawCircle(last, 2.5, Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(_MiniLinePainter oldDelegate) =>
+      oldDelegate.data.length != data.length ||
+      (data.isNotEmpty && oldDelegate.data.last != data.last);
 }

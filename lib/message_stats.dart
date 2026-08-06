@@ -17,7 +17,14 @@ class MessageStats extends ChangeNotifier {
   double messagesPerSecond = 0;
   Map<String, double> rateByFeed = {};
 
+  /// Last samples of the global rate (for charts), oldest first.
+  final List<double> rateHistory = [];
+
+  /// Last samples of the decoded rate (decoded messages per second).
+  final List<double> decodedHistory = [];
+
   int _lastCount = 0;
+  int _lastDecodedCount = 0;
   Map<String, int> _lastByFeedCount = {};
   Timer? _sampler;
 
@@ -28,6 +35,12 @@ class MessageStats extends ChangeNotifier {
   void _sample() {
     messagesPerSecond = (totalReceived - _lastCount).toDouble();
     _lastCount = totalReceived;
+    rateHistory.add(messagesPerSecond);
+    if (rateHistory.length > 60) rateHistory.removeAt(0);
+
+    decodedHistory.add((totalDecoded - _lastDecodedCount).toDouble());
+    _lastDecodedCount = totalDecoded;
+    if (decodedHistory.length > 60) decodedHistory.removeAt(0);
 
     final next = <String, double>{};
     for (final entry in byFeed.entries) {
@@ -63,10 +76,13 @@ class MessageStats extends ChangeNotifier {
     byFeedDecoded.clear();
     byTypePerFeed.clear();
     rateByFeed = {};
+    rateHistory.clear();
+    decodedHistory.clear();
     totalReceived = 0;
     totalDecoded = 0;
     messagesPerSecond = 0;
     _lastCount = 0;
+    _lastDecodedCount = 0;
     _lastByFeedCount = {};
     notifyListeners();
   }

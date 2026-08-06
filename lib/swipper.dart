@@ -7,7 +7,8 @@ import 'ais_editor_page.dart';
 import 'app_settings.dart';
 import 'boat_animation.dart';
 import 'decoder_page.dart';
-import 'forwarder_ui.dart';
+import 'reception_page.dart';
+import 'send_page.dart';
 import 'stats_page.dart';
 import 'themes.dart';
 import 'world_map_page.dart';
@@ -25,10 +26,11 @@ class _SwipperUiState extends State<SwipperUi> {
   final BoatAnimationController boatController = BoatAnimationController();
   final ValueNotifier<bool> forwarderRunning = ValueNotifier(false);
   final PageController _pageController = PageController();
-  final GlobalKey<ForwarderUIState> _forwarderKey =
-      GlobalKey<ForwarderUIState>();
+  final GlobalKey<ReceptionPageState> _receptionKey =
+      GlobalKey<ReceptionPageState>();
   late final BoatAnimation boat;
-  late final ForwarderUI forwarderPage;
+  late final ReceptionPage receptionPage;
+  late final SendPage sendPage;
   late final WorldMapPage mapPage;
   late final AisEditorPage editorPage;
   late final DecoderPage decoderPage;
@@ -40,16 +42,20 @@ class _SwipperUiState extends State<SwipperUi> {
   void initState() {
     super.initState();
     boat = BoatAnimation(controller: boatController);
-    forwarderPage = ForwarderUI(
+    receptionPage = ReceptionPage(
       boatController,
-      key: _forwarderKey,
+      key: _receptionKey,
+      running: forwarderRunning,
+    );
+    sendPage = SendPage(
+      serviceGetter: () => _receptionKey.currentState?.forwarderService,
       running: forwarderRunning,
     );
     mapPage = WorldMapPage(key: const PageStorageKey('world_map'));
     editorPage = AisEditorPage(
       running: forwarderRunning,
       onSendToTarget: (sentence) async {
-        _forwarderKey.currentState?.sendRaw(sentence);
+        _receptionKey.currentState?.sendRaw(sentence);
       },
     );
     decoderPage = const DecoderPage(key: PageStorageKey('decoder'));
@@ -155,11 +161,11 @@ class _SwipperUiState extends State<SwipperUi> {
                     if (pointerSignal is PointerScrollEvent) {
                       if (pointerSignal.scrollDelta.dx > 0) {
                         setState(() {
-                          _currentIndex = (_currentIndex + 1).clamp(0, 4);
+                          _currentIndex = (_currentIndex + 1).clamp(0, 5);
                         });
                       } else if (pointerSignal.scrollDelta.dx < 0) {
                         setState(() {
-                          _currentIndex = (_currentIndex - 1).clamp(0, 4);
+                          _currentIndex = (_currentIndex - 1).clamp(0, 5);
                         });
                       }
                     }
@@ -167,7 +173,8 @@ class _SwipperUiState extends State<SwipperUi> {
                   child: IndexedStack(
                     index: _currentIndex,
                     children: [
-                      forwarderPage,
+                      receptionPage,
+                      sendPage,
                       mapPage,
                       editorPage,
                       decoderPage,
@@ -175,45 +182,42 @@ class _SwipperUiState extends State<SwipperUi> {
                     ],
                   ),
                 ),
-                bottomNavigationBar: SizedBox(
-                  height: 20,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Positioned.fill(
-                        child: Row(
-                          children: List.generate(5, (index) {
-                            return Expanded(
-                              child: GestureDetector(
-                                onTap: () =>
-                                    setState(() => _currentIndex = index),
-                                child: Container(color: Colors.transparent),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
-                      IgnorePointer(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(5, (index) {
-                            return AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              width: _currentIndex == index ? 30 : 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: _currentIndex == index
-                                    ? Colors.lightBlueAccent
-                                    : Colors.grey,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
-                    ],
-                  ),
+                bottomNavigationBar: NavigationBar(
+                  selectedIndex: _currentIndex,
+                  onDestinationSelected: (index) =>
+                      setState(() => _currentIndex = index),
+                  destinations: const [
+                    NavigationDestination(
+                      icon: Icon(Icons.radio_outlined),
+                      selectedIcon: Icon(Icons.radio),
+                      label: 'Reception',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.outbox_outlined),
+                      selectedIcon: Icon(Icons.outbox),
+                      label: 'Send',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.map_outlined),
+                      selectedIcon: Icon(Icons.map),
+                      label: 'Map',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.edit_note_outlined),
+                      selectedIcon: Icon(Icons.edit_note),
+                      label: 'Editor',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.manage_search_outlined),
+                      selectedIcon: Icon(Icons.manage_search),
+                      label: 'Decoder',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.bar_chart_outlined),
+                      selectedIcon: Icon(Icons.bar_chart),
+                      label: 'Stats',
+                    ),
+                  ],
                 ),
               ),
             ),

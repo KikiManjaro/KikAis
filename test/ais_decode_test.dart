@@ -145,6 +145,105 @@ void main() {
     });
   });
 
+  group('FragmentAssembler drops mismatched fragments', () {
+    String twoPartBinary() {
+      final full = NmeaSentence.tryParse(
+        encodePositionReport(
+          mmsi: 226545000,
+          latitude: 48.85,
+          longitude: 1.05,
+          sog: 12.0,
+          cog: 250.0,
+          heading: 90.0,
+        ),
+      )!
+          .binaryPayload;
+      return full;
+    }
+
+    test('drops a fragment whose total does not match the pending message', () {
+      final full = twoPartBinary();
+      final decoder = AisNmeaDecoder();
+      expect(decoder.decode(_fragment(full.substring(0, 144), 0, 2, 3)),
+          isNull);
+      // Same key, different total -> different message -> dropped.
+      expect(decoder.decode(_fragment(full.substring(0, 100), 0, 3, 3)),
+          isNull);
+      expect(decoder.droppedFragments, 1);
+      expect(decoder.fragmentsSeen, 2);
+      // The pending message can still complete.
+      final msg = decoder.decode(_fragment(full.substring(144), 1, 2, 3));
+      expect(msg, isA<PositionMessage>());
+      expect(decoder.multiPartCompleted, 1);
+    });
+
+    test('drops a conflicting fragment with the same index but a different '
+        'payload', () {
+      final full = twoPartBinary();
+      final decoder = AisNmeaDecoder();
+      expect(decoder.decode(_fragment(full.substring(0, 144), 0, 2, 3)),
+          isNull);
+      // Same key, same index, different bits -> different message -> dropped.
+      final conflicting = full.substring(0, 144).replaceRange(0, 6, '111111');
+      expect(decoder.decode(_fragment(conflicting, 0, 2, 3)), isNull);
+      expect(decoder.droppedFragments, 1);
+      final msg = decoder.decode(_fragment(full.substring(144), 1, 2, 3));
+      expect(msg, isA<PositionMessage>());
+    });
+
+    test('keeps an identical retransmission and still completes', () {
+      final full = twoPartBinary();
+      final decoder = AisNmeaDecoder();
+      final part1 = _fragment(full.substring(0, 144), 0, 2, 3);
+      expect(decoder.decode(part1), isNull);
+      expect(decoder.decode(part1), isNull); // retransmission, not a drop
+      expect(decoder.droppedFragments, 0);
+      expect(decoder.fragmentsSeen, 2);
+      final msg = decoder.decode(_fragment(full.substring(144), 1, 2, 3));
+      expect(msg, isA<PositionMessage>());
+      expect(decoder.multiPartCompleted, 1);
+    });
+
+    test('drops an out-of-range fragment number', () {
+      final decoder = AisNmeaDecoder();
+      // index 2 -> fragment number 3 > total 2.
+      expect(decoder.decode(_fragment('0' * 48, 2, 2, 3)), isNull);
+      expect(decoder.droppedFragments, 1);
+    });
+
+    test('never merges interleaved messages sharing the same key', () {
+      final full = twoPartBinary();
+      final decoder = AisNmeaDecoder();
+      // Message A (seq 3) fragment 0.
+      expect(decoder.decode(_fragment(full.substring(0, 144), 0, 2, 3)),
+          isNull);
+      // Message B reuses seq 3 with a conflicting fragment 0 -> dropped.
+      final b0 = full.substring(0, 144).replaceRange(0, 6, '111111');
+      expect(decoder.decode(_fragment(b0, 0, 2, 3)), isNull);
+      expect(decoder.droppedFragments, 1);
+      // Message A still assembles cleanly from its own fragments.
+      final msg = decoder.decode(_fragment(full.substring(144), 1, 2, 3));
+      expect(msg, isA<PositionMessage>());
+      expect((msg as PositionMessage).mmsi, 226545000);
+      expect(decoder.multiPartCompleted, 1);
+    });
+
+    test('reset clears counters and the fragment buffer', () {
+      final full = twoPartBinary();
+      final decoder = AisNmeaDecoder();
+      decoder.decode(_fragment(full.substring(0, 144), 0, 2, 3));
+      expect(decoder.fragmentsSeen, 1);
+      expect(decoder.pendingFragments, 1);
+      decoder.reset();
+      expect(decoder.fragmentsSeen, 0);
+      expect(decoder.multiPartCompleted, 0);
+      expect(decoder.droppedFragments, 0);
+      expect(decoder.pendingFragments, 0);
+      expect(decoder.invalidChecksums, 0);
+      expect(decoder.parseErrors, 0);
+    });
+  });
+
   group('Checksum option', () {
     test('invalid sentences are dropped when validation is on', () {
       final sentence = encodePositionReport(

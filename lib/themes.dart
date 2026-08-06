@@ -197,6 +197,7 @@ ThemeData _base({
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.transparent,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: scheme.outlineVariant),
@@ -205,7 +206,21 @@ ThemeData _base({
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: scheme.outlineVariant),
       ),
-      isDense: true,
+    ),
+    switchTheme: SwitchThemeData(
+      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return scheme.onPrimary;
+        }
+        return scheme.outline;
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return scheme.primary;
+        }
+        return scheme.surfaceContainerHighest;
+      }),
     ),
     dividerTheme: DividerThemeData(
       color: scheme.outlineVariant.withValues(alpha: 0.6),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'ais/ais_decoder.dart';
 import 'ais_message_details.dart';
 import 'app_settings.dart';
 import 'themes.dart';
+import 'widgets.dart';
 
 class _DecodeResult {
   final String raw;
@@ -183,12 +183,10 @@ class _DecoderPageState extends State<DecoderPage> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.copy, size: 16),
-                          visualDensity: VisualDensity.compact,
-                          onPressed: () => Clipboard.setData(
-                            ClipboardData(text: result.raw),
-                          ),
+                        CopyIconButton(
+                          text: result.raw,
+                          message: 'Frame copied',
+                          padding: EdgeInsets.zero,
                           tooltip: 'Copy this frame',
                         ),
                       ],

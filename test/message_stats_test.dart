@@ -41,6 +41,18 @@ void main() {
     stats.dispose();
   });
 
+  test('decodedHistory is sampled with the decoded rate', () async {
+    final stats = MessageStats();
+    stats.recordDecoded(1, feed: 'US');
+    stats.recordDecoded(1, feed: 'US');
+
+    await Future<void>.delayed(const Duration(milliseconds: 1100));
+    expect(stats.decodedHistory, isNotEmpty);
+    expect(stats.decodedHistory.last, 2);
+
+    stats.dispose();
+  });
+
   test('reset clears everything', () async {
     final stats = MessageStats();
     stats.recordReceived('US');
@@ -54,6 +66,8 @@ void main() {
     expect(stats.byTypePerFeed, isEmpty);
     expect(stats.messagesPerSecond, 0);
     expect(stats.rateByFeed, isEmpty);
+    expect(stats.rateHistory, isEmpty);
+    expect(stats.decodedHistory, isEmpty);
     stats.dispose();
   });
 }

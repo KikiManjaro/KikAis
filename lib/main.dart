@@ -32,8 +32,8 @@ Future<void> main() async {
   );
 
   doWhenWindowReady(() {
-    appWindow.minSize = const Size(810, 520);
-    appWindow.size = const Size(840, 600);
+    appWindow.minSize = const Size(640, 480);
+    appWindow.size = const Size(1024, 810);
     appWindow.alignment = Alignment.center;
     appWindow.title = "KikAis";
     appWindow.show();

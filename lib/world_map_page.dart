@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import 'app_settings.dart';
+import 'basemaps.dart';
 import 'boat.dart';
+import 'boat_map_layer.dart';
 import 'boatmanager.dart';
 import 'bubble_boat.dart';
 import 'mid_countries.dart';
@@ -28,7 +30,10 @@ class MapFilters {
 }
 
 class WorldMapPage extends StatefulWidget {
-  const WorldMapPage({super.key});
+  /// Overridable for tests (avoids real network tile requests).
+  final TileProvider? tileProvider;
+
+  const WorldMapPage({super.key, this.tileProvider});
 
   @override
   State<WorldMapPage> createState() => _WorldMapPageState();
@@ -40,6 +45,8 @@ class _WorldMapPageState extends State<WorldMapPage> {
   bool clusterEnabled = true;
   String? _followingMmsi;
   MapFilters _filters = MapFilters();
+  Boat? _selected;
+  String? _hoverName;
   late BoatManager _boatManager;
   late AppSettings _settings;
 
@@ -112,35 +119,9 @@ class _WorldMapPageState extends State<WorldMapPage> {
     return true;
   }
 
-  List<Marker> _buildMarkers(List<Boat> boats) {
-    return boats
-        .where(
-          (boat) =>
-              _matchesFilters(boat) &&
-              boat.lat != null &&
-              boat.lon != null &&
-              boat.lat! >= -90 &&
-              boat.lat! <= 90 &&
-              boat.lon! >= -180 &&
-              boat.lon! <= 180,
-        )
-        .map((boat) {
-          try {
-            return Marker(
-              point: LatLng(boat.lat!, boat.lon!),
-              width: 80,
-              height: 50,
-              child: BoatMarkerWithInfo(boat: boat),
-            );
-          } catch (e, stack) {
-            debugPrint(
-              'Error creating marker for boat ${boat.mmsi}: $e\n$stack',
-            );
-            return null;
-          }
-        })
-        .where((marker) => marker != null)
-        .cast<Marker>()
+  List<Boat> _visibleBoats() {
+    return _boatManager.boats
+        .where((b) => b.lat != null && b.lon != null && _matchesFilters(b))
         .toList();
   }
 
@@ -288,72 +269,74 @@ class _WorldMapPageState extends State<WorldMapPage> {
             );
           }
 
-          return AlertDialog(
-            title: const Text('Filters'),
-            content: SizedBox(
-              width: 420,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    buildDropdown<String>(
-                      label: 'Vessel type',
-                      options: types,
-                      value: draft.vesselType,
-                      labelOf: (t) => t,
-                      onChanged: (v) => draft.vesselType = v,
-                    ),
-                    buildDropdown<String>(
-                      label: 'Navigation status',
-                      options: statuses,
-                      value: draft.navigationStatus,
-                      labelOf: (t) => t,
-                      onChanged: (v) => draft.navigationStatus = v,
-                    ),
-                    buildDropdown<String>(
-                      label: 'Country',
-                      options: countries,
-                      value: draft.country,
-                      labelOf: (t) => t,
-                      onChanged: (v) => draft.country = v,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: minSogController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Min SOG (kn)',
-                              isDense: true,
+            return AlertDialog(
+              title: const Text('Filters'),
+              content: SizedBox(
+                width: 420,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      buildDropdown<String>(
+                        label: 'Vessel type',
+                        options: types,
+                        value: draft.vesselType,
+                        labelOf: (t) => t,
+                        onChanged: (v) => draft.vesselType = v,
+                      ),
+                      const SizedBox(height: 12),
+                      buildDropdown<String>(
+                        label: 'Navigation status',
+                        options: statuses,
+                        value: draft.navigationStatus,
+                        labelOf: (t) => t,
+                        onChanged: (v) => draft.navigationStatus = v,
+                      ),
+                      const SizedBox(height: 12),
+                      buildDropdown<String>(
+                        label: 'Country',
+                        options: countries,
+                        value: draft.country,
+                        labelOf: (t) => t,
+                        onChanged: (v) => draft.country = v,
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: minSogController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                labelText: 'Min SOG (kn)',
+                              ),
+                              onChanged: (_) => setDialogState(() {}),
                             ),
-                            onChanged: (_) => setDialogState(() {}),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextField(
-                            controller: maxSogController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Max SOG (kn)',
-                              isDense: true,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextField(
+                              controller: maxSogController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                labelText: 'Max SOG (kn)',
+                              ),
+                              onChanged: (_) => setDialogState(() {}),
                             ),
-                            onChanged: (_) => setDialogState(() {}),
                           ),
-                        ),
-                      ],
-                    ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Only vessels with a name'),
-                      value: draft.onlyNamed,
-                      onChanged: (v) => setDialogState(() => draft.onlyNamed = v),
-                    ),
-                  ],
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Only vessels with a name'),
+                        value: draft.onlyNamed,
+                        onChanged: (v) => setDialogState(() => draft.onlyNamed = v),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
             actions: [
               TextButton(
                 onPressed: () {
@@ -388,8 +371,12 @@ class _WorldMapPageState extends State<WorldMapPage> {
   @override
   Widget build(BuildContext context) {
     final boatManager = context.watch<BoatManager>();
-    final boats = boatManager.sendToMap ? boatManager.boats : const <Boat>[];
-    final markers = _buildMarkers(boats);
+    final settings = context.watch<AppSettings>();
+
+    final baseMap = settings.basemapId.isEmpty
+        ? baseMapById(defaultBasemapIdFor(settings.appTheme))
+        : baseMapById(settings.basemapId);
+    final boats = boatManager.sendToMap ? _visibleBoats() : const <Boat>[];
 
     return Scaffold(
       appBar: AppBar(
@@ -403,7 +390,9 @@ class _WorldMapPageState extends State<WorldMapPage> {
           IconButton(
             icon: Icon(
               Icons.filter_list,
-              color: _filters.active ? Colors.lightBlueAccent : null,
+              color: _filters.active
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
             ),
             onPressed: _showFiltersDialog,
             tooltip: 'Filters',
@@ -417,6 +406,30 @@ class _WorldMapPageState extends State<WorldMapPage> {
           ),
           IconButton(
             icon: Icon(
+              settings.showTrails ? Icons.route : Icons.route_outlined,
+              color: settings.showTrails
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
+            ),
+            onPressed: () => settings.setShowTrails(!settings.showTrails),
+            tooltip: settings.showTrails
+                ? 'Hide vessel trails'
+                : 'Show vessel trails',
+          ),
+          IconButton(
+            icon: Icon(
+              settings.showVectors ? Icons.explore : Icons.explore_outlined,
+              color: settings.showVectors
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
+            ),
+            onPressed: () => settings.setShowVectors(!settings.showVectors),
+            tooltip: settings.showVectors
+                ? 'Hide speed vectors'
+                : 'Show speed vectors',
+          ),
+          IconButton(
+            icon: Icon(
               boatManager.sendToMap
                   ? Icons.directions_boat
                   : Icons.hide_source_rounded,
@@ -425,6 +438,42 @@ class _WorldMapPageState extends State<WorldMapPage> {
             tooltip: boatManager.sendToMap
                 ? 'Statistics only (hide vessels)'
                 : 'Show decoded vessels on map',
+          ),
+          PopupMenuButton<String>(
+            tooltip: 'Basemap',
+            icon: const Icon(Icons.layers_outlined),
+            onSelected: (id) => settings.setBasemap(id),
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                value: '',
+                child: Row(
+                  children: [
+                    Icon(
+                      settings.basemapId.isEmpty
+                          ? Icons.check
+                          : Icons.auto_awesome,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('Auto (follow theme)'),
+                  ],
+                ),
+              ),
+              for (final b in kBaseMaps)
+                PopupMenuItem<String>(
+                  value: b.id,
+                  child: Row(
+                    children: [
+                      Icon(
+                        baseMap.id == b.id ? Icons.check : Icons.map_outlined,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(b.label),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -435,35 +484,44 @@ class _WorldMapPageState extends State<WorldMapPage> {
             options: MapOptions(
               initialCenter: const LatLng(48.8566, 2.3522),
               initialZoom: 5.0,
-              onPositionChanged: (camera, hasGesture) => _zoom = camera.zoom,
+              onPositionChanged: (camera, hasGesture) =>
+                  _zoom = camera.zoom,
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: baseMap.urlTemplate,
+                subdomains: baseMap.subdomains,
+                tileProvider: widget.tileProvider ??
+                    CancellableNetworkTileProvider(),
                 userAgentPackageName: 'com.kikimanjaro.kikais',
               ),
-              if (clusterEnabled)
-                MarkerClusterLayerWidget(
-                  options: MarkerClusterLayerOptions(
-                    maxClusterRadius: 45,
-                    size: const Size(40, 40),
-                    polygonOptions: PolygonOptions(
-                      borderColor: Colors.blueAccent,
-                      color: Colors.black12,
-                      borderStrokeWidth: 3,
-                    ),
-                    builder: (context, markers) {
-                      return FloatingActionButton(
-                        onPressed: null,
-                        child: Text(markers.length.toString()),
-                      );
-                    },
-                    markers: markers,
-                  ),
-                )
-              else
-                MarkerLayer(markers: markers),
+              BoatMapLayer(
+                boats: boats,
+                clusterEnabled: clusterEnabled,
+                showTrails: settings.showTrails,
+                showVectors: settings.showVectors,
+                onBoatTap: (boat) => setState(() => _selected = boat),
+                onClusterTap: (latLng) {
+                  try {
+                    _mapController.move(latLng, _zoom + 1);
+                  } catch (_) {}
+                },
+                onBoatHover: (boat) {
+                  final name = boat?.name?.trim().isNotEmpty == true
+                      ? boat!.name!.trim()
+                      : (boat != null ? 'MMSI ${boat.mmsi}' : null);
+                  if (name != _hoverName) {
+                    setState(() => _hoverName = name);
+                  }
+                },
+              ),
+              SimpleAttributionWidget(
+                source: Text(
+                  baseMap.attribution,
+                  style: const TextStyle(fontSize: 10),
+                ),
+                alignment: Alignment.bottomLeft,
+              ),
             ],
           ),
           if (_followingMmsi != null)
@@ -508,6 +566,55 @@ class _WorldMapPageState extends State<WorldMapPage> {
                 ),
               ),
             ),
+          if (_hoverName != null)
+            Positioned(
+              top: 8,
+              right: 12,
+              child: Material(
+                color: Colors.black87,
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  child: Text(
+                    _hoverName!,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
+            ),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutCubic,
+            left: _selected != null ? 0 : -360,
+            top: 0,
+            bottom: 0,
+            width: 340,
+            child: IgnorePointer(
+              ignoring: _selected == null,
+              child: Material(
+                color: Theme.of(context).colorScheme.surface,
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: const BorderRadius.horizontal(
+                    right: Radius.circular(12),
+                  ),
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: _selected == null
+                    ? const SizedBox.shrink()
+                    : BoatInfoBubble(
+                        boat: _selected!,
+                        onClose: () => setState(() => _selected = null),
+                      ),
+              ),
+            ),
+          ),
         ],
       ),
     );
