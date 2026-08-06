@@ -1,88 +1,145 @@
-import 'src/messages/specialized/basestation_report.dart';
+import 'package:kik_ais/ais/ais_decoder.dart';
+import 'package:kik_ais/ais/src/utils/get_int.dart';
 import 'src/utils/convert_char_to_bin.dart';
-import 'src/exceptions/ais_exceptions.dart';
-import 'src/messages/base/ais_message.dart';
-import 'src/messages/position/class_b_position.dart';
-import 'src/messages/position/extended_class_b.dart';
-import 'src/messages/position/long_range_broadcast.dart';
-import 'src/messages/position/position_message.dart';
-import 'src/messages/static/static_voyage_data.dart';
-
 
 // ToDo: (For Release) Needs Extensive Documentation
-// ToDo: (High Priority) Currently only can deal with single Fragment style AIS Sentences. Needs to be updated to also support sentences with more than one fragment!
+// ToDo: (Medium Priority) isPayload should be later moved into a separate function if any more parameters become necessary, fine for now - for later documentation: isPayload bypasses the String splitting via , and just passes the payload directly into encoded.
 
 class MessageFactory {
-  static AISMessage create(String input, bool logging) {
-    String binary = '';
+  static AISMessage create(String input, bool logging, bool legacy, bool isPayload) {
+    String encoded = '';
 
     //region sanitizing
+
+    //legacy method to create binary String from input String
+    String makeBinaryString(String input) {
+      String binaryOutput = '';
+      for (String char in input.split('')) {
+        binaryOutput += convertCharToBinary(char);
+      }
+      return binaryOutput;
+    }
+    
     if(input.isEmpty) {
       throw InvalidBinaryDataException(
           "Supplied String is empty or undefined!");
     }
 
     if(input.contains("!AIVDM") || input.contains("!AIVDO")) {
+
       List<String> fields = input.split(',');
 
-      for (String char in fields[5].split('')) {
-        binary += convertCharToBinary(char);
+      // Legacy Mode:
+      if(legacy) {
+        encoded = isPayload ? input : makeBinaryString(fields[5]);
+      } else {
+        encoded = isPayload ? input : fields[5];
       }
+      
     } else {
-      binary = input;
+      // fallback if no AIVDM String is found aka is payload
+      encoded = input;
     }
 
     // minimum length for mmsi part of sentence
-    if(binary.length < 38) {
-      throw InvalidBinaryDataException("Supplied binary String too short (${binary.length} bits)!");
+    if(legacy && encoded.length < 38) {
+      throw InvalidBinaryDataException("Supplied binary String too short (${encoded.length} bits)!");
     }
     //endregion
 
     try {
       // get message type
-      int messageType = int.parse(binary.substring(0,6), radix: 2);
+      int messageType = legacy ? int.parse(encoded.substring(0,6), radix: 2) : getUintDirect(encoded, 0, 6);
+      int messagePart = legacy ? int.parse(encoded.substring(38, 40), radix: 2) : getUintDirect(encoded, 38, 40);
+      if(messageType == 24) { messagePart = legacy ? int.parse(encoded.substring(38, 40), radix: 2) : getUintDirect(encoded, 38, 40); }
 
       // switch to correct message type handling scenario
-      return switch (messageType) {
+      if(!legacy) {
 
-      // Position reports
-        1 || 2 || 3 => PositionMessage.fromBinary(binary),
-        18 => StandardClassBCSPositionReport.fromBinary(binary),
-        19 => ExtendedClassBCSPositionReport.fromBinary(binary),
-        27 => LongRangeAISBroadcastMessage.fromBinary(binary),
+        return switch (messageType) {
 
-      // Static data
-        5 => StaticAndVoyageRelatedData.fromBinary(binary),
-        // 24 => StaticDataReport.fromBinary(binary),
+        // Position reports
+          1 || 2 || 3 => PositionMessage.fromEncoded(encoded),
+          18 => StandardClassBCSPositionReport.fromEncoded(encoded),
+          19 => ExtendedClassBCSPositionReport.fromEncoded(encoded),
+          27 => LongRangeAISBroadcastMessage.fromEncoded(encoded),
+          9 => SarAircraftPositionReport.fromEncoded(encoded),
 
-      // Safety src.messages
-        // 12 => AddressedSafetyRelatedMessage.fromBinary(binary),
-        // 13 => SafetyRelatedAcknowledgement.fromBinary(binary),
-        // 14 => SafetyRelatedBroadcastMessage.fromBinary(binary),
+        // Static data
+          5 => StaticAndVoyageRelatedData.fromEncoded(encoded),
+          24 => messagePart == 0
+              ? StaticDataReportA.fromEncoded(encoded)
+              : StaticDataReportB.fromEncoded(encoded),
 
-      // Specialized
-        4 => BaseStationReport.fromBinary(binary),
-        // 21 => AidToNavigationReport.fromBinary(binary),
+        // Safety messages
+          12 => AddressedSafetyRelatedMessage.fromEncoded(encoded),
+          13 => SafetyRelatedAcknowledgement.fromEncoded(encoded),
+          14 => SafetyRelatedBroadcastMessage.fromEncoded(encoded),
 
-      // Binary src.messages
-        // 6 => BinaryAddressedMessage.fromBinary(binary),
-        // 8 => BinaryBroadcastMessage.fromBinary(binary),*/
+        // Specialized
+          4 => BaseStationReport.fromEncoded(encoded),
+          21 => AidToNavigationReport.fromEncoded(encoded),
 
-        _ => throw UnsupportedMessageTypeException(messageType),
-      };
+        // Binary messages
+          6 => BinaryAddressedMessage.fromEncoded(encoded),
+          7 => BinaryAcknowledge.fromEncoded(encoded),
+          8 => BinaryBroadcastMessage.fromEncoded(encoded),
+          25 => SingleSlotBinaryMessage.fromEncoded(encoded),
+          26 => MultipleSlotBinaryMessage.fromEncoded(encoded),
+
+        // Network messages
+          15 => InterrogationMessage.fromEncoded(encoded),
+          16 => AssignmentModeCommand.fromEncoded(encoded),
+          17 => DgnssBroadcastBinaryMessage.fromEncoded(encoded),
+          20 => DataLinkManagementMessage.fromEncoded(encoded),
+          22 => ChannelManagementMessage.fromEncoded(encoded),
+          23 => GroupAssignmentCommand.fromEncoded(encoded),
+
+        // Time messages
+          10 => UtcDateInquiry.fromEncoded(encoded),
+          11 => UtcDateResponse.fromEncoded(encoded),
+
+          _ => throw UnsupportedMessageTypeException(messageType),
+        };
+      } else {
+        return switch (messageType) {
+
+        // Position reports
+          1 || 2 || 3 => PositionMessage.fromBinary(encoded),
+          18 => StandardClassBCSPositionReport.fromBinary(encoded),
+          19 => ExtendedClassBCSPositionReport.fromBinary(encoded),
+          27 => LongRangeAISBroadcastMessage.fromBinary(encoded),
+
+        // Static data
+          5 => StaticAndVoyageRelatedData.fromBinary(encoded),
+          24 =>
+          messagePart == 0
+              ? StaticDataReportA.fromBinary(encoded)
+              : StaticDataReportB.fromBinary(encoded),
+
+        // Specialized
+          4 => BaseStationReport.fromBinary(encoded),
+
+          _ => throw UnsupportedMessageTypeExceptionLegacy(messageType),
+        };
+      }
+
 
     } catch (e) {
       throw Exception(e);
     }
   }
 
-  // Helper method to check if a message type is supported ToDo: Update
+  // Helper method to check if a message type is supported
   static bool isSupported(int messageType) {
-    return [1, 2, 3, 4, 5, 18, 19, 24].contains(messageType);
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27].contains(messageType);
+  }
+  static bool isSupportedByLegacy(int messageType) {
+    return [1, 2, 3, 4, 5, 18, 19, 24, 27].contains(messageType);
   }
 
-  // Helper method to get supported message types ToDo: Update
+  // Helper method to get supported message types
   static List<int> getSupportedTypes() {
-    return [1, 2, 3, 4, 5, 18, 19, 24];
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27];
   }
 }

@@ -1,13 +1,21 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'ais_editor_page.dart';
+import 'app_settings.dart';
 import 'boat_animation.dart';
+import 'decoder_page.dart';
 import 'forwarder_ui.dart';
+import 'stats_page.dart';
+import 'themes.dart';
 import 'world_map_page.dart';
 
 class SwipperUi extends StatefulWidget {
-  const SwipperUi({super.key});
+  final String version;
+
+  const SwipperUi({super.key, required this.version});
 
   @override
   State<SwipperUi> createState() => _SwipperUiState();
@@ -15,10 +23,16 @@ class SwipperUi extends StatefulWidget {
 
 class _SwipperUiState extends State<SwipperUi> {
   final BoatAnimationController boatController = BoatAnimationController();
+  final ValueNotifier<bool> forwarderRunning = ValueNotifier(false);
   final PageController _pageController = PageController();
+  final GlobalKey<ForwarderUIState> _forwarderKey =
+      GlobalKey<ForwarderUIState>();
   late final BoatAnimation boat;
   late final ForwarderUI forwarderPage;
   late final WorldMapPage mapPage;
+  late final AisEditorPage editorPage;
+  late final DecoderPage decoderPage;
+  late final StatsPage statsPage;
 
   int _currentIndex = 0;
 
@@ -28,20 +42,33 @@ class _SwipperUiState extends State<SwipperUi> {
     boat = BoatAnimation(controller: boatController);
     forwarderPage = ForwarderUI(
       boatController,
-      key: const PageStorageKey('forwarder_ui'),
+      key: _forwarderKey,
+      running: forwarderRunning,
     );
     mapPage = WorldMapPage(key: const PageStorageKey('world_map'));
+    editorPage = AisEditorPage(
+      running: forwarderRunning,
+      onSendToTarget: (sentence) async {
+        _forwarderKey.currentState?.sendRaw(sentence);
+      },
+    );
+    decoderPage = const DecoderPage(key: PageStorageKey('decoder'));
+    statsPage = const StatsPage();
   }
 
   @override
   void dispose() {
     boatController.dispose();
+    forwarderRunning.dispose();
     _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentTheme = context.watch<AppSettings>().appTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+
     return WindowBorder(
       width: 3,
       color: Theme.of(context).colorScheme.surface,
@@ -61,18 +88,62 @@ class _SwipperUiState extends State<SwipperUi> {
                           size: 26,
                         ),
                       ),
-                      const Text(
+                      Text(
                         "KikAis",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: onSurface,
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'v${widget.version}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: onSurface.withValues(alpha: 0.6),
                           decoration: TextDecoration.none,
                         ),
                       ),
                     ],
                   ),
                   Expanded(child: Stack(children: [boat, MoveWindow()])),
+                  Material(
+                    type: MaterialType.transparency,
+                    child: PopupMenuButton<AppTheme>(
+                      tooltip: 'Change theme',
+                      onSelected: (t) =>
+                          context.read<AppSettings>().setTheme(t),
+                      itemBuilder: (context) => [
+                        for (final t in AppTheme.values)
+                          PopupMenuItem<AppTheme>(
+                            value: t,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  t == currentTheme ? Icons.check : t.icon,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(t.label),
+                              ],
+                            ),
+                          ),
+                      ],
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 4,
+                        ),
+                        child: Icon(
+                          Icons.brightness_6,
+                          size: 18,
+                          color: onSurface,
+                        ),
+                      ),
+                    ),
+                  ),
                   const WindowButtons(),
                 ],
               ),
@@ -84,18 +155,24 @@ class _SwipperUiState extends State<SwipperUi> {
                     if (pointerSignal is PointerScrollEvent) {
                       if (pointerSignal.scrollDelta.dx > 0) {
                         setState(() {
-                          _currentIndex = (_currentIndex + 1).clamp(0, 1);
+                          _currentIndex = (_currentIndex + 1).clamp(0, 4);
                         });
                       } else if (pointerSignal.scrollDelta.dx < 0) {
                         setState(() {
-                          _currentIndex = (_currentIndex - 1).clamp(0, 1);
+                          _currentIndex = (_currentIndex - 1).clamp(0, 4);
                         });
                       }
                     }
                   },
                   child: IndexedStack(
                     index: _currentIndex,
-                    children: [forwarderPage, mapPage],
+                    children: [
+                      forwarderPage,
+                      mapPage,
+                      editorPage,
+                      decoderPage,
+                      statsPage,
+                    ],
                   ),
                 ),
                 bottomNavigationBar: SizedBox(
@@ -104,25 +181,22 @@ class _SwipperUiState extends State<SwipperUi> {
                     alignment: Alignment.center,
                     children: [
                       Positioned.fill(
-                        left: 0,
-                        right: MediaQuery.of(context).size.width / 2,
-                        child: GestureDetector(
-                          onTap: () => setState(() => _currentIndex = 0),
-                          child: Container(color: Colors.transparent),
-                        ),
-                      ),
-                      Positioned.fill(
-                        left: MediaQuery.of(context).size.width / 2,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: () => setState(() => _currentIndex = 1),
-                          child: Container(color: Colors.transparent),
+                        child: Row(
+                          children: List.generate(5, (index) {
+                            return Expanded(
+                              child: GestureDetector(
+                                onTap: () =>
+                                    setState(() => _currentIndex = index),
+                                child: Container(color: Colors.transparent),
+                              ),
+                            );
+                          }),
                         ),
                       ),
                       IgnorePointer(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(2, (index) {
+                          children: List.generate(5, (index) {
                             return AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
                               margin: const EdgeInsets.symmetric(horizontal: 4),

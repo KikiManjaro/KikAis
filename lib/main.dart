@@ -1,24 +1,39 @@
-import 'package:kik_ais/swipper.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
+import 'app_settings.dart';
 import 'boatmanager.dart';
+import 'message_stats.dart';
+import 'swipper.dart';
+import 'themes.dart';
 
 Future<void> main() async {
-  final boatManager = BoatManager();
+  final stats = MessageStats();
+  final boatManager = BoatManager(stats: stats);
   await boatManager.startDecoder();
 
+  final settings = AppSettings();
+  await settings.load();
+
+  final packageInfo = await PackageInfo.fromPlatform();
+  final version = '${packageInfo.version}+${packageInfo.buildNumber}';
+
   runApp(
-    ChangeNotifierProvider.value(
-      value: boatManager,
-      child: const MyApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: boatManager),
+        ChangeNotifierProvider.value(value: settings),
+        ChangeNotifierProvider.value(value: stats),
+      ],
+      child: MyApp(version: version),
     ),
   );
 
   doWhenWindowReady(() {
-    appWindow.minSize = const Size(890, 540);
-    appWindow.size = const Size(900, 600);
+    appWindow.minSize = const Size(810, 520);
+    appWindow.size = const Size(840, 600);
     appWindow.alignment = Alignment.center;
     appWindow.title = "KikAis";
     appWindow.show();
@@ -26,42 +41,20 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String version;
+
+  const MyApp({super.key, required this.version});
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<AppSettings>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'KikAis',
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.dark(
-          primary: Colors.lightBlueAccent,
-          secondary: Colors.blue,
-          surface: Colors.grey[800]!,
-        ),
-        scaffoldBackgroundColor: Colors.grey[900],
-        cardColor: Colors.grey[800],
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.white70),
-          bodySmall: TextStyle(color: Colors.white60),
-        ),
-        tooltipTheme: TooltipThemeData(
-          textStyle: const TextStyle(color: Colors.white, fontSize: 12),
-          decoration: BoxDecoration(
-            color: Colors.grey[900],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.lightBlueAccent, width: 1),
-          ),
-          waitDuration: const Duration(milliseconds: 500),
-          showDuration: const Duration(seconds: 5),
-        ),
-      ),
-
-      themeMode: ThemeMode.dark,
-
-      home: const SwipperUi(),
+      theme: buildAppTheme(settings.appTheme),
+      themeMode: ThemeMode.light,
+      home: SwipperUi(version: version),
     );
   }
 }

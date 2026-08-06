@@ -7,6 +7,13 @@ class BoatInfoBubble extends StatelessWidget {
 
   const BoatInfoBubble({super.key, required this.boat});
 
+  static String _kindLabel(BoatKind kind) => switch (kind) {
+        BoatKind.vessel => 'Vessel',
+        BoatKind.aircraft => 'SAR Aircraft',
+        BoatKind.aton => 'Aid to Navigation',
+        BoatKind.station => 'Base Station',
+      };
+
   Widget buildRow(String title, dynamic value) {
     return Text(
       "$title: ${value ?? "-"}",
@@ -38,8 +45,15 @@ class BoatInfoBubble extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("General Information", style: TextStyle(fontWeight: FontWeight.bold)),
+              buildRow("Kind", _kindLabel(boat.kind)),
               buildRow("MMSI", boat.mmsi),
               buildRow("Name", boat.name),
+              if (boat.kind == BoatKind.aton) ...[
+                buildRow("Aid Type", boat.aidType),
+                buildRow("Virtual", boat.virtualAid),
+              ],
+              if (boat.kind == BoatKind.aircraft)
+                buildRow("Altitude", boat.altitude != null ? "${boat.altitude} m" : null),
               buildRow("Call Sign", boat.callSign),
               buildRow("IMO", boat.imoNumber),
               SizedBox(height: 4),
@@ -91,6 +105,15 @@ class _BoatMarkerWithInfoState extends State<BoatMarkerWithInfo> {
 
   @override
   Widget build(BuildContext context) {
+    final (icon, color) = switch (widget.boat.kind) {
+      BoatKind.aircraft => (Icons.flight, Colors.orange),
+      BoatKind.aton => (Icons.waves, Colors.teal),
+      BoatKind.station => (Icons.cell_tower, Colors.purple),
+      BoatKind.vessel => (
+          Icons.directions_boat_filled_outlined,
+          Colors.blue,
+        ),
+    };
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -98,11 +121,7 @@ class _BoatMarkerWithInfoState extends State<BoatMarkerWithInfo> {
         clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
-          Icon(
-            Icons.directions_boat_filled_outlined,
-            color: Colors.blue,
-            size: 16,
-          ),
+          Icon(icon, color: color, size: 16),
           if (_hovered)
             Positioned(
               bottom: 24,

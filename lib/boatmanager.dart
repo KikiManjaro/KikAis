@@ -8,9 +8,14 @@ import 'ais/src/messages/position/class_b_position.dart';
 import 'ais/src/messages/position/extended_class_b.dart';
 import 'ais/src/messages/position/long_range_broadcast.dart';
 import 'ais/src/messages/position/position_message.dart';
+import 'ais/src/messages/position/sar_aircraft_position_report.dart';
+import 'ais/src/messages/specialized/aid_to_navigation.dart';
 import 'ais/src/messages/specialized/basestation_report.dart';
-import 'ais/src/messages/static/static_voyage_data.dart';
+import 'ais/src/messages/static_data/static_data_report.dart';
+import 'ais/src/messages/static_data/static_voyage_data.dart';
+import 'ais/src/nmea/ais_decoder.dart';
 import 'boat.dart';
+import 'message_stats.dart';
 
 class BoatManager extends ChangeNotifier {
   static const Duration boatTtl = Duration(minutes: 30);
@@ -18,11 +23,19 @@ class BoatManager extends ChangeNotifier {
   static const Duration notifyThrottle = Duration(milliseconds: 200);
 
   final Map<int, Boat> _boats = {};
+  final MessageStats stats;
   bool sendToMap = false;
+  bool decodeEnabled = true;
+  bool validateChecksum = true;
+
+  int invalidChecksumCount = 0;
+  int droppedFragmentCount = 0;
+  int parseErrorCount = 0;
 
   Isolate? _decoderIsolate;
   SendPort? _decoderSendPort;
   final ReceivePort _decoderControl = ReceivePort();
+  final AisNmeaDecoder _fallbackDecoder = AisNmeaDecoder();
 
   DateTime _lastNotify = DateTime.fromMillisecondsSinceEpoch(0);
   bool _pendingNotify = false;
@@ -30,7 +43,7 @@ class BoatManager extends ChangeNotifier {
 
   List<Boat> get boats => _boats.values.toList();
 
-  BoatManager() {
+  BoatManager({MessageStats? stats}) : stats = stats ?? MessageStats() {
     _purgeTimer = Timer.periodic(purgeInterval, (_) => purgeStaleBoats());
   }
 
@@ -48,6 +61,20 @@ class BoatManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setDecodeEnabled(bool value) {
+    if (decodeEnabled == value) return;
+    decodeEnabled = value;
+    notifyListeners();
+  }
+
+  void setValidateChecksum(bool value) {
+    if (validateChecksum == value) return;
+    validateChecksum = value;
+    _fallbackDecoder.validateChecksum = value;
+    _decoderSendPort?.send(value);
+    notifyListeners();
+  }
+
   /// Spawns a dedicated isolate used to decode AIS messages so that the UI
   /// thread never blocks, even on high-volume streams.
   Future<void> startDecoder() async {
@@ -56,8 +83,11 @@ class BoatManager extends ChangeNotifier {
     _decoderControl.listen((message) {
       if (message is SendPort) {
         _decoderSendPort = message;
-      } else if (message is AISMessage) {
-        updateFromMessage(message);
+        _decoderSendPort?.send(validateChecksum);
+      } else if (message is _DecodedWithFeed) {
+        updateFromMessage(message.message, feed: message.feed);
+      } else if (message is DecoderReport) {
+        _applyReport(message);
       }
     });
 
@@ -74,29 +104,54 @@ class BoatManager extends ChangeNotifier {
   static void _decoderEntry(SendPort control) {
     final ReceivePort commandPort = ReceivePort();
     control.send(commandPort.sendPort);
+    final decoder = AisNmeaDecoder();
     commandPort.listen((message) {
-      try {
-        final decoded = AISMessage.fromString(message as String);
-        control.send(decoded);
-      } catch (_) {
-        // Malformed or unsupported sentences are silently ignored.
+      if (message is bool) {
+        decoder.validateChecksum = message;
+        return;
+      }
+      if (message is List) {
+        final feed = message[0] as String?;
+        final line = message[1] as String;
+        final decoded = decoder.decode(line);
+        if (decoded != null) {
+          control.send(_DecodedWithFeed(decoded, feed));
+        }
+        control.send(decoder.report());
       }
     });
   }
 
-  Future<void> processMessage(String msg) async {
+  Future<void> processMessage(String msg, {String? feed}) async {
     if (_decoderSendPort != null) {
-      _decoderSendPort!.send(msg);
+      _decoderSendPort!.send([feed, msg]);
       return;
     }
-    try {
-      updateFromMessage(AISMessage.fromString(msg));
-    } catch (e) {
-      debugPrint('Error processing message: $e');
-    }
+    final decoded = _fallbackDecoder.decode(msg);
+    if (decoded != null) updateFromMessage(decoded, feed: feed);
+    _applyReport(_fallbackDecoder.report());
   }
 
-  void updateFromMessage(AISMessage message) {
+  void _applyReport(DecoderReport report) {
+    final changed = invalidChecksumCount != report.invalidChecksums ||
+        droppedFragmentCount != report.droppedFragments ||
+        parseErrorCount != report.parseErrors;
+    if (!changed) return;
+    invalidChecksumCount = report.invalidChecksums;
+    droppedFragmentCount = report.droppedFragments;
+    parseErrorCount = report.parseErrors;
+    notifyListeners();
+  }
+
+  void resetCounters() {
+    invalidChecksumCount = 0;
+    droppedFragmentCount = 0;
+    parseErrorCount = 0;
+    notifyListeners();
+  }
+
+  void updateFromMessage(AISMessage message, {String? feed}) {
+    stats.recordDecoded(message.messageType, feed: feed);
     final boat = _boats.putIfAbsent(
       message.mmsi,
       () => Boat(mmsi: message.mmsi.toString()),
@@ -104,6 +159,7 @@ class BoatManager extends ChangeNotifier {
     boat.lastUpdate = DateTime.now();
 
     if (message is PositionMessage) {
+      boat.kind = BoatKind.vessel;
       boat.lat = message.latitude;
       boat.lon = message.longitude;
       boat.sog = message.speedOverGround;
@@ -111,12 +167,13 @@ class BoatManager extends ChangeNotifier {
       boat.heading = message.heading;
       boat.navigationStatus = message.navigationStatus;
     } else if (message is ExtendedClassBCSPositionReport) {
+      boat.kind = BoatKind.vessel;
       boat.lat = message.latitude;
       boat.lon = message.longitude;
       boat.sog = message.speedOverGround;
       boat.cog = message.courseOverGround;
       boat.heading = message.heading;
-      boat.name = message.vesselName;
+      boat.name = message.vesselName.trim();
       boat.vesselTypeInt = message.vesselTypeInt;
       boat.vesselType = message.vesselType;
       boat.dimensionBow = message.dimensionBow;
@@ -131,6 +188,7 @@ class BoatManager extends ChangeNotifier {
       boat.timestamp = message.timestamp;
       boat.regionalReserved = message.regionalReserved;
     } else if (message is StandardClassBCSPositionReport) {
+      boat.kind = BoatKind.vessel;
       boat.lat = message.latitude;
       boat.lon = message.longitude;
       boat.sog = message.speedOverGround;
@@ -139,6 +197,7 @@ class BoatManager extends ChangeNotifier {
       boat.timestamp = message.timestamp;
       boat.raimFlag = message.raimFlag;
     } else if (message is LongRangeAISBroadcastMessage) {
+      boat.kind = BoatKind.vessel;
       boat.lat = message.latitude;
       boat.lon = message.longitude;
       boat.sog = message.speedOverGround;
@@ -146,13 +205,37 @@ class BoatManager extends ChangeNotifier {
       boat.navigationStatus = message.navigationStatus;
       boat.raimFlag = message.raimEnabled;
     } else if (message is BaseStationReport) {
+      boat.kind = BoatKind.station;
       boat.lat = message.latitude;
       boat.lon = message.longitude;
       boat.epfdFixType = message.epfdFixType;
       boat.raimFlag = message.raim;
       boat.spare = message.spare;
+    } else if (message is SarAircraftPositionReport) {
+      boat.kind = BoatKind.aircraft;
+      boat.lat = message.latitude;
+      boat.lon = message.longitude;
+      boat.sog = message.speedOverGround?.toDouble();
+      boat.cog = message.courseOverGround;
+      boat.altitude = message.altitude;
+      boat.raimFlag = message.raimEnabled;
+      boat.timestamp = message.timestamp;
+    } else if (message is AidToNavigationReport) {
+      boat.kind = BoatKind.aton;
+      boat.lat = message.latitude;
+      boat.lon = message.longitude;
+      boat.name = message.name?.trim();
+      boat.aidType = message.aidType;
+      boat.virtualAid = message.virtualAid;
+      boat.dimensionBow = message.dimensionBow;
+      boat.dimensionStern = message.dimensionStern;
+      boat.dimensionPort = message.dimensionPort;
+      boat.dimensionStarboard = message.dimensionStarboard;
+      boat.epfdFixType = message.epfdFixType;
+      boat.raimFlag = message.raimFlag;
     } else if (message is StaticAndVoyageRelatedData) {
-      boat.name = message.vesselName;
+      boat.kind = BoatKind.vessel;
+      boat.name = message.vesselName.trim();
       boat.vesselTypeInt = message.vesselTypeInt;
       boat.vesselType = message.vesselType;
       boat.dimensionBow = message.dimensionBow;
@@ -169,7 +252,21 @@ class BoatManager extends ChangeNotifier {
       boat.dte = message.dte;
       boat.spare = message.spare;
       boat.imoNumber = message.imoNumber;
-      boat.callSign = message.callSign;
+      boat.callSign = message.callSign.trim();
+    } else if (message is StaticDataReportA) {
+      boat.kind = BoatKind.vessel;
+      if (message.vesselName.trim().isNotEmpty) {
+        boat.name = message.vesselName.trim();
+      }
+    } else if (message is StaticDataReportB) {
+      boat.kind = BoatKind.vessel;
+      boat.vesselTypeInt = message.vesselTypeInt;
+      boat.vesselType = message.vesselType;
+      boat.dimensionBow = message.dimensionBow;
+      boat.dimensionStern = message.dimensionStern;
+      boat.dimensionPort = message.dimensionPort;
+      boat.dimensionStarboard = message.dimensionStarboard;
+      boat.callSign = message.callSign.trim();
     }
 
     _notifyThrottled();
@@ -203,4 +300,13 @@ class BoatManager extends ChangeNotifier {
       notifyListeners();
     }
   }
+}
+
+/// Simple, isolate-safe wrapper carrying a decoded AIS message together with
+/// the feed it originated from (used by the decoder isolate protocol).
+class _DecodedWithFeed {
+  final AISMessage message;
+  final String? feed;
+
+  const _DecodedWithFeed(this.message, this.feed);
 }

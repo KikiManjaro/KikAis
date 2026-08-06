@@ -1,0 +1,423 @@
+// ignore_for_file: avoid_print, empty_statements
+
+import 'package:kik_ais/ais/ais_decoder.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('Type 1', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType1Example1);
+      expect(message, isNotNull);
+      expect(message.messageType, 1);
+      expect(message.mmsi, 256321000);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<PositionMessage>());
+      final typed = message as PositionMessage;
+      expect(typed.navigationStatus, 'Under way using engine');
+      expect(typed.latitude, 37.729603);
+      expect(typed.longitude, 23.354215);
+      expect(typed.speedOverGround, 12.8);
+      expect(typed.courseOverGround, 223.0);
+      expect(typed.maneuverIndicator, 'Not available (Default)');
+      expect(typed.rateOfTurn, 5.401474888342364);
+      expect(typed.heading, 225.0);
+      expect(typed.timestamp, 35);
+      expect(typed.raimEnabled, 0);
+    });
+    test('example 2', () {
+      final message = AISMessage.fromString(kType1Example2);
+      expect(message, isNotNull);
+      expect(message.messageType, 1);
+      expect(message.mmsi, 241133000);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<PositionMessage>());
+      final typed = message as PositionMessage;
+      expect(typed.navigationStatus, 'Under way using engine');
+      expect(typed.latitude, 37.818638);
+      expect(typed.longitude, 23.494813);
+      expect(typed.speedOverGround, 15.1);
+      expect(typed.courseOverGround, 54.6);
+      expect(typed.maneuverIndicator, 'Not available (Default)');
+      expect(typed.rateOfTurn, isNaN);
+      expect(typed.heading, isNull);
+      expect(typed.timestamp, 46);
+      expect(typed.raimEnabled, 1);
+    });
+    test('example 3 - direct Payload', () {
+      final message = AISMessage.fromPayload(kType1Example3OnlyPayload);
+      expect(message, isNotNull);
+      expect(message.messageType, 1);
+      expect(message.mmsi, 241133000);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<PositionMessage>());
+      final typed = message as PositionMessage;
+      expect(typed.navigationStatus, 'Under way using engine');
+      expect(typed.latitude, 37.818638);
+      expect(typed.longitude, 23.494813);
+      expect(typed.speedOverGround, 15.1);
+      expect(typed.courseOverGround, 54.6);
+      expect(typed.maneuverIndicator, 'Not available (Default)');
+      expect(typed.rateOfTurn, isNaN);
+      expect(typed.heading, isNull);
+      expect(typed.timestamp, 46);
+      expect(typed.raimEnabled, 1);
+    });
+  });
+  group('Type 3', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType3Example1);
+      expect(message, isNotNull);
+      expect(message.messageType, 3);
+      expect(message.mmsi, 366525000);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<PositionMessage>());
+      final typed = message as PositionMessage;
+      expect(typed.navigationStatus, 'At anchor');
+      expect(typed.latitude, 37.87433);
+      expect(typed.longitude, 23.525713);
+      expect(typed.speedOverGround, 0.1);
+      expect(typed.courseOverGround, 118.6);
+      expect(typed.maneuverIndicator, 'Not available (Default)');
+      expect(typed.rateOfTurn, 0.0);
+      expect(typed.heading, 34.0);
+      expect(typed.timestamp, 7);
+      expect(typed.raimEnabled, 0);
+    });
+    test('example 2', () {
+      final message = AISMessage.fromString(kType3Example2);
+      expect(message, isNotNull);
+      expect(message.messageType, 3);
+      expect(message.mmsi, 248223000);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<PositionMessage>());
+      final typed = message as PositionMessage;
+      expect(typed.navigationStatus, 'Under way using engine');
+      expect(typed.latitude, 37.51329);
+      expect(typed.longitude, 23.544977);
+      expect(typed.speedOverGround, 12.9);
+      expect(typed.courseOverGround, 351.2);
+      expect(typed.maneuverIndicator, 'Not available (Default)');
+      expect(typed.rateOfTurn, -708.1);
+      expect(typed.heading, 352.0);
+      expect(typed.timestamp, 6);
+      expect(typed.raimEnabled, 0);
+    });
+  });
+  group('Type 5', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType5Example1Line1);
+      expect(message, isNotNull);
+      expect(message.messageType, 5);
+      expect(message.mmsi, 370824000);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<StaticAndVoyageRelatedData>());
+      final typed = message as StaticAndVoyageRelatedData;
+      expect(typed.aisVersion, 1);
+      expect(typed.imoNumber, 9452127);
+      expect(typed.callSign, '3FME7  ');
+      expect(typed.vesselName, 'KEREM KARABEKIR     ');
+      expect(typed.vesselTypeInt, 70);
+      expect(typed.vesselType, 'Cargo, all ships of this type');
+      expect(typed.dimensionBow, 84);
+      expect(typed.dimensionStern, 19);
+      expect(typed.dimensionPort, 6);
+      expect(typed.dimensionStarboard, 10);
+      expect(typed.epfdFixType, 'GPS');
+      expect(typed.etaMonth, 6);
+      expect(typed.etaDay, 27);
+      expect(typed.etaHour, 7);
+      expect(typed.etaMinute, 0);
+      expect(typed.draught, 6.1);
+      expect(typed.destination, 'GEPTI     ');
+      expect(typed.dte, 0);
+      expect(typed.spare, 0);
+    });
+    test('example 2', () {
+      final message = AISMessage.fromString(kType5Example2Line1);
+      expect(message, isNotNull);
+      expect(message.messageType, 5);
+      expect(message.mmsi, 237005900);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<StaticAndVoyageRelatedData>());
+      final typed = message as StaticAndVoyageRelatedData;
+      expect(typed.aisVersion, 0);
+      expect(typed.imoNumber, 6619762);
+      expect(typed.callSign, 'SV7235 ');
+      expect(typed.vesselName, 'NAFTILOS            ');
+      expect(typed.vesselTypeInt, 70);
+      expect(typed.vesselType, 'Cargo, all ships of this type');
+      expect(typed.dimensionBow, 55);
+      expect(typed.dimensionStern, 13);
+      expect(typed.dimensionPort, 8);
+      expect(typed.dimensionStarboard, 2);
+      expect(typed.epfdFixType, 'GPS');
+      expect(typed.etaMonth, 6);
+      expect(typed.etaDay, 20);
+      expect(typed.etaHour, 23);
+      expect(typed.etaMinute, 30);
+      expect(typed.draught, 4.6);
+      expect(typed.destination, 'AEGINA LEL');
+      expect(typed.dte, 0);
+      expect(typed.spare, 0);
+    });
+  });
+  group('Type 6,7,8 - binary', () {
+    test('examples 1, 2, 3', () {
+      final message6 = AISMessage.fromString(kType6Example1);
+      final message7 = AISMessage.fromString(kType7Example1);
+      final message8 = AISMessage.fromString(kType8Example1);
+      expect(message6, isNotNull);
+      expect(message7, isNotNull);
+      expect(message8, isNotNull);
+      expect(message6.messageType, 6);
+      expect(message7.messageType, 7);
+      expect(message8.messageType, 8);
+      expect(message6.mmsi, 150834090);
+      expect(message7.mmsi, 2655651);
+      expect(message8.mmsi, 366999712);
+    });
+  });
+  group('Type 9', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType9Example1);
+      expect(message, isNotNull);
+      expect(message.messageType, 9);
+      expect(message.mmsi, 111232511);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<SarAircraftPositionReport>());
+      final typed = message as SarAircraftPositionReport;
+      expect(typed.altitude, 303);
+      expect(typed.latitude, 58.144);
+      expect(typed.longitude, -6.278843);
+    });
+  });
+  group('Type 10 & 11', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType10Example1);
+      expect(message, isNotNull);
+      expect(message.messageType, 10);
+      expect(message.mmsi, 366814480);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<UtcDateInquiry>());
+    });
+  });
+  group('Type 12, 13 & 14', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType12Example1);
+      expect(message, isNotNull);
+      expect(message.messageType, 12);
+      expect(message.mmsi, 2275200);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<AddressedSafetyRelatedMessage>());
+      final typed = message as AddressedSafetyRelatedMessage;
+      expect(typed.text, 'PLEASE REPORT TO JOBOURG TRAFFIC CHANNEL 13 ');
+    });
+  });
+  group('Type 18', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType18Example1);
+      expect(message, isNotNull);
+      expect(message.messageType, 18);
+      expect(message.mmsi, 244010141);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<StandardClassBCSPositionReport>());
+      final typed = message as StandardClassBCSPositionReport;
+      expect(typed.heading, isNull);
+      expect(typed.positionAccuracy, 0);
+      expect(typed.latitude, 37.760103);
+      expect(typed.longitude, 23.124475);
+      expect(typed.courseOverGround, 268.0);
+      expect(typed.raimFlag, 1);
+      expect(typed.speedOverGround, 0.7);
+      expect(typed.timestamp, 45);
+    });
+    test('example 2', () {
+      final message = AISMessage.fromString(kType18Example2);
+      expect(message, isNotNull);
+      expect(message.messageType, 18);
+      expect(message.mmsi, 275049210);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<StandardClassBCSPositionReport>());
+      final typed = message as StandardClassBCSPositionReport;
+      expect(typed.heading, isNull);
+      expect(typed.positionAccuracy, 1);
+      expect(typed.latitude, 37.762643);
+      expect(typed.longitude, 23.13048);
+      expect(typed.courseOverGround, isNull);
+      expect(typed.raimFlag, 1);
+      expect(typed.speedOverGround, 0.0);
+      expect(typed.timestamp, 55);
+    });
+    test('test equality of Type 18 examples legacy', () {
+      final message = AISMessage.fromString(kType18Example1);
+      final messageLegacy = AISMessage.fromString(kType18Example1, legacy: true);
+      expect(message, isNotNull);
+      expect(message, equals(messageLegacy));
+      expect(message.messageType, 18);
+      expect(message.mmsi, 244010141);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<StandardClassBCSPositionReport>());
+    });
+  });
+  group('Type 19', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType19Example1);
+      final messageLegacy = AISMessage.fromString(kType19Example1, legacy: true);
+      expect(message, isNotNull);
+      expect(message.messageType, 19);
+      expect(message, equals(messageLegacy));
+      expect(message, isA<ExtendedClassBCSPositionReport>());
+      final typed = message as ExtendedClassBCSPositionReport;
+      expect(typed.heading, null);
+      expect(typed.speedOverGround, 8.7);
+      print(typed);
+    });
+  });
+  group('Type 24', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType24Example1, legacy: true);
+      expect(message, isNotNull);
+      print('message: $message');
+      expect(message.messageType, 24);
+      expect(message.mmsi, 319199800);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<StaticDataReportA>());
+      final typed = message as StaticDataReportA;
+      expect(typed.partNumber, 0);
+      expect(typed.vesselName, 'GUTEE');
+      expect(typed.spare, 0);
+    });
+    test('example 2', () {
+      final message = AISMessage.fromString(kType24Example2, legacy: true);
+      expect(message, isNotNull);
+      print('message: $message');
+      expect(message.messageType, 24);
+      expect(message.mmsi, 219023680);
+      expect(message.repeatIndicator, 0);
+      expect(message, isA<StaticDataReportB>());
+      final typed = message as StaticDataReportB;
+      expect(typed.partNumber, 1);
+      expect(typed.vesselTypeInt, 37);
+      expect(typed.vesselType, 'Pleasure Craft');
+      expect(typed.vendorId, 'SRT');
+      expect(typed.unitModel, 1);
+      expect(typed.serialNumber, 96385);
+      expect(typed.callSign, 'XPH2610');
+      expect(typed.dimensionBow, 12);
+      expect(typed.dimensionStern, 1);
+      expect(typed.dimensionPort, 1);
+      expect(typed.dimensionStarboard, 1);
+      expect(typed.mothershipMMSI, 25169985);
+      expect(typed.spare, 60);
+    });
+    test('example 3 - legacy Check Type A & B', () {
+      final messageALegacy = AISMessage.fromString(kType24Example1, legacy: true);
+      final messageA = AISMessage.fromString(kType24Example1, legacy: false);
+      expect(messageA, isNotNull);
+      expect(messageALegacy, isNotNull);
+      expect(messageA, equals(messageALegacy));
+      print('message: $messageA');
+      expect(messageA.messageType, 24);
+      expect(messageA.mmsi, 319199800);
+      expect(messageA.repeatIndicator, 0);
+      expect(messageA, isA<StaticDataReportA>());
+      final typedA = messageA as StaticDataReportA;
+      expect(typedA.partNumber, 0);
+      expect(typedA.vesselName, 'GUTEE');
+      expect(typedA.spare, 0);
+
+      final messageBLegacy = AISMessage.fromString(kType24Example2, legacy: true);
+      final messageB = AISMessage.fromString(kType24Example2, legacy: false);
+      expect(messageB, isNotNull);
+      expect(messageBLegacy, isNotNull);
+      expect(messageBLegacy, equals(messageB));
+      print('message: $messageB');
+      expect(messageB.messageType, 24);
+      expect(messageB.mmsi, 219023680);
+      expect(messageB.repeatIndicator, 0);
+      expect(messageB, isA<StaticDataReportB>());
+      final typedB = messageB as StaticDataReportB;
+      expect(typedB.partNumber, 1);
+      expect(typedB.vesselTypeInt, 37);
+      expect(typedB.vesselType, 'Pleasure Craft');
+      expect(typedB.vendorId, 'SRT');
+      expect(typedB.unitModel, 1);
+      expect(typedB.serialNumber, 96385);
+      expect(typedB.callSign, 'XPH2610');
+      expect(typedB.dimensionBow, 12);
+      expect(typedB.dimensionStern, 1);
+      expect(typedB.dimensionPort, 1);
+      expect(typedB.dimensionStarboard, 1);
+      expect(typedB.mothershipMMSI, 25169985);
+      expect(typedB.spare, 60);
+    });
+  });
+  group('Type 25', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType25Example1);
+      expect(message, isNotNull);
+      expect(message.messageType, 25);
+      expect(message, isA<SingleSlotBinaryMessage>());
+      final typed = message as SingleSlotBinaryMessage;;
+      print(typed);
+    });
+  });
+  group('Type 26', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType26Example1);
+      expect(message, isNotNull);
+      expect(message.messageType, 26);
+      expect(message, isA<MultipleSlotBinaryMessage>());
+      final typed = message as MultipleSlotBinaryMessage;;
+      print(typed);
+    });
+  });
+  group('Type 27', () {
+    test('example 1', () {
+      final message = AISMessage.fromString(kType27Example1);
+      final messageLegacy = AISMessage.fromString(kType27Example1, legacy: true);
+      expect(message, isNotNull);
+      expect(message.messageType, 27);
+      expect(message, equals(messageLegacy));
+      expect(message, isA<LongRangeAISBroadcastMessage>());
+      final typed = message as LongRangeAISBroadcastMessage;
+      print(typed);
+    });
+  });
+}
+
+const kType1Example1 = '!AIVDM,1,1,,A,13lLUr02j01br3REUdh`eW3608Dn,0*52';
+const kType1Example2 = '!AIVDM,1,1,,A,13UuUj0P2GQcS?hE`uKj8gwL2@KF,0*72';
+const kType1Example3OnlyPayload = '13UuUj0P2GQcS?hE`uKj8gwL2@KF';
+const kType3Example1 = '!AIVDM,1,1,,A,35MRrB10011cdC8EbwuT`Q4>0Dqb,0*6F';
+const kType3Example2 = '!AIVDM,1,1,,A,33dfE60PB11citDEMiief;0<00b0,0*21';
+const kType5Example1Line1 =
+    '!AIVDM,2,1,0,B,55QaC@42@>Uw<HlGN20dE8Dn0d5848DdU:222216:PC6:5eW0?AiD52H8888,0*4C';
+const kType5Example1Line2 = '!AIVDM,2,2,0,B,88888888880,2*27';
+const kType5Example2Line1 =
+    '!AIVDM,2,1,1,A,53R1dC01U0W9=KO;?F0p4I@Thu>22222222222166p=825bGN;PAAjCPH31C,0*2C';
+const kType5Example2Line2 = '!AIVDM,2,2,1,A,kQ2H8888880,2*65';
+
+//binary
+const kType6Example1 = '!AIVDM,1,1,,B,6B?n;be:cbapalgc;i6?Ow4,2*4A';
+const kType7Example1 = '!AIVDM,1,1,,A,702R5`hwCjq8,0*6B';
+const kType8Example1 = '!AIVDM,1,1,,A,85Mwp`1Kf3aCnsNvBWLi=wQuNhA5t43N`5nCuI=p<IBfVqnMgPGs,0*47';
+
+const kType9Example1 = '!AIVDM,1,1,,B,91b55wi;hbOS@OdQAC062Ch2089h,0*30';
+
+const kType10Example1 = '!AIVDM,1,1,,B,:5MlU41GMK6@,0*6C';
+
+const kType12Example1= '!AIVDM,1,1,,A,<02:oP0kKcv0@<51C5PB5@?BDPD?P:?2?EB7PDB16693P381>>5<PikP,0*37';
+
+const kType18Example1 = '!AIVDM,1,1,,B,B3`e<W@01hJMcvUIe3rWSwnUoP06,0*48';
+const kType18Example2 = '!AIVDM,1,1,,A,B46CbvP008JN885IfS;Q3wsUoP06,0*25';
+
+const kType19Example1 = '!AIVDM,1,1,,B,C5N3SRgPEnJGEBT>NhWAwwo862PaLELTBJ:V00000000S0D:R220,0*0B';
+
+const kType24Example1 = '!AIVDM,1,1,,A,H4hJJ>0ME@DD000000000000000,2*46';
+const kType24Example2 = '!AIVDM,1,1,,A,H3@p9@4UCBD4GR1H@8jnih1P111t,0*31';
+
+const kType25Example1 = '!AIVDM,1,1,,A,I6SWo?8P00a3PKpEKEVj0?vNP<65,0*73';
+const kType26Example1 = '!AIVDM,1,1,,A,J1@@0IK70PGgT740000000000@000?D0ih1e00006JlPC9C3,0*6B';
+
+const kType27Example1 = '!AIVDM,1,1,,A,KCQ9r=hrFUnH7P00,0*41';

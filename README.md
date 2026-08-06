@@ -107,8 +107,7 @@ something with some visual returns.
 
 ## Misc
 
-All files in the `ais/src` directory used to decode received message and put them on the map are borrowed from [ais_decoder](https://github.com/jamesdalby/ais) by jamesdlby on github, 
-the file have slightly been changed.
+The AIS decoder in `lib/ais` (all 27 ITU-R M.1371 message types, including the NMEA/checksum/fragment pipeline and the message encoders used by the editor) is a vendored fork of [ais_decoder](https://github.com/LucasMnzb/ais_decoder) by LucasMnzb (BSD-3-Clause, see `lib/ais/LICENSE.ais_decoder.txt`), with the charset bug fix and the payload-based `getUintDirect` retained. The files have been adapted (relative imports, lints).
 
 This app as been tested on both windows and linux.
 

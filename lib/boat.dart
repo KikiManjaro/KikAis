@@ -1,13 +1,19 @@
+enum BoatKind { vessel, aircraft, aton, station }
+
 class Boat {
   final String mmsi;
   DateTime? lastUpdate;
+  BoatKind kind = BoatKind.vessel;
   String? name;
   double? lat;
   double? lon;
   double? cog;
   double? sog;
   double? heading;
+  int? altitude;
   String? navigationStatus;
+  String? aidType;
+  int? virtualAid;
   int? timestamp;
   double? regionalReserved;
   int? vesselTypeInt;
