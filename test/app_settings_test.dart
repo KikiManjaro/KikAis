@@ -77,7 +77,7 @@ void main() {
     expect(loaded.targets.single.host, '127.0.0.1');
     expect(loaded.targets.single.port, 33333);
     expect(loaded.targets.single.protocol, ForwardProtocol.udpServer);
-    expect(loaded.targets.single.enabled, isTrue);
+    expect(loaded.targets.single.enabled, isFalse);
   });
 
   test('AppSettings migrates a legacy single target', () async {

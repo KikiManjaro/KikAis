@@ -1,5 +1,14 @@
 import 'nmea_sentence.dart';
 
+/// The assembled payload of a message together with every raw NMEA sentence
+/// that contributed to it (all fragments, in order).
+class AssembledPayload {
+  final String payload;
+  final List<String> rawSentences;
+
+  const AssembledPayload(this.payload, this.rawSentences);
+}
+
 /// Reassembles multi-fragment AIS sentences (e.g. type 5 static data sent
 /// as two sentences) into a single 6-bit payload string.
 class FragmentAssembler {
@@ -19,17 +28,17 @@ class FragmentAssembler {
   /// parts (received but not yet decodable).
   int get pending => _partials.length;
 
-  /// Returns the assembled payload string when the sentence completes a
-  /// message, or null when more fragments are still expected or the fragment
-  /// is inconsistent and was dropped.
-  String? add(NmeaSentence sentence) {
+  /// Returns the assembled payload when the sentence completes a message, or
+  /// null when more fragments are still expected or the fragment is
+  /// inconsistent and was dropped.
+  AssembledPayload? add(NmeaSentence sentence) {
     final now = DateTime.now();
     final before = _partials.length;
     _partials.removeWhere((_, p) => now.difference(p.lastUpdate) > timeout);
     dropped += before - _partials.length;
 
     if (sentence.fragmentCount <= 1) {
-      return sentence.payload;
+      return AssembledPayload(sentence.payload, [sentence.raw]);
     }
 
     fragmentsSeen++;
@@ -43,12 +52,12 @@ class FragmentAssembler {
     final partial = _partials[key];
     if (partial == null) {
       final created = _PartialMessage(sentence.fragmentCount);
-      created.add(sentence.fragmentNumber, sentence.payload);
+      created.add(sentence.fragmentNumber, sentence.payload, sentence.raw);
       created.lastUpdate = now;
       if (created.isComplete) {
         _partials.remove(key);
         multiPartCompleted++;
-        return created.payload;
+        return AssembledPayload(created.payload, created.rawSentences);
       }
       _partials[key] = created;
       return null;
@@ -71,13 +80,13 @@ class FragmentAssembler {
       return null;
     }
 
-    partial.add(sentence.fragmentNumber, sentence.payload);
+    partial.add(sentence.fragmentNumber, sentence.payload, sentence.raw);
     partial.lastUpdate = now;
 
     if (partial.isComplete) {
       _partials.remove(key);
       multiPartCompleted++;
-      return partial.payload;
+      return AssembledPayload(partial.payload, partial.rawSentences);
     }
     return null;
   }
@@ -97,16 +106,25 @@ class FragmentAssembler {
 class _PartialMessage {
   final int total;
   final Map<int, String> parts = {};
+  final Map<int, String> raws = {};
   DateTime lastUpdate = DateTime.now();
 
   _PartialMessage(this.total);
 
-  void add(int index, String payload) => parts[index] = payload;
+  void add(int index, String payload, String raw) {
+    parts[index] = payload;
+    raws[index] = raw;
+  }
 
   bool get isComplete => parts.length == total;
 
   String get payload {
     final indexes = parts.keys.toList()..sort();
     return indexes.map((i) => parts[i]).join();
+  }
+
+  List<String> get rawSentences {
+    final indexes = parts.keys.toList()..sort();
+    return indexes.map((i) => raws[i]!).toList();
   }
 }

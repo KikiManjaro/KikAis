@@ -141,7 +141,8 @@ one processor, this should be reworked
 - Add the ability for the user to add custom streams
 - Add the ability for the user to create and send his own ais messages
 - Add the ability to manage multiple endpoint while sending data
-
+- Ajouter un onglet de simulation permettant de simuler une flotte de bateau, a un endroit précis qui envoient certains messages
+- Ajouter la possibiliter de filtrer ce qui est renvoyé (filtre par type de message, par zone géographique, par bateau, etc...)
 
 ## Images
 

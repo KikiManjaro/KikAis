@@ -30,8 +30,7 @@ class SendPage extends StatefulWidget {
 class _SendPageState extends State<SendPage> {
   Future<void> _apply(List<TargetConfig> targets) async {
     final settings = context.read<AppSettings>();
-    settings.targets = targets;
-    settings.save();
+    settings.setTargets(targets);
     await widget.serviceGetter()?.setTargets(targets);
   }
 
@@ -192,7 +191,8 @@ class _SendPageState extends State<SendPage> {
                           const SizedBox(width: 8),
                           const Expanded(
                             child: Text(
-                              'Forwarder is running — destinations are locked.',
+                              'Forwarder is running — destinations are '
+                              'locked.',
                               style: TextStyle(fontSize: 12),
                             ),
                           ),
@@ -203,8 +203,8 @@ class _SendPageState extends State<SendPage> {
                     const Padding(
                       padding: EdgeInsets.all(24),
                       child: Center(
-                        child: Text('No destination yet. Add one to forward '
-                            'received AIS frames.'),
+                        child: Text('No destination yet. Add one to '
+                            'forward received AIS frames.'),
                       ),
                     )
                   else
@@ -224,7 +224,8 @@ class _SendPageState extends State<SendPage> {
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       target.name,
@@ -244,9 +245,13 @@ class _SendPageState extends State<SendPage> {
                                 ),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.edit_outlined, size: 18),
+                                icon: const Icon(
+                                  Icons.edit_outlined,
+                                  size: 18,
+                                ),
                                 visualDensity: VisualDensity.compact,
-                                onPressed: () => _showEditor(existing: target),
+                                onPressed: () =>
+                                    _showEditor(existing: target),
                                 tooltip: 'Edit destination',
                               ),
                               IconButton(

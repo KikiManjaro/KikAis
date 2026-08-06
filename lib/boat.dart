@@ -1,5 +1,20 @@
 enum BoatKind { vessel, aircraft, aton, station }
 
+/// A raw NMEA sentence that decoded into a message for a [Boat].
+class BoatFrame {
+  final String raw;
+  final String? feed;
+  final DateTime time;
+  final int? type;
+
+  const BoatFrame({
+    required this.raw,
+    this.feed,
+    required this.time,
+    this.type,
+  });
+}
+
 class Boat {
   final String mmsi;
   DateTime? lastUpdate;
@@ -36,5 +51,17 @@ class Boat {
   int? imoNumber;
   String? callSign;
 
+  static const int maxFrameLog = 200;
+
+  /// Raw NMEA frames that decoded into messages for this boat, oldest first.
+  final List<BoatFrame> frameLog = [];
+
   Boat({required this.mmsi});
+
+  void addFrame(BoatFrame frame) {
+    frameLog.add(frame);
+    if (frameLog.length > maxFrameLog) {
+      frameLog.removeRange(0, frameLog.length - maxFrameLog);
+    }
+  }
 }

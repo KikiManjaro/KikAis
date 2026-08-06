@@ -67,6 +67,13 @@ class AppSettings extends ChangeNotifier {
     save();
   }
 
+  void setTargets(List<TargetConfig> value) {
+    if (identical(targets, value)) return;
+    targets = value;
+    notifyListeners();
+    save();
+  }
+
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     mapClusterEnabled = prefs.getBool(_kCluster) ?? true;
@@ -108,7 +115,7 @@ class AppSettings extends ChangeNotifier {
           protocol: ForwardProtocol.udpServer,
           host: '127.0.0.1',
           port: 33333,
-          enabled: true,
+          enabled: false,
         ),
       ];
     }

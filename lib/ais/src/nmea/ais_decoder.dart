@@ -47,26 +47,39 @@ class AisNmeaDecoder {
   /// Multi-part messages fully reassembled so far.
   int get multiPartCompleted => _assembler.multiPartCompleted;
 
+  List<String> _lastRawSentences = const [];
+
+  /// The raw NMEA sentences that produced the most recent successful decode
+  /// (every fragment of a multi-part message, in order). Empty when the last
+  /// call only buffered fragments or failed.
+  List<String> get lastRawSentences => _lastRawSentences;
+
   AISMessage? decode(String rawLine) {
     final sentence = NmeaSentence.tryParse(rawLine);
     if (sentence == null) {
       parseErrors++;
+      _lastRawSentences = const [];
       return null;
     }
     if (validateChecksum && !sentence.isChecksumValid) {
       invalidChecksums++;
+      _lastRawSentences = const [];
       return null;
     }
-    final payload = _assembler.add(sentence);
-    if (payload == null) {
+    final assembled = _assembler.add(sentence);
+    if (assembled == null) {
+      _lastRawSentences = const [];
       return null;
     }
     try {
-      final message = MessageFactory.create(payload, false, false, true);
+      final message =
+          MessageFactory.create(assembled.payload, false, false, true);
       decodedCount++;
+      _lastRawSentences = assembled.rawSentences;
       return message;
     } catch (_) {
       parseErrors++;
+      _lastRawSentences = const [];
       return null;
     }
   }
@@ -85,6 +98,7 @@ class AisNmeaDecoder {
     invalidChecksums = 0;
     parseErrors = 0;
     decodedCount = 0;
+    _lastRawSentences = const [];
     _assembler.reset();
   }
 }

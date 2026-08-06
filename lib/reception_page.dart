@@ -632,12 +632,13 @@ class ReceptionPageState extends State<ReceptionPage> {
                                         : entry.message,
                                   ),
                                 ),
-                                CopyIconButton(
-                                  text: entry.message,
-                                  message: 'Frame copied',
-                                  padding: EdgeInsets.zero,
-                                  tooltip: 'Copy this frame',
-                                ),
+                                if (entry.message.startsWith('!'))
+                                  CopyIconButton(
+                                    text: entry.message,
+                                    message: 'Frame copied',
+                                    padding: EdgeInsets.zero,
+                                    tooltip: 'Copy this frame',
+                                  ),
                               ],
                             );
                           },

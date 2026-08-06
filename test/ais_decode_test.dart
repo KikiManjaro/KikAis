@@ -143,6 +143,32 @@ void main() {
       expect(p.latitude, closeTo(48.85, 0.00001));
       expect(p.longitude, closeTo(1.05, 0.00001));
     });
+
+    test('reassembled message exposes all raw sentences in order', () {
+      final full = NmeaSentence.tryParse(
+        encodePositionReport(
+          mmsi: 226545000,
+          latitude: 48.85,
+          longitude: 1.05,
+          sog: 12.0,
+          cog: 250.0,
+          heading: 90.0,
+        ),
+      )!
+          .binaryPayload;
+      final part1 = _fragment(full.substring(0, 144), 0, 2, 3);
+      final part2 = _fragment(full.substring(144), 1, 2, 3);
+
+      final decoder = AisNmeaDecoder();
+      expect(decoder.decode(part1), isNull);
+      expect(decoder.lastRawSentences, isEmpty);
+
+      final msg = decoder.decode(part2);
+      expect(msg, isA<PositionMessage>());
+      expect(decoder.lastRawSentences, hasLength(2));
+      expect(decoder.lastRawSentences[0], part1);
+      expect(decoder.lastRawSentences[1], part2);
+    });
   });
 
   group('FragmentAssembler drops mismatched fragments', () {

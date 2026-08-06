@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'boat.dart';
+import 'widgets.dart';
 
 class BoatInfoBubble extends StatelessWidget {
   final Boat boat;
@@ -178,6 +179,8 @@ class BoatInfoBubble extends StatelessWidget {
             ),
           ),
         ),
+        const Divider(height: 1),
+        _BoatFrameLog(boat: boat),
       ],
     );
   }
@@ -188,4 +191,154 @@ class BoatInfoBubble extends StatelessWidget {
         BoatKind.aton => Icons.waves,
         BoatKind.station => Icons.cell_tower,
       };
+}
+
+/// Bottom panel listing the raw NMEA frames that decoded for this boat, with
+/// a copy button per frame and a copy-all action.
+class _BoatFrameLog extends StatefulWidget {
+  final Boat boat;
+
+  const _BoatFrameLog({required this.boat});
+
+  @override
+  State<_BoatFrameLog> createState() => _BoatFrameLogState();
+}
+
+class _BoatFrameLogState extends State<_BoatFrameLog> {
+  bool _expanded = true;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final frames = widget.boat.frameLog;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        InkWell(
+          onTap: () => setState(() => _expanded = !_expanded),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 4, 4, 4),
+            child: Row(
+              children: [
+                Icon(Icons.list_alt, size: 16, color: scheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Frames (${frames.length})',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: scheme.onSurface,
+                  ),
+                ),
+                const Spacer(),
+                if (frames.isNotEmpty)
+                  CopyIconButton(
+                    text: frames.map((f) => f.raw).join('\n'),
+                    tooltip: 'Copy all frames',
+                    iconSize: 15,
+                    padding: EdgeInsets.zero,
+                  ),
+                Icon(
+                  _expanded ? Icons.expand_more : Icons.expand_less,
+                  size: 18,
+                  color: scheme.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_expanded)
+          SizedBox(
+            height: 170,
+            child: frames.isEmpty
+                ? Center(
+                    child: Text(
+                      'No frames yet',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    reverse: true,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    itemCount: frames.length,
+                    itemBuilder: (context, i) {
+                      final frame = frames[frames.length - 1 - i];
+                      return _FrameRow(frame: frame);
+                    },
+                  ),
+          ),
+      ],
+    );
+  }
+}
+
+class _FrameRow extends StatelessWidget {
+  final BoatFrame frame;
+
+  const _FrameRow({required this.frame});
+
+  static String _time(DateTime t) {
+    final local = t.toLocal();
+    String two(int v) => v.toString().padLeft(2, '0');
+    return '${two(local.hour)}:${two(local.minute)}:${two(local.second)}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Text(
+            _time(frame.time),
+            style: TextStyle(
+              fontSize: 10,
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(width: 8),
+          if (frame.feed != null) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+              decoration: BoxDecoration(
+                color: scheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                frame.feed!,
+                style: TextStyle(fontSize: 10, color: scheme.onSurfaceVariant),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 6),
+          ],
+          Expanded(
+            child: Tooltip(
+              message: frame.raw,
+              child: Text(
+                frame.raw,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontFamily: 'monospace',
+                  color: scheme.onSurface,
+                ),
+              ),
+            ),
+          ),
+          CopyIconButton(
+            text: frame.raw,
+            iconSize: 14,
+            padding: EdgeInsets.zero,
+          ),
+        ],
+      ),
+    );
+  }
 }

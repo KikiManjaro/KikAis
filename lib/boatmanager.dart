@@ -42,6 +42,8 @@ class BoatManager extends ChangeNotifier {
 
   DateTime _lastNotify = DateTime.fromMillisecondsSinceEpoch(0);
   bool _pendingNotify = false;
+  bool _disposed = false;
+  Timer? _throttleTimer;
   Timer? _purgeTimer;
 
   List<Boat> get boats => _boats.values.toList();
@@ -52,7 +54,9 @@ class BoatManager extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     _purgeTimer?.cancel();
+    _throttleTimer?.cancel();
     _decoderControl.close();
     _decoderIsolate?.kill(priority: Isolate.immediate);
     super.dispose();
@@ -88,7 +92,11 @@ class BoatManager extends ChangeNotifier {
         _decoderSendPort = message;
         _decoderSendPort?.send(validateChecksum);
       } else if (message is _DecodedWithFeed) {
-        updateFromMessage(message.message, feed: message.feed);
+        updateFromMessage(
+          message.message,
+          feed: message.feed,
+          rawLines: message.rawLines,
+        );
       } else if (message is DecoderReport) {
         _applyReport(message);
       }
@@ -125,7 +133,7 @@ class BoatManager extends ChangeNotifier {
         final line = message[1] as String;
         final decoded = decoder.decode(line);
         if (decoded != null) {
-          control.send(_DecodedWithFeed(decoded, feed));
+          control.send(_DecodedWithFeed(decoded, feed, decoder.lastRawSentences));
         }
         control.send(decoder.report());
       }
@@ -138,7 +146,13 @@ class BoatManager extends ChangeNotifier {
       return;
     }
     final decoded = _fallbackDecoder.decode(msg);
-    if (decoded != null) updateFromMessage(decoded, feed: feed);
+    if (decoded != null) {
+      updateFromMessage(
+        decoded,
+        feed: feed,
+        rawLines: _fallbackDecoder.lastRawSentences,
+      );
+    }
     _applyReport(_fallbackDecoder.report());
   }
 
@@ -172,13 +186,29 @@ class BoatManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateFromMessage(AISMessage message, {String? feed}) {
+  void updateFromMessage(
+    AISMessage message, {
+    String? feed,
+    List<String>? rawLines,
+  }) {
     stats.recordDecoded(message.messageType, feed: feed);
     final boat = _boats.putIfAbsent(
       message.mmsi,
       () => Boat(mmsi: message.mmsi.toString()),
     );
     boat.lastUpdate = DateTime.now();
+    if (rawLines != null) {
+      for (final raw in rawLines) {
+        boat.addFrame(
+          BoatFrame(
+            raw: raw,
+            feed: feed,
+            time: DateTime.now(),
+            type: message.messageType,
+          ),
+        );
+      }
+    }
 
     if (message is PositionMessage) {
       boat.kind = BoatKind.vessel;
@@ -302,9 +332,12 @@ class BoatManager extends ChangeNotifier {
     } else if (!_pendingNotify) {
       _pendingNotify = true;
       final remaining = notifyThrottle - now.difference(_lastNotify);
-      Timer(remaining, () {
+      _throttleTimer?.cancel();
+      _throttleTimer = Timer(remaining, () {
+        _throttleTimer = null;
         _pendingNotify = false;
         _lastNotify = DateTime.now();
+        if (_disposed) return;
         notifyListeners();
       });
     }
@@ -325,10 +358,12 @@ class BoatManager extends ChangeNotifier {
 }
 
 /// Simple, isolate-safe wrapper carrying a decoded AIS message together with
-/// the feed it originated from (used by the decoder isolate protocol).
+/// the feed and raw sentences it originated from (used by the decoder isolate
+/// protocol).
 class _DecodedWithFeed {
   final AISMessage message;
   final String? feed;
+  final List<String>? rawLines;
 
-  const _DecodedWithFeed(this.message, this.feed);
+  const _DecodedWithFeed(this.message, this.feed, [this.rawLines]);
 }

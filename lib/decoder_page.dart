@@ -8,14 +8,14 @@ import 'themes.dart';
 import 'widgets.dart';
 
 class _DecodeResult {
-  final String raw;
+  final List<String> raws;
   final bool decoded;
   final String status;
   final AISMessage? message;
   final List<MessageField> fields;
 
   const _DecodeResult({
-    required this.raw,
+    required this.raws,
     required this.decoded,
     required this.status,
     this.message,
@@ -57,16 +57,25 @@ class _DecoderPageState extends State<DecoderPage> {
 
     final decoder = AisNmeaDecoder(validateChecksum: _validateChecksum);
     final results = <_DecodeResult>[];
+    final pending = <String>[];
     for (final line in lines) {
       final invalidBefore = decoder.invalidChecksums;
       final errorsBefore = decoder.parseErrors;
       final message = decoder.decode(line);
       if (message != null) {
+        final raws = decoder.lastRawSentences;
+        if (raws.length > 1) {
+          for (final earlier in raws.sublist(0, raws.length - 1)) {
+            pending.remove(earlier);
+          }
+        }
         results.add(
           _DecodeResult(
-            raw: line,
+            raws: raws,
             decoded: true,
-            status: 'Decoded',
+            status: raws.length > 1
+                ? 'Decoded (${raws.length} sentences)'
+                : 'Decoded',
             message: message,
             fields: describeMessage(message),
           ),
@@ -74,7 +83,7 @@ class _DecoderPageState extends State<DecoderPage> {
       } else if (decoder.invalidChecksums > invalidBefore) {
         results.add(
           _DecodeResult(
-            raw: line,
+            raws: [line],
             decoded: false,
             status: 'Invalid checksum',
           ),
@@ -82,20 +91,23 @@ class _DecoderPageState extends State<DecoderPage> {
       } else if (decoder.parseErrors > errorsBefore) {
         results.add(
           _DecodeResult(
-            raw: line,
+            raws: [line],
             decoded: false,
             status: 'Parse error',
           ),
         );
       } else {
-        results.add(
-          _DecodeResult(
-            raw: line,
-            decoded: false,
-            status: 'Waiting for more fragments…',
-          ),
-        );
+        pending.add(line);
       }
+    }
+    for (final line in pending) {
+      results.add(
+        _DecodeResult(
+          raws: [line],
+          decoded: false,
+          status: 'Waiting for more fragments…',
+        ),
+      );
     }
     setState(() => _results = results);
   }
@@ -175,7 +187,7 @@ class _DecoderPageState extends State<DecoderPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: SelectableText(
-                            result.raw,
+                            result.raws.join('\n'),
                             style: TextStyle(
                               fontFamily: 'monospace',
                               fontSize: 12,
@@ -184,10 +196,12 @@ class _DecoderPageState extends State<DecoderPage> {
                           ),
                         ),
                         CopyIconButton(
-                          text: result.raw,
+                          text: result.raws.join('\n'),
                           message: 'Frame copied',
                           padding: EdgeInsets.zero,
-                          tooltip: 'Copy this frame',
+                          tooltip: result.raws.length > 1
+                              ? 'Copy these frames'
+                              : 'Copy this frame',
                         ),
                       ],
                     ),
