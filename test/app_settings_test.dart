@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kik_ais/app_settings.dart';
 import 'package:kik_ais/feed_def.dart';
 import 'package:kik_ais/forwarder_service.dart';
+import 'package:kik_ais/sim_fleet.dart';
 import 'package:kik_ais/target_config.dart';
 import 'package:kik_ais/themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,6 +60,29 @@ void main() {
     expect(loaded.customFeeds, hasLength(1));
     expect(loaded.customFeeds.single.host, '192.168.1.5');
     expect(loaded.customFeeds.single.port, 9999);
+  });
+
+  test('AppSettings persists the simulated fleet', () async {
+    SharedPreferences.setMockInitialValues({});
+
+    final settings = AppSettings();
+    final fleet = SimFleet();
+    fleet.generate(SimFleetConfig(seed: 11, messageTypes: {1, 5, 4, 21}));
+    settings.simFleet = fleet.boats.toList();
+    await settings.save();
+
+    final loaded = AppSettings();
+    await loaded.load();
+
+    expect(loaded.simFleet, isNotNull);
+    expect(loaded.simFleet!.length, fleet.boats.length);
+    expect(loaded.simFleet!.first.mmsi, fleet.boats.first.mmsi);
+    expect(loaded.simFleet!.first.lat, fleet.boats.first.lat);
+    expect(
+      loaded.simFleet!.any((b) => b.emitType == 4),
+      isTrue,
+      reason: 'base station survives persistence',
+    );
   });
 
   test('AppSettings keeps defaults when nothing is stored', () async {

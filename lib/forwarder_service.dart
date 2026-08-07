@@ -127,6 +127,12 @@ class ForwarderService {
 
   Future<void> sendRaw(String nmea) => _send(nmea);
 
+  /// Injects a raw NMEA line into the pipeline as if it came from [feedName]
+  /// (used by the simulation tab): it is forwarded to the enabled targets,
+  /// logged and decoded exactly like a real feed frame.
+  Future<void> ingest(String feedName, String flag, String line) =>
+      _handleData(feedName, flag, line);
+
   Future<void> addFeed(
     String name,
     String flag,

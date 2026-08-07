@@ -18,7 +18,9 @@ Future<void> main() async {
   await settings.load();
 
   final packageInfo = await PackageInfo.fromPlatform();
-  final version = '${packageInfo.version}+${packageInfo.buildNumber}';
+  final version = packageInfo.buildNumber.isEmpty
+      ? packageInfo.version
+      : '${packageInfo.version}+${packageInfo.buildNumber}';
 
   runApp(
     MultiProvider(

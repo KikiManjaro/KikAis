@@ -125,8 +125,9 @@ try {
   $config = Join-Path $work "config.txt"
   Set-Content -LiteralPath $config -Value @(
     ";!@Install@!UTF-8!",
+    "GUIMode=1",
     "RunProgram=`"$AppName`"",
-    ";!@InstallEnd@!"
+    ";!@Install@!End@!"
   ) -Encoding Ascii
 
   $OutputExe = [System.IO.Path]::GetFullPath($OutputExe)

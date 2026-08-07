@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'feed_def.dart';
 import 'forwarder_service.dart';
+import 'sim_fleet.dart';
 import 'target_config.dart';
 import 'themes.dart';
 
@@ -23,6 +24,8 @@ class AppSettings extends ChangeNotifier {
   static const _kShowVectors = 'showVectors';
   static const _kCustomFeeds = 'customFeeds';
   static const _kFeedPrefix = 'feedEnabled.';
+  static const _kSimulation = 'simulation';
+  static const _kSimFleet = 'simFleet';
 
   bool mapClusterEnabled = true;
   bool sendToMap = false;
@@ -38,6 +41,11 @@ class AppSettings extends ChangeNotifier {
   List<TargetConfig> targets = [];
   final Map<String, bool> feedEnabled = {};
   List<FeedDef> customFeeds = [];
+  SimFleetConfig simConfig = SimFleetConfig();
+
+  /// The generated fleet, persisted so it survives restarts. Null until the
+  /// simulation page has generated one.
+  List<SimBoat>? simFleet;
 
   void setTheme(AppTheme theme) {
     if (appTheme == theme) return;
@@ -134,6 +142,19 @@ class AppSettings extends ChangeNotifier {
             .map((e) => FeedDef.fromJson(e as Map<String, dynamic>))
             .toList();
 
+    final simRaw = prefs.getString(_kSimulation);
+    if (simRaw != null && simRaw.isNotEmpty) {
+      simConfig =
+          SimFleetConfig.fromJson(jsonDecode(simRaw) as Map<String, dynamic>);
+    }
+
+    final fleetRaw = prefs.getString(_kSimFleet);
+    if (fleetRaw != null && fleetRaw.isNotEmpty) {
+      simFleet = (jsonDecode(fleetRaw) as List)
+          .map((e) => SimBoat.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+
     notifyListeners();
   }
 
@@ -166,5 +187,12 @@ class AppSettings extends ChangeNotifier {
       _kCustomFeeds,
       jsonEncode(customFeeds.map((f) => f.toJson()).toList()),
     );
+    await prefs.setString(_kSimulation, jsonEncode(simConfig.toJson()));
+    if (simFleet != null) {
+      await prefs.setString(
+        _kSimFleet,
+        jsonEncode(simFleet!.map((b) => b.toJson()).toList()),
+      );
+    }
   }
 }

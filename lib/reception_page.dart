@@ -14,10 +14,14 @@ import 'forwarder_service.dart';
 import 'host_input_formatter.dart';
 import 'message_stats.dart';
 import 'port_input_formatter.dart';
+import 'simulator_service.dart';
 import 'widgets.dart';
 
 /// A feed is considered "receiving" while a frame arrived within this window.
 const Duration feedStaleAfter = Duration(seconds: 10);
+
+/// Key of the virtual "Simulation" feed shown alongside the network feeds.
+const String kSimulationFeedKey = 'Simulation';
 
 enum FeedDotColor { grey, red, orange, green }
 
@@ -55,6 +59,7 @@ class ReceptionPageState extends State<ReceptionPage> {
 
   final ScrollController _scrollController = ScrollController();
   late ForwarderService forwarderService;
+  late SimulatorService sim;
 
   final List<LogEntry> logEntries = [];
   final Map<String, bool> feedEnabled = {};
@@ -103,6 +108,13 @@ class ReceptionPageState extends State<ReceptionPage> {
     );
     forwarderService.setTargets(settings.targets);
 
+    sim = SimulatorService(
+      config: settings.simConfig,
+      initialFleet: settings.simFleet,
+    );
+    sim.onSentence = (nmea) =>
+        forwarderService.ingest('Simulation', 'SIM', nmea);
+
     _customFeeds = List.of(settings.customFeeds);
     feedEnabled
       ..clear()
@@ -122,6 +134,7 @@ class ReceptionPageState extends State<ReceptionPage> {
 
     _feedListenable = Listenable.merge([
       forwarderService.feedStatuses,
+      sim,
       _statusTick,
     ]);
     _statusTimer = Timer.periodic(
@@ -131,6 +144,9 @@ class ReceptionPageState extends State<ReceptionPage> {
   }
 
   List<FeedDef> get _allFeeds => [...kFeedDefs, ..._customFeeds];
+
+  /// The simulation service, exposed to the Simulation tab.
+  SimulatorService get simService => sim;
 
   void _syncFeedSettings() {
     settings.customFeeds = List.of(_customFeeds);
@@ -156,12 +172,51 @@ class ReceptionPageState extends State<ReceptionPage> {
         );
       }
     }
+
+    if (feedEnabled[kSimulationFeedKey] ?? false) {
+      sim.start();
+    }
   }
 
   void stopForwarder() async {
+    if (sim.isRunning) {
+      sim.stop();
+      _saveSimFleet();
+    }
     await forwarderService.stop();
     setState(() => isRunning = false);
     widget.running.value = false;
+  }
+
+  Future<void> toggleSimFeed(bool value) async {
+    setState(() => feedEnabled[kSimulationFeedKey] = value);
+    settings.feedEnabled[kSimulationFeedKey] = value;
+    settings.save();
+
+    if (!isRunning) return;
+
+    if (value) {
+      sim.start();
+    } else {
+      sim.stop();
+      _saveSimFleet();
+    }
+  }
+
+  void _saveSimFleet() {
+    settings.simFleet = sim.fleet.boats.toList();
+    settings.save();
+  }
+
+  /// Status of the virtual simulation feed, derived from the simulator so the
+  /// tile reuses the same dot semantics as the network feeds.
+  FeedStatus _simFeedStatus() {
+    if (!sim.isRunning) return const FeedStatus();
+    return FeedStatus(
+      connected: true,
+      messageCount: sim.emittedCount,
+      lastMessageAt: sim.lastEmitAt,
+    );
   }
 
   void toggleFeed(FeedDef feed, bool value) async {
@@ -346,6 +401,28 @@ class ReceptionPageState extends State<ReceptionPage> {
     return '${status.messageCount} messages · last frame ${seconds}s ago';
   }
 
+  Widget _buildSimFeedTile(FeedStatus status) {
+    final tile = CheckboxListTile(
+      dense: true,
+      title: Row(
+        children: [
+          const Expanded(
+            child: Text('Simulation', overflow: TextOverflow.ellipsis),
+          ),
+          _feedStatusDot(status),
+        ],
+      ),
+      value: feedEnabled[kSimulationFeedKey] ?? false,
+      onChanged: (val) => toggleSimFeed(val ?? false),
+      secondary: const Icon(Icons.science, size: 30),
+    );
+    return Tooltip(
+      message: 'Emit a simulated AIS fleet around a location. '
+          'Configure it on the Simulation tab.',
+      child: tile,
+    );
+  }
+
   Widget _buildFeedTile(FeedDef feed, FeedStatus? status) {
     final tile = CheckboxListTile(
       dense: true,
@@ -383,6 +460,10 @@ class ReceptionPageState extends State<ReceptionPage> {
     _statusTimer?.cancel();
     _statusTick.dispose();
     _scrollController.dispose();
+    if (sim.isRunning) {
+      _saveSimFleet();
+    }
+    sim.dispose();
     super.dispose();
   }
 
@@ -470,11 +551,12 @@ class ReceptionPageState extends State<ReceptionPage> {
                     vertical: 4,
                     horizontal: 4,
                   ),
-                  child: AnimatedBuilder(
+                    child: AnimatedBuilder(
                     animation: _feedListenable,
                     builder: (context, _) {
                       final statuses = forwarderService.feedStatuses.value;
                       final tiles = [
+                        _buildSimFeedTile(_simFeedStatus()),
                         for (final feed in _allFeeds)
                           _buildFeedTile(
                             feed,

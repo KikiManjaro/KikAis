@@ -9,6 +9,7 @@ import 'boat_animation.dart';
 import 'decoder_page.dart';
 import 'reception_page.dart';
 import 'send_page.dart';
+import 'simulation_page.dart';
 import 'stats_page.dart';
 import 'themes.dart';
 import 'world_map_page.dart';
@@ -35,6 +36,7 @@ class _SwipperUiState extends State<SwipperUi> {
   late final AisEditorPage editorPage;
   late final DecoderPage decoderPage;
   late final StatsPage statsPage;
+  late final SimulationPage simulationPage;
 
   int _currentIndex = 0;
 
@@ -60,6 +62,10 @@ class _SwipperUiState extends State<SwipperUi> {
     );
     decoderPage = const DecoderPage(key: PageStorageKey('decoder'));
     statsPage = const StatsPage();
+    simulationPage = SimulationPage(
+      simGetter: () => _receptionKey.currentState?.simService,
+      onGoToReception: () => setState(() => _currentIndex = 0),
+    );
   }
 
   @override
@@ -161,11 +167,11 @@ class _SwipperUiState extends State<SwipperUi> {
                     if (pointerSignal is PointerScrollEvent) {
                       if (pointerSignal.scrollDelta.dx > 0) {
                         setState(() {
-                          _currentIndex = (_currentIndex + 1).clamp(0, 5);
+                          _currentIndex = (_currentIndex + 1).clamp(0, 6);
                         });
                       } else if (pointerSignal.scrollDelta.dx < 0) {
                         setState(() {
-                          _currentIndex = (_currentIndex - 1).clamp(0, 5);
+                          _currentIndex = (_currentIndex - 1).clamp(0, 6);
                         });
                       }
                     }
@@ -179,6 +185,7 @@ class _SwipperUiState extends State<SwipperUi> {
                       editorPage,
                       decoderPage,
                       statsPage,
+                      simulationPage,
                     ],
                   ),
                 ),
@@ -216,6 +223,11 @@ class _SwipperUiState extends State<SwipperUi> {
                       icon: Icon(Icons.bar_chart_outlined),
                       selectedIcon: Icon(Icons.bar_chart),
                       label: 'Stats',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.bubble_chart_outlined),
+                      selectedIcon: Icon(Icons.bubble_chart),
+                      label: 'Simulation',
                     ),
                   ],
                 ),
