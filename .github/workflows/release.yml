@@ -53,6 +53,8 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: write
+    env:
+      HAS_MSIX_CERT: ${{ secrets.MSIX_CERT_B64 != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -83,7 +85,7 @@ jobs:
             -OutputExe "kikais-windows-${{ needs.version.outputs.version }}-portable.exe"
 
       - name: Build MSIX installer and publish folder
-        if: ${{ secrets.MSIX_CERT_B64 != '' }}
+        if: env.HAS_MSIX_CERT == 'true'
         shell: pwsh
         env:
           MSIX_CERT_B64: ${{ secrets.MSIX_CERT_B64 }}
@@ -104,7 +106,7 @@ jobs:
           [IO.File]::WriteAllBytes("build/msix/publish/KikAis.cer", $cer.RawData)
 
       - name: Rewrite appinstaller/index URIs to absolute URLs
-        if: ${{ secrets.MSIX_CERT_B64 != '' }}
+        if: env.HAS_MSIX_CERT == 'true'
         shell: pwsh
         run: |
           $base = "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
@@ -130,7 +132,7 @@ jobs:
             build/msix/publish/
 
       - name: Deploy publish folder to GitHub Pages
-        if: ${{ secrets.MSIX_CERT_B64 != '' }}
+        if: env.HAS_MSIX_CERT == 'true'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
