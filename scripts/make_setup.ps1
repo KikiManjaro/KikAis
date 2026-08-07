@@ -92,7 +92,12 @@ if (-not $IsccPath -or -not (Test-Path -LiteralPath $IsccPath)) {
 
 # --- 2. Compile the installer ---
 Write-Host "Compiling installer (v$Version)..."
-& $IsccPath "installer\kikais.iss" "/DMyAppVersion=$Version"
+if ([System.IO.Path]::IsPathRooted($OutputDir)) {
+  $outputDirFull = $OutputDir
+} else {
+  $outputDirFull = [System.IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $PSScriptRoot) $OutputDir))
+}
+& $IsccPath "installer\kikais.iss" "/DMyAppVersion=$Version" "/DMyOutputDir=$outputDirFull"
 if ($LASTEXITCODE -ne 0) {
   throw "ISCC.exe failed"
 }
