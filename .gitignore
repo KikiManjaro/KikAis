@@ -1,6 +1,9 @@
 # Git worktrees
 .worktrees/
 
+# Portable build artifacts
+*.exe
+
 # Miscellaneous
 *.class
 *.log
