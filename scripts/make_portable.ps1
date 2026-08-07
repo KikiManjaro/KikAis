@@ -154,6 +154,7 @@ try {
   $configLines = @(
     ";!@Install@!UTF-8!",
     'GUIMode="1"',
+    'Progress="no"',
     "RunProgram=`"$AppName`"",
     ";!@InstallEnd@!"
   ) -join "`r`n"
