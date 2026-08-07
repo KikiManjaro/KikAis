@@ -23,8 +23,16 @@ Path of the portable executable to produce.
 .PARAMETER AppName
 Name of the launcher executable inside the bundle (default: KikAis.exe).
 
+.PARAMETER Icon
+Path to the .ico file to embed as the portable executable's icon. Defaults
+to the app icon used by the Flutter runner and the installer
+(windows/runner/resources/app_icon.ico).
+
 .PARAMETER SevenZipSfxUrl
 URL of the 7-Zip 9.20 "extra" package (provides 7zS.sfx and 7zr.exe).
+
+.PARAMETER RceditUrl
+URL of rcedit-x64.exe, used to replace the SFX stub's icon resource.
 
 .EXAMPLE
 ./scripts/make_portable.ps1 `
@@ -40,7 +48,11 @@ param(
 
   [string]$AppName = "KikAis.exe",
 
-  [string]$SevenZipSfxUrl = "https://www.7-zip.org/a/7z920_extra.7z"
+  [string]$Icon = (Join-Path (Split-Path -Parent $PSScriptRoot) "windows\runner\resources\app_icon.ico"),
+
+  [string]$SevenZipSfxUrl = "https://www.7-zip.org/a/7z920_extra.7z",
+
+  [string]$RceditUrl = "https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe"
 )
 
 $ErrorActionPreference = "Stop"
@@ -107,7 +119,20 @@ try {
     $archiver = $sevenZr.FullName
   }
 
-  # --- 3. Compress the release bundle (contents at archive root) ---
+  # --- 3. Replace the stub's icon with the application icon ---
+  if ($Icon -and (Test-Path -LiteralPath $Icon)) {
+    Write-Host "Applying app icon to SFX stub..."
+    $rcedit = Join-Path $work "rcedit-x64.exe"
+    Invoke-WebRequest -Uri $RceditUrl -OutFile $rcedit -UseBasicParsing
+    & $rcedit $sfxStub.FullName "--set-icon" $Icon
+    if ($LASTEXITCODE -ne 0) {
+      throw "rcedit failed to set the icon"
+    }
+  } else {
+    Write-Warning "Icon not found, skipping icon embedding: $Icon"
+  }
+
+  # --- 4. Compress the release bundle (contents at archive root) ---
   Write-Host "Compressing release bundle..."
   $archive = Join-Path $work "app.7z"
   Push-Location -LiteralPath $ReleaseDir
@@ -120,15 +145,19 @@ try {
     throw "Failed to create the 7z archive"
   }
 
-  # --- 4. Assemble: stub + config + archive ---
+  # --- 5. Assemble: stub + config + archive ---
   Write-Host "Building portable executable..."
   $config = Join-Path $work "config.txt"
-  Set-Content -LiteralPath $config -Value @(
+  # The config block must be UTF-8 (no BOM), delimited by
+  # ";!@Install@!UTF-8!" ... ";!@InstallEnd@!" and use quoted values
+  # (ID_String="Value") as documented by 7-Zip 9.20.
+  $configLines = @(
     ";!@Install@!UTF-8!",
-    "GUIMode=1",
+    'GUIMode="1"',
     "RunProgram=`"$AppName`"",
-    ";!@Install@!End@!"
-  ) -Encoding Ascii
+    ";!@InstallEnd@!"
+  ) -join "`r`n"
+  [System.IO.File]::WriteAllText($config, $configLines, (New-Object System.Text.UTF8Encoding($false)))
 
   $OutputExe = [System.IO.Path]::GetFullPath($OutputExe)
   Copy-Item -LiteralPath $sfxStub.FullName -Destination $OutputExe
