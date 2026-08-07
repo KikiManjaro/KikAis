@@ -166,6 +166,16 @@ class ForwarderService {
     }
   }
 
+  /// Updates the displayed status of a source that is not backed by a socket
+  /// connection (e.g. file feeds), so its tile reuses the same dot semantics.
+  void setFeedStatus(String name, FeedStatus status) {
+    feedStatuses.value = {...feedStatuses.value, name: status};
+  }
+
+  void removeFeedStatus(String name) {
+    feedStatuses.value = Map.of(feedStatuses.value)..remove(name);
+  }
+
   Future<void> _connectFeed(_FeedConnection feed) async {
     while (!_stopping) {
       try {

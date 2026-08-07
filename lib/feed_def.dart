@@ -1,18 +1,33 @@
+enum FeedType { network, file }
+
 class FeedDef {
   final String key;
   final String displayName;
+  final FeedType type;
+
+  /// Network source details.
   final String host;
   final int port;
   final String? header;
+
+  /// File source details.
+  final String? path;
+  final int intervalMs;
+  final bool loop;
+
   final String? tooltip;
   final bool builtIn;
 
   const FeedDef({
     required this.key,
     required this.displayName,
-    required this.host,
-    required this.port,
+    this.type = FeedType.network,
+    this.host = '',
+    this.port = 0,
     this.header,
+    this.path,
+    this.intervalMs = 1000,
+    this.loop = true,
     this.tooltip,
     this.builtIn = false,
   });
@@ -20,18 +35,31 @@ class FeedDef {
   Map<String, dynamic> toJson() => {
         'key': key,
         'displayName': displayName,
+        'type': type.name,
         'host': host,
         'port': port,
         'header': header,
+        'path': path,
+        'intervalMs': intervalMs,
+        'loop': loop,
         'tooltip': tooltip,
       };
 
+  /// Legacy JSON without a "type" field is treated as a network feed so
+  /// previously saved custom feeds keep working.
   factory FeedDef.fromJson(Map<String, dynamic> json) => FeedDef(
         key: json['key'] as String,
         displayName: json['displayName'] as String,
-        host: json['host'] as String,
-        port: json['port'] as int,
+        type: FeedType.values.firstWhere(
+          (t) => t.name == json['type'],
+          orElse: () => FeedType.network,
+        ),
+        host: json['host'] as String? ?? '',
+        port: json['port'] as int? ?? 0,
         header: json['header'] as String?,
+        path: json['path'] as String?,
+        intervalMs: json['intervalMs'] as int? ?? 1000,
+        loop: json['loop'] as bool? ?? true,
         tooltip: json['tooltip'] as String?,
       );
 }

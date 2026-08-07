@@ -10,6 +10,7 @@ import 'app_settings.dart';
 import 'boat_animation.dart';
 import 'boatmanager.dart';
 import 'feed_def.dart';
+import 'file_feed_player.dart';
 import 'forwarder_service.dart';
 import 'host_input_formatter.dart';
 import 'message_stats.dart';
@@ -67,6 +68,11 @@ class ReceptionPageState extends State<ReceptionPage> {
   Timer? _statusTimer;
   late final Listenable _feedListenable;
   List<FeedDef> _customFeeds = [];
+
+  /// Active file players, keyed by feed.key. Created lazily when a file feed
+  /// is enabled, kept alive so re-enabling replays instantly.
+  final Map<String, FileFeedPlayer> _filePlayers = {};
+
   bool isRunning = false;
   bool _validateChecksum = true;
 
@@ -163,13 +169,17 @@ class ReceptionPageState extends State<ReceptionPage> {
 
     for (final feed in _allFeeds) {
       if (feedEnabled[feed.key] ?? false) {
-        await forwarderService.addFeed(
-          feed.displayName,
-          feed.key,
-          feed.host,
-          feed.port,
-          header: feed.header,
-        );
+        if (feed.type == FeedType.network) {
+          await forwarderService.addFeed(
+            feed.displayName,
+            feed.key,
+            feed.host,
+            feed.port,
+            header: feed.header,
+          );
+        } else {
+          await _startFileFeed(feed);
+        }
       }
     }
 
@@ -182,6 +192,11 @@ class ReceptionPageState extends State<ReceptionPage> {
     if (sim.isRunning) {
       sim.stop();
       _saveSimFleet();
+    }
+    for (final feed in _allFeeds) {
+      if (feed.type == FeedType.file) {
+        _stopFileFeed(feed);
+      }
     }
     await forwarderService.stop();
     setState(() => isRunning = false);
@@ -219,6 +234,41 @@ class ReceptionPageState extends State<ReceptionPage> {
     );
   }
 
+  /// Returns the existing player for a file feed or creates and wires one.
+  FileFeedPlayer _playerFor(FeedDef feed) {
+    final existing = _filePlayers[feed.key];
+    if (existing != null) return existing;
+
+    final player = FileFeedPlayer(
+      path: feed.path ?? '',
+      intervalMs: feed.intervalMs,
+      loop: feed.loop,
+    );
+    player.onSentence = (nmea) =>
+        forwarderService.ingest(feed.displayName, feed.key, nmea);
+    player.addListener(() {
+      forwarderService.setFeedStatus(feed.displayName, player.status);
+    });
+    _filePlayers[feed.key] = player;
+    return player;
+  }
+
+  /// Loads the file and starts replaying it through the pipeline. On load
+  /// failure the feed is left stopped with an error status.
+  Future<void> _startFileFeed(FeedDef feed) async {
+    final player = _playerFor(feed);
+    await player.load();
+    forwarderService.setFeedStatus(feed.displayName, player.status);
+    if (player.error == null && !player.isRunning) {
+      player.start();
+    }
+  }
+
+  void _stopFileFeed(FeedDef feed) {
+    _filePlayers[feed.key]?.stop();
+    forwarderService.removeFeedStatus(feed.displayName);
+  }
+
   void toggleFeed(FeedDef feed, bool value) async {
     setState(() => feedEnabled[feed.key] = value);
     settings.feedEnabled[feed.key] = value;
@@ -226,91 +276,34 @@ class ReceptionPageState extends State<ReceptionPage> {
 
     if (!isRunning) return;
 
-    if (value) {
-      await forwarderService.addFeed(
-        feed.displayName,
-        feed.key,
-        feed.host,
-        feed.port,
-        header: feed.header,
-      );
+    if (feed.type == FeedType.network) {
+      if (value) {
+        await forwarderService.addFeed(
+          feed.displayName,
+          feed.key,
+          feed.host,
+          feed.port,
+          header: feed.header,
+        );
+      } else {
+        await forwarderService.removeFeed(feed.displayName);
+      }
     } else {
-      await forwarderService.removeFeed(feed.displayName);
+      if (value) {
+        await _startFileFeed(feed);
+      } else {
+        _stopFileFeed(feed);
+      }
     }
   }
 
   Future<void> _showAddFeedDialog() async {
-    final nameController = TextEditingController();
-    final hostController = TextEditingController();
-    final portController = TextEditingController(text: '3000');
-    final headerController = TextEditingController();
-
-    final confirmed = await showDialog<bool>(
+    final feed = await showDialog<FeedDef>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add feed'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: hostController,
-              decoration: const InputDecoration(labelText: 'Host'),
-              inputFormatters: [HostInputFormatter()],
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: portController,
-              decoration: const InputDecoration(labelText: 'Port'),
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                PortInputFormatter(),
-              ],
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: headerController,
-              decoration: const InputDecoration(labelText: 'Header (optional)'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Add'),
-          ),
-        ],
-      ),
+      builder: (_) => const _AddFeedDialog(),
     );
 
-    nameController.dispose();
-    hostController.dispose();
-    portController.dispose();
-    headerController.dispose();
-
-    if (confirmed != true || !mounted) return;
-
-    final name = nameController.text.trim();
-    final host = hostController.text.trim();
-    if (name.isEmpty || host.isEmpty) return;
-    final header = headerController.text.trim();
-
-    final feed = FeedDef(
-      key: name,
-      displayName: name,
-      host: host,
-      port: int.tryParse(portController.text) ?? 3000,
-      header: header.isEmpty ? null : header,
-    );
+    if (feed == null || !mounted) return;
 
     setState(() {
       _customFeeds.add(feed);
@@ -319,24 +312,31 @@ class ReceptionPageState extends State<ReceptionPage> {
     _syncFeedSettings();
 
     if (isRunning) {
-      await forwarderService.addFeed(
-        feed.displayName,
-        feed.key,
-        feed.host,
-        feed.port,
-        header: feed.header,
-      );
+      if (feed.type == FeedType.network) {
+        await forwarderService.addFeed(
+          feed.displayName,
+          feed.key,
+          feed.host,
+          feed.port,
+          header: feed.header,
+        );
+      } else {
+        await _startFileFeed(feed);
+      }
     }
   }
 
   Future<void> _removeCustomFeed(FeedDef feed) async {
-    if (isRunning) {
+    if (feed.type == FeedType.file) {
+      _stopFileFeed(feed);
+    } else if (isRunning) {
       await forwarderService.removeFeed(feed.displayName);
     }
     setState(() {
       _customFeeds.remove(feed);
       feedEnabled.remove(feed.key);
     });
+    _filePlayers.remove(feed.key)?.dispose();
     _syncFeedSettings();
   }
 
@@ -359,10 +359,15 @@ class ReceptionPageState extends State<ReceptionPage> {
     });
   }
 
-  Widget feedIcon(String key) {
-    if (key == "Kikistream.io") return const Icon(Icons.public, size: 30);
-    if (key.length == 2) {
-      return CountryFlag.fromCountryCode(key, width: 30, height: 18);
+  Widget feedIcon(FeedDef feed) {
+    if (feed.type == FeedType.file) {
+      return const Icon(Icons.description, size: 30);
+    }
+    if (feed.key == "Kikistream.io") {
+      return const Icon(Icons.public, size: 30);
+    }
+    if (feed.key.length == 2) {
+      return CountryFlag.fromCountryCode(feed.key, width: 30, height: 18);
     }
     return const Icon(Icons.directions_boat, size: 30);
   }
@@ -447,10 +452,18 @@ class ReceptionPageState extends State<ReceptionPage> {
       ),
       value: feedEnabled[feed.key] ?? false,
       onChanged: (val) => toggleFeed(feed, val ?? false),
-      secondary: feedIcon(feed.key),
+      secondary: feedIcon(feed),
     );
     if (feed.tooltip != null) {
       return Tooltip(message: feed.tooltip!, child: tile);
+    }
+    if (feed.type == FeedType.file) {
+      final fileName = (feed.path ?? '').split(RegExp(r'[/\\]')).last;
+      return Tooltip(
+        message: 'Replays "$fileName", one frame every '
+            '${feed.intervalMs} ms${feed.loop ? ' (loops)' : ''}.',
+        child: tile,
+      );
     }
     return tile;
   }
@@ -464,6 +477,9 @@ class ReceptionPageState extends State<ReceptionPage> {
       _saveSimFleet();
     }
     sim.dispose();
+    for (final player in _filePlayers.values) {
+      player.dispose();
+    }
     super.dispose();
   }
 
@@ -504,6 +520,9 @@ class ReceptionPageState extends State<ReceptionPage> {
     if (entry.starter == "Kikistream.io") {
       return const Icon(Icons.public, size: 16);
     }
+    if (_fileFeedKeys.contains(entry.starter)) {
+      return const Icon(Icons.description, size: 16);
+    }
     if (entry.starter!.length == 2) {
       try {
         return CountryFlag.fromCountryCode(
@@ -517,6 +536,12 @@ class ReceptionPageState extends State<ReceptionPage> {
     }
     return const Icon(Icons.directions_boat, size: 16);
   }
+
+  /// Keys of the file-type custom feeds, used to pick a log starter icon.
+  Set<String> get _fileFeedKeys => {
+        for (final f in _allFeeds)
+          if (f.type == FeedType.file) f.key,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -744,4 +769,196 @@ class LogEntry {
   final String? name;
 
   LogEntry({required this.message, this.starter, this.name});
+}
+
+/// Dialog used to add a custom feed source. The source type (network or
+/// file) selects which details are edited. The controllers live in this
+/// State so they are disposed together with the dialog route (after its exit
+/// animation completes).
+class _AddFeedDialog extends StatefulWidget {
+  const _AddFeedDialog();
+
+  @override
+  State<_AddFeedDialog> createState() => _AddFeedDialogState();
+}
+
+class _AddFeedDialogState extends State<_AddFeedDialog> {
+  FeedType _type = FeedType.network;
+  final _name = TextEditingController();
+  final _host = TextEditingController();
+  final _port = TextEditingController(text: '3000');
+  final _header = TextEditingController();
+  final _path = TextEditingController();
+  final _interval = TextEditingController(text: '1000');
+  bool _loop = true;
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _host.dispose();
+    _port.dispose();
+    _header.dispose();
+    _path.dispose();
+    _interval.dispose();
+    super.dispose();
+  }
+
+  Future<void> _browse() async {
+    const typeGroup = XTypeGroup(
+      label: 'NMEA / text',
+      extensions: ['txt', 'nmea', 'log'],
+    );
+    final file = await openFile(acceptedTypeGroups: [typeGroup]);
+    if (file != null && mounted) {
+      setState(() => _path.text = file.path);
+    }
+  }
+
+  FeedDef? _buildResult() {
+    final name = _name.text.trim();
+    if (name.isEmpty) return null;
+    if (_type == FeedType.network) {
+      final host = _host.text.trim();
+      if (host.isEmpty) return null;
+      final header = _header.text.trim();
+      return FeedDef(
+        key: name,
+        displayName: name,
+        type: FeedType.network,
+        host: host,
+        port: int.tryParse(_port.text) ?? 3000,
+        header: header.isEmpty ? null : header,
+      );
+    }
+    final path = _path.text.trim();
+    if (path.isEmpty) return null;
+    final interval =
+        (int.tryParse(_interval.text) ?? 1000).clamp(1, 60000).toInt();
+    return FeedDef(
+      key: name,
+      displayName: name,
+      type: FeedType.file,
+      path: path,
+      intervalMs: interval,
+      loop: _loop,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Add source'),
+      content: SizedBox(
+        width: 380,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SegmentedButton<FeedType>(
+                segments: const [
+                  ButtonSegment(
+                    value: FeedType.network,
+                    label: Text('Network'),
+                    icon: Icon(Icons.dns_outlined),
+                  ),
+                  ButtonSegment(
+                    value: FeedType.file,
+                    label: Text('File'),
+                    icon: Icon(Icons.description_outlined),
+                  ),
+                ],
+                selected: {_type},
+                onSelectionChanged: (s) => setState(() => _type = s.first),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _name,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              const SizedBox(height: 12),
+              if (_type == FeedType.network) ...[
+                TextField(
+                  controller: _host,
+                  decoration: const InputDecoration(labelText: 'Host'),
+                  inputFormatters: [HostInputFormatter()],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _port,
+                  decoration: const InputDecoration(labelText: 'Port'),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    PortInputFormatter(),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _header,
+                  decoration: const InputDecoration(
+                    labelText: 'Header (optional)',
+                  ),
+                ),
+              ] else ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _path,
+                        decoration: const InputDecoration(
+                          labelText: 'File',
+                          hintText: 'Path or Browse…',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.folder_open),
+                      tooltip: 'Browse',
+                      onPressed: _browse,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _interval,
+                  decoration: const InputDecoration(
+                    labelText: 'Interval between frames (ms)',
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                ),
+                SwitchListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text(
+                    'Loop (replay from the start)',
+                    style: TextStyle(fontSize: 13),
+                  ),
+                  value: _loop,
+                  onChanged: (v) => setState(() => _loop = v),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () {
+            final result = _buildResult();
+            if (result != null) {
+              Navigator.pop(context, result);
+            }
+          },
+          child: const Text('Add'),
+        ),
+      ],
+    );
+  }
 }
