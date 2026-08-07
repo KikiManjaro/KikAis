@@ -56,9 +56,13 @@ class _WorldMapPageState extends State<WorldMapPage> {
     _boatManager = context.read<BoatManager>();
     _settings = context.read<AppSettings>();
     clusterEnabled = _settings.mapClusterEnabled;
-    if (_boatManager.sendToMap != _settings.sendToMap) {
-      _boatManager.setSendToMap(_settings.sendToMap);
-    }
+    // Defer the BoatManager sync to the first post-frame so setSendToMap's
+    // notifyListeners() doesn't fire while the tree is being built.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_boatManager.sendToMap != _settings.sendToMap) {
+        _boatManager.setSendToMap(_settings.sendToMap);
+      }
+    });
     _boatManager.addListener(_onBoatsChanged);
   }
 

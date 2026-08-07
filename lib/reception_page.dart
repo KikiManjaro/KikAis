@@ -15,6 +15,7 @@ import 'forwarder_service.dart';
 import 'host_input_formatter.dart';
 import 'message_stats.dart';
 import 'port_input_formatter.dart';
+import 'serial_feed_player.dart';
 import 'simulator_service.dart';
 import 'widgets.dart';
 
@@ -78,6 +79,10 @@ class ReceptionPageState extends State<ReceptionPage> {
   /// is enabled, kept alive so re-enabling replays instantly.
   final Map<String, FileFeedPlayer> _filePlayers = {};
 
+  /// Active serial players, keyed by feed.key. Created lazily when a serial
+  /// feed is enabled, kept alive so re-enabling reconnects instantly.
+  final Map<String, SerialFeedPlayer> _serialPlayers = {};
+
   bool isRunning = false;
   bool _validateChecksum = true;
 
@@ -121,24 +126,35 @@ class ReceptionPageState extends State<ReceptionPage> {
       ..addAll({for (final f in _customFeeds) f.key: false})
       ..addAll(settings.feedEnabled);
     _validateChecksum = settings.validateChecksum;
-    if (boatManager.validateChecksum != settings.validateChecksum) {
-      boatManager.setValidateChecksum(settings.validateChecksum);
-    }
-    if (boatManager.decodeEnabled != settings.decodeEnabled) {
-      boatManager.setDecodeEnabled(settings.decodeEnabled);
-    }
-    if (boatManager.sendToMap != settings.sendToMap) {
-      boatManager.setSendToMap(settings.sendToMap);
-    }
+    // BoatManager setters notify listeners; deferring them to the first
+    // post-frame avoids calling notifyListeners() while the widget tree is
+    // still building (which throws an assertion and disrupts the first frame).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (boatManager.validateChecksum != settings.validateChecksum) {
+        boatManager.setValidateChecksum(settings.validateChecksum);
+      }
+      if (boatManager.decodeEnabled != settings.decodeEnabled) {
+        boatManager.setDecodeEnabled(settings.decodeEnabled);
+      }
+      if (boatManager.sendToMap != settings.sendToMap) {
+        boatManager.setSendToMap(settings.sendToMap);
+      }
+    });
 
     _feedListenable = Listenable.merge([
       forwarderService.feedStatuses,
       sim,
       _statusTick,
     ]);
+    // Refresh the feed tiles only while the forwarder is running; the dots
+    // never change over time otherwise. Idle rebuilds churn the semantics tree
+    // (ListView + Tooltips), which on Windows triggers AXTree bridge failures.
     _statusTimer = Timer.periodic(
       const Duration(seconds: 1),
-      (_) => _statusTick.value++,
+      (_) {
+        if (isRunning) _statusTick.value++;
+      },
     );
   }
 
@@ -187,8 +203,10 @@ class ReceptionPageState extends State<ReceptionPage> {
             feed.port,
             header: feed.header,
           );
-        } else {
+        } else if (feed.type == FeedType.file) {
           await _startFileFeed(feed);
+        } else {
+          await _startSerialFeed(feed);
         }
       }
     }
@@ -205,6 +223,8 @@ class ReceptionPageState extends State<ReceptionPage> {
     for (final feed in _allFeeds) {
       if (feed.type == FeedType.file) {
         _stopFileFeed(feed);
+      } else if (feed.type == FeedType.serial) {
+        _stopSerialFeed(feed);
       }
     }
     await forwarderService.stop();
@@ -272,6 +292,37 @@ class ReceptionPageState extends State<ReceptionPage> {
     forwarderService.removeFeedStatus(feed.displayName);
   }
 
+  /// Returns the existing player for a serial feed or creates and wires one.
+  SerialFeedPlayer _playerForSerial(FeedDef feed) {
+    final existing = _serialPlayers[feed.key];
+    if (existing != null) return existing;
+
+    final player = SerialFeedPlayer(
+      address: feed.serialPort ?? '',
+      baudRate: feed.baudRate,
+    );
+    player.onSentence = (nmea) =>
+        forwarderService.ingest(feed.displayName, feed.key, nmea);
+    player.addListener(() {
+      forwarderService.setFeedStatus(feed.displayName, player.status);
+    });
+    _serialPlayers[feed.key] = player;
+    return player;
+  }
+
+  /// Opens the serial port and starts reading. On connect failure the feed is
+  /// left stopped with an error status.
+  Future<void> _startSerialFeed(FeedDef feed) async {
+    final player = _playerForSerial(feed);
+    await player.connect();
+    forwarderService.setFeedStatus(feed.displayName, player.status);
+  }
+
+  Future<void> _stopSerialFeed(FeedDef feed) async {
+    await _serialPlayers[feed.key]?.disconnect();
+    forwarderService.removeFeedStatus(feed.displayName);
+  }
+
   void toggleFeed(FeedDef feed, bool value) async {
     setState(() => feedEnabled[feed.key] = value);
     settings.feedEnabled[feed.key] = value;
@@ -291,11 +342,17 @@ class ReceptionPageState extends State<ReceptionPage> {
       } else {
         await forwarderService.removeFeed(feed.displayName);
       }
-    } else {
+    } else if (feed.type == FeedType.file) {
       if (value) {
         await _startFileFeed(feed);
       } else {
         _stopFileFeed(feed);
+      }
+    } else {
+      if (value) {
+        await _startSerialFeed(feed);
+      } else {
+        await _stopSerialFeed(feed);
       }
     }
   }
@@ -323,8 +380,10 @@ class ReceptionPageState extends State<ReceptionPage> {
           feed.port,
           header: feed.header,
         );
-      } else {
+      } else if (feed.type == FeedType.file) {
         await _startFileFeed(feed);
+      } else {
+        await _startSerialFeed(feed);
       }
     }
   }
@@ -332,6 +391,8 @@ class ReceptionPageState extends State<ReceptionPage> {
   Future<void> _removeCustomFeed(FeedDef feed) async {
     if (feed.type == FeedType.file) {
       _stopFileFeed(feed);
+    } else if (feed.type == FeedType.serial) {
+      await _stopSerialFeed(feed);
     } else if (isRunning) {
       await forwarderService.removeFeed(feed.displayName);
     }
@@ -340,6 +401,7 @@ class ReceptionPageState extends State<ReceptionPage> {
       feedEnabled.remove(feed.key);
     });
     _filePlayers.remove(feed.key)?.dispose();
+    _serialPlayers.remove(feed.key)?.dispose();
     _syncFeedSettings();
   }
 
@@ -363,6 +425,9 @@ class ReceptionPageState extends State<ReceptionPage> {
   }
 
   Widget feedIcon(FeedDef feed) {
+    if (feed.type == FeedType.serial) {
+      return const Icon(Icons.settings_ethernet, size: 30);
+    }
     if (feed.type == FeedType.file) {
       return const Icon(Icons.description, size: 30);
     }
@@ -460,6 +525,14 @@ class ReceptionPageState extends State<ReceptionPage> {
     if (feed.tooltip != null) {
       return Tooltip(message: feed.tooltip!, child: tile);
     }
+    if (feed.type == FeedType.serial) {
+      final port = feed.serialPort ?? '';
+      return Tooltip(
+        message: 'Reads NMEA frames from serial port $port at '
+            '${feed.baudRate} baud.',
+        child: tile,
+      );
+    }
     if (feed.type == FeedType.file) {
       final fileName = (feed.path ?? '').split(RegExp(r'[/\\]')).last;
       return Tooltip(
@@ -479,6 +552,9 @@ class ReceptionPageState extends State<ReceptionPage> {
     _logFlushTimer?.cancel();
     sim.dispose();
     for (final player in _filePlayers.values) {
+      player.dispose();
+    }
+    for (final player in _serialPlayers.values) {
       player.dispose();
     }
     super.dispose();
@@ -521,6 +597,9 @@ class ReceptionPageState extends State<ReceptionPage> {
     if (entry.starter == "Kikistream.io") {
       return const Icon(Icons.public, size: 16);
     }
+    if (_serialFeedKeys.contains(entry.starter)) {
+      return const Icon(Icons.settings_ethernet, size: 16);
+    }
     if (_fileFeedKeys.contains(entry.starter)) {
       return const Icon(Icons.description, size: 16);
     }
@@ -542,6 +621,12 @@ class ReceptionPageState extends State<ReceptionPage> {
   Set<String> get _fileFeedKeys => {
         for (final f in _allFeeds)
           if (f.type == FeedType.file) f.key,
+      };
+
+  /// Keys of the serial-type custom feeds, used to pick a log starter icon.
+  Set<String> get _serialFeedKeys => {
+        for (final f in _allFeeds)
+          if (f.type == FeedType.serial) f.key,
       };
 
   @override
@@ -784,6 +869,10 @@ class _AddFeedDialog extends StatefulWidget {
 }
 
 class _AddFeedDialogState extends State<_AddFeedDialog> {
+  static const List<int> kBaudRates = [
+    4800, 9600, 19200, 38400, 57600, 115200,
+  ];
+
   FeedType _type = FeedType.network;
   final _name = TextEditingController();
   final _host = TextEditingController();
@@ -791,6 +880,9 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
   final _header = TextEditingController();
   final _path = TextEditingController();
   final _interval = TextEditingController(text: '1000');
+  final _serialPort = TextEditingController();
+  int _baudRate = 38400;
+  List<String> _serialPorts = [];
   bool _loop = true;
 
   @override
@@ -801,7 +893,15 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
     _header.dispose();
     _path.dispose();
     _interval.dispose();
+    _serialPort.dispose();
     super.dispose();
+  }
+
+  /// Refreshes the list of serial ports detected on the system. When the
+  /// native library is unavailable (e.g. under `flutter test`) this simply
+  /// leaves the manual-entry field visible.
+  void _refreshSerialPorts() {
+    setState(() => _serialPorts = availableSerialPorts());
   }
 
   Future<void> _browse() async {
@@ -829,6 +929,17 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
         host: host,
         port: int.tryParse(_port.text) ?? 3000,
         header: header.isEmpty ? null : header,
+      );
+    }
+    if (_type == FeedType.serial) {
+      final serialPort = _serialPort.text.trim();
+      if (serialPort.isEmpty) return null;
+      return FeedDef(
+        key: name,
+        displayName: name,
+        type: FeedType.serial,
+        serialPort: serialPort,
+        baudRate: _baudRate,
       );
     }
     final path = _path.text.trim();
@@ -868,9 +979,19 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                     label: Text('File'),
                     icon: Icon(Icons.description_outlined),
                   ),
+                  ButtonSegment(
+                    value: FeedType.serial,
+                    label: Text('Serial'),
+                    icon: Icon(Icons.settings_ethernet_outlined),
+                  ),
                 ],
                 selected: {_type},
-                onSelectionChanged: (s) => setState(() => _type = s.first),
+                onSelectionChanged: (s) {
+                  setState(() => _type = s.first);
+                  if (s.first == FeedType.serial) {
+                    _refreshSerialPorts();
+                  }
+                },
               ),
               const SizedBox(height: 16),
               TextField(
@@ -901,7 +1022,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                     labelText: 'Header (optional)',
                   ),
                 ),
-              ] else ...[
+              ] else if (_type == FeedType.file) ...[
                 Row(
                   children: [
                     Expanded(
@@ -939,6 +1060,53 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                   ),
                   value: _loop,
                   onChanged: (v) => setState(() => _loop = v),
+                ),
+              ] else ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _serialPort,
+                        decoration: const InputDecoration(
+                          labelText: 'Serial port',
+                          hintText: 'e.g. COM3 or /dev/ttyUSB0',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.refresh),
+                      tooltip: 'Refresh ports',
+                      onPressed: _refreshSerialPorts,
+                    ),
+                  ],
+                ),
+                if (_serialPorts.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      for (final p in _serialPorts)
+                        ActionChip(
+                          label: Text(p),
+                          onPressed: () {
+                            setState(() => _serialPort.text = p);
+                          },
+                        ),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 12),
+                DropdownButtonFormField<int>(
+                  initialValue: _baudRate,
+                  decoration: const InputDecoration(labelText: 'Baud rate'),
+                  items: [
+                    for (final rate in kBaudRates)
+                      DropdownMenuItem(value: rate, child: Text('$rate')),
+                  ],
+                  onChanged: (v) {
+                    if (v != null) setState(() => _baudRate = v);
+                  },
                 ),
               ],
             ],

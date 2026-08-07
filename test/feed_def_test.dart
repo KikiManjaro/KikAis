@@ -57,5 +57,31 @@ void main() {
       expect(restored.intervalMs, 1000);
       expect(restored.loop, isTrue);
     });
+
+    test('serial feed', () {
+      final feed = FeedDef(
+        key: 'gps',
+        displayName: 'GPS',
+        type: FeedType.serial,
+        serialPort: 'COM7',
+        baudRate: 9600,
+      );
+      final restored = FeedDef.fromJson(feed.toJson());
+      expect(restored.type, FeedType.serial);
+      expect(restored.serialPort, 'COM7');
+      expect(restored.baudRate, 9600);
+    });
+
+    test('serial feed defaults to 38400 baud', () {
+      final restored = FeedDef.fromJson({
+        'key': 's',
+        'displayName': 'S',
+        'type': 'serial',
+        'serialPort': '/dev/ttyUSB0',
+      });
+      expect(restored.type, FeedType.serial);
+      expect(restored.serialPort, '/dev/ttyUSB0');
+      expect(restored.baudRate, 38400);
+    });
   });
 }

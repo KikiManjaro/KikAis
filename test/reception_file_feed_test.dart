@@ -233,4 +233,40 @@ void main() {
       running: ctx.running,
     );
   });
+
+  testWidgets('add source dialog offers serial fields after switching type',
+      (tester) async {
+    final ctx = await pumpReception(tester);
+
+    await tester.tap(find.byTooltip('Add feed'));
+    await tester.pumpAndSettle();
+
+    // Default type is network: host/port/header fields are visible.
+    expect(find.widgetWithText(TextField, 'Host'), findsOneWidget);
+
+    // Switch to serial: serial port and baud rate fields appear instead.
+    await tester.tap(find.text('Serial'));
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(TextField, 'Serial port'), findsOneWidget);
+    expect(find.text('Baud rate'), findsOneWidget);
+    expect(find.widgetWithText(TextField, 'Host'), findsNothing);
+
+    // Fill the fields and add the source.
+    await tester.enterText(find.widgetWithText(TextField, 'Name'), 'My GPS');
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Serial port'),
+      'COM7',
+    );
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+
+    expect(find.widgetWithText(CheckboxListTile, 'My GPS'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    disposeTest(
+      boatManager: ctx.boatManager,
+      stats: ctx.stats,
+      boat: ctx.boat,
+      running: ctx.running,
+    );
+  });
 }

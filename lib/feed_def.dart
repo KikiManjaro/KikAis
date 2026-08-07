@@ -1,4 +1,4 @@
-enum FeedType { network, file }
+enum FeedType { network, file, serial }
 
 class FeedDef {
   final String key;
@@ -15,6 +15,10 @@ class FeedDef {
   final int intervalMs;
   final bool loop;
 
+  /// Serial source details.
+  final String? serialPort;
+  final int baudRate;
+
   final String? tooltip;
   final bool builtIn;
 
@@ -28,6 +32,8 @@ class FeedDef {
     this.path,
     this.intervalMs = 1000,
     this.loop = true,
+    this.serialPort,
+    this.baudRate = 38400,
     this.tooltip,
     this.builtIn = false,
   });
@@ -42,6 +48,8 @@ class FeedDef {
         'path': path,
         'intervalMs': intervalMs,
         'loop': loop,
+        'serialPort': serialPort,
+        'baudRate': baudRate,
         'tooltip': tooltip,
       };
 
@@ -60,6 +68,8 @@ class FeedDef {
         path: json['path'] as String?,
         intervalMs: json['intervalMs'] as int? ?? 1000,
         loop: json['loop'] as bool? ?? true,
+        serialPort: json['serialPort'] as String?,
+        baudRate: json['baudRate'] as int? ?? 38400,
         tooltip: json['tooltip'] as String?,
       );
 }

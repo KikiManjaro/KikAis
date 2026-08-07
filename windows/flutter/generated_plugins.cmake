@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   auto_updater_windows
   bitsdojo_window_windows
   file_selector_windows
+  flutter_libserialport
   url_launcher_windows
 )
 

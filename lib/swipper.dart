@@ -179,13 +179,24 @@ class _SwipperUiState extends State<SwipperUi> {
                   child: IndexedStack(
                     index: _currentIndex,
                     children: [
-                      receptionPage,
-                      sendPage,
-                      mapPage,
-                      editorPage,
-                      decoderPage,
-                      statsPage,
-                      simulationPage,
+                      // Hidden pages keep their state but their animations are
+                      // muted (TickerMode) so they don't churn the frame loop.
+                      TickerMode(
+                        enabled: _currentIndex == 0,
+                        child: receptionPage,
+                      ),
+                      TickerMode(enabled: _currentIndex == 1, child: sendPage),
+                      TickerMode(enabled: _currentIndex == 2, child: mapPage),
+                      TickerMode(enabled: _currentIndex == 3, child: editorPage),
+                      TickerMode(
+                        enabled: _currentIndex == 4,
+                        child: decoderPage,
+                      ),
+                      TickerMode(enabled: _currentIndex == 5, child: statsPage),
+                      TickerMode(
+                        enabled: _currentIndex == 6,
+                        child: simulationPage,
+                      ),
                     ],
                   ),
                 ),
