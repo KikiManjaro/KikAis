@@ -200,7 +200,13 @@ one processor, this should be reworked
 - Add the ability for the user to create and send his own ais messages
 - Add the ability to manage multiple endpoint while sending data
 - Ajouter un onglet de simulation permettant de simuler une flotte de bateau, a un endroit précis qui envoient certains messages
-- Ajouter la possibiliter de filtrer ce qui est renvoyé (filtre par type de message, par zone géographique, par bateau, etc...)
+- Ajouter la possibilité de filtrer ce qui est renvoyé (filtre par type de message, par zone géographique, par bateau, etc...)
+- Ajouter un vrai installer windows (pas juste portable)
+- Ajouter un systeme d'update de l'app
+- Pouvoir relire des fichiers
+- Support du NMEA4.0
+- Ajout de la reception en serial
+- Gestion des messages binaires
 
 ## Images
 
