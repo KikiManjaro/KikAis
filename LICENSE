@@ -1,0 +1,42 @@
+# KikAis — Source-Available License (Custom)
+
+Copyright (c) 2026 Kylian Meulin (KikiManjaro)
+
+## Permitted Use
+
+You are free to download, install, and use the KikAis software for any
+personal, private, or internal purpose, free of charge. You may use the
+application to receive, process, visualize, and forward AIS NMEA 0183 data
+as described in the project documentation.
+
+## Prohibited Use
+
+You may **NOT**:
+
+- Copy, reproduce, duplicate, mirror, or distribute the software or its
+  source code, in whole or in part, by any means, whether free of charge or
+  for a fee;
+- Redistribute, sublicense, lease, rent, or loan the software or its source
+  code to any third party;
+- Resell, re-license, or commercialize the software or its source code;
+- Publish or host a modified or derivative version of the software or its
+  source code;
+- Remove or alter any copyright, trademark, or license notices contained in
+  the software or its source code.
+
+## Scope and Third-Party Components
+
+This license applies to the KikAis project as a whole, except for the
+vendored AIS decoder located in `lib/ais`, which is distributed under its own
+BSD-3-Clause license (see `lib/ais/LICENSE.ais_decoder.txt`). Third-party
+packages and dependencies remain under their respective licenses.
+
+## Disclaimer of Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
