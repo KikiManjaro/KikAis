@@ -25,7 +25,6 @@ class AppSettings extends ChangeNotifier {
   static const _kCustomFeeds = 'customFeeds';
   static const _kFeedPrefix = 'feedEnabled.';
   static const _kSimulation = 'simulation';
-  static const _kSimFleet = 'simFleet';
 
   bool mapClusterEnabled = true;
   bool sendToMap = false;
@@ -42,10 +41,6 @@ class AppSettings extends ChangeNotifier {
   final Map<String, bool> feedEnabled = {};
   List<FeedDef> customFeeds = [];
   SimFleetConfig simConfig = SimFleetConfig();
-
-  /// The generated fleet, persisted so it survives restarts. Null until the
-  /// simulation page has generated one.
-  List<SimBoat>? simFleet;
 
   void setTheme(AppTheme theme) {
     if (appTheme == theme) return;
@@ -148,13 +143,6 @@ class AppSettings extends ChangeNotifier {
           SimFleetConfig.fromJson(jsonDecode(simRaw) as Map<String, dynamic>);
     }
 
-    final fleetRaw = prefs.getString(_kSimFleet);
-    if (fleetRaw != null && fleetRaw.isNotEmpty) {
-      simFleet = (jsonDecode(fleetRaw) as List)
-          .map((e) => SimBoat.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-
     notifyListeners();
   }
 
@@ -188,11 +176,5 @@ class AppSettings extends ChangeNotifier {
       jsonEncode(customFeeds.map((f) => f.toJson()).toList()),
     );
     await prefs.setString(_kSimulation, jsonEncode(simConfig.toJson()));
-    if (simFleet != null) {
-      await prefs.setString(
-        _kSimFleet,
-        jsonEncode(simFleet!.map((b) => b.toJson()).toList()),
-      );
-    }
   }
 }

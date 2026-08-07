@@ -45,11 +45,7 @@ class _SimulationPageState extends State<SimulationPage> {
     super.initState();
     settings = context.read<AppSettings>();
     boatManager = context.read<BoatManager>();
-    sim = widget.simGetter() ??
-        SimulatorService(
-          config: settings.simConfig,
-          initialFleet: settings.simFleet,
-        );
+    sim = widget.simGetter() ?? SimulatorService(config: settings.simConfig);
     _draftTypes = Set.of(sim.config.messageTypes);
     _syncControllers(sim.config);
   }
@@ -97,11 +93,6 @@ class _SimulationPageState extends State<SimulationPage> {
     );
     sim.setConfig(config);
     settings.simConfig = config;
-    _saveFleet();
-  }
-
-  void _saveFleet() {
-    settings.simFleet = sim.fleet.boats.toList();
     settings.save();
   }
 
@@ -140,6 +131,75 @@ class _SimulationPageState extends State<SimulationPage> {
         keyboardType:
             const TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(labelText: label, isDense: true),
+      ),
+    );
+  }
+
+  Widget _buildBoatRow(SimBoat b) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Tooltip(
+            message: _kindLabel(b.emitType),
+            child: Icon(
+              _kindIcon(b.emitType),
+              size: 16,
+              color: _kindColor(b.emitType),
+            ),
+          ),
+          const SizedBox(width: 6),
+          SizedBox(
+            width: 110,
+            child: Text(
+              '${b.mmsi}',
+              style: const TextStyle(
+                fontSize: 11,
+                fontFamily: 'monospace',
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 90,
+            child: Text(
+              b.name,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 11),
+            ),
+          ),
+          SizedBox(
+            width: 60,
+            child: Text(
+              'T${b.emitType}',
+              style: const TextStyle(fontSize: 11),
+            ),
+          ),
+          SizedBox(
+            width: 50,
+            child: Text(
+              '${b.sog.toStringAsFixed(1)} kn',
+              style: const TextStyle(fontSize: 11),
+            ),
+          ),
+          SizedBox(
+            width: 55,
+            child: Text(
+              '${b.cog.toStringAsFixed(0)}°',
+              style: const TextStyle(fontSize: 11),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              '${b.lat.toStringAsFixed(4)}, '
+              '${b.lon.toStringAsFixed(4)}',
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 11,
+                fontFamily: 'monospace',
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -290,73 +350,14 @@ class _SimulationPageState extends State<SimulationPage> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        for (final b in sim.fleet.boats)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Row(
-                              children: [
-                                Tooltip(
-                                  message: _kindLabel(b.emitType),
-                                  child: Icon(
-                                    _kindIcon(b.emitType),
-                                    size: 16,
-                                    color: _kindColor(b.emitType),
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                SizedBox(
-                                  width: 110,
-                                  child: Text(
-                                    '${b.mmsi}',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontFamily: 'monospace',
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 90,
-                                  child: Text(
-                                    b.name,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontSize: 11),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 60,
-                                  child: Text(
-                                    'T${b.emitType}',
-                                    style: const TextStyle(fontSize: 11),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 50,
-                                  child: Text(
-                                    '${b.sog.toStringAsFixed(1)} kn',
-                                    style: const TextStyle(fontSize: 11),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 55,
-                                  child: Text(
-                                    '${b.cog.toStringAsFixed(0)}°',
-                                    style: const TextStyle(fontSize: 11),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    '${b.lat.toStringAsFixed(4)}, '
-                                    '${b.lon.toStringAsFixed(4)}',
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontFamily: 'monospace',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                        SizedBox(
+                          height: 320,
+                          child: ListView.builder(
+                            itemCount: sim.fleet.boats.length,
+                            itemBuilder: (context, index) =>
+                                _buildBoatRow(sim.fleet.boats[index]),
                           ),
+                        ),
                       ],
                     ),
                   ),

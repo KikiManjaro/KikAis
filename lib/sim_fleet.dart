@@ -306,57 +306,11 @@ class SimBoat {
         draught: draught,
         destination: destination,
       );
-
-  Map<String, dynamic> toJson() => {
-        'index': index,
-        'mmsi': mmsi,
-        'name': name,
-        'vesselType': vesselType,
-        'lat': lat,
-        'lon': lon,
-        'sog': sog,
-        'cog': cog,
-        'heading': heading,
-        'altitude': altitude,
-        'dimensionBow': dimensionBow,
-        'dimensionStern': dimensionStern,
-        'dimensionPort': dimensionPort,
-        'dimensionStarboard': dimensionStarboard,
-        'draught': draught,
-        'callSign': callSign,
-        'destination': destination,
-        'emitType': emitType,
-        'fixed': fixed,
-      };
-
-  factory SimBoat.fromJson(Map<String, dynamic> json) => SimBoat(
-        index: json['index'] as int,
-        mmsi: json['mmsi'] as int,
-        name: json['name'] as String? ?? '',
-        vesselType: json['vesselType'] as int? ?? 0,
-        lat: (json['lat'] as num).toDouble(),
-        lon: (json['lon'] as num).toDouble(),
-        sog: (json['sog'] as num?)?.toDouble() ?? 0,
-        cog: (json['cog'] as num?)?.toDouble() ?? 0,
-        heading: (json['heading'] as num?)?.toDouble() ?? 0,
-        altitude: json['altitude'] as int? ?? 300,
-        dimensionBow: json['dimensionBow'] as int? ?? 10,
-        dimensionStern: json['dimensionStern'] as int? ?? 20,
-        dimensionPort: json['dimensionPort'] as int? ?? 5,
-        dimensionStarboard: json['dimensionStarboard'] as int? ?? 5,
-        draught: (json['draught'] as num?)?.toDouble() ?? 4,
-        callSign: json['callSign'] as String? ?? '',
-        destination: json['destination'] as String? ?? '',
-        emitType: json['emitType'] as int,
-        fixed: json['fixed'] as bool? ?? false,
-      );
 }
 
 /// The simulated fleet: generated vessels plus a couple of fixed stations.
 class SimFleet {
   final List<SimBoat> boats = [];
-
-  SimFleet();
 
   void generate(SimFleetConfig config) {
     boats.clear();
@@ -455,26 +409,5 @@ class SimFleet {
     final lonDegKm = kKmPerDegLat * math.cos(config.centerLat * math.pi / 180);
     final dLon = math.sin(ang) * r / lonDegKm;
     return (config.centerLat + dLat, config.centerLon + dLon);
-  }
-
-  Map<String, dynamic> toJson() => {
-        'boats': boats.map((b) => b.toJson()).toList(),
-      };
-
-  factory SimFleet.fromJson(Map<String, dynamic> json) {
-    final fleet = SimFleet();
-    fleet.boats.addAll(
-      ((json['boats'] as List?) ?? const [])
-          .map((e) => SimBoat.fromJson(e as Map<String, dynamic>)),
-    );
-    return fleet;
-  }
-
-  /// Replaces the current fleet with a deep copy of [source] (used to restore
-  /// the fleet persisted in [AppSettings]).
-  void restoreFrom(List<SimBoat> source) {
-    boats
-      ..clear()
-      ..addAll(source.map((b) => SimBoat.fromJson(b.toJson())));
   }
 }

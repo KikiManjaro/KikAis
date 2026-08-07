@@ -121,41 +121,12 @@ void main() {
     expect(simBoatKind(21), SimBoatKind.aton);
   });
 
-  test('fleet and boats json round-trips', () {
-    final config = SimFleetConfig(messageTypes: {1, 5, 4, 21});
+  test('generate handles a very large fleet', () {
+    final config = SimFleetConfig(boatCount: 10000, seed: 1);
     final fleet = SimFleet();
     fleet.generate(config);
-
-    final restored = SimFleet.fromJson(fleet.toJson());
-    expect(restored.boats.length, fleet.boats.length);
-    for (var i = 0; i < fleet.boats.length; i++) {
-      final a = fleet.boats[i];
-      final b = restored.boats[i];
-      expect(b.index, a.index);
-      expect(b.mmsi, a.mmsi);
-      expect(b.name, a.name);
-      expect(b.lat, a.lat);
-      expect(b.lon, a.lon);
-      expect(b.sog, a.sog);
-      expect(b.cog, a.cog);
-      expect(b.emitType, a.emitType);
-      expect(b.fixed, a.fixed);
-    }
-  });
-
-  test('restoreFrom deep-copies the saved fleet', () {
-    final config = SimFleetConfig(seed: 5);
-    final fleet = SimFleet();
-    fleet.generate(config);
-    final saved = fleet.boats.toList();
-
-    final restored = SimFleet();
-    restored.restoreFrom(saved);
-    expect(restored.boats.length, saved.length);
-    expect(restored.boats.first.lat, saved.first.lat);
-
-    // Mutating the restored fleet must not affect the saved snapshot.
-    restored.boats.first.lat += 10;
-    expect(saved.first.lat, isNot(restored.boats.first.lat));
+    expect(fleet.boats.length, 10000);
+    // MMSIs stay unique even at scale.
+    expect(fleet.boats.map((b) => b.mmsi).toSet().length, 10000);
   });
 }

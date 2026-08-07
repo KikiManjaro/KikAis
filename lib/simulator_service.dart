@@ -22,13 +22,8 @@ class SimulatorService extends ChangeNotifier {
   Timer? _timer;
   int _tick = 0;
 
-  SimulatorService({SimFleetConfig? config, List<SimBoat>? initialFleet})
-      : config = config ?? SimFleetConfig() {
-    if (initialFleet != null && initialFleet.isNotEmpty) {
-      fleet.restoreFrom(initialFleet);
-    } else {
-      fleet.generate(this.config);
-    }
+  SimulatorService({SimFleetConfig? config}) : config = config ?? SimFleetConfig() {
+    fleet.generate(this.config);
   }
 
   void setConfig(SimFleetConfig next) {

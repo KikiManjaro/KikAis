@@ -135,6 +135,11 @@ void main() {
     // Stopping the forwarder stops the replay.
     await tester.tap(find.text('Stop'));
     await tester.pump();
+    // Log lines are flushed in a batched timer; let it settle before counting.
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
+    await tester.pump();
     final before = find.textContaining('[Log]').evaluate().length;
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 200)),
@@ -163,6 +168,11 @@ void main() {
 
     // Disabling the feed stops the replay: no new frames are logged.
     await tester.tap(find.widgetWithText(CheckboxListTile, 'Log'));
+    await tester.pump();
+    // Log lines are flushed in a batched timer; let it settle before counting.
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
     await tester.pump();
     final before = find.textContaining('[Log]').evaluate().length;
     await tester.runAsync(

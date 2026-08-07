@@ -51,7 +51,7 @@ void main() {
     stats.dispose();
   });
 
-  testWidgets('apply fleet updates the generated fleet and persists it',
+  testWidgets('apply fleet updates the generated fleet and persists the config',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     final stats = MessageStats();
@@ -62,7 +62,7 @@ void main() {
     await tester.pumpWidget(_app(sim, settings, boatManager));
     await tester.pump();
 
-    expect(find.text('SIM-10'), findsOneWidget); // 10 boats by default
+    expect(find.textContaining('10 boats'), findsOneWidget);
 
     // Increase the vessel count and apply.
     await tester.enterText(
@@ -73,10 +73,9 @@ void main() {
     await tester.tap(find.text('Apply fleet'));
     await tester.pump();
 
-    expect(find.text('SIM-15'), findsOneWidget);
+    expect(find.textContaining('15 boats'), findsOneWidget);
     expect(sim.config.boatCount, 15);
     expect(settings.simConfig.boatCount, 15);
-    expect(settings.simFleet, hasLength(15));
     expect(tester.takeException(), isNull);
 
     sim.dispose();
@@ -84,34 +83,28 @@ void main() {
     stats.dispose();
   });
 
-  testWidgets('restores the persisted fleet on startup', (tester) async {
+  testWidgets('a very large fleet renders without building every row',
+      (tester) async {
     SharedPreferences.setMockInitialValues({});
     final stats = MessageStats();
     final boatManager = BoatManager(stats: stats);
     final settings = AppSettings();
-
-    // A fleet that was saved before a restart (with a renamed vessel).
-    final fleet = SimFleet();
-    fleet.generate(
-      SimFleetConfig(seed: 3, boatCount: 20, messageTypes: {1, 5, 4, 21}),
-    );
-    fleet.boats.first.name = 'KEEPER';
-    settings.simFleet = fleet.boats.toList();
     final sim = SimulatorService(
-      config: settings.simConfig,
-      initialFleet: settings.simFleet,
+      config: SimFleetConfig(boatCount: 10000, seed: 1),
     );
 
     await tester.pumpWidget(_app(sim, settings, boatManager));
     await tester.pump();
 
-    // The restored fleet (24 = 20 vessels + base + 3 AtoN) is shown. Each
-    // vessel row carries a role icon; the "Live fleet" header adds one more.
-    expect(find.text('KEEPER'), findsOneWidget);
-    expect(find.text('SIM BASE'), findsOneWidget);
-    expect(find.byIcon(Icons.directions_boat), findsNWidgets(21));
-    expect(find.byIcon(Icons.radio), findsOneWidget);
-    expect(find.byIcon(Icons.anchor), findsNWidgets(3));
+    // The count reflects the whole fleet...
+    expect(find.textContaining('10000 boats'), findsOneWidget);
+    // ...but only the visible rows are actually built (virtualized list), so
+    // a tiny number of vessel icons exists instead of one per boat.
+    final built = tester
+        .widgetList(find.byIcon(Icons.directions_boat))
+        .length;
+    expect(built, lessThan(100));
+    expect(tester.takeException(), isNull);
 
     sim.dispose();
     boatManager.dispose();

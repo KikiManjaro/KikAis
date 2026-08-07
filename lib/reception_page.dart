@@ -62,6 +62,11 @@ class ReceptionPageState extends State<ReceptionPage> {
   late ForwarderService forwarderService;
   late SimulatorService sim;
 
+  /// Log lines waiting to be flushed to [logEntries] in a single rebuild.
+  final List<LogEntry> _pendingLogs = [];
+  static const Duration _logFlushDelay = Duration(milliseconds: 50);
+  Timer? _logFlushTimer;
+
   final List<LogEntry> logEntries = [];
   final Map<String, bool> feedEnabled = {};
   final ValueNotifier<int> _statusTick = ValueNotifier(0);
@@ -92,21 +97,12 @@ class ReceptionPageState extends State<ReceptionPage> {
         if (message.startsWith("!")) {
           stats.recordReceived(name);
         }
-        setState(() {
-          logEntries.add(
-            LogEntry(message: message, starter: starter, name: name),
-          );
-          if (logEntries.length > maxLogEntries) {
-            logEntries.removeRange(0, logEntries.length - maxLogEntries);
-          }
-        });
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_scrollController.hasClients) {
-            _scrollController.jumpTo(
-              _scrollController.position.maxScrollExtent,
-            );
-          }
-        });
+        // Batched: a single setState per flush instead of one per frame, so
+        // high-volume feeds (e.g. a large simulated fleet) don't stall the UI.
+        _pendingLogs.add(
+          LogEntry(message: message, starter: starter, name: name),
+        );
+        _logFlushTimer ??= Timer(_logFlushDelay, _flushLogs);
         if (boatManager.decodeEnabled && message.startsWith("!")) {
           boatManager.processMessage(message, feed: name);
         }
@@ -114,10 +110,7 @@ class ReceptionPageState extends State<ReceptionPage> {
     );
     forwarderService.setTargets(settings.targets);
 
-    sim = SimulatorService(
-      config: settings.simConfig,
-      initialFleet: settings.simFleet,
-    );
+    sim = SimulatorService(config: settings.simConfig);
     sim.onSentence = (nmea) =>
         forwarderService.ingest('Simulation', 'SIM', nmea);
 
@@ -162,6 +155,23 @@ class ReceptionPageState extends State<ReceptionPage> {
     settings.save();
   }
 
+  void _flushLogs() {
+    _logFlushTimer = null;
+    if (_pendingLogs.isEmpty) return;
+    setState(() {
+      logEntries.addAll(_pendingLogs);
+      _pendingLogs.clear();
+      if (logEntries.length > maxLogEntries) {
+        logEntries.removeRange(0, logEntries.length - maxLogEntries);
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
+  }
+
   void startForwarder() async {
     await forwarderService.start();
     setState(() => isRunning = true);
@@ -191,7 +201,6 @@ class ReceptionPageState extends State<ReceptionPage> {
   void stopForwarder() async {
     if (sim.isRunning) {
       sim.stop();
-      _saveSimFleet();
     }
     for (final feed in _allFeeds) {
       if (feed.type == FeedType.file) {
@@ -214,13 +223,7 @@ class ReceptionPageState extends State<ReceptionPage> {
       sim.start();
     } else {
       sim.stop();
-      _saveSimFleet();
     }
-  }
-
-  void _saveSimFleet() {
-    settings.simFleet = sim.fleet.boats.toList();
-    settings.save();
   }
 
   /// Status of the virtual simulation feed, derived from the simulator so the
@@ -473,9 +476,7 @@ class ReceptionPageState extends State<ReceptionPage> {
     _statusTimer?.cancel();
     _statusTick.dispose();
     _scrollController.dispose();
-    if (sim.isRunning) {
-      _saveSimFleet();
-    }
+    _logFlushTimer?.cancel();
     sim.dispose();
     for (final player in _filePlayers.values) {
       player.dispose();

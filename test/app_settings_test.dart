@@ -62,27 +62,18 @@ void main() {
     expect(loaded.customFeeds.single.port, 9999);
   });
 
-  test('AppSettings persists the simulated fleet', () async {
+  test('AppSettings persists the simulation configuration (seed only)', () async {
     SharedPreferences.setMockInitialValues({});
 
     final settings = AppSettings();
-    final fleet = SimFleet();
-    fleet.generate(SimFleetConfig(seed: 11, messageTypes: {1, 5, 4, 21}));
-    settings.simFleet = fleet.boats.toList();
+    settings.simConfig = SimFleetConfig(seed: 11, messageTypes: {1, 5, 4, 21});
     await settings.save();
 
     final loaded = AppSettings();
     await loaded.load();
 
-    expect(loaded.simFleet, isNotNull);
-    expect(loaded.simFleet!.length, fleet.boats.length);
-    expect(loaded.simFleet!.first.mmsi, fleet.boats.first.mmsi);
-    expect(loaded.simFleet!.first.lat, fleet.boats.first.lat);
-    expect(
-      loaded.simFleet!.any((b) => b.emitType == 4),
-      isTrue,
-      reason: 'base station survives persistence',
-    );
+    expect(loaded.simConfig.seed, 11);
+    expect(loaded.simConfig.messageTypes, {1, 5, 4, 21});
   });
 
   test('AppSettings keeps defaults when nothing is stored', () async {
