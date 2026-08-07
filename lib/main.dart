@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:auto_updater/auto_updater.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -9,7 +12,11 @@ import 'message_stats.dart';
 import 'swipper.dart';
 import 'themes.dart';
 
+const _appcastUrl = 'https://kikimanjaro.github.io/KikAis/appcast.xml';
+
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   final stats = MessageStats();
   final boatManager = BoatManager(stats: stats);
   await boatManager.startDecoder();
@@ -21,6 +28,19 @@ Future<void> main() async {
   final version = packageInfo.buildNumber.isEmpty
       ? packageInfo.version
       : '${packageInfo.version}+${packageInfo.buildNumber}';
+
+  // Auto-update is only meaningful for the installed app. The portable
+  // self-extracting exe runs from a temporary directory, so skip it there.
+  final exePath = Platform.resolvedExecutable.toLowerCase();
+  if (!exePath.startsWith(Directory.systemTemp.path.toLowerCase())) {
+    try {
+      await autoUpdater.setFeedURL(_appcastUrl);
+      await autoUpdater.setScheduledCheckInterval(3600);
+      await autoUpdater.checkForUpdates(inBackground: true);
+    } catch (_) {
+      // Updates are best-effort; never block startup.
+    }
+  }
 
   runApp(
     MultiProvider(

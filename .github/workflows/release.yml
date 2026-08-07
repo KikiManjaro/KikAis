@@ -53,8 +53,6 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: write
-    env:
-      HAS_MSIX_CERT: ${{ secrets.MSIX_CERT_B64 != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,42 +82,18 @@ jobs:
             -ReleaseDir "build/windows/x64/runner/Release" `
             -OutputExe "kikais-windows-${{ needs.version.outputs.version }}-portable.exe"
 
-      - name: Build MSIX installer and publish folder
-        if: env.HAS_MSIX_CERT == 'true'
+      - name: Install Inno Setup
         shell: pwsh
-        env:
-          MSIX_CERT_B64: ${{ secrets.MSIX_CERT_B64 }}
-          MSIX_CERT_PASSWORD: ${{ secrets.MSIX_CERT_PASSWORD }}
-        run: |
-          New-Item -ItemType Directory -Path build/msix/publish -Force | Out-Null
-          [IO.File]::WriteAllBytes(
-            "$env:RUNNER_TEMP/msix.pfx",
-            [Convert]::FromBase64String($env:MSIX_CERT_B64))
-          dart run msix:publish `
-            --build-windows false `
-            --certificate-path "$env:RUNNER_TEMP/msix.pfx" `
-            --certificate-password "$env:MSIX_CERT_PASSWORD" `
-            --install-certificate false
+        run: choco install innosetup -y
 
-          $cert2 = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("$env:RUNNER_TEMP/msix.pfx", $env:MSIX_CERT_PASSWORD)
-          $cer = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($cert2.RawData)
-          [IO.File]::WriteAllBytes("build/msix/publish/KikAis.cer", $cer.RawData)
-
-      - name: Rewrite appinstaller/index URIs to absolute URLs
-        if: env.HAS_MSIX_CERT == 'true'
+      - name: Build installer and appcast
         shell: pwsh
         run: |
-          $base = "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          $app = "build/msix/publish/KikAis.appinstaller"
-          $content = Get-Content -Raw -LiteralPath $app
-          $content = $content.Replace('build/msix/publish\', $base)
-          $content = $content.Replace('build/msix/publish/', $base)
-          $content = $content.Replace('\', '/')
-          Set-Content -LiteralPath $app -Value $content -NoNewline
-          $idx = "build/msix/publish/index.html"
-          $html = Get-Content -Raw -LiteralPath $idx
-          $html = $html.Replace("'/KikAis.appinstaller'", "'" + $base + "KikAis.appinstaller'")
-          Set-Content -LiteralPath $idx -Value $html -NoNewline
+          ./scripts/make_setup.ps1 `
+            -Version "${{ needs.version.outputs.version }}" `
+            -ReleaseDir "build/windows/x64/runner/Release" `
+            -AppcastDir "build/pages" `
+            -DownloadBaseUrl "https://github.com/${{ github.repository }}/releases/download/${{ needs.version.outputs.tag }}/"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -128,15 +102,14 @@ jobs:
           path: |
             kikais-windows-*.zip
             kikais-windows-*-portable.exe
-            build/msix/KikAis.msix
-            build/msix/publish/
+            build/installer/kikais-setup-*.exe
+            build/pages/
 
-      - name: Deploy publish folder to GitHub Pages
-        if: env.HAS_MSIX_CERT == 'true'
+      - name: Deploy appcast and download page to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/msix/publish
+          publish_dir: build/pages
           force_orphan: false
 
   build-linux:

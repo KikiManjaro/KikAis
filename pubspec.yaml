@@ -45,6 +45,7 @@ dependencies:
   url_launcher: ^6.3.2
   shared_preferences: ^2.5.5
   package_info_plus: ^9.0.1
+  auto_updater: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -56,22 +57,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  msix: ^3.18.0
-
-msix_config:
-  display_name: KikAis
-  publisher_display_name: KikAis
-  identity_name: kikais.desktop.app
-  logo_path: resources/FireBoat2.png
-  capabilities: internetClientServer, privateNetworkClientServer
-  output_name: KikAis
-  output_path: build/msix
-  app_installer:
-    publish_folder_path: build/msix/publish
-    hours_between_update_checks: 24
-    automatic_background_task: true
-    show_prompt: false
-    update_blocks_activation: false
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
