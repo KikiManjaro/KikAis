@@ -1,118 +1,148 @@
-# KikAis: AIS Data Forwarding and Visualization Tool
+<div align="center">
 
-KikAis is a desktop application built using the Flutter framework, designed to operate as a central hub for receiving, 
-processing, and redistributing Automatic Identification System (AIS) NMEA 0183 data. 
-This tool aggregates real-time vessel data from multiple sources—including public streams and a "private" server (see aisstreamio2nmea part of the project)—and
-broadcasts it across various network protocols.
+<img src="resources/FireBoat2.png" width="96" alt="KikAis">
 
-The application’s core function is dual-layered: first, it manages the low-level network connections and data forwarding via various protocols (UDP/TCP); 
-second, it processes the received NMEA 0183 messages to extract vessel information and visualize their positions in real-time on a world map. 
-This architecture ensures high-performance data handling while maintaining a responsive and informative user interface. 
-The UI is organized around seven tabs:
-- **Reception** — connection management, feeds and the log console
-- **Send** — the forwarding destinations (read-only by default)
-- **Map** — the real-time vessel visualization
-- **Editor** — build and send your own AIS messages (all 27 types)
-- **Decoder** — paste and decode NMEA sentences
-- **Stats** — live statistics and the accounting of received vs decoded messages
-- **Simulation** — configure and emit a fleet of vessels around a chosen location
+# KikAis
 
-## Architecture
+**AIS data forwarding & visualization hub for NMEA 0183**
 
-The architecture of KikAis was intentionally designed to address the challenges inherent in handling high-volume, real-time network data, prioritizing performance, decoupling of concerns, and user experience.
+Receive, decode, visualize and rebroadcast Automatic Identification System (AIS) data — all in one desktop app.
 
-Given that AIS messages arrive continuously, requiring rapid updates to both the UI logs and the map markers, 
-an approach with fine-grained control over widget rebuilding was necessary.
-The BoatManager holds the central vessel collection (Map<int, Boat>). When new messages arrive, the manager updates the relevant Boat object.
-To prevent these computational tasks from blocking the main thread, the boat manager was designed to execute the parsing logic asynchronously.
-By offloading the message decoding to an isolated thread, we ensure the UI remains smooth and map updates even while the underlying data stream is being heavily processed.
-This single source of truth ensures the map page is instantly updated with minimal overhead, preventing the application from freezing under heavy data load (was happening a lot during the development).
+[![Release](https://img.shields.io/github/v/release/KikiManjaro/KikAis?color=%230ea5e9&label=version)](https://github.com/KikiManjaro/KikAis/releases)
+[![License: Custom](https://img.shields.io/badge/License-Custom%20(no%20redistribution)-%23f97316)](LICENSE)
+[![Platform: Windows](https://img.shields.io/badge/Windows-supported-%230ea5e9?logo=windows&logoColor=white)](https://github.com/KikiManjaro/KikAis/releases)
+[![Platform: Linux](https://img.shields.io/badge/Linux-supported-%23f97316?logo=linux&logoColor=white)](https://github.com/KikiManjaro/KikAis/releases)
+[![CI](https://img.shields.io/github/actions/workflow/status/KikiManjaro/KikAis/ci.yml?color=%2334d399&label=CI)](https://github.com/KikiManjaro/KikAis/actions)
+[![Flutter](https://img.shields.io/badge/Flutter-%2302569B?logo=flutter&logoColor=white)](https://flutter.dev)
+[![Stars](https://img.shields.io/github/stars/KikiManjaro/KikAis?color=%23facc15&label=stars)](https://github.com/KikiManjaro/KikAis/stargazers)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black&style=flat)](https://www.buymeacoffee.com/kikimanjaro)
 
-The main application window is a single view implemented with an IndexedStack inside the SwipperUi widget, 
-switched through a NavigationBar with seven destinations (Reception, Send, Map, Editor, Decoder, Stats, Simulation). 
-A light/dark/high-contrast theme can be selected from the custom window title bar.
-Note that the map only renders vessels when the "show decoded vessels" toggle is enabled (off by default) to avoid overload: 
-using a heavy stream such as the one provided by aisstreamio2nmea (vessels all around the world) could still make the map stutter.
+</div>
 
-The app operates as follows:
+## About
 
-1. Connects to a configurable list of external data feeds (built-in and user-defined) all transmitting AIS NMEA 0183 sentences.
+KikAis is a desktop application built with **Flutter** that acts as a central hub for AIS **NMEA 0183** data. It connects to one or more data feeds, decodes the vessel information in real time, displays it on a world map, and forwards the raw stream to any number of destinations.
 
-2. The application acts as a relay, enabling the rebroadcast of the aggregated AIS data to every enabled destination
-   (UDP server/client, TCP client/server). Forwarding is read-only by default: no destination is active until you enable one.
+The application's core function is dual-layered:
 
-3. A dedicated log console provides immediate feedback on incoming data, displaying raw NMEA messages, connection status updates,
-   and a copy button on every frame.
+1. **Forwarding** — it manages low-level network connections and rebroadcasts the aggregated AIS data over **UDP/TCP** (server & client).
+2. **Processing** — it decodes NMEA 0183 sentences to extract vessel information and visualizes their live positions on an interactive world map.
 
-4. Integrates a world map to display the live positions of all reported vessels (marker clustering, trails, speed vectors,
-   search and filters, and a detail panel with a per-vessel frame log).
+This architecture keeps data handling performant while maintaining a responsive, informative user interface.
 
-5. Provides a decoder tab to paste and decode NMEA sentences (multi-part messages are regrouped into a single block) and an editor
-   tab to compose and inject/send messages of any of the 27 supported AIS types.
+## ✨ Features
 
-6. A statistics tab summarizes the flow: received/decoded rates, checksum and parse errors, dropped and pending fragments,
-   and an "accounting" view that reconciles the received vs decoded counters.
+### 📡 Reception
+- Built-in and user-defined **network feeds**, plus **file feeds** that replay a saved NMEA log as a live stream
+- Live **log console** with per-frame copy, save-to-file and clear
+- **Checksum validation** toggle with a live dropped-sentence counter
+- Per-feed **status dots** (grey / red / orange / green) with message counts
 
-7. A simulation tab generates a configurable fleet of vessels around a chosen location (position reports, static data, base
-   stations, aids to navigation...), fed into the same pipeline as a regular source. File feeds can also replay a saved
-   NMEA log as a live stream.
+### 🚀 Forwarding
+- Send the aggregated AIS stream to **multiple destinations** simultaneously
+- **UDP Server / UDP Client / TCP Client / TCP Server** transports
+- Each destination is independently enabled and edited while the forwarder is stopped
 
-## Misc
+### 🗺️ Map
+- Live positions of all decoded vessels on an interactive world map
+- **Marker clustering**, **vessel trails** and **speed vectors**
+- Vessel **search** (name / MMSI / IMO) and **filters** (type, navigation status, country, SOG range, named only)
+- Detail panel with full vessel data and a per-vessel **frame log**
+- Multiple free basemaps (CARTO, OpenStreetMap, OpenTopoMap, Esri…) with an auto follow-theme option
 
-The AIS decoder in `lib/ais` (all 27 ITU-R M.1371 message types, including the NMEA/checksum/fragment pipeline and the message encoders used by the editor) is a vendored fork of [ais_decoder](https://github.com/LucasMnzb/ais_decoder) by LucasMnzb (BSD-3-Clause, see `lib/ais/LICENSE.ais_decoder.txt`), with the charset bug fix and the payload-based `getUintDirect` retained. The files have been adapted (relative imports, lints).
+### ✏️ Editor
+- Compose and send messages of **all 27 AIS message types**
+- Live NMEA preview with copy, plus inject-to-map or send-to-target actions
 
-This app has been tested on both Windows and Linux.
+### 🔍 Decoder
+- Paste and decode one or more NMEA sentences
+- Multi-part messages regrouped into a single block with full field-by-field breakdown
 
-I had to learn how to create a portable exe with [Enigma Virtual Box](https://enigmaprotector.com/),
-how to build a proper installer with [Inno Setup](https://jrsoftware.org/isinfo.php) and wire auto-updates through [WinSparkle](https://winsparkle.org/),
-how to make good LAF (Look And Feel) for windows using [bitsdojo_window](https://pub.dev/packages/bitsdojo_window),
-how to learn about the [flutter_map](https://pub.dev/packages/flutter_map) library for vessels visualization.
+### 📊 Stats
+- KPI cards: received / decoded rates, invalid checksums, dropped & pending fragments, parse errors
+- Received-vs-decoded chart over the last minute
+- **Accounting** view reconciling the received and decoded counters
+- Per-feed and per-message-type breakdowns
 
-Note that GPSD public feeds are not always up.
+### 🧪 Simulation
+- Generate a **configurable fleet** of vessels around a chosen location
+- Vessels, SAR aircraft, base stations and aids to navigation
+- Position reports, static/voyage data, configurable speed, radius, interval and seed
 
-LLM have been used mainly to help me redact (and mostly translate) this README file in english and to help me to solve some bugs I have encountered while trying to connect multiple clients.
+### ⚙️ Extras
+- **Isolate-based decoding** keeps the UI fluid even on high-volume streams
+- Light / dark / high-contrast **themes**
+- **Automatic updates** on Windows (WinSparkle)
+- Portable executable, installer and zip distributions
 
-This app is still in development, i choose to provide it as it is since i think it is enough to fulfill the requirements of the end-of-year project,
-some improvements are already planned and some bugs are already known, i'll keep working on it.
+## 📸 Screenshots
+
+| Main page | Console / Logs |
+|---|---|
+| ![Main page](readme_images/img.png) | ![Console/Logs](readme_images/img_1.png) |
+
+| Map page | Map with clustering |
+|---|---|
+| ![Map](readme_images/img_2.png) | ![Clustered](readme_images/img_3.png) |
+
+| Map without clustering | Vessel data |
+|---|---|
+| ![Unclustered](readme_images/img_4.png) | ![Ship data](readme_images/img_5.png) |
+
+## ⬇️ Download & Install
+
+Grab the latest release from the [Releases page](https://github.com/KikiManjaro/KikAis/releases) or the [download page](https://kikimanjaro.github.io/KikAis/):
+
+| Platform | File | Notes |
+|---|---|---|
+| Windows | `kikais-setup-<version>.exe` | Per-user installer, **auto-updates** on by default |
+| Windows | `kikais-windows-<version>-portable.exe` | Single-file portable executable, no install |
+| Windows | `kikais-windows-<version>.zip` | Raw release bundle |
+| Linux | `kikais-linux-<version>.tar.gz` | Linux release bundle |
+
+## 🚀 Quick Start
+
+1. Open the **Reception** tab and enable one or more feeds.
+2. Press **Start** to launch the forwarder.
+3. Open the **Map** tab and toggle "Show decoded vessels" (top-right) to see the live fleet.
+4. Head to the **Send** tab to configure where the stream is forwarded.
+
+## 🏗️ Architecture
+
+AIS messages arrive continuously and need rapid updates to both the UI logs and the map markers. To keep the interface responsive:
+
+- The **BoatManager** holds the central vessel collection (`Map<int, Boat>`) and updates the relevant boat on every incoming message.
+- Message decoding is offloaded to a **dedicated isolate**, so the UI never blocks — even under heavy data load.
+- The main window is a single view built around an **IndexedStack** inside `SwipperUi`, switched through a NavigationBar with **seven tabs** (Reception, Send, Map, Editor, Decoder, Stats, Simulation).
+- The map renders vessels through a custom canvas layer for smooth drawing of thousands of markers.
 
 ## Known Bugs & Roadmap
 
-#### Known bugs
+### Known bugs
 
-- The app will sometimes not boot on Linux (tested on raspberry pi), retrying to boot multiple times solves the issue
+- The app will sometimes not boot on Linux (tested on Raspberry Pi); retrying to boot a few times solves the issue
 - The map page could be laggy when receiving too much data
 
-#### Improvements
+### Improvements
 
-- Logs processing for NMEA sentences and connection state are in the same pipeline causing some issues between them since there is only
-one processor, this should be reworked
-- Add the ability to filter what is forwarded (by message type, geographic zone, vessel, etc...)
+- Logs processing for NMEA sentences and connection state are in the same pipeline causing some issues between them since there is only one processor — this should be reworked
+- Add the ability to filter what is forwarded (by message type, geographic zone, vessel, etc.)
 - Support for NMEA 4.0
 - Add serial reception
-- Improve compatibility with other platforms (running on macOS, iOS and Android)
+- Improve compatibility with other platforms (macOS, iOS and Android)
 
-## Images
+## 🤝 Contributing
 
-*Main page:*
+Contributions are welcome! Feel free to open an [issue](https://github.com/KikiManjaro/KikAis/issues) for bugs or feature requests, or submit a pull request.
 
-![img.png](readme_images/img.png)
+## ☕ Support
 
-*Console/Logs data:*
+If you like KikAis and want to support its development, you can buy me a coffee:
 
-![img_1.png](readme_images/img_1.png)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black&style=for-the-badge)](https://www.buymeacoffee.com/kikimanjaro)
 
-*Map page:*
+You can also sponsor me on [GitHub Sponsors](https://github.com/sponsors/KikiManjaro).
 
-![img_2.png](readme_images/img_2.png)
+## 📄 License
 
-*Map page with ships clustered:*
-
-![img_3.png](readme_images/img_3.png)
-
-*Map page with ships unclustered:*
-
-![img_4.png](readme_images/img_4.png)
-
-*Ships data:*
-
-![img_5.png](readme_images/img_5.png)
+KikAis is distributed under a **custom source-available license**: you may freely use the software, but you may **not** copy, redistribute, or resell it — in whole or in part, free or for profit. See [LICENSE](LICENSE) for the full terms.
