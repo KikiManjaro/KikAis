@@ -142,11 +142,8 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - Support for NMEA 4.0
 - Add serial reception
 - Improve compatibility with other platforms (macOS, iOS and Android)
-- Add cache for tiles
 - Make verification for memory leaks and performances
 - Find a way to make tooltips works
-- Add more messages for simulation
-- Add more options for simulation
 - Add ais documentation in a tab (all messages, what they are used for etc, difference between ships, base station etc)
 - Add i18n
 

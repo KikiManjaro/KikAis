@@ -63,15 +63,17 @@ String encodePositionReport({
   required double cog,
   required double heading,
   int navigationStatus = 0,
+  int positionAccuracy = 0,
+  int rot = 0,
   int timestamp = 0,
   int type = 1,
 }) {
   final sb = StringBuffer();
   sb.write(_head(type: type.clamp(1, 3), mmsi: mmsi));
   sb.write(_bits(navigationStatus.clamp(0, 15), 4));
-  sb.write(_bits(0, 8)); // rate of turn
+  sb.write(_bits(_signed(rot.clamp(-128, 127), 8), 8)); // rate of turn
   sb.write(_bits((sog * 10).round().clamp(0, 1023), 10));
-  sb.write(_bits(0, 1)); // position accuracy
+  sb.write(_bits(positionAccuracy.clamp(0, 1), 1)); // position accuracy
   sb.write(_coord(longitude, 600000, 28));
   sb.write(_coord(latitude, 600000, 27));
   sb.write(_bits((cog * 10).round().clamp(0, 3600), 12));
@@ -227,13 +229,14 @@ String encodeSarAircraftPosition({
   required double cog,
   int altitude = 0,
   int sog = 0,
+  int positionAccuracy = 0,
   int timestamp = 0,
 }) {
   final sb = StringBuffer();
   sb.write(_head(type: 9, mmsi: mmsi));
   sb.write(_bits(altitude.clamp(0, 4095), 12));
   sb.write(_bits(sog.clamp(0, 1023), 10));
-  sb.write(_bits(0, 1)); // position accuracy
+  sb.write(_bits(positionAccuracy.clamp(0, 1), 1)); // position accuracy
   sb.write(_coord(longitude, 600000, 28));
   sb.write(_coord(latitude, 600000, 27));
   sb.write(_bits((cog * 10).round().clamp(0, 3600), 12));
@@ -405,12 +408,13 @@ String _classBHead({
   required double cog,
   required double heading,
   required int timestamp,
+  required int positionAccuracy,
 }) {
   final sb = StringBuffer();
   sb.write(_head(type: type, mmsi: mmsi));
   sb.write(_bits(0, 8)); // spare
   sb.write(_bits((sog * 10).round().clamp(0, 1023), 10));
-  sb.write(_bits(0, 1)); // position accuracy
+  sb.write(_bits(positionAccuracy.clamp(0, 1), 1)); // position accuracy
   sb.write(_coord(longitude, 600000, 28));
   sb.write(_coord(latitude, 600000, 27));
   sb.write(_bits((cog * 10).round().clamp(0, 3600), 12));
@@ -427,6 +431,7 @@ String encodeClassBPosition({
   required double sog,
   required double cog,
   required double heading,
+  int positionAccuracy = 0,
   int timestamp = 0,
 }) {
   final sb = StringBuffer();
@@ -439,6 +444,7 @@ String encodeClassBPosition({
     cog: cog,
     heading: heading,
     timestamp: timestamp,
+    positionAccuracy: positionAccuracy,
   ));
   sb.write(_bits(0, 8)); // regional / CS / display / DSC / band / msg22 / assigned
   sb.write(_bits(0, 1)); // RAIM
@@ -460,6 +466,7 @@ String encodeClassBExtended({
   int dimensionStern = 0,
   int dimensionPort = 0,
   int dimensionStarboard = 0,
+  int positionAccuracy = 0,
   int timestamp = 0,
 }) {
   final sb = StringBuffer();
@@ -472,6 +479,7 @@ String encodeClassBExtended({
     cog: cog,
     heading: heading,
     timestamp: timestamp,
+    positionAccuracy: positionAccuracy,
   ));
   sb.write(_bits(0, 4)); // regional reserved
   sb.write(encodeAisText(name, 120));

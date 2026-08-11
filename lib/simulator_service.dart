@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 
@@ -61,6 +62,11 @@ class SimulatorService extends ChangeNotifier {
 
   Future<void> _tickEmit() async {
     _tick++;
+    if (config.autoRegenerate &&
+        config.regenEveryTicks > 0 &&
+        _tick % config.regenEveryTicks == 0) {
+      fleet.generate(config, seed: math.Random().nextInt(100000));
+    }
     final sentences = fleet.advanceAndCollect(config, _tick);
     for (final sentence in sentences) {
       emittedCount++;

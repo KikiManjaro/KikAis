@@ -3,6 +3,7 @@ import 'package:kik_ais/ais/src/encoder/ais_message_encoder.dart';
 import 'package:kik_ais/ais/src/messages/binary/binary_addressed_message.dart';
 import 'package:kik_ais/ais/src/messages/binary/binary_broadcast_message.dart';
 import 'package:kik_ais/ais/src/messages/position/long_range_broadcast.dart';
+import 'package:kik_ais/ais/src/messages/position/position_message.dart';
 import 'package:kik_ais/ais/src/messages/position/sar_aircraft_position_report.dart';
 import 'package:kik_ais/ais/src/messages/position/class_b_position.dart';
 import 'package:kik_ais/ais/src/messages/position/extended_class_b.dart';
@@ -208,5 +209,20 @@ void main() {
     expect(l.longitude, closeTo(8.5, 0.01));
     expect(l.speedOverGround, closeTo(3.4, 0.01));
     expect(l.courseOverGround, closeTo(12.3, 0.01));
+  });
+
+  test('type 1 carries a rate of turn', () {
+    final sentence = encodePositionReport(
+      mmsi: 247000001,
+      latitude: 48.8,
+      longitude: 2.3,
+      sog: 12,
+      cog: 90,
+      heading: 95,
+      rot: 127,
+    );
+    final msg = decoder.decode(sentence);
+    expect(msg, isA<PositionMessage>());
+    expect((msg as PositionMessage).rateOfTurn, greaterThan(0));
   });
 }

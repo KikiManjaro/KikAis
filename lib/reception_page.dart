@@ -72,8 +72,14 @@ class ReceptionPageState extends State<ReceptionPage> {
   final Map<String, bool> feedEnabled = {};
   final ValueNotifier<int> _statusTick = ValueNotifier(0);
   Timer? _statusTimer;
-  late final Listenable _feedListenable;
   List<FeedDef> _customFeeds = [];
+
+  /// Built feed tiles, keyed by feed key (the simulation tile uses
+  /// [kSimulationFeedKey]). A tile is only rebuilt when its checkbox state
+  /// changes; the status dot refreshes itself via [_FeedStatusDot], so the
+  /// card never rebuilds on status ticks or incoming frames.
+  final Map<String, Widget> _tilesCache = {};
+  final Map<String, bool> _tilesEnabledCache = {};
 
   /// Active file players, keyed by feed.key. Created lazily when a file feed
   /// is enabled, kept alive so re-enabling replays instantly.
@@ -142,15 +148,14 @@ class ReceptionPageState extends State<ReceptionPage> {
       }
     });
 
-    // The feed card structure only depends on toggles, the simulator and the
-    _feedListenable = Listenable.merge([
-      forwarderService.feedStatuses,
-      sim,
-      _statusTick,
-    ]);
+    // The feed tiles are cached and their status dots listen to [_statusTick]
+    // on their own, so the card only rebuilds on explicit state changes
+    // (toggles, add/remove) instead of on every status update or every second.
     _statusTimer = Timer.periodic(
       const Duration(seconds: 1),
-      (_) => _statusTick.value++,
+      (_) {
+        if (isRunning) _statusTick.value++;
+      },
     );
   }
 
@@ -396,6 +401,8 @@ class ReceptionPageState extends State<ReceptionPage> {
       _customFeeds.remove(feed);
       feedEnabled.remove(feed.key);
     });
+    _tilesCache.remove(feed.key);
+    _tilesEnabledCache.remove(feed.key);
     _filePlayers.remove(feed.key)?.dispose();
     _serialPlayers.remove(feed.key)?.dispose();
     _syncFeedSettings();
@@ -436,22 +443,35 @@ class ReceptionPageState extends State<ReceptionPage> {
     return const Icon(Icons.directions_boat, size: 30);
   }
 
-  Widget _feedStatusDot(FeedStatus? status) {
-    final color = switch (feedDotColor(status, DateTime.now())) {
-      FeedDotColor.grey => Colors.grey.shade600,
-      FeedDotColor.red => Colors.red,
-      FeedDotColor.orange => Colors.orange,
-      FeedDotColor.green => Colors.green,
-    };
-    return Container(
-      width: 10,
-      height: 10,
-      margin: const EdgeInsets.only(right: 4),
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-    );
+  /// Returns the cached simulation tile, rebuilding it only when the checkbox
+  /// state changes.
+  Widget _simTileCached() {
+    final enabled = feedEnabled[kSimulationFeedKey] ?? false;
+    final cached = _tilesCache[kSimulationFeedKey];
+    if (cached != null && _tilesEnabledCache[kSimulationFeedKey] == enabled) {
+      return cached;
+    }
+    final tile = _buildSimFeedTile();
+    _tilesCache[kSimulationFeedKey] = tile;
+    _tilesEnabledCache[kSimulationFeedKey] = enabled;
+    return tile;
   }
 
-  Widget _buildSimFeedTile(FeedStatus status) {
+  /// Returns the cached tile for [feed], rebuilding it only when its checkbox
+  /// state changes.
+  Widget _feedTileCached(FeedDef feed) {
+    final enabled = feedEnabled[feed.key] ?? false;
+    final cached = _tilesCache[feed.key];
+    if (cached != null && _tilesEnabledCache[feed.key] == enabled) {
+      return cached;
+    }
+    final tile = _buildFeedTile(feed);
+    _tilesCache[feed.key] = tile;
+    _tilesEnabledCache[feed.key] = enabled;
+    return tile;
+  }
+
+  Widget _buildSimFeedTile() {
     return CheckboxListTile(
       dense: true,
       title: Row(
@@ -459,7 +479,11 @@ class ReceptionPageState extends State<ReceptionPage> {
           const Expanded(
             child: Text('Simulation', overflow: TextOverflow.ellipsis),
           ),
-          _feedStatusDot(status),
+          _FeedStatusDot(
+            statusSource: sim,
+            tick: _statusTick,
+            statusOf: _simFeedStatus,
+          ),
         ],
       ),
       value: feedEnabled[kSimulationFeedKey] ?? false,
@@ -468,7 +492,7 @@ class ReceptionPageState extends State<ReceptionPage> {
     );
   }
 
-  Widget _buildFeedTile(FeedDef feed, FeedStatus? status) {
+  Widget _buildFeedTile(FeedDef feed) {
     return CheckboxListTile(
       dense: true,
       title: Row(
@@ -479,7 +503,12 @@ class ReceptionPageState extends State<ReceptionPage> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          _feedStatusDot(status),
+          _FeedStatusDot(
+            statusSource: forwarderService.feedStatuses,
+            tick: _statusTick,
+            statusOf: () =>
+                forwarderService.feedStatuses.value[feed.displayName],
+          ),
           if (!feed.builtIn)
             IconButton(
               icon: const Icon(Icons.delete_outline, size: 16),
@@ -499,6 +528,8 @@ class ReceptionPageState extends State<ReceptionPage> {
   void dispose() {
     _statusTimer?.cancel();
     _statusTick.dispose();
+    _tilesCache.clear();
+    _tilesEnabledCache.clear();
     _scrollController.dispose();
     _logFlushTimer?.cancel();
     sim.dispose();
@@ -612,35 +643,28 @@ class ReceptionPageState extends State<ReceptionPage> {
                     vertical: 4,
                     horizontal: 4,
                   ),
-                    child: AnimatedBuilder(
-                    animation: _feedListenable,
-                    builder: (context, _) {
-                      final statuses = forwarderService.feedStatuses.value;
-                      final tiles = [
-                        _buildSimFeedTile(_simFeedStatus()),
-                        for (final feed in _allFeeds)
-                          _buildFeedTile(feed, statuses[feed.displayName]),
-                      ];
-                      return LayoutBuilder(
-                        builder: (context, constraints) {
-                          const itemHeight = 48.0;
-                          final fits =
-                              tiles.length * itemHeight <= constraints.maxHeight;
-                          if (fits) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: tiles,
-                            );
-                          }
-                          return ListView.builder(
-                            itemCount: tiles.length,
-                            itemBuilder: (context, i) => tiles[i],
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final tiles = <Widget>[
+                          _simTileCached(),
+                          for (final feed in _allFeeds) _feedTileCached(feed),
+                        ];
+                        const itemHeight = 48.0;
+                        final fits =
+                            tiles.length * itemHeight <= constraints.maxHeight;
+                        if (fits) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: tiles,
                           );
-                        },
-                      );
-                    },
-                  ),
+                        }
+                        return ListView.builder(
+                          itemCount: tiles.length,
+                          itemBuilder: (context, i) => tiles[i],
+                        );
+                      },
+                    ),
                 ),
               ),
             ),
@@ -779,6 +803,48 @@ class ReceptionPageState extends State<ReceptionPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The 10x10 status dot of a feed tile. It listens to both the feed's status
+/// source and the one-second [tick], so staleness (green fading to orange) and
+/// per-frame status updates only repaint this tiny widget instead of rebuilding
+/// the whole (cached) tile.
+class _FeedStatusDot extends StatelessWidget {
+  const _FeedStatusDot({
+    required this.statusSource,
+    required this.tick,
+    required this.statusOf,
+  });
+
+  /// Fires whenever the feed's status may have changed.
+  final Listenable statusSource;
+
+  /// Ticks once per second so a connected feed goes stale after 10 s.
+  final Listenable tick;
+
+  /// Reads the latest status for the feed this dot represents.
+  final FeedStatus? Function() statusOf;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([statusSource, tick]),
+      builder: (context, _) {
+        final color = switch (feedDotColor(statusOf(), DateTime.now())) {
+          FeedDotColor.grey => Colors.grey.shade600,
+          FeedDotColor.red => Colors.red,
+          FeedDotColor.orange => Colors.orange,
+          FeedDotColor.green => Colors.green,
+        };
+        return Container(
+          width: 10,
+          height: 10,
+          margin: const EdgeInsets.only(right: 4),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        );
+      },
     );
   }
 }
