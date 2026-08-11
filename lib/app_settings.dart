@@ -154,6 +154,15 @@ class AppSettings extends ChangeNotifier {
     );
   }
 
+  /// Persists only the enabled state of a single feed. Toggling a feed from
+  /// the UI is a hot path: a full [save] rewrites every preference, and on
+  /// Windows each write is synchronous disk I/O on the UI isolate, which
+  /// visibly stalls the frame.
+  Future<void> saveFeedEnabled(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kFeedPrefix + key, value);
+  }
+
   Future<void> save() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kCluster, mapClusterEnabled);

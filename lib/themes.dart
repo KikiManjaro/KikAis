@@ -170,6 +170,10 @@ ThemeData _base({
   return ThemeData(
     brightness: brightness,
     colorScheme: scheme,
+    // The default Material 3 "ink sparkle" splash renders a shader effect on
+    // press; on Windows it crashes (access violation in the engine's GPU/texture
+    // path). Use the classic ripple instead.
+    splashFactory: InkRipple.splashFactory,
     scaffoldBackgroundColor: scaffold,
     cardColor: card,
     canvasColor: card,
@@ -226,6 +230,10 @@ ThemeData _base({
       color: scheme.outlineVariant.withValues(alpha: 0.6),
     ),
     tooltipTheme: TooltipThemeData(
+      // The Windows engine crashes (NULL_PTR_READ in UpdateTooltipPosition)
+      // when hover tooltips show/dismiss; keep tooltips programmatic-only to
+      // avoid triggering the engine bug. See flutter/flutter#182444.
+      triggerMode: TooltipTriggerMode.manual,
       textStyle: const TextStyle(color: Colors.white, fontSize: 12),
       decoration: BoxDecoration(
         color: tooltipBackground,

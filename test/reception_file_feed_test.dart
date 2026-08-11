@@ -193,7 +193,7 @@ void main() {
       (tester) async {
     final ctx = await pumpReception(tester);
 
-    await tester.tap(find.byTooltip('Add feed'));
+    await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
 
     // Default type is network: host/port/header fields are visible.
@@ -238,7 +238,7 @@ void main() {
       (tester) async {
     final ctx = await pumpReception(tester);
 
-    await tester.tap(find.byTooltip('Add feed'));
+    await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
 
     // Default type is network: host/port/header fields are visible.

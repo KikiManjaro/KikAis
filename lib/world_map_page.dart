@@ -389,7 +389,6 @@ class _WorldMapPageState extends State<WorldMapPage> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: _handleSearch,
-            tooltip: 'Search vessels',
           ),
           IconButton(
             icon: Icon(
@@ -399,14 +398,12 @@ class _WorldMapPageState extends State<WorldMapPage> {
                   : null,
             ),
             onPressed: _showFiltersDialog,
-            tooltip: 'Filters',
           ),
           IconButton(
             icon: Icon(
               clusterEnabled ? Icons.scatter_plot : Icons.group_work,
             ),
             onPressed: toggleMarkers,
-            tooltip: clusterEnabled ? "Disable clustering" : "Enable clustering",
           ),
           IconButton(
             icon: Icon(
@@ -416,9 +413,6 @@ class _WorldMapPageState extends State<WorldMapPage> {
                   : null,
             ),
             onPressed: () => settings.setShowTrails(!settings.showTrails),
-            tooltip: settings.showTrails
-                ? 'Hide vessel trails'
-                : 'Show vessel trails',
           ),
           IconButton(
             icon: Icon(
@@ -428,9 +422,6 @@ class _WorldMapPageState extends State<WorldMapPage> {
                   : null,
             ),
             onPressed: () => settings.setShowVectors(!settings.showVectors),
-            tooltip: settings.showVectors
-                ? 'Hide speed vectors'
-                : 'Show speed vectors',
           ),
           IconButton(
             icon: Icon(
@@ -439,12 +430,8 @@ class _WorldMapPageState extends State<WorldMapPage> {
                   : Icons.hide_source_rounded,
             ),
             onPressed: toggleCompute,
-            tooltip: boatManager.sendToMap
-                ? 'Statistics only (hide vessels)'
-                : 'Show decoded vessels on map',
           ),
           PopupMenuButton<String>(
-            tooltip: 'Basemap',
             icon: const Icon(Icons.layers_outlined),
             onSelected: (id) => settings.setBasemap(id),
             itemBuilder: (context) => [
@@ -562,7 +549,6 @@ class _WorldMapPageState extends State<WorldMapPage> {
                           onPressed: () => setState(
                             () => _followingMmsi = null,
                           ),
-                          tooltip: 'Stop following',
                         ),
                       ],
                     ),

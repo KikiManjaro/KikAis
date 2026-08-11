@@ -70,7 +70,6 @@ class _MiniToastState extends State<MiniToast>
 /// next to it.
 class CopyIconButton extends StatelessWidget {
   final String text;
-  final String? tooltip;
   final String message;
   final double iconSize;
   final EdgeInsetsGeometry? padding;
@@ -78,7 +77,6 @@ class CopyIconButton extends StatelessWidget {
   const CopyIconButton({
     super.key,
     required this.text,
-    this.tooltip = 'Copy',
     this.message = 'Copied',
     this.iconSize = 16,
     this.padding,
@@ -111,7 +109,6 @@ class CopyIconButton extends StatelessWidget {
       visualDensity: VisualDensity.compact,
       padding: padding,
       onPressed: () => _copy(context),
-      tooltip: tooltip,
     );
   }
 }

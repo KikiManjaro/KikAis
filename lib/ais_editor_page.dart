@@ -180,14 +180,10 @@ class _AisEditorPageState extends State<AisEditorPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Tooltip(
-                  message: 'Decode and add/update the vessel on the map '
-                      'and in the statistics',
-                  child: FilledButton.icon(
-                    onPressed: _sentence == null ? null : _inject,
-                    icon: const Icon(Icons.map),
-                    label: const Text('Inject to map'),
-                  ),
+                FilledButton.icon(
+                  onPressed: _sentence == null ? null : _inject,
+                  icon: const Icon(Icons.map),
+                  label: const Text('Inject to map'),
                 ),
                 const SizedBox(width: 12),
                 ValueListenableBuilder<bool>(
@@ -196,15 +192,10 @@ class _AisEditorPageState extends State<AisEditorPage> {
                     final enabled = _sentence != null &&
                         widget.onSendToTarget != null &&
                         running;
-                    return Tooltip(
-                      message: running
-                          ? 'Send this NMEA sentence to the configured target'
-                          : 'Start the forwarder first to send this sentence',
-                      child: FilledButton.icon(
-                        onPressed: enabled ? _sendToTarget : null,
-                        icon: const Icon(Icons.send),
-                        label: const Text('Send to target'),
-                      ),
+                    return FilledButton.icon(
+                      onPressed: enabled ? _sendToTarget : null,
+                      icon: const Icon(Icons.send),
+                      label: const Text('Send to target'),
                     );
                   },
                 ),
@@ -229,7 +220,6 @@ class _AisEditorPageState extends State<AisEditorPage> {
                           text: _sentence ?? '',
                           message: 'NMEA copied',
                           padding: EdgeInsets.zero,
-                          tooltip: 'Copy the NMEA sentence',
                         ),
                       ],
                     ),

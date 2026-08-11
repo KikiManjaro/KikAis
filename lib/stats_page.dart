@@ -114,9 +114,6 @@ class _StatsPageState extends State<StatsPage> {
               settings.decodeEnabled = next;
               settings.save();
             },
-            tooltip: boatManager.decodeEnabled
-                ? 'Decoding is on - pause decoding'
-                : 'Decoding is off - resume decoding',
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -124,7 +121,6 @@ class _StatsPageState extends State<StatsPage> {
               stats.reset();
               boatManager.resetCounters();
             },
-            tooltip: 'Reset counters',
           ),
         ],
       ),
@@ -181,7 +177,6 @@ class _StatsPageState extends State<StatsPage> {
                         ? '${stats.messagesPerSecond.toStringAsFixed(1)}/s'
                         : '(all feeds)',
                     live: stats.messagesPerSecond > 0,
-                    tooltip: 'NMEA sentences received from the feeds',
                     chart: _MiniLineChart(
                       data: stats.rateHistory,
                       color: appColors.info,
@@ -196,7 +191,6 @@ class _StatsPageState extends State<StatsPage> {
                         ? '${decodedRate.toStringAsFixed(1)}/s'
                         : '(all feeds)',
                     live: decodedRate > 0,
-                    tooltip: 'Messages successfully decoded',
                     chart: _MiniLineChart(
                       data: stats.decodedHistory,
                       color: appColors.success,
@@ -208,7 +202,6 @@ class _StatsPageState extends State<StatsPage> {
                     icon: Icons.error_outline,
                     accent: appColors.danger,
                     subtitle: filter == null ? null : '(all feeds)',
-                    tooltip: 'Sentences dropped due to a bad checksum',
                   ),
                   _KpiCard(
                     label: 'Dropped fragments',
@@ -216,7 +209,6 @@ class _StatsPageState extends State<StatsPage> {
                     icon: Icons.call_split,
                     accent: appColors.info,
                     subtitle: filter == null ? null : '(all feeds)',
-                    tooltip: 'Incomplete multi-part sentences that were dropped',
                   ),
                   _KpiCard(
                     label: 'Parse errors',
@@ -224,7 +216,6 @@ class _StatsPageState extends State<StatsPage> {
                     icon: Icons.bug_report_outlined,
                     accent: appColors.danger,
                     subtitle: filter == null ? null : '(all feeds)',
-                    tooltip: 'Sentences that failed to decode',
                   ),
                   _KpiCard(
                     label: 'Pending fragments',
@@ -232,8 +223,6 @@ class _StatsPageState extends State<StatsPage> {
                     icon: Icons.hourglass_bottom,
                     accent: appColors.warning,
                     live: boatManager.pendingFragmentCount > 0,
-                    tooltip: 'Multi-part messages still awaiting their '
-                        'remaining fragments',
                   ),
                 ],
               ),
@@ -472,7 +461,6 @@ class _KpiCard extends StatelessWidget {
   final Color accent;
   final String? subtitle;
   final bool live;
-  final String tooltip;
   final Widget? chart;
 
   const _KpiCard({
@@ -480,7 +468,6 @@ class _KpiCard extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.accent,
-    required this.tooltip,
     this.subtitle,
     this.live = false,
     this.chart,
@@ -492,24 +479,22 @@ class _KpiCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).colorScheme.onSurface;
 
-    return Tooltip(
-      message: tooltip,
-      child: TintedCard(
-        accent: accent,
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                AccentBadge(icon: icon, accent: accent),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TweenAnimationBuilder<double>(
-                        tween: Tween(end: value),
+    return TintedCard(
+      accent: accent,
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              AccentBadge(icon: icon, accent: accent),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(end: value),
                         duration: const Duration(milliseconds: 400),
                         curve: Curves.easeOutCubic,
                         builder: (context, v, _) => Text(
@@ -562,8 +547,7 @@ class _KpiCard extends StatelessWidget {
             ],
           ],
         ),
-      ),
-    );
+      );
   }
 
   static String _group(int value) {

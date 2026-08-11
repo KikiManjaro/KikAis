@@ -122,6 +122,18 @@ AIS messages arrive continuously and need rapid updates to both the UI logs and 
 
 - The app will sometimes not boot on Linux (tested on Raspberry Pi); retrying to boot a few times solves the issue
 - The map page could be laggy when receiving too much data
+- **Windows: micro-freezes / stalls on clicks and tab switches** (Skia renderer). Skia compiles shaders at runtime on first use, which stalls the GPU on interactions (button presses, feed checkboxes, tab switches). Measured via the VM timeline: ~27-70 ms frames on clicks and ~1.3 s stalls when a page mounts; `SkSL::Compiler::convertProgram` / `driver_link_program` / `cache_miss` events fire on every interaction. **Impeller** (precompiled shaders) removes them completely, but in Flutter 3.44 Impeller is opt-in on Windows and cannot be baked into a release build (no engine-switch API in the runner; the `FLUTTER_ENGINE_SWITCHES` env vars are ignored by release builds). For development, run with `flutter run --enable-impeller` (the IntelliJ run configuration already includes it). Release builds keep a first-use stall until Impeller becomes the Windows default.
+- **Windows: Tooltip widgets removed** to avoid a Flutter engine crash. `ListView` + `Tooltip` combinations desynchronize the Windows accessibility (`ui::AXTree`) bridge (flutter/flutter#182444), eventually crashing the process with an access violation in `flutter_windows.dll`. The app's tooltips were removed as a workaround; the fix is tracked upstream (flutter/flutter PR #190344). This is why "make tooltips work" is in the roadmap below.
+- **Windows: `auto_updater` logs a "non-platform thread" warning** (`dev.leanflutter.plugins/auto_updater_event`). A known limitation of the `auto_updater` plugin (1.0.0, leanflutter/auto_updater#68): WinSparkle callbacks fire on a background thread. Confirmed by A/B testing that this is **not** the cause of the previous self-close crashes; it is a benign log warning for now.
+
+#### Debugging notes (what was investigated and tried)
+
+During a crash/performance investigation (Flutter 3.41 → 3.44.9), the following was measured and ruled in/out:
+
+- **Self-close crashes** (Windows): root cause was the accessibility/Tooltip engine bug above. `auto_updater` was ruled out (reproduced the crash with it disabled), as were the per-frame feed-status rebuilds.
+- **Click / tab-switch micro-freezes**: root cause is Skia shader compilation (see above). Impeller fixes it in dev builds.
+- The following performance experiments were tried and later **reverted** because they did not resolve the perceived micro-freezes: throttling feed-status notifications, debouncing `AppSettings.save()`, gating the reception status timer on the forwarder state, gating `MessageStats` notifications on counter changes, lazy-mounting the `IndexedStack` pages + `TickerMode`, narrowing the simulation page's `ListenableBuilder`, and scoping the feed-card rebuilds to per-tile status dots.
+- Kept fixes: Tooltip removal + `InkRipple.splashFactory` (avoid the `ink_sparkle` shader that also failed in tests) to prevent the crashes, and deferring `BoatManager` settings sync to the first post-frame (avoids the "setState() during build" assertion at startup).
 
 ### Improvements
 
@@ -130,6 +142,13 @@ AIS messages arrive continuously and need rapid updates to both the UI logs and 
 - Support for NMEA 4.0
 - Add serial reception
 - Improve compatibility with other platforms (macOS, iOS and Android)
+- Add cache for tiles
+- Make verification for memory leaks and performances
+- Find a way to make tooltips works
+- Add more messages for simulation
+- Add more options for simulation
+- Add ais documentation in a tab (all messages, what they are used for etc, difference between ships, base station etc)
+- Add i18n
 
 ## 🤝 Contributing
 

@@ -46,7 +46,6 @@ void main() {
     expect(find.textContaining('!AIVDM,1,1'), findsOneWidget);
     expect(find.textContaining('!AIVDM,2,1'), findsOneWidget);
     expect(find.text('US'), findsOneWidget);
-    expect(find.byTooltip('Copy all frames'), findsOneWidget);
     // 2 rows + 1 copy-all.
     expect(find.byIcon(Icons.copy), findsNWidgets(3));
     expect(tester.takeException(), isNull);

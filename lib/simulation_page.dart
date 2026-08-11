@@ -116,13 +116,6 @@ class _SimulationPageState extends State<SimulationPage> {
         SimBoatKind.aton => Colors.teal,
       };
 
-  String _kindLabel(int emitType) => switch (simBoatKind(emitType)) {
-        SimBoatKind.vessel => 'Vessel',
-        SimBoatKind.aircraft => 'Aircraft',
-        SimBoatKind.baseStation => 'Base station',
-        SimBoatKind.aton => 'Aid to navigation',
-      };
-
   Widget _field(TextEditingController controller, String label) {
     return SizedBox(
       width: 150,
@@ -140,13 +133,10 @@ class _SimulationPageState extends State<SimulationPage> {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Tooltip(
-            message: _kindLabel(b.emitType),
-            child: Icon(
-              _kindIcon(b.emitType),
-              size: 16,
-              color: _kindColor(b.emitType),
-            ),
+          Icon(
+            _kindIcon(b.emitType),
+            size: 16,
+            color: _kindColor(b.emitType),
           ),
           const SizedBox(width: 6),
           SizedBox(

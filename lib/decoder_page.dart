@@ -126,7 +126,6 @@ class _DecoderPageState extends State<DecoderPage> {
               _controller.clear();
               setState(() => _results = []);
             },
-            tooltip: 'Clear',
           ),
         ],
       ),
@@ -199,9 +198,6 @@ class _DecoderPageState extends State<DecoderPage> {
                           text: result.raws.join('\n'),
                           message: 'Frame copied',
                           padding: EdgeInsets.zero,
-                          tooltip: result.raws.length > 1
-                              ? 'Copy these frames'
-                              : 'Copy this frame',
                         ),
                       ],
                     ),

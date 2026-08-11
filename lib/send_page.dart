@@ -161,9 +161,6 @@ class _SendPageState extends State<SendPage> {
             builder: (context, running, _) => IconButton(
               icon: const Icon(Icons.add),
               onPressed: running ? null : () => _showEditor(),
-              tooltip: running
-                  ? 'Stop the forwarder to edit destinations'
-                  : 'Add destination',
             ),
           ),
         ],
@@ -252,7 +249,6 @@ class _SendPageState extends State<SendPage> {
                                 visualDensity: VisualDensity.compact,
                                 onPressed: () =>
                                     _showEditor(existing: target),
-                                tooltip: 'Edit destination',
                               ),
                               IconButton(
                                 icon: const Icon(
@@ -261,7 +257,6 @@ class _SendPageState extends State<SendPage> {
                                 ),
                                 visualDensity: VisualDensity.compact,
                                 onPressed: () => _remove(target),
-                                tooltip: 'Remove destination',
                               ),
                             ],
                           ),

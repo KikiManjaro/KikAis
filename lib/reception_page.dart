@@ -142,19 +142,15 @@ class ReceptionPageState extends State<ReceptionPage> {
       }
     });
 
+    // The feed card structure only depends on toggles, the simulator and the
     _feedListenable = Listenable.merge([
       forwarderService.feedStatuses,
       sim,
       _statusTick,
     ]);
-    // Refresh the feed tiles only while the forwarder is running; the dots
-    // never change over time otherwise. Idle rebuilds churn the semantics tree
-    // (ListView + Tooltips), which on Windows triggers AXTree bridge failures.
     _statusTimer = Timer.periodic(
       const Duration(seconds: 1),
-      (_) {
-        if (isRunning) _statusTick.value++;
-      },
+      (_) => _statusTick.value++,
     );
   }
 
@@ -235,7 +231,7 @@ class ReceptionPageState extends State<ReceptionPage> {
   Future<void> toggleSimFeed(bool value) async {
     setState(() => feedEnabled[kSimulationFeedKey] = value);
     settings.feedEnabled[kSimulationFeedKey] = value;
-    settings.save();
+    settings.saveFeedEnabled(kSimulationFeedKey, value);
 
     if (!isRunning) return;
 
@@ -326,7 +322,7 @@ class ReceptionPageState extends State<ReceptionPage> {
   void toggleFeed(FeedDef feed, bool value) async {
     setState(() => feedEnabled[feed.key] = value);
     settings.feedEnabled[feed.key] = value;
-    settings.save();
+    settings.saveFeedEnabled(feed.key, value);
 
     if (!isRunning) return;
 
@@ -447,35 +443,16 @@ class ReceptionPageState extends State<ReceptionPage> {
       FeedDotColor.orange => Colors.orange,
       FeedDotColor.green => Colors.green,
     };
-    return Tooltip(
-      message: _statusTooltip(status),
-      child: Container(
-        width: 10,
-        height: 10,
-        margin: const EdgeInsets.only(right: 4),
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      ),
+    return Container(
+      width: 10,
+      height: 10,
+      margin: const EdgeInsets.only(right: 4),
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 
-  String _statusTooltip(FeedStatus? status) {
-    if (status == null) return 'Disconnected';
-    if (status.error != null) {
-      return '${status.messageCount} messages · ${status.error}';
-    }
-    if (!status.connected) {
-      return status.connecting ? 'Connecting…' : 'Disconnected';
-    }
-    final last = status.lastMessageAt;
-    if (last == null) {
-      return 'Connected · no AIS frames yet';
-    }
-    final seconds = DateTime.now().difference(last).inSeconds;
-    return '${status.messageCount} messages · last frame ${seconds}s ago';
-  }
-
   Widget _buildSimFeedTile(FeedStatus status) {
-    final tile = CheckboxListTile(
+    return CheckboxListTile(
       dense: true,
       title: Row(
         children: [
@@ -489,15 +466,10 @@ class ReceptionPageState extends State<ReceptionPage> {
       onChanged: (val) => toggleSimFeed(val ?? false),
       secondary: const Icon(Icons.science, size: 30),
     );
-    return Tooltip(
-      message: 'Emit a simulated AIS fleet around a location. '
-          'Configure it on the Simulation tab.',
-      child: tile,
-    );
   }
 
   Widget _buildFeedTile(FeedDef feed, FeedStatus? status) {
-    final tile = CheckboxListTile(
+    return CheckboxListTile(
       dense: true,
       title: Row(
         children: [
@@ -514,7 +486,6 @@ class ReceptionPageState extends State<ReceptionPage> {
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
               onPressed: () => _removeCustomFeed(feed),
-              tooltip: 'Remove feed',
             ),
         ],
       ),
@@ -522,26 +493,6 @@ class ReceptionPageState extends State<ReceptionPage> {
       onChanged: (val) => toggleFeed(feed, val ?? false),
       secondary: feedIcon(feed),
     );
-    if (feed.tooltip != null) {
-      return Tooltip(message: feed.tooltip!, child: tile);
-    }
-    if (feed.type == FeedType.serial) {
-      final port = feed.serialPort ?? '';
-      return Tooltip(
-        message: 'Reads NMEA frames from serial port $port at '
-            '${feed.baudRate} baud.',
-        child: tile,
-      );
-    }
-    if (feed.type == FeedType.file) {
-      final fileName = (feed.path ?? '').split(RegExp(r'[/\\]')).last;
-      return Tooltip(
-        message: 'Replays "$fileName", one frame every '
-            '${feed.intervalMs} ms${feed.loop ? ' (loops)' : ''}.',
-        child: tile,
-      );
-    }
-    return tile;
   }
 
   @override
@@ -651,7 +602,6 @@ class ReceptionPageState extends State<ReceptionPage> {
                     minHeight: 32,
                   ),
                   onPressed: _showAddFeedDialog,
-                  tooltip: 'Add feed',
                 ),
               ),
             ),
@@ -669,10 +619,7 @@ class ReceptionPageState extends State<ReceptionPage> {
                       final tiles = [
                         _buildSimFeedTile(_simFeedStatus()),
                         for (final feed in _allFeeds)
-                          _buildFeedTile(
-                            feed,
-                            statuses[feed.displayName],
-                          ),
+                          _buildFeedTile(feed, statuses[feed.displayName]),
                       ];
                       return LayoutBuilder(
                         builder: (context, constraints) {
@@ -698,35 +645,30 @@ class ReceptionPageState extends State<ReceptionPage> {
               ),
             ),
             const SizedBox(height: 8),
-            Tooltip(
-              message: 'When enabled, sentences with an invalid NMEA '
-                  'checksum are dropped before decoding. Disable it to accept '
-                  'feeds that send malformed or unchecked sentences.',
-              child: SwitchListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                dense: true,
-                title: const Text(
-                  "Validate NMEA checksums",
-                  style: TextStyle(fontSize: 13),
-                ),
-                subtitle: AnimatedBuilder(
-                  animation: boatManager,
-                  builder: (_, __) => Text(
-                    "${boatManager.invalidChecksumCount} "
-                    "sentences dropped",
-                    style: const TextStyle(fontSize: 11),
-                  ),
-                ),
-                value: _validateChecksum,
-                onChanged: (v) {
-                  setState(() {
-                    _validateChecksum = v;
-                  });
-                  boatManager.setValidateChecksum(v);
-                  settings.validateChecksum = v;
-                  settings.save();
-                },
+            SwitchListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              dense: true,
+              title: const Text(
+                "Validate NMEA checksums",
+                style: TextStyle(fontSize: 13),
               ),
+              subtitle: AnimatedBuilder(
+                animation: boatManager,
+                builder: (_, __) => Text(
+                  "${boatManager.invalidChecksumCount} "
+                  "sentences dropped",
+                  style: const TextStyle(fontSize: 11),
+                ),
+              ),
+              value: _validateChecksum,
+              onChanged: (v) {
+                setState(() {
+                  _validateChecksum = v;
+                });
+                boatManager.setValidateChecksum(v);
+                settings.validateChecksum = v;
+                settings.save();
+              },
             ),
             const SizedBox(height: 10),
             Row(
@@ -740,31 +682,26 @@ class ReceptionPageState extends State<ReceptionPage> {
                       child: child,
                     );
                   },
-                  child: Tooltip(
-                    message: isRunning
-                        ? 'Stop the forwarder'
-                        : 'Start the forwarder',
-                    child: ElevatedButton.icon(
-                      key: ValueKey(isRunning),
-                      icon: Icon(
-                        isRunning ? Icons.stop : Icons.play_arrow,
-                      ),
-                      label: Text(isRunning ? "Stop" : "Start"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isRunning ? Colors.red : Colors.green,
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: () {
-                        if (isRunning) {
-                          stopForwarder();
-                          widget.boat.stop();
-                        } else {
-                          startForwarder();
-                          widget.boat.start();
-                        }
-                      },
+                  child: ElevatedButton.icon(
+                    key: ValueKey(isRunning),
+                    icon: Icon(
+                      isRunning ? Icons.stop : Icons.play_arrow,
                     ),
+                    label: Text(isRunning ? "Stop" : "Start"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          isRunning ? Colors.red : Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () {
+                      if (isRunning) {
+                        stopForwarder();
+                        widget.boat.stop();
+                      } else {
+                        startForwarder();
+                        widget.boat.start();
+                      }
+                    },
                   ),
                 ),
               ],
@@ -785,7 +722,6 @@ class ReceptionPageState extends State<ReceptionPage> {
                           iconSize: 18,
                           visualDensity: VisualDensity.compact,
                           onPressed: saveLogs,
-                          tooltip: "Save logs to a file",
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete_outline),
@@ -797,7 +733,6 @@ class ReceptionPageState extends State<ReceptionPage> {
                               _scrollController.jumpTo(0);
                             });
                           },
-                          tooltip: "Clear logs",
                         ),
                       ],
                     ),
@@ -830,7 +765,6 @@ class ReceptionPageState extends State<ReceptionPage> {
                                     text: entry.message,
                                     message: 'Frame copied',
                                     padding: EdgeInsets.zero,
-                                    tooltip: 'Copy this frame',
                                   ),
                               ],
                             );
@@ -1037,7 +971,6 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                     const SizedBox(width: 8),
                     IconButton(
                       icon: const Icon(Icons.folder_open),
-                      tooltip: 'Browse',
                       onPressed: _browse,
                     ),
                   ],
@@ -1076,7 +1009,6 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                     const SizedBox(width: 8),
                     IconButton(
                       icon: const Icon(Icons.refresh),
-                      tooltip: 'Refresh ports',
                       onPressed: _refreshSerialPorts,
                     ),
                   ],

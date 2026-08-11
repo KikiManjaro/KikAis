@@ -87,7 +87,6 @@ class BoatInfoBubble extends StatelessWidget {
                   icon: const Icon(Icons.close, size: 18),
                   visualDensity: VisualDensity.compact,
                   onPressed: onClose,
-                  tooltip: 'Close',
                 ),
             ],
           ),
@@ -235,7 +234,6 @@ class _BoatFrameLogState extends State<_BoatFrameLog> {
                 if (frames.isNotEmpty)
                   CopyIconButton(
                     text: frames.map((f) => f.raw).join('\n'),
-                    tooltip: 'Copy all frames',
                     iconSize: 15,
                     padding: EdgeInsets.zero,
                   ),
@@ -318,17 +316,14 @@ class _FrameRow extends StatelessWidget {
             const SizedBox(width: 6),
           ],
           Expanded(
-            child: Tooltip(
-              message: frame.raw,
-              child: Text(
-                frame.raw,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontFamily: 'monospace',
-                  color: scheme.onSurface,
-                ),
+            child: Text(
+              frame.raw,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11,
+                fontFamily: 'monospace',
+                color: scheme.onSurface,
               ),
             ),
           ),

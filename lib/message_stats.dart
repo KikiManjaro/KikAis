@@ -26,15 +26,6 @@ class MessageStats extends ChangeNotifier {
   int _lastCount = 0;
   int _lastDecodedCount = 0;
   Map<String, int> _lastByFeedCount = {};
-
-  /// Snapshot of the counters at the last [notifyListeners]. When the app is
-  /// idle (no feed activity) nothing changes between samples, so no
-  /// notification is emitted. This avoids rebuilding the stats UI every second
-  /// for no reason.
-  int _lastNotifiedReceived = 0;
-  int _lastNotifiedDecoded = 0;
-  Map<String, int> _lastNotifiedByFeed = {};
-
   Timer? _sampler;
 
   MessageStats() {
@@ -59,22 +50,7 @@ class MessageStats extends ChangeNotifier {
     rateByFeed = next;
     _lastByFeedCount = Map.of(byFeed);
 
-    final changed = totalReceived != _lastNotifiedReceived ||
-        totalDecoded != _lastNotifiedDecoded ||
-        !_sameCounts(byFeed, _lastNotifiedByFeed);
-    _lastNotifiedReceived = totalReceived;
-    _lastNotifiedDecoded = totalDecoded;
-    _lastNotifiedByFeed = Map.of(byFeed);
-    if (!changed) return;
     notifyListeners();
-  }
-
-  static bool _sameCounts(Map<String, int> a, Map<String, int> b) {
-    if (a.length != b.length) return false;
-    for (final entry in a.entries) {
-      if (b[entry.key] != entry.value) return false;
-    }
-    return true;
   }
 
   void recordReceived(String? feed) {
@@ -108,9 +84,6 @@ class MessageStats extends ChangeNotifier {
     _lastCount = 0;
     _lastDecodedCount = 0;
     _lastByFeedCount = {};
-    _lastNotifiedReceived = 0;
-    _lastNotifiedDecoded = 0;
-    _lastNotifiedByFeed = {};
     notifyListeners();
   }
 
