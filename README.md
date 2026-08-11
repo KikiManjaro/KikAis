@@ -140,11 +140,9 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - Logs processing for NMEA sentences and connection state are in the same pipeline causing some issues between them since there is only one processor — this should be reworked
 - Add the ability to filter what is forwarded (by message type, geographic zone, vessel, etc.)
 - Support for NMEA 4.0
-- Add serial reception
 - Improve compatibility with other platforms (macOS, iOS and Android)
 - Make verification for memory leaks and performances
 - Find a way to make tooltips works
-- Add ais documentation in a tab (all messages, what they are used for etc, difference between ships, base station etc)
 - Add i18n
 
 ## 🤝 Contributing
