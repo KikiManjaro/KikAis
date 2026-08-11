@@ -1,0 +1,111 @@
+import 'package:flutter/material.dart';
+
+/// Labels for the comma-separated fields of an AIVDM/AIVDO sentence.
+const List<String> kNmeaFieldLabels = [
+  'Talker',
+  'Fragments',
+  'Fragment #',
+  'Message ID',
+  'Channel',
+  'Payload',
+  'Fill bits',
+];
+
+/// Renders a single NMEA AIS sentence as coloured, per-field chips so the
+/// framing is obvious at a glance (the "sentence inspector").
+///
+/// Colours are adapted to the current theme so they stay readable in both
+/// light and dark themes: labels/borders use a darker shade on light themes
+/// and a lighter shade on dark themes, and the value text always uses
+/// [ColorScheme.onSurface].
+class NmeaFieldBreakdown extends StatelessWidget {
+  final String sentence;
+
+  const NmeaFieldBreakdown({super.key, required this.sentence});
+
+  static const List<MaterialColor> _palette = [
+    Colors.lightBlue,
+    Colors.teal,
+    Colors.deepPurple,
+    Colors.orange,
+    Colors.pink,
+    Colors.indigo,
+    Colors.brown,
+    Colors.cyan,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final star = sentence.indexOf('*');
+    final body = star >= 0 ? sentence.substring(0, star) : sentence;
+    final checksum = star >= 0 ? sentence.substring(star + 1) : '';
+    final parts = body.split(',');
+
+    return Wrap(
+      spacing: 4,
+      runSpacing: 4,
+      children: [
+        for (var i = 0; i < parts.length; i++) ...[
+          _chip(
+            scheme,
+            isDark,
+            i % _palette.length,
+            kNmeaFieldLabels[i],
+            parts[i].isEmpty ? '(empty)' : parts[i],
+          ),
+        ],
+        if (checksum.isNotEmpty)
+          _chip(
+            scheme,
+            isDark,
+            7 % _palette.length,
+            'Checksum',
+            checksum,
+          ),
+      ],
+    );
+  }
+
+  Widget _chip(
+    ColorScheme scheme,
+    bool isDark,
+    int paletteIndex,
+    String label,
+    String value,
+  ) {
+    final base = _palette[paletteIndex];
+    final accent = isDark ? base.shade300 : base.shade800;
+    final bg = base.withValues(alpha: isDark ? 0.22 : 0.14);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: accent),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              color: accent,
+            ),
+          ),
+          SelectableText(
+            value,
+            style: TextStyle(
+              fontFamily: 'monospace',
+              fontSize: 11,
+              color: scheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

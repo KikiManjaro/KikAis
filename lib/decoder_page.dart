@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'ais/ais_decoder.dart';
 import 'ais_message_details.dart';
 import 'app_settings.dart';
+import 'nmea_field_breakdown.dart';
 import 'themes.dart';
 import 'widgets.dart';
 
@@ -27,10 +28,10 @@ class DecoderPage extends StatefulWidget {
   const DecoderPage({super.key});
 
   @override
-  State<DecoderPage> createState() => _DecoderPageState();
+  State<DecoderPage> createState() => DecoderPageState();
 }
 
-class _DecoderPageState extends State<DecoderPage> {
+class DecoderPageState extends State<DecoderPage> {
   final TextEditingController _controller = TextEditingController();
   late bool _validateChecksum;
   List<_DecodeResult> _results = [];
@@ -110,6 +111,13 @@ class _DecoderPageState extends State<DecoderPage> {
       );
     }
     setState(() => _results = results);
+  }
+
+  /// Loads [text] into the decoder box and decodes it immediately. Used by
+  /// the Documentation tab's "Open in Decoder" action.
+  void loadSentences(String text) {
+    _controller.text = text;
+    _decode();
   }
 
   @override
@@ -213,6 +221,11 @@ class _DecoderPageState extends State<DecoderPage> {
                         ),
                       ),
                     ),
+                    for (final raw in result.raws)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: NmeaFieldBreakdown(sentence: raw),
+                      ),
                     if (result.decoded)
                       for (final field in result.fields)
                         Padding(

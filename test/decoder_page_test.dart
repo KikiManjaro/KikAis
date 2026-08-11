@@ -74,6 +74,9 @@ void main() {
     expect(find.textContaining('T1'), findsOneWidget);
     expect(find.text('MMSI'), findsOneWidget);
     expect(find.text('226545000'), findsWidgets);
+    // The frame is also shown broken down into coloured field chips.
+    expect(find.text('Talker'), findsOneWidget);
+    expect(find.text('Payload'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

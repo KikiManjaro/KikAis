@@ -7,6 +7,7 @@ import 'ais_editor_page.dart';
 import 'app_settings.dart';
 import 'boat_animation.dart';
 import 'decoder_page.dart';
+import 'documentation_page.dart';
 import 'reception_page.dart';
 import 'send_page.dart';
 import 'simulation_page.dart';
@@ -29,6 +30,7 @@ class _SwipperUiState extends State<SwipperUi> {
   final PageController _pageController = PageController();
   final GlobalKey<ReceptionPageState> _receptionKey =
       GlobalKey<ReceptionPageState>();
+  final GlobalKey<DecoderPageState> _decoderKey = GlobalKey<DecoderPageState>();
   late final BoatAnimation boat;
   late final ReceptionPage receptionPage;
   late final SendPage sendPage;
@@ -37,6 +39,7 @@ class _SwipperUiState extends State<SwipperUi> {
   late final DecoderPage decoderPage;
   late final StatsPage statsPage;
   late final SimulationPage simulationPage;
+  late final DocumentationPage documentationPage;
 
   int _currentIndex = 0;
 
@@ -60,11 +63,18 @@ class _SwipperUiState extends State<SwipperUi> {
         _receptionKey.currentState?.sendRaw(sentence);
       },
     );
-    decoderPage = const DecoderPage(key: PageStorageKey('decoder'));
+    decoderPage = DecoderPage(key: _decoderKey);
     statsPage = const StatsPage();
     simulationPage = SimulationPage(
       simGetter: () => _receptionKey.currentState?.simService,
       onGoToReception: () => setState(() => _currentIndex = 0),
+    );
+    documentationPage = DocumentationPage(
+      onOpenTab: (i) => setState(() => _currentIndex = i),
+      onOpenInDecoder: (sentence) {
+        setState(() => _currentIndex = 4);
+        _decoderKey.currentState?.loadSentences(sentence);
+      },
     );
   }
 
@@ -166,11 +176,11 @@ class _SwipperUiState extends State<SwipperUi> {
                     if (pointerSignal is PointerScrollEvent) {
                       if (pointerSignal.scrollDelta.dx > 0) {
                         setState(() {
-                          _currentIndex = (_currentIndex + 1).clamp(0, 6);
+                          _currentIndex = (_currentIndex + 1).clamp(0, 7);
                         });
                       } else if (pointerSignal.scrollDelta.dx < 0) {
                         setState(() {
-                          _currentIndex = (_currentIndex - 1).clamp(0, 6);
+                          _currentIndex = (_currentIndex - 1).clamp(0, 7);
                         });
                       }
                     }
@@ -185,6 +195,7 @@ class _SwipperUiState extends State<SwipperUi> {
                       decoderPage,
                       statsPage,
                       simulationPage,
+                      documentationPage,
                     ],
                   ),
                 ),
@@ -227,6 +238,11 @@ class _SwipperUiState extends State<SwipperUi> {
                       icon: Icon(Icons.bubble_chart_outlined),
                       selectedIcon: Icon(Icons.bubble_chart),
                       label: 'Simulation',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.menu_book_outlined),
+                      selectedIcon: Icon(Icons.menu_book),
+                      label: 'Docs',
                     ),
                   ],
                 ),
