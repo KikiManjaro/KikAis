@@ -1,3 +1,4 @@
+import '../nmea/nmea_tag_block.dart';
 import '../utils/convert_char_to_bin.dart';
 
 String _bits(int value, int width) => value.toRadixString(2).padLeft(width, '0');
@@ -26,7 +27,8 @@ String encodeAisText(String text, int bitWidth) {
   return padded.substring(0, bitWidth);
 }
 
-String _computeChecksum(String body) {
+/// Computes the NMEA XOR checksum (two uppercase hex digits) of [body].
+String computeNmeaChecksum(String body) {
   int xor = 0;
   for (final c in body.codeUnits) {
     xor ^= c;
@@ -34,10 +36,18 @@ String _computeChecksum(String body) {
   return xor.toRadixString(16).padLeft(2, '0').toUpperCase();
 }
 
+String _computeChecksum(String body) => computeNmeaChecksum(body);
+
 /// Builds a full NMEA sentence from a raw binary payload.
-String buildNmeaSentence(String binary, {String channel = 'A'}) {
+String buildNmeaSentence(
+  String binary, {
+  String channel = 'A',
+  String talker = 'AI',
+  NmeaTagBlock? tagBlock,
+}) {
   final payload = encodeBinaryToAis(binary);
   final fill = binary.length % 6 == 0 ? 0 : 6 - (binary.length % 6);
-  final body = 'AIVDM,1,1,,$channel,$payload,$fill';
-  return '!$body*${_computeChecksum(body)}';
+  final body = '${talker}VDM,1,1,,$channel,$payload,$fill';
+  final framed = '!$body*${_computeChecksum(body)}';
+  return tagBlock == null ? framed : '${tagBlock.raw}$framed';
 }

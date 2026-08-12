@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kik_ais/ais/ais_decoder.dart' show NmeaFormat;
 import 'package:kik_ais/app_settings.dart';
 import 'package:kik_ais/feed_def.dart';
 import 'package:kik_ais/forwarder_service.dart';
@@ -36,6 +37,7 @@ void main() {
     settings.customFeeds = [
       const FeedDef(key: 'local', displayName: 'Local', host: '192.168.1.5', port: 9999),
     ];
+    settings.setImportFormat(NmeaFormat.tag, 'MYSITE');
     await settings.save();
 
     final loaded = AppSettings();
@@ -60,6 +62,8 @@ void main() {
     expect(loaded.customFeeds, hasLength(1));
     expect(loaded.customFeeds.single.host, '192.168.1.5');
     expect(loaded.customFeeds.single.port, 9999);
+    expect(loaded.nmeaImportFormat, NmeaFormat.tag);
+    expect(loaded.nmeaImportTagSource, 'MYSITE');
   });
 
   test('AppSettings persists the simulation configuration (seed only)', () async {
@@ -93,6 +97,8 @@ void main() {
     expect(loaded.targets.single.port, 33333);
     expect(loaded.targets.single.protocol, ForwardProtocol.udpServer);
     expect(loaded.targets.single.enabled, isFalse);
+    expect(loaded.nmeaImportFormat, NmeaFormat.passthrough);
+    expect(loaded.nmeaImportTagSource, 'KIKAIS');
   });
 
   test('AppSettings migrates a legacy single target', () async {

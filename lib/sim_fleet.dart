@@ -1,15 +1,29 @@
 import 'dart:math' as math;
 
 import 'ais/src/encoder/ais_message_encoder.dart';
+import 'ais/src/nmea/nmea_format.dart' show buildTagBlock, msSinceUtcMidnight, wrapNmea4;
 
 const double kKmPerDegLat = 111.0;
 
 /// How many ticks between two type 5 (static & voyage) emissions per vessel.
 const int kStaticEveryTicks = 5;
 
+/// NMEA 4.0 AIS talker IDs selectable for transmission.
+const List<String> kSimTalkers = [
+  'AI',
+  'AB',
+  'AD',
+  'AN',
+  'AR',
+  'AS',
+  'AT',
+  'AX',
+  'BS',
+  'SA',
+];
+
 /// A few realistic ITU-R M.1371 ship types used to vary the fleet.
-const List<(int, String)> kSimVesselTypes = [
-  (70, 'Cargo'),
+const List<(int, String)> kSimVesselTypes = [  (70, 'Cargo'),
   (80, 'Tanker'),
   (30, 'Fishing'),
   (36, 'Sailing'),
@@ -577,6 +591,14 @@ class SimFleetConfig {
   /// When true, position reports carry a rate of turn derived from heading.
   bool realisticRot;
 
+  /// NMEA 4.0 talker ID used when emitting (AI, AB, AN, ...). 'AI' keeps the
+  /// classic !AIVDM/!AIVDO form.
+  String nmeaTalker;
+
+  /// When true, every emitted frame is prefixed with a NMEA 4.0 tag block
+  /// (source "SIM" and a timestamp).
+  bool nmea4Tags;
+
   SimFleetConfig({
     this.centerLat = 48.85,
     this.centerLon = 2.35,
@@ -611,6 +633,8 @@ class SimFleetConfig {
     this.classBPercent = 50,
     this.accuratePosition = false,
     this.realisticRot = false,
+    this.nmeaTalker = 'AI',
+    this.nmea4Tags = false,
   })  : messageTypes = messageTypes ?? {1, 5},
         vesselTypes = vesselTypes ?? {
             70, 80, 30, 36, 60, 52, 40, 90,
@@ -652,6 +676,8 @@ class SimFleetConfig {
     int? classBPercent,
     bool? accuratePosition,
     bool? realisticRot,
+    String? nmeaTalker,
+    bool? nmea4Tags,
   }) =>
       SimFleetConfig(
         centerLat: centerLat ?? this.centerLat,
@@ -687,6 +713,8 @@ class SimFleetConfig {
         classBPercent: classBPercent ?? this.classBPercent,
         accuratePosition: accuratePosition ?? this.accuratePosition,
         realisticRot: realisticRot ?? this.realisticRot,
+        nmeaTalker: nmeaTalker ?? this.nmeaTalker,
+        nmea4Tags: nmea4Tags ?? this.nmea4Tags,
       );
 
   Map<String, dynamic> toJson() => {
@@ -723,6 +751,8 @@ class SimFleetConfig {
         'classBPercent': classBPercent,
         'accuratePosition': accuratePosition,
         'realisticRot': realisticRot,
+        'nmeaTalker': nmeaTalker,
+        'nmea4Tags': nmea4Tags,
       };
 
   factory SimFleetConfig.fromJson(Map<String, dynamic> json) =>
@@ -770,6 +800,8 @@ class SimFleetConfig {
         classBPercent: json['classBPercent'] as int? ?? 50,
         accuratePosition: json['accuratePosition'] as bool? ?? false,
         realisticRot: json['realisticRot'] as bool? ?? false,
+        nmeaTalker: json['nmeaTalker'] as String? ?? 'AI',
+        nmea4Tags: json['nmea4Tags'] as bool? ?? false,
       );
 
   /// Types that produce a moving position report.
@@ -1368,10 +1400,23 @@ class SimFleet {
         }
       }
     }
-    if (config.injectErrors && out.isNotEmpty) {
-      return _injectErrors(out, config.errorRate, random);
+    var result = out;
+    if (config.nmeaTalker != 'AI' || config.nmea4Tags) {
+      final tag = config.nmea4Tags
+          ? buildTagBlock(
+              sourceId: 'SIM',
+              timeMs: msSinceUtcMidnight(DateTime.now()),
+            )
+          : null;
+      result = [
+        for (final s in out)
+          wrapNmea4(s, talker: config.nmeaTalker, tagBlock: tag),
+      ];
     }
-    return out;
+    if (config.injectErrors && result.isNotEmpty) {
+      return _injectErrors(result, config.errorRate, random);
+    }
+    return result;
   }
 
   /// Corrupts the checksum of, or duplicates, a random share of sentences to

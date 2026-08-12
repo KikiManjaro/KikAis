@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'ais/ais_decoder.dart' show NmeaFormat;
 import 'feed_def.dart';
 import 'forwarder_service.dart';
 import 'sim_fleet.dart';
@@ -25,6 +26,8 @@ class AppSettings extends ChangeNotifier {
   static const _kCustomFeeds = 'customFeeds';
   static const _kFeedPrefix = 'feedEnabled.';
   static const _kSimulation = 'simulation';
+  static const _kImportFormat = 'nmeaImportFormat';
+  static const _kImportTagSource = 'nmeaImportTagSource';
 
   bool mapClusterEnabled = true;
   bool sendToMap = false;
@@ -41,6 +44,23 @@ class AppSettings extends ChangeNotifier {
   final Map<String, bool> feedEnabled = {};
   List<FeedDef> customFeeds = [];
   SimFleetConfig simConfig = SimFleetConfig();
+
+  /// How frames are normalized when received (all sources: network, file,
+  /// serial and simulation).
+  NmeaFormat nmeaImportFormat = NmeaFormat.passthrough;
+
+  /// Source id used when [nmeaImportFormat] is [NmeaFormat.tag].
+  String nmeaImportTagSource = 'KIKAIS';
+
+  void setImportFormat(NmeaFormat format, String tagSource) {
+    if (nmeaImportFormat == format && nmeaImportTagSource == tagSource) {
+      return;
+    }
+    nmeaImportFormat = format;
+    nmeaImportTagSource = tagSource;
+    notifyListeners();
+    save();
+  }
 
   void setTheme(AppTheme theme) {
     if (appTheme == theme) return;
@@ -143,6 +163,12 @@ class AppSettings extends ChangeNotifier {
           SimFleetConfig.fromJson(jsonDecode(simRaw) as Map<String, dynamic>);
     }
 
+    nmeaImportFormat = NmeaFormat.values.firstWhere(
+      (f) => f.name == prefs.getString(_kImportFormat),
+      orElse: () => NmeaFormat.passthrough,
+    );
+    nmeaImportTagSource = prefs.getString(_kImportTagSource) ?? 'KIKAIS';
+
     notifyListeners();
   }
 
@@ -185,5 +211,7 @@ class AppSettings extends ChangeNotifier {
       jsonEncode(customFeeds.map((f) => f.toJson()).toList()),
     );
     await prefs.setString(_kSimulation, jsonEncode(simConfig.toJson()));
+    await prefs.setString(_kImportFormat, nmeaImportFormat.name);
+    await prefs.setString(_kImportTagSource, nmeaImportTagSource);
   }
 }

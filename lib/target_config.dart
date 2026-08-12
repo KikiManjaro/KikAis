@@ -1,3 +1,4 @@
+import 'ais/ais_decoder.dart' show NmeaFormat;
 import 'forwarder_service.dart';
 
 /// A send destination: incoming AIS frames are forwarded to every enabled
@@ -10,6 +11,12 @@ class TargetConfig {
   final int port;
   final bool enabled;
 
+  /// How frames are formatted before being sent to this target.
+  final NmeaFormat sendFormat;
+
+  /// Source id used when [sendFormat] is [NmeaFormat.tag].
+  final String? tagSourceId;
+
   const TargetConfig({
     required this.id,
     required this.name,
@@ -17,6 +24,8 @@ class TargetConfig {
     required this.host,
     required this.port,
     this.enabled = true,
+    this.sendFormat = NmeaFormat.passthrough,
+    this.tagSourceId,
   });
 
   TargetConfig copyWith({
@@ -25,6 +34,8 @@ class TargetConfig {
     String? host,
     int? port,
     bool? enabled,
+    NmeaFormat? sendFormat,
+    String? tagSourceId,
   }) =>
       TargetConfig(
         id: id,
@@ -33,6 +44,8 @@ class TargetConfig {
         host: host ?? this.host,
         port: port ?? this.port,
         enabled: enabled ?? this.enabled,
+        sendFormat: sendFormat ?? this.sendFormat,
+        tagSourceId: tagSourceId ?? this.tagSourceId,
       );
 
   Map<String, dynamic> toJson() => {
@@ -42,6 +55,8 @@ class TargetConfig {
         'host': host,
         'port': port,
         'enabled': enabled,
+        'sendFormat': sendFormat.name,
+        'tagSourceId': tagSourceId,
       };
 
   factory TargetConfig.fromJson(Map<String, dynamic> json) => TargetConfig(
@@ -54,6 +69,11 @@ class TargetConfig {
         host: json['host'] as String,
         port: json['port'] as int,
         enabled: json['enabled'] as bool? ?? true,
+        sendFormat: NmeaFormat.values.firstWhere(
+          (f) => f.name == json['sendFormat'],
+          orElse: () => NmeaFormat.passthrough,
+        ),
+        tagSourceId: json['tagSourceId'] as String?,
       );
 
   static String newId() => 't${DateTime.now().microsecondsSinceEpoch}';

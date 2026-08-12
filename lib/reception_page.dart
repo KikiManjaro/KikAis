@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'ais/ais_decoder.dart'
+    show NmeaFormat, NmeaTagBlock, buildTagBlock, msSinceUtcMidnight, nmeaFormatLabel;
 import 'app_settings.dart';
 import 'boat_animation.dart';
 import 'boatmanager.dart';
@@ -91,6 +93,9 @@ class ReceptionPageState extends State<ReceptionPage> {
 
   bool isRunning = false;
   bool _validateChecksum = true;
+  late NmeaFormat _importFormat;
+  late String _importTagSource;
+  final _importTagSourceC = TextEditingController();
 
   late BoatManager boatManager;
   late AppSettings settings;
@@ -102,24 +107,31 @@ class ReceptionPageState extends State<ReceptionPage> {
     boatManager = context.read<BoatManager>();
     settings = context.read<AppSettings>();
     stats = context.read<MessageStats>();
+    _importFormat = settings.nmeaImportFormat;
+    _importTagSource = settings.nmeaImportTagSource;
+    _importTagSourceC.text = _importTagSource;
 
     forwarderService = ForwarderService(
       onLog: (message, starter, name) {
-        if (message.startsWith("!")) {
+        final (_, sentence) = NmeaTagBlock.split(message);
+        final isAis = sentence.startsWith('!');
+        if (isAis) {
           stats.recordReceived(name);
         }
         // Batched: a single setState per flush instead of one per frame, so
         // high-volume feeds (e.g. a large simulated fleet) don't stall the UI.
         _pendingLogs.add(
-          LogEntry(message: message, starter: starter, name: name),
+          LogEntry(message: message, starter: starter, name: name, time: DateTime.now()),
         );
         _logFlushTimer ??= Timer(_logFlushDelay, _flushLogs);
-        if (boatManager.decodeEnabled && message.startsWith("!")) {
-          boatManager.processMessage(message, feed: name);
+        if (boatManager.decodeEnabled && isAis) {
+          boatManager.processMessage(sentence, feed: name);
         }
       },
     );
     forwarderService.setTargets(settings.targets);
+    forwarderService.importFormat = settings.nmeaImportFormat;
+    forwarderService.importTagSourceId = settings.nmeaImportTagSource;
 
     sim = SimulatorService(config: settings.simConfig);
     sim.onSentence = (nmea) =>
@@ -267,6 +279,8 @@ class ReceptionPageState extends State<ReceptionPage> {
       path: feed.path ?? '',
       intervalMs: feed.intervalMs,
       loop: feed.loop,
+      useTimestamps: feed.useTimestamps,
+      speed: feed.speed,
     );
     player.onSentence = (nmea) =>
         forwarderService.ingest(feed.displayName, feed.key, nmea);
@@ -414,7 +428,12 @@ class ReceptionPageState extends State<ReceptionPage> {
     forwarderService.sendRaw(nmea);
     setState(() {
       logEntries.add(
-        LogEntry(message: nmea.trim(), starter: "KikAis", name: null),
+        LogEntry(
+          message: nmea.trim(),
+          starter: "KikAis",
+          name: null,
+          time: DateTime.now(),
+        ),
       );
       if (logEntries.length > maxLogEntries) {
         logEntries.removeRange(0, logEntries.length - maxLogEntries);
@@ -532,6 +551,7 @@ class ReceptionPageState extends State<ReceptionPage> {
     _tilesEnabledCache.clear();
     _scrollController.dispose();
     _logFlushTimer?.cancel();
+    _importTagSourceC.dispose();
     sim.dispose();
     for (final player in _filePlayers.values) {
       player.dispose();
@@ -557,7 +577,17 @@ class ReceptionPageState extends State<ReceptionPage> {
     final StringBuffer logBuffer = StringBuffer();
     for (var entry in logEntries) {
       if (entry.starter != null) {
-        logBuffer.writeln(entry.message);
+        // Prefix each frame with a NMEA 4.0 tag block carrying the source
+        // and the recorded time so it can be replayed chronologically.
+        if (entry.message.startsWith('\\')) {
+          logBuffer.writeln(entry.message);
+        } else {
+          final tag = buildTagBlock(
+            sourceId: entry.starter!,
+            timeMs: msSinceUtcMidnight(entry.time),
+          );
+          logBuffer.writeln('$tag${entry.message}');
+        }
       }
     }
     final Uint8List data = Uint8List.fromList(logBuffer.toString().codeUnits);
@@ -694,6 +724,56 @@ class ReceptionPageState extends State<ReceptionPage> {
                 settings.save();
               },
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                children: [
+                  const Text(
+                    'Import frame format',
+                    style: TextStyle(fontSize: 13),
+                  ),
+                  const Spacer(),
+                  DropdownButton<NmeaFormat>(
+                    value: _importFormat,
+                    isDense: true,
+                    underline: const SizedBox.shrink(),
+                    items: [
+                      for (final f in NmeaFormat.values)
+                        DropdownMenuItem(
+                          value: f,
+                          child: Text(
+                            nmeaFormatLabel(f),
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                    ],
+                    onChanged: (f) {
+                      if (f == null) return;
+                      setState(() => _importFormat = f);
+                      forwarderService.importFormat = f;
+                      settings.setImportFormat(f, _importTagSource);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            if (_importFormat == NmeaFormat.tag)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+                child: TextField(
+                  controller: _importTagSourceC,
+                  decoration: const InputDecoration(
+                    labelText: 'Tag source ID',
+                    isDense: true,
+                  ),
+                  onChanged: (v) {
+                    final source = v.trim().isEmpty ? 'KIKAIS' : v.trim();
+                    setState(() => _importTagSource = source);
+                    forwarderService.importTagSourceId = source;
+                    settings.setImportFormat(_importFormat, source);
+                  },
+                ),
+              ),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -853,8 +933,14 @@ class LogEntry {
   final String message;
   final String? starter;
   final String? name;
+  final DateTime time;
 
-  LogEntry({required this.message, this.starter, this.name});
+  LogEntry({
+    required this.message,
+    this.starter,
+    this.name,
+    required this.time,
+  });
 }
 
 /// Dialog used to add a custom feed source. The source type (network or
@@ -884,6 +970,8 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
   int _baudRate = 38400;
   List<String> _serialPorts = [];
   bool _loop = true;
+  bool _useTimestamps = false;
+  int _speed = 1;
 
   @override
   void dispose() {
@@ -953,6 +1041,8 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
       path: path,
       intervalMs: interval,
       loop: _loop,
+      useTimestamps: _useTimestamps,
+      speed: _speed,
     );
   }
 
@@ -1050,6 +1140,45 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
+                SwitchListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text(
+                    'Replay using file timestamps',
+                    style: TextStyle(fontSize: 13),
+                  ),
+                  subtitle: const Text(
+                    'Follows the recorded times (tag block t: or timestamp '
+                    'prefix) instead of a fixed interval',
+                    style: TextStyle(fontSize: 11),
+                  ),
+                  value: _useTimestamps,
+                  onChanged: (v) => setState(() => _useTimestamps = v),
+                ),
+                if (_useTimestamps)
+                  Row(
+                    children: [
+                      const Text(
+                        'Speed',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                      const Spacer(),
+                      DropdownButton<int>(
+                        value: _speed,
+                        isDense: true,
+                        underline: const SizedBox.shrink(),
+                        items: const [
+                          DropdownMenuItem(value: 1, child: Text('×1')),
+                          DropdownMenuItem(value: 2, child: Text('×2')),
+                          DropdownMenuItem(value: 5, child: Text('×5')),
+                          DropdownMenuItem(value: 10, child: Text('×10')),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) setState(() => _speed = v);
+                        },
+                      ),
+                    ],
+                  ),
                 SwitchListTile(
                   dense: true,
                   contentPadding: EdgeInsets.zero,

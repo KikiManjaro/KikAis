@@ -44,6 +44,8 @@ export 'src/messages/time/utc_date_response.dart';
 
 // NMEA pipeline (checksum, fragments, decoding)
 export 'src/nmea/nmea_sentence.dart';
+export 'src/nmea/nmea_tag_block.dart';
+export 'src/nmea/nmea_format.dart';
 export 'src/nmea/fragment_assembler.dart';
 export 'src/nmea/ais_decoder.dart';
 

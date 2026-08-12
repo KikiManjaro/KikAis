@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'ais/ais_decoder.dart' show NmeaTagBlock;
+
 /// Labels for the comma-separated fields of an AIVDM/AIVDO sentence.
 const List<String> kNmeaFieldLabels = [
   'Talker',
@@ -38,15 +40,27 @@ class NmeaFieldBreakdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final star = sentence.indexOf('*');
-    final body = star >= 0 ? sentence.substring(0, star) : sentence;
-    final checksum = star >= 0 ? sentence.substring(star + 1) : '';
+    final (tagBlock, sentencePart) = NmeaTagBlock.split(sentence);
+    final line = sentencePart;
+    final star = line.indexOf('*');
+    final body = star >= 0 ? line.substring(0, star) : line;
+    final checksum = star >= 0 ? line.substring(star + 1) : '';
     final parts = body.split(',');
 
     return Wrap(
       spacing: 4,
       runSpacing: 4,
       children: [
+        if (tagBlock != null)
+          _chip(
+            scheme,
+            isDark,
+            7 % _palette.length,
+            'Tag block',
+            tagBlock.sourceId != null
+                ? 's:${tagBlock.sourceId}'
+                : tagBlock.raw,
+          ),
         for (var i = 0; i < parts.length; i++) ...[
           _chip(
             scheme,

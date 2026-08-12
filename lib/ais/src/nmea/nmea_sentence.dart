@@ -1,4 +1,5 @@
 import '../utils/convert_char_to_bin.dart';
+import 'nmea_tag_block.dart';
 
 /// Parsed representation of a single NMEA 0183 AIS sentence
 /// (e.g. `!AIVDM,1,1,,A,<payload>,0*<checksum>`).
@@ -11,7 +12,15 @@ class NmeaSentence {
   final String payload;
   final int fillBits;
   final String? checksum;
+
+  /// Optional NMEA 4.0 tag block carried in front of the sentence.
+  final NmeaTagBlock? tagBlock;
+
+  /// The original line exactly as received (tag block included).
   final String raw;
+
+  /// The sentence part (`!...`) without any tag block.
+  final String sentenceRaw;
 
   const NmeaSentence({
     required this.talker,
@@ -22,11 +31,14 @@ class NmeaSentence {
     required this.payload,
     required this.fillBits,
     required this.checksum,
+    required this.tagBlock,
     required this.raw,
+    required this.sentenceRaw,
   });
 
   static NmeaSentence? tryParse(String rawLine) {
-    final line = rawLine.trim();
+    final (tagBlock, sentencePart) = NmeaTagBlock.split(rawLine);
+    final line = sentencePart;
     if (!line.startsWith('!')) return null;
 
     final star = line.lastIndexOf('*');
@@ -58,15 +70,17 @@ class NmeaSentence {
       payload: body.substring(commas[4] + 1, commas.last),
       fillBits: fill,
       checksum: checksum,
-      raw: line,
+      tagBlock: tagBlock,
+      raw: rawLine.trim(),
+      sentenceRaw: line,
     );
   }
 
   /// XOR of all characters between `!` and `*`, compared to the trailing
-  /// two-hex-digit checksum.
+  /// two-hex-digit checksum. A leading tag block is not part of the checksum.
   bool get isChecksumValid {
     if (checksum == null) return true;
-    final body = raw.substring(1, raw.lastIndexOf('*'));
+    final body = sentenceRaw.substring(1, sentenceRaw.lastIndexOf('*'));
     int xor = 0;
     for (final c in body.codeUnits) {
       xor ^= c;

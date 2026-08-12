@@ -15,6 +15,14 @@ class FeedDef {
   final int intervalMs;
   final bool loop;
 
+  /// When true, a file feed is replayed following the timestamps recorded in
+  /// the file (NMEA 4.0 tag-block `t:` or a leading timestamp prefix) instead
+  /// of a fixed [intervalMs].
+  final bool useTimestamps;
+
+  /// Speed factor applied to the recorded deltas (1 = real time).
+  final int speed;
+
   /// Serial source details.
   final String? serialPort;
   final int baudRate;
@@ -32,6 +40,8 @@ class FeedDef {
     this.path,
     this.intervalMs = 1000,
     this.loop = true,
+    this.useTimestamps = false,
+    this.speed = 1,
     this.serialPort,
     this.baudRate = 38400,
     this.tooltip,
@@ -48,6 +58,8 @@ class FeedDef {
         'path': path,
         'intervalMs': intervalMs,
         'loop': loop,
+        'useTimestamps': useTimestamps,
+        'speed': speed,
         'serialPort': serialPort,
         'baudRate': baudRate,
         'tooltip': tooltip,
@@ -68,6 +80,8 @@ class FeedDef {
         path: json['path'] as String?,
         intervalMs: json['intervalMs'] as int? ?? 1000,
         loop: json['loop'] as bool? ?? true,
+        useTimestamps: json['useTimestamps'] as bool? ?? false,
+        speed: json['speed'] as int? ?? 1,
         serialPort: json['serialPort'] as String?,
         baudRate: json['baudRate'] as int? ?? 38400,
         tooltip: json['tooltip'] as String?,

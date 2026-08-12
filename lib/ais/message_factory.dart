@@ -25,7 +25,9 @@ class MessageFactory {
           "Supplied String is empty or undefined!");
     }
 
-    if(input.contains("!AIVDM") || input.contains("!AIVDO")) {
+    // Accept any NMEA 4.0 talker ID in front of VDM/VDO (!AIVDM, !ABVDM,
+    // !ANVDM, ...) as well as the classic forms.
+    if (RegExp(r'![A-Za-z0-9]{2}VD[MO],').hasMatch(input)) {
 
       List<String> fields = input.split(',');
 

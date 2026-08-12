@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
+import 'ais/ais_decoder.dart' show NmeaFormat, applyNmeaFormat;
 import 'target_config.dart';
 
 enum ForwardProtocol { udpServer, tcpClient, udpClient, tcpServer }
@@ -58,6 +59,13 @@ class ForwarderService {
   List<TargetConfig> configuredTargets = [];
   bool _running = false;
   bool _stopping = false;
+
+  /// How frames are normalized when they enter the pipeline (import): keep
+  /// them as received, strip their tag blocks, or tag them.
+  NmeaFormat importFormat = NmeaFormat.passthrough;
+
+  /// Source id used when [importFormat] is [NmeaFormat.tag].
+  String importTagSourceId = 'KIKAIS';
 
   /// Stores the configured destinations and, while running, connects /
   /// disconnects the corresponding transports.
@@ -116,12 +124,18 @@ class ForwarderService {
     onLog("Forwarder stopped.", null, null);
   }
 
-  /// Forwards a raw NMEA line to every connected target.
+  /// Forwards a raw NMEA line to every connected target, applying each
+  /// target's configured frame format.
   Future<void> _send(String line) async {
     final clean = line.trim();
     if (clean.isEmpty) return;
     for (final t in _targets.values) {
-      await t.send(clean);
+      final out = applyNmeaFormat(
+        clean,
+        t.config.sendFormat,
+        sourceId: t.config.tagSourceId ?? t.config.name,
+      );
+      if (out.isNotEmpty) await t.send(out);
     }
   }
 
@@ -202,12 +216,20 @@ class ForwarderService {
   }
 
   Future<void> _handleData(String feedName, String flag, String line) async {
-    final index = line.indexOf('!');
-    if (index == -1) return;
+    // Normalize the incoming frame according to the chosen import format.
+    final normalized = applyNmeaFormat(line, importFormat,
+        sourceId: importTagSourceId);
+    if (normalized.isEmpty) return;
 
-    final cleanLine = line.substring(index);
-    await _send(cleanLine);
-    onLog(cleanLine, flag, feedName);
+    for (final t in _targets.values) {
+      final out = applyNmeaFormat(
+        normalized,
+        t.config.sendFormat,
+        sourceId: t.config.tagSourceId ?? t.config.name,
+      );
+      if (out.isNotEmpty) await t.send(out);
+    }
+    onLog(normalized, flag, feedName);
   }
 }
 

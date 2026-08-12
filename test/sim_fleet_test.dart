@@ -124,6 +124,8 @@ void main() {
       classBPercent: 80,
       accuratePosition: true,
       realisticRot: true,
+      nmeaTalker: 'AB',
+      nmea4Tags: true,
     );
     final c2 = SimFleetConfig.fromJson(c.toJson());
     expect(c2.centerLat, 10);
@@ -156,6 +158,8 @@ void main() {
     expect(c2.classBPercent, 80);
     expect(c2.accuratePosition, isTrue);
     expect(c2.realisticRot, isTrue);
+    expect(c2.nmeaTalker, 'AB');
+    expect(c2.nmea4Tags, isTrue);
   });
 
   test('simBoatKind maps message types to roles', () {
@@ -524,5 +528,23 @@ void main() {
         .whereType<PositionMessage>()
         .toList();
     expect(msgs, isNotEmpty);
+  });
+
+  test('NMEA 4.0 talker and tag block are applied and stay decodable', () {
+    final config = SimFleetConfig(
+      messageTypes: {1},
+      nmeaTalker: 'AB',
+      nmea4Tags: true,
+    );
+    final fleet = SimFleet();
+    fleet.generate(config);
+    final sentences = fleet.advanceAndCollect(config, 1);
+    expect(sentences, isNotEmpty);
+    for (final s in sentences) {
+      expect(s, startsWith('\\'));
+      expect(s, contains('s:SIM'));
+      expect(s, contains('!ABVDM'));
+      expect(AisNmeaDecoder().decode(s), isA<PositionMessage>());
+    }
   });
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'ais/ais_decoder.dart' show NmeaFormat, nmeaFormatLabel;
 import 'app_settings.dart';
 import 'forwarder_service.dart';
 import 'host_input_formatter.dart';
@@ -63,7 +64,10 @@ class _SendPageState extends State<SendPage> {
     final hostController = TextEditingController(text: existing?.host ?? '');
     final portController =
         TextEditingController(text: (existing?.port ?? 33333).toString());
+    final tagSourceController =
+        TextEditingController(text: existing?.tagSourceId ?? '');
     var protocol = existing?.protocol ?? ForwardProtocol.udpServer;
+    var sendFormat = existing?.sendFormat ?? NmeaFormat.passthrough;
 
     final saved = await showDialog<bool>(
       context: context,
@@ -109,6 +113,33 @@ class _SendPageState extends State<SendPage> {
                     PortInputFormatter(),
                   ],
                 ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<NmeaFormat>(
+                  initialValue: sendFormat,
+                  decoration: const InputDecoration(
+                    labelText: 'Send format',
+                  ),
+                  items: [
+                    for (final f in NmeaFormat.values)
+                      DropdownMenuItem(
+                        value: f,
+                        child: Text(nmeaFormatLabel(f)),
+                      ),
+                  ],
+                  onChanged: (f) {
+                    if (f != null) setDialogState(() => sendFormat = f);
+                  },
+                ),
+                if (sendFormat == NmeaFormat.tag)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: TextField(
+                      controller: tagSourceController,
+                      decoration: const InputDecoration(
+                        labelText: 'Tag source ID',
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -129,12 +160,14 @@ class _SendPageState extends State<SendPage> {
     nameController.dispose();
     hostController.dispose();
     portController.dispose();
+    tagSourceController.dispose();
 
     if (saved != true || !mounted) return;
     final name = nameController.text.trim();
     final host = hostController.text.trim();
     if (name.isEmpty || host.isEmpty) return;
 
+    final tagSource = tagSourceController.text.trim();
     await _upsert(
       TargetConfig(
         id: existing?.id ?? TargetConfig.newId(),
@@ -143,6 +176,8 @@ class _SendPageState extends State<SendPage> {
         host: host,
         port: int.tryParse(portController.text) ?? 33333,
         enabled: existing?.enabled ?? true,
+        sendFormat: sendFormat,
+        tagSourceId: tagSource.isEmpty ? null : tagSource,
       ),
     );
   }
@@ -234,7 +269,8 @@ class _SendPageState extends State<SendPage> {
                                     const SizedBox(height: 2),
                                     Text(
                                       '${protocolLabel(target.protocol)} · '
-                                      '${target.host}:${target.port}',
+                                      '${target.host}:${target.port} · '
+                                      '${nmeaFormatLabel(target.sendFormat)}',
                                       style: const TextStyle(fontSize: 12),
                                       overflow: TextOverflow.ellipsis,
                                     ),

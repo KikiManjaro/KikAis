@@ -221,6 +221,29 @@ class DecoderPageState extends State<DecoderPage> {
                         ),
                       ),
                     ),
+                    if (result.raws.isNotEmpty)
+                      Builder(builder: (context) {
+                        final (tag, _) = NmeaTagBlock.split(result.raws.first);
+                        if (tag == null) return const SizedBox.shrink();
+                        final parts = <String>[
+                          if (tag.sourceId != null) 'source ${tag.sourceId}',
+                          if (tag.timeMs != null) 't:${tag.timeMs}',
+                          if (tag.relativeTime != null)
+                            'r:${tag.relativeTime}',
+                        ];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text(
+                            'Tag block · ${parts.isEmpty ? tag.raw : parts.join(' · ')}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
+                          ),
+                        );
+                      }),
                     for (final raw in result.raws)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),

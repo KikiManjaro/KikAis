@@ -2,8 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'ais/src/nmea/nmea_format.dart'
+    show buildTagBlock, msSinceUtcMidnight, wrapNmea4;
 import 'ais_editor_specs.dart';
 import 'boatmanager.dart';
+import 'sim_fleet.dart' show kSimTalkers;
 import 'widgets.dart';
 
 class AisEditorPage extends StatefulWidget {
@@ -23,6 +26,9 @@ class AisEditorPage extends StatefulWidget {
 class _AisEditorPageState extends State<AisEditorPage> {
   int _type = 1;
   final Map<String, TextEditingController> _controllers = {};
+  String _talker = 'AI';
+  bool _nmea4Tags = false;
+  final _tagSourceC = TextEditingController();
 
   String? _sentence;
   String? _error;
@@ -39,6 +45,7 @@ class _AisEditorPageState extends State<AisEditorPage> {
     for (final c in _controllers.values) {
       c.dispose();
     }
+    _tagSourceC.dispose();
     super.dispose();
   }
 
@@ -65,9 +72,17 @@ class _AisEditorPageState extends State<AisEditorPage> {
 
   void _rebuild() {
     try {
-      final sentence = encodeMessage(_type, _values());
+      final base = encodeMessage(_type, _values());
+      final tag = _nmea4Tags
+          ? buildTagBlock(
+              sourceId: _tagSourceC.text.trim().isEmpty
+                  ? 'KIKAIS'
+                  : _tagSourceC.text.trim(),
+              timeMs: msSinceUtcMidnight(DateTime.now()),
+            )
+          : null;
       setState(() {
-        _sentence = sentence;
+        _sentence = wrapNmea4(base, talker: _talker, tagBlock: tag);
         _error = null;
       });
     } catch (e) {
@@ -168,6 +183,75 @@ class _AisEditorPageState extends State<AisEditorPage> {
                                 labelText: spec.label,
                                 isDense: true,
                               ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const SectionHeader(
+              icon: Icons.settings_input_antenna,
+              title: 'NMEA 4.0 framing',
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 160,
+                          child: DropdownButtonFormField<String>(
+                            initialValue: _talker,
+                            decoration: const InputDecoration(
+                              labelText: 'Talker ID',
+                              isDense: true,
+                            ),
+                            items: [
+                              for (final t in kSimTalkers)
+                                DropdownMenuItem(
+                                  value: t,
+                                  child: Text(t),
+                                ),
+                            ],
+                            onChanged: (t) {
+                              if (t == null) return;
+                              setState(() => _talker = t);
+                              _rebuild();
+                            },
+                          ),
+                        ),
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title: const Text(
+                            'Add NMEA 4.0 tag block',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          value: _nmea4Tags,
+                          onChanged: (v) {
+                            setState(() => _nmea4Tags = v);
+                            _rebuild();
+                          },
+                        ),
+                        if (_nmea4Tags)
+                          SizedBox(
+                            width: 160,
+                            child: TextField(
+                              controller: _tagSourceC,
+                              decoration: const InputDecoration(
+                                labelText: 'Source ID',
+                                isDense: true,
+                              ),
+                              onChanged: (_) => _rebuild(),
                             ),
                           ),
                       ],

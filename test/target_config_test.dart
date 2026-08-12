@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kik_ais/ais/ais_decoder.dart' show NmeaFormat;
 import 'package:kik_ais/forwarder_service.dart';
 import 'package:kik_ais/target_config.dart';
 
@@ -20,6 +21,23 @@ void main() {
     expect(restored.host, '10.0.0.1');
     expect(restored.port, 4000);
     expect(restored.enabled, isFalse);
+    expect(restored.sendFormat, NmeaFormat.passthrough);
+  });
+
+  test('TargetConfig round-trips the send format', () {
+    const target = TargetConfig(
+      id: 't2',
+      name: 'Tagged',
+      protocol: ForwardProtocol.udpServer,
+      host: '10.0.0.1',
+      port: 4000,
+      sendFormat: NmeaFormat.tag,
+      tagSourceId: 'MYSITE',
+    );
+
+    final restored = TargetConfig.fromJson(target.toJson());
+    expect(restored.sendFormat, NmeaFormat.tag);
+    expect(restored.tagSourceId, 'MYSITE');
   });
 
   test('TargetConfig copyWith keeps id and overrides fields', () {

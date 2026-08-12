@@ -66,6 +66,8 @@ class _SimulationPageState extends State<SimulationPage> {
   late bool _draftAutoRegenerate;
   late bool _draftAccuratePosition;
   late bool _draftRealisticRot;
+  late bool _draftNmea4Tags;
+  late String _draftNmeaTalker;
   late SimZoneShape _draftZoneShape;
 
   @override
@@ -85,6 +87,8 @@ class _SimulationPageState extends State<SimulationPage> {
     _draftAutoRegenerate = sim.config.autoRegenerate;
     _draftAccuratePosition = sim.config.accuratePosition;
     _draftRealisticRot = sim.config.realisticRot;
+    _draftNmea4Tags = sim.config.nmea4Tags;
+    _draftNmeaTalker = sim.config.nmeaTalker;
     _draftZoneShape = sim.config.zoneShape;
     _syncControllers(sim.config);
   }
@@ -206,6 +210,8 @@ class _SimulationPageState extends State<SimulationPage> {
       classBPercent: int.tryParse(_classBPctC.text) ?? sim.config.classBPercent,
       accuratePosition: _draftAccuratePosition,
       realisticRot: _draftRealisticRot,
+      nmeaTalker: _draftNmeaTalker,
+      nmea4Tags: _draftNmea4Tags,
     );
     sim.setConfig(config);
     settings.simConfig = config;
@@ -788,6 +794,28 @@ class _SimulationPageState extends State<SimulationPage> {
                           (v) => setState(() => _draftInjectErrors = v),
                         ),
                         _field(_errorRateC, 'Error rate (%)'),
+                        _labelDropdown<String>(
+                          'Talker ID',
+                          _draftNmeaTalker,
+                          [
+                            for (final t in kSimTalkers)
+                              DropdownMenuItem(
+                                value: t,
+                                child: Text(
+                                  t,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ),
+                          ],
+                          (v) => setState(() {
+                            if (v != null) _draftNmeaTalker = v;
+                          }),
+                        ),
+                        _switchTile(
+                          'NMEA 4.0 tag block',
+                          _draftNmea4Tags,
+                          (v) => setState(() => _draftNmea4Tags = v),
+                        ),
                       ],
                     ),
                   ),
