@@ -28,12 +28,17 @@ class AppSettings extends ChangeNotifier {
   static const _kSimulation = 'simulation';
   static const _kImportFormat = 'nmeaImportFormat';
   static const _kImportTagSource = 'nmeaImportTagSource';
+  static const _kLocale = 'locale';
 
   bool mapClusterEnabled = true;
   bool sendToMap = false;
   bool decodeEnabled = true;
   bool validateChecksum = true;
   AppTheme appTheme = AppTheme.dark;
+
+  /// The ISO 639-1 language code of the selected UI language, or `null` to
+  /// follow the operating system language. See docs/i18n.md.
+  String? localeCode;
 
   /// Empty string means "auto" (follow the current theme).
   String basemapId = '';
@@ -65,6 +70,14 @@ class AppSettings extends ChangeNotifier {
   void setTheme(AppTheme theme) {
     if (appTheme == theme) return;
     appTheme = theme;
+    notifyListeners();
+    save();
+  }
+
+  /// Sets the UI language ([localeCode] is an ISO 639-1 code, `null` = system).
+  void setLocale(String? code) {
+    if (localeCode == code) return;
+    localeCode = code;
     notifyListeners();
     save();
   }
@@ -168,6 +181,7 @@ class AppSettings extends ChangeNotifier {
       orElse: () => NmeaFormat.passthrough,
     );
     nmeaImportTagSource = prefs.getString(_kImportTagSource) ?? 'KIKAIS';
+    localeCode = prefs.getString(_kLocale);
 
     notifyListeners();
   }
@@ -213,5 +227,10 @@ class AppSettings extends ChangeNotifier {
     await prefs.setString(_kSimulation, jsonEncode(simConfig.toJson()));
     await prefs.setString(_kImportFormat, nmeaImportFormat.name);
     await prefs.setString(_kImportTagSource, nmeaImportTagSource);
+    if (localeCode == null) {
+      await prefs.remove(_kLocale);
+    } else {
+      await prefs.setString(_kLocale, localeCode!);
+    }
   }
 }

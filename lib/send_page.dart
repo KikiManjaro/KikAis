@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import 'ais/ais_decoder.dart' show NmeaFormat, nmeaFormatLabel;
+import 'ais/ais_decoder.dart' show NmeaFormat;
 import 'app_settings.dart';
 import 'forwarder_service.dart';
 import 'host_input_formatter.dart';
+import 'l10n_ext.dart';
+import 'labels.dart';
 import 'port_input_formatter.dart';
 import 'target_config.dart';
 import 'themes.dart';
@@ -73,24 +75,26 @@ class _SendPageState extends State<SendPage> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: Text(existing == null ? 'Add destination' : 'Edit destination'),
+          title: Text(existing == null
+              ? ctx.l10n.sendAddDestination
+              : ctx.l10n.sendEditDestination),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
+                  decoration: InputDecoration(labelText: ctx.l10n.fieldName),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<ForwardProtocol>(
                   initialValue: protocol,
-                  decoration: const InputDecoration(labelText: 'Protocol'),
+                  decoration: InputDecoration(labelText: ctx.l10n.fieldProtocol),
                   items: [
                     for (final p in ForwardProtocol.values)
                       DropdownMenuItem(
                         value: p,
-                        child: Text(protocolLabel(p)),
+                        child: Text(protocolLabelLocalized(p, ctx.l10n)),
                       ),
                   ],
                   onChanged: (p) {
@@ -100,13 +104,13 @@ class _SendPageState extends State<SendPage> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: hostController,
-                  decoration: const InputDecoration(labelText: 'Host'),
+                  decoration: InputDecoration(labelText: ctx.l10n.fieldHost),
                   inputFormatters: [HostInputFormatter()],
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: portController,
-                  decoration: const InputDecoration(labelText: 'Port'),
+                  decoration: InputDecoration(labelText: ctx.l10n.fieldPort),
                   keyboardType: TextInputType.number,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
@@ -116,14 +120,12 @@ class _SendPageState extends State<SendPage> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<NmeaFormat>(
                   initialValue: sendFormat,
-                  decoration: const InputDecoration(
-                    labelText: 'Send format',
-                  ),
+                  decoration: InputDecoration(labelText: ctx.l10n.sendFormat),
                   items: [
                     for (final f in NmeaFormat.values)
                       DropdownMenuItem(
                         value: f,
-                        child: Text(nmeaFormatLabel(f)),
+                        child: Text(nmeaFormatLabelLocalized(f, ctx.l10n)),
                       ),
                   ],
                   onChanged: (f) {
@@ -135,8 +137,8 @@ class _SendPageState extends State<SendPage> {
                     padding: const EdgeInsets.only(top: 12),
                     child: TextField(
                       controller: tagSourceController,
-                      decoration: const InputDecoration(
-                        labelText: 'Tag source ID',
+                      decoration: InputDecoration(
+                        labelText: ctx.l10n.fieldTagSourceId,
                       ),
                     ),
                   ),
@@ -146,11 +148,13 @@ class _SendPageState extends State<SendPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel'),
+              child: Text(ctx.l10n.fieldCancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text(existing == null ? 'Add' : 'Save'),
+              child: Text(existing == null
+                  ? ctx.l10n.fieldAdd
+                  : ctx.l10n.sendSave),
             ),
           ],
         ),
@@ -189,7 +193,7 @@ class _SendPageState extends State<SendPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Send'),
+        title: Text(context.l10n.tabSend),
         actions: [
           ValueListenableBuilder<bool>(
             valueListenable: widget.running,
@@ -221,22 +225,20 @@ class _SendPageState extends State<SendPage> {
                             color: appColors.warning,
                           ),
                           const SizedBox(width: 8),
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              'Forwarder is running — destinations are '
-                              'locked.',
-                              style: TextStyle(fontSize: 12),
+                              context.l10n.sendLockedBanner,
+                              style: const TextStyle(fontSize: 12),
                             ),
                           ),
                         ],
                       ),
                     ),
                   if (settings.targets.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.all(24),
+                    Padding(
+                      padding: const EdgeInsets.all(24),
                       child: Center(
-                        child: Text('No destination yet. Add one to '
-                            'forward received AIS frames.'),
+                        child: Text(context.l10n.sendEmpty),
                       ),
                     )
                   else
@@ -268,9 +270,9 @@ class _SendPageState extends State<SendPage> {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      '${protocolLabel(target.protocol)} · '
+                                      '${protocolLabelLocalized(target.protocol, context.l10n)} · '
                                       '${target.host}:${target.port} · '
-                                      '${nmeaFormatLabel(target.sendFormat)}',
+                                      '${nmeaFormatLabelLocalized(target.sendFormat, context.l10n)}',
                                       style: const TextStyle(fontSize: 12),
                                       overflow: TextOverflow.ellipsis,
                                     ),

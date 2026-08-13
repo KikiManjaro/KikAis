@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kik_ais/boat.dart';
 import 'package:kik_ais/bubble_boat.dart';
 
+import 'l10n_test_utils.dart';
+
 void main() {
   Boat boatWithFrames() {
     final boat = Boat(mmsi: '226545000');
@@ -27,8 +29,8 @@ void main() {
 
   Future<void> pump(WidgetTester tester, Boat boat) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
+      withLocalizations(
+        Scaffold(
           body: SizedBox(
             width: 340,
             height: 600,

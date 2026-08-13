@@ -1,3 +1,4 @@
+import 'l10n/generated/app_localizations.dart';
 import 'themes.dart';
 
 /// A selectable basemap (free raster tile sources, no API key required).
@@ -84,6 +85,19 @@ BaseMap baseMapById(String id) {
   }
   return kBaseMaps.first;
 }
+
+/// Localized display label of a basemap. Brand names stay untouched; only
+/// descriptive words (e.g. "(light)") are translated.
+String basemapLabel(BaseMap b, AppLocalizations l10n) => switch (b.id) {
+      'carto-voyager' => l10n.basemapVoyagerLight,
+      'carto-positron' => l10n.basemapPositronLight,
+      'carto-dark' => l10n.basemapDarkMatter,
+      'osm' => l10n.basemapOsm,
+      'opentopomap' => l10n.basemapOpenTopo,
+      'esri-satellite' => l10n.basemapEsriSatellite,
+      'esri-streets' => l10n.basemapEsriStreets,
+      _ => b.label,
+    };
 
 /// The basemap used when the user has not picked one explicitly: it follows
 /// the application theme (dark style for dark themes).

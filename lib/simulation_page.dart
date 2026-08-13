@@ -3,10 +3,46 @@ import 'package:provider/provider.dart';
 
 import 'app_settings.dart';
 import 'boatmanager.dart';
+import 'l10n/country_names.dart';
+import 'l10n/generated/app_localizations.dart';
+import 'l10n_ext.dart';
 import 'sim_fleet.dart';
 import 'simulator_service.dart';
 import 'themes.dart';
 import 'widgets.dart';
+
+/// Localized name of an ITU-R M.1371 ship type used by the simulated fleet.
+String vesselTypeLabel(int type, AppLocalizations l10n) => switch (type) {
+      70 => l10n.simVesselCargo,
+      80 => l10n.simVesselTanker,
+      30 => l10n.simVesselFishing,
+      36 => l10n.simVesselSailing,
+      60 => l10n.simVesselPassenger,
+      52 => l10n.simVesselTug,
+      40 => l10n.simVesselHsc,
+      90 => l10n.simVesselOther,
+      _ => '$type',
+    };
+
+/// Localized name of a simulated AIS message type.
+String simTypeLabel(int type, AppLocalizations l10n) => switch (type) {
+      1 => l10n.simType1,
+      5 => l10n.simType5,
+      9 => l10n.simType9,
+      18 => l10n.simType18,
+      19 => l10n.simType19,
+      27 => l10n.simType27,
+      4 => l10n.simType4,
+      21 => l10n.simType21,
+      8 => l10n.simType8,
+      11 => l10n.simType11,
+      12 => l10n.simType12,
+      14 => l10n.simType14,
+      22 => l10n.simType22,
+      23 => l10n.simType23,
+      24 => l10n.simType24,
+      _ => 'T$type',
+    };
 
 /// Simulation tab: configures a personalizable fleet of vessels around a chosen
 /// location. The fleet is emitted when the "Simulation" feed on the Reception
@@ -445,7 +481,7 @@ class _SimulationPageState extends State<SimulationPage> {
     final appColors =
         Theme.of(context).extension<AppColors>() ?? AppColors.dark;
     return Scaffold(
-      appBar: AppBar(title: const Text('Simulation')),
+      appBar: AppBar(title: Text(context.l10n.simTitle)),
       body: ListenableBuilder(
         listenable: sim,
         builder: (context, _) {
@@ -469,28 +505,26 @@ class _SimulationPageState extends State<SimulationPage> {
                           size: 28,
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'The fleet is emitted when the "Simulation" feed '
-                            'is enabled on the Reception tab and the '
-                            'forwarder is running.',
-                            style: TextStyle(fontSize: 12),
+                            context.l10n.simInfoBanner,
+                            style: const TextStyle(fontSize: 12),
                           ),
                         ),
                         if (widget.onGoToReception != null)
                           OutlinedButton.icon(
                             onPressed: widget.onGoToReception,
                             icon: const Icon(Icons.rss_feed, size: 18),
-                            label: const Text('Open Reception'),
+                            label: Text(context.l10n.simOpenReception),
                           ),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 12),
-                const SectionHeader(
+                SectionHeader(
                   icon: Icons.workspaces,
-                  title: 'Fleet',
+                  title: context.l10n.simFleetSection,
                 ),
                 Card(
                   child: Padding(
@@ -502,14 +536,14 @@ class _SimulationPageState extends State<SimulationPage> {
                           spacing: 12,
                           runSpacing: 12,
                           children: [
-                            _field(_radiusC, 'Radius (km)'),
-                            _field(_countC, 'Vessels'),
-                            _field(_sogMinC, 'Speed min (kn)'),
-                            _field(_sogMaxC, 'Speed max (kn)'),
-                            _field(_intervalC, 'Interval (s)'),
-                            _field(_seedC, 'Seed'),
-                            _field(_anchoredC, 'Anchored (%)'),
-                            _field(_namePrefixC, 'Name prefix'),
+                            _field(_radiusC, context.l10n.simRadiusKm),
+                            _field(_countC, context.l10n.simVessels),
+                            _field(_sogMinC, context.l10n.simSpeedMinKn),
+                            _field(_sogMaxC, context.l10n.simSpeedMaxKn),
+                            _field(_intervalC, context.l10n.simIntervalS),
+                            _field(_seedC, context.l10n.simSeed),
+                            _field(_anchoredC, context.l10n.simAnchoredPct),
+                            _field(_namePrefixC, context.l10n.simNamePrefix),
                           ],
                         ),
                         const SizedBox(height: 4),
@@ -521,8 +555,8 @@ class _SimulationPageState extends State<SimulationPage> {
                             _searchCombo<int>(
                               controller: _mmsiMidC,
                               focusNode: _mmsiMidFocus,
-                              label: 'MMSI country / MID',
-                              hint: 'Search a country or type a 3-digit MID',
+                              label: context.l10n.simMmsiMid,
+                              hint: context.l10n.simSearchMmid,
                               optionsBuilder: (value) {
                                 final q = value.text.trim().toLowerCase();
                                 final matches = q.isEmpty
@@ -542,16 +576,15 @@ class _SimulationPageState extends State<SimulationPage> {
                                 return matches;
                               },
                               displayForOption: (m) => '$m',
-                              labelForOption: (m) =>
-                                  '${kSimMids[m] ?? 'Custom'} ($m)',
+                              labelForOption: (m) => '${kSimMids[m] == null ? context.l10n.simCustom : localizedCountryName(kSimMids[m]!, context)} ($m)',
                               onSelected: (_) {},
                             ),
                           ],
                         ),
                         const Divider(height: 20),
-                        const Text(
-                          'Vessel types',
-                          style: TextStyle(
+                        Text(
+                          context.l10n.simVesselTypes,
+                          style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                           ),
@@ -569,7 +602,7 @@ class _SimulationPageState extends State<SimulationPage> {
                                   controlAffinity:
                                       ListTileControlAffinity.leading,
                                   title: Text(
-                                    vt.$2,
+                                    vesselTypeLabel(vt.$1, context.l10n),
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                   value:
@@ -591,18 +624,18 @@ class _SimulationPageState extends State<SimulationPage> {
                           runSpacing: 4,
                           children: [
                             _switchTile(
-                              'Realistic names',
+                              context.l10n.simRealisticNames,
                               _draftRealisticNames,
                               (v) => setState(() => _draftRealisticNames = v),
                             ),
                             _switchTile(
-                              'Realistic dimensions',
+                              context.l10n.simRealisticDimensions,
                               _draftRealisticDimensions,
                               (v) =>
                                   setState(() => _draftRealisticDimensions = v),
                             ),
                             _switchTile(
-                              'Realistic ITU MMSI',
+                              context.l10n.simRealisticMmsi,
                               _draftRealisticMmsi,
                               (v) => setState(() => _draftRealisticMmsi = v),
                             ),
@@ -613,9 +646,9 @@ class _SimulationPageState extends State<SimulationPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const SectionHeader(
+                SectionHeader(
                   icon: Icons.map_outlined,
-                  title: 'Zone & traffic',
+                  title: context.l10n.simZoneSection,
                 ),
                 Card(
                   child: Padding(
@@ -628,8 +661,8 @@ class _SimulationPageState extends State<SimulationPage> {
                         _searchCombo<String>(
                           controller: _locationC,
                           focusNode: _locationFocus,
-                          label: 'Location preset',
-                          hint: 'Search a port…',
+                          label: context.l10n.simLocationPreset,
+                          hint: context.l10n.simSearchPort,
                           optionsBuilder: (value) {
                             final q = value.text.trim().toLowerCase();
                             final names = kSimLocationPresets.keys.toList();
@@ -652,10 +685,10 @@ class _SimulationPageState extends State<SimulationPage> {
                             });
                           },
                         ),
-                        _field(_latC, 'Center latitude'),
-                        _field(_lonC, 'Center longitude'),
+                        _field(_latC, context.l10n.simCenterLat),
+                        _field(_lonC, context.l10n.simCenterLon),
                         _labelDropdown<SimZoneShape>(
-                          'Zone shape',
+                          context.l10n.simZoneShape,
                           _draftZoneShape,
                           [
                             for (final s in SimZoneShape.values)
@@ -671,13 +704,13 @@ class _SimulationPageState extends State<SimulationPage> {
                             if (v != null) _draftZoneShape = v;
                           }),
                         ),
-                        _field(_transitC, 'Transit (%)'),
+                        _field(_transitC, context.l10n.simTransitPct),
                         _switchTile(
-                          'Regenerate periodically',
+                          context.l10n.simRegeneratePeriodically,
                           _draftAutoRegenerate,
                           (v) => setState(() => _draftAutoRegenerate = v),
                         ),
-                        _field(_regenEveryC, 'Regenerate (ticks)'),
+                        _field(_regenEveryC, context.l10n.simRegenerateTicks),
                       ],
                     ),
                   ),
@@ -686,8 +719,7 @@ class _SimulationPageState extends State<SimulationPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text(
-                    'Pick a preset to fill the coordinates, or type '
-                    'Center latitude / longitude directly.',
+                    context.l10n.simPresetHint,
                     style: TextStyle(
                       fontSize: 11,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -695,9 +727,9 @@ class _SimulationPageState extends State<SimulationPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const SectionHeader(
+                SectionHeader(
                   icon: Icons.timeline,
-                  title: 'Movement & emission',
+                  title: context.l10n.simMovementSection,
                 ),
                 Card(
                   child: Padding(
@@ -707,25 +739,25 @@ class _SimulationPageState extends State<SimulationPage> {
                       runSpacing: 4,
                       children: [
                         _switchTile(
-                          'Vary speed over time',
+                          context.l10n.simVarySpeed,
                           _draftVarySpeed,
                           (v) => setState(() => _draftVarySpeed = v),
                         ),
-                        _field(_reportIntervalC, 'Report interval (ticks)'),
-                        _field(_wanderC, 'Wander (0-3)'),
+                        _field(_reportIntervalC, context.l10n.simReportIntervalTicks),
+                        _field(_wanderC, context.l10n.simWander),
                         _switchTile(
-                          'Speed by vessel type',
+                          context.l10n.simSpeedByType,
                           _draftSpeedByType,
                           (v) => setState(() => _draftSpeedByType = v),
                         ),
-                        _field(_classBPctC, 'Class B share (%)'),
+                        _field(_classBPctC, context.l10n.simClassBSharePct),
                         _switchTile(
-                          'High accuracy',
+                          context.l10n.simHighAccuracy,
                           _draftAccuratePosition,
                           (v) => setState(() => _draftAccuratePosition = v),
                         ),
                         _switchTile(
-                          'Realistic rate of turn',
+                          context.l10n.simRealisticRot,
                           _draftRealisticRot,
                           (v) => setState(() => _draftRealisticRot = v),
                         ),
@@ -734,9 +766,9 @@ class _SimulationPageState extends State<SimulationPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const SectionHeader(
+                SectionHeader(
                   icon: Icons.text_snippet_outlined,
-                  title: 'Content',
+                  title: context.l10n.simContentSection,
                 ),
                 Card(
                   child: Padding(
@@ -747,11 +779,11 @@ class _SimulationPageState extends State<SimulationPage> {
                       children: [
                         _multiField(
                           _safetyTextsC,
-                          'Safety texts (one per line)',
+                          context.l10n.simSafetyTexts,
                         ),
                         _multiField(
                           _destinationsC,
-                          'Destinations (one per line)',
+                          context.l10n.simDestinations,
                           lines: 3,
                         ),
                       ],
@@ -759,9 +791,9 @@ class _SimulationPageState extends State<SimulationPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const SectionHeader(
+                SectionHeader(
                   icon: Icons.cell_tower,
-                  title: 'Stations',
+                  title: context.l10n.simStationsSection,
                 ),
                 Card(
                   child: Padding(
@@ -770,16 +802,16 @@ class _SimulationPageState extends State<SimulationPage> {
                       spacing: 12,
                       runSpacing: 12,
                       children: [
-                        _field(_baseStationsC, 'Base stations'),
-                        _field(_atonC, 'AtoN'),
+                        _field(_baseStationsC, context.l10n.simBaseStations),
+                        _field(_atonC, context.l10n.simAtoN),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                const SectionHeader(
+                SectionHeader(
                   icon: Icons.error_outline,
-                  title: 'Transmission quality',
+                  title: context.l10n.simQualitySection,
                 ),
                 Card(
                   child: Padding(
@@ -789,13 +821,13 @@ class _SimulationPageState extends State<SimulationPage> {
                       runSpacing: 4,
                       children: [
                         _switchTile(
-                          'Inject errors',
+                          context.l10n.simInjectErrors,
                           _draftInjectErrors,
                           (v) => setState(() => _draftInjectErrors = v),
                         ),
-                        _field(_errorRateC, 'Error rate (%)'),
+                        _field(_errorRateC, context.l10n.simErrorRatePct),
                         _labelDropdown<String>(
-                          'Talker ID',
+                          context.l10n.simTalkerId,
                           _draftNmeaTalker,
                           [
                             for (final t in kSimTalkers)
@@ -812,7 +844,7 @@ class _SimulationPageState extends State<SimulationPage> {
                           }),
                         ),
                         _switchTile(
-                          'NMEA 4.0 tag block',
+                          context.l10n.simNmea4Tag,
                           _draftNmea4Tags,
                           (v) => setState(() => _draftNmea4Tags = v),
                         ),
@@ -821,9 +853,9 @@ class _SimulationPageState extends State<SimulationPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const SectionHeader(
+                SectionHeader(
                   icon: Icons.message_outlined,
-                  title: 'Messages',
+                  title: context.l10n.simMessagesSection,
                 ),
                 Card(
                   child: Padding(
@@ -840,7 +872,7 @@ class _SimulationPageState extends State<SimulationPage> {
                               contentPadding: EdgeInsets.zero,
                               controlAffinity: ListTileControlAffinity.leading,
                               title: Text(
-                                entry.value,
+                                simTypeLabel(entry.key, context.l10n),
                                 style: const TextStyle(fontSize: 12),
                               ),
                               value: _draftTypes.contains(entry.key),
@@ -863,20 +895,20 @@ class _SimulationPageState extends State<SimulationPage> {
                     FilledButton.icon(
                       onPressed: _apply,
                       icon: const Icon(Icons.check),
-                      label: const Text('Apply fleet'),
+                      label: Text(context.l10n.simApplyFleet),
                     ),
                     const SizedBox(width: 8),
                     OutlinedButton.icon(
                       onPressed: _regenerate,
                       icon: const Icon(Icons.shuffle),
-                      label: const Text('Regenerate fleet'),
+                      label: Text(context.l10n.simRegenerateFleet),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                const SectionHeader(
+                SectionHeader(
                   icon: Icons.directions_boat,
-                  title: 'Live fleet',
+                  title: context.l10n.simLiveFleet,
                 ),
                 Card(
                   child: Padding(
@@ -885,8 +917,10 @@ class _SimulationPageState extends State<SimulationPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${sim.fleet.boats.length} boats · '
-                          '${sim.emittedCount} frames emitted',
+                          context.l10n.simFleetSummary(
+                            '${sim.fleet.boats.length}',
+                            '${sim.emittedCount}',
+                          ),
                           style: TextStyle(
                             fontSize: 12,
                             color: Theme.of(context)

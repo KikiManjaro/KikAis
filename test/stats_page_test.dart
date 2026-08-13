@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kik_ais/app_settings.dart';
 import 'package:kik_ais/boatmanager.dart';
 import 'package:kik_ais/message_stats.dart';
 import 'package:kik_ais/stats_page.dart';
 import 'package:provider/provider.dart';
+
+import 'l10n_test_utils.dart';
 
 void main() {
   testWidgets('stats page feed filter narrows the dashboard', (tester) async {
@@ -25,7 +26,7 @@ void main() {
           ChangeNotifierProvider.value(value: stats),
           ChangeNotifierProvider.value(value: settings),
         ],
-        child: const MaterialApp(home: StatsPage()),
+        child: withLocalizations(const StatsPage()),
       ),
     );
     await tester.pump(const Duration(milliseconds: 1100));
@@ -70,7 +71,7 @@ void main() {
           ChangeNotifierProvider.value(value: stats),
           ChangeNotifierProvider.value(value: settings),
         ],
-        child: const MaterialApp(home: StatsPage()),
+        child: withLocalizations(const StatsPage()),
       ),
     );
     await tester.pump(const Duration(milliseconds: 1100));

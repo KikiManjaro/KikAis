@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'ais/ais_decoder.dart';
 import 'ais_message_details.dart';
 import 'app_settings.dart';
+import 'l10n_ext.dart';
 import 'nmea_field_breakdown.dart';
 import 'themes.dart';
 import 'widgets.dart';
@@ -75,10 +76,10 @@ class DecoderPageState extends State<DecoderPage> {
             raws: raws,
             decoded: true,
             status: raws.length > 1
-                ? 'Decoded (${raws.length} sentences)'
-                : 'Decoded',
+                ? context.l10n.decoderDecodedN(raws.length)
+                : context.l10n.decoderDecoded,
             message: message,
-            fields: describeMessage(message),
+            fields: describeMessage(message, context.l10n),
           ),
         );
       } else if (decoder.invalidChecksums > invalidBefore) {
@@ -86,7 +87,7 @@ class DecoderPageState extends State<DecoderPage> {
           _DecodeResult(
             raws: [line],
             decoded: false,
-            status: 'Invalid checksum',
+            status: context.l10n.decoderInvalidChecksum,
           ),
         );
       } else if (decoder.parseErrors > errorsBefore) {
@@ -94,7 +95,7 @@ class DecoderPageState extends State<DecoderPage> {
           _DecodeResult(
             raws: [line],
             decoded: false,
-            status: 'Parse error',
+            status: context.l10n.decoderParseError,
           ),
         );
       } else {
@@ -106,7 +107,7 @@ class DecoderPageState extends State<DecoderPage> {
         _DecodeResult(
           raws: [line],
           decoded: false,
-          status: 'Waiting for more fragments…',
+          status: context.l10n.decoderWaitingFragments,
         ),
       );
     }
@@ -126,7 +127,7 @@ class DecoderPageState extends State<DecoderPage> {
         Theme.of(context).extension<AppColors>() ?? AppColors.dark;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Decoder'),
+        title: Text(context.l10n.tabDecoder),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline),
@@ -146,10 +147,10 @@ class DecoderPageState extends State<DecoderPage> {
             controller: _controller,
             maxLines: 5,
             minLines: 3,
-            decoration: const InputDecoration(
-              labelText: 'Paste or write one or more NMEA AIS sentences',
+            decoration: InputDecoration(
+              labelText: context.l10n.decoderInputLabel,
               alignLabelWithHint: true,
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 12),
@@ -159,7 +160,7 @@ class DecoderPageState extends State<DecoderPage> {
                 child: SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   dense: true,
-                  title: const Text('Validate checksums'),
+                  title: Text(context.l10n.decoderValidateChecksums),
                   value: _validateChecksum,
                   onChanged: (v) => setState(() => _validateChecksum = v),
                 ),
@@ -167,7 +168,7 @@ class DecoderPageState extends State<DecoderPage> {
               FilledButton.icon(
                 onPressed: _decode,
                 icon: const Icon(Icons.manage_search),
-                label: const Text('Decode'),
+                label: Text(context.l10n.decoderDecode),
               ),
             ],
           ),
@@ -204,7 +205,7 @@ class DecoderPageState extends State<DecoderPage> {
                         ),
                         CopyIconButton(
                           text: result.raws.join('\n'),
-                          message: 'Frame copied',
+                          message: context.l10n.receptionFrameCopied,
                           padding: EdgeInsets.zero,
                         ),
                       ],
@@ -226,7 +227,8 @@ class DecoderPageState extends State<DecoderPage> {
                         final (tag, _) = NmeaTagBlock.split(result.raws.first);
                         if (tag == null) return const SizedBox.shrink();
                         final parts = <String>[
-                          if (tag.sourceId != null) 'source ${tag.sourceId}',
+                          if (tag.sourceId != null)
+                            context.l10n.decoderTagSource(tag.sourceId!),
                           if (tag.timeMs != null) 't:${tag.timeMs}',
                           if (tag.relativeTime != null)
                             'r:${tag.relativeTime}',
@@ -234,7 +236,9 @@ class DecoderPageState extends State<DecoderPage> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 4),
                           child: Text(
-                            'Tag block · ${parts.isEmpty ? tag.raw : parts.join(' · ')}',
+                            context.l10n.decoderTagBlock(
+                              parts.isEmpty ? tag.raw : parts.join(' · '),
+                            ),
                             style: TextStyle(
                               fontSize: 11,
                               color: Theme.of(context)

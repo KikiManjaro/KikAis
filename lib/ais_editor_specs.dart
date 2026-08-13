@@ -1,4 +1,5 @@
 import 'ais/src/encoder/ais_message_encoder.dart';
+import 'l10n/generated/app_localizations.dart';
 
 enum FieldKind { number, decimal, text, bytes, intList }
 
@@ -8,6 +9,112 @@ class FieldSpec {
   final FieldKind kind;
   final String defaultText;
   const FieldSpec(this.key, this.label, this.kind, [this.defaultText = '']);
+}
+
+/// Localized "N · `<message type name>`" used by the editor and the message
+/// details view.
+String editorMessageTypeLabel(int type, AppLocalizations l10n) {
+  final name = switch (type) {
+    1 => l10n.msgType1,
+    2 => l10n.msgType2,
+    3 => l10n.msgType3,
+    4 => l10n.msgType4,
+    5 => l10n.msgType5,
+    6 => l10n.msgType6,
+    7 => l10n.msgType7,
+    8 => l10n.msgType8,
+    9 => l10n.msgType9,
+    10 => l10n.msgType10,
+    11 => l10n.msgType11,
+    12 => l10n.msgType12,
+    13 => l10n.msgType13,
+    14 => l10n.msgType14,
+    15 => l10n.msgType15,
+    16 => l10n.msgType16,
+    17 => l10n.msgType17,
+    18 => l10n.msgType18,
+    19 => l10n.msgType19,
+    20 => l10n.msgType20,
+    21 => l10n.msgType21,
+    22 => l10n.msgType22,
+    23 => l10n.msgType23,
+    24 => l10n.msgType24,
+    25 => l10n.msgType25,
+    26 => l10n.msgType26,
+    27 => l10n.msgType27,
+    _ => null,
+  };
+  if (name == null) return l10n.statsTypeFallback(type);
+  return '$type · $name';
+}
+
+/// Localized label of an editor field, keyed by its English label. Falls back
+/// to the English label when no translation exists.
+String editorFieldLabel(AppLocalizations l10n, String english) {
+  final localized = switch (english) {
+    'MMSI' => l10n.fMmsi,
+    'Latitude' => l10n.fLatitude,
+    'Longitude' => l10n.fLongitude,
+    'SOG (kn)' => l10n.fSogKn,
+    'COG (°)' => l10n.fCogDeg,
+    'Heading (°)' => l10n.fHeadingDeg,
+    'Nav status (0-15)' => l10n.editorNavStatus0_15,
+    'Year' => l10n.editorYear,
+    'Month' => l10n.editorMonth,
+    'Day' => l10n.editorDay,
+    'Hour' => l10n.editorHour,
+    'Minute' => l10n.editorMinute,
+    'Second' => l10n.editorSecond,
+    'Vessel name' => l10n.fVesselName,
+    'Call sign' => l10n.fCallSign,
+    'IMO number' => l10n.editorImoNumber,
+    'Ship type' => l10n.fShipType,
+    'Bow (m)' => l10n.editorBowM,
+    'Stern (m)' => l10n.editorSternM,
+    'Port (m)' => l10n.editorPortM,
+    'Starboard (m)' => l10n.editorStarboardM,
+    'ETA month' => l10n.editorEtaMonth,
+    'ETA day' => l10n.editorEtaDay,
+    'ETA hour' => l10n.editorEtaHour,
+    'ETA minute' => l10n.editorEtaMinute,
+    'Draught (m)' => l10n.fDraughtM,
+    'Destination' => l10n.fDestination,
+    'Destination MMSI' => l10n.fDestMmsi,
+    'Sequence (0-3)' => l10n.editorSequence0_3,
+    'DAC' => l10n.fDac,
+    'FID' => l10n.fFid,
+    'Data bytes (hex or 1,2,3)' => l10n.editorDataBytes,
+    'Dest. MMSIs (comma)' => l10n.editorDestMmsisComma,
+    'Sequences (comma)' => l10n.editorSequencesComma,
+    'Altitude (m)' => l10n.fAltitudeM,
+    'Text' => l10n.fText,
+    'Interrogated MMSI' => l10n.editorInterrogatedMmsi,
+    'Type 1' => l10n.editorType1,
+    'Offset 1' => l10n.editorOffset1,
+    'Target MMSI' => l10n.editorTargetMmsi,
+    'Offset' => l10n.editorOffset,
+    'Increment' => l10n.editorIncrement,
+    'Number' => l10n.editorNumber,
+    'Timeout' => l10n.editorTimeout,
+    'Name' => l10n.fName,
+    'Aid type (0-31)' => l10n.editorAidType0_31,
+    'Virtual aid (0/1)' => l10n.editorVirtualAid0_1,
+    'Channel A' => l10n.fChannelA,
+    'Channel B' => l10n.fChannelB,
+    'Tx/Rx mode (0-15)' => l10n.editorTxRxMode0_15,
+    'Tx/Rx mode (0-3)' => l10n.editorTxRxMode0_3,
+    'NE latitude' => l10n.editorNeLat,
+    'NE longitude' => l10n.editorNeLon,
+    'SW latitude' => l10n.editorSwLat,
+    'SW longitude' => l10n.editorSwLon,
+    'Interval (0-15)' => l10n.editorInterval0_15,
+    'Part (0 = A name, 1 = B static)' => l10n.editorPart,
+    'Destination MMSI (empty = broadcast)' => l10n.editorDestMmsiEmpty,
+    'App DAC (empty = none)' => l10n.editorAppDacEmpty,
+    'App FID (empty = none)' => l10n.editorAppFidEmpty,
+    _ => english,
+  };
+  return localized;
 }
 
 const Map<int, String> kEditorTypeLabels = {

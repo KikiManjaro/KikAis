@@ -1,24 +1,25 @@
 import 'ais/src/encoder/ais_message_encoder.dart';
 import 'ais/src/utils/binary_conversion.dart';
+import 'l10n/generated/app_localizations.dart';
 
 /// A single AIS message type described for the documentation.
 class DocMessageType {
   final int type;
-  final String name;
-  final String family;
-  final String summary;
-  final String emittedBy;
+  final String nameKey;
+  final String familyKey;
+  final String summaryKey;
+  final String emittedByKey;
   final int bits;
-  final String cadence;
+  final String cadenceKey;
 
   const DocMessageType({
     required this.type,
-    required this.name,
-    required this.family,
-    required this.summary,
-    required this.emittedBy,
+    required this.nameKey,
+    required this.familyKey,
+    required this.summaryKey,
+    required this.emittedByKey,
     required this.bits,
-    required this.cadence,
+    required this.cadenceKey,
   });
 }
 
@@ -27,318 +28,429 @@ const List<DocMessageType> kDocMessageTypes = [
   // Position reports
   DocMessageType(
     type: 1,
-    name: 'Position Report Class A',
-    family: 'Position reports',
-    summary:
-        'The workhorse of the system: a Class A transponder broadcasting its '
-        'position, course, speed, heading and navigation status.',
-    emittedBy: 'Class A transponders (SOLAS vessels)',
+    nameKey: 'docType1Name',
+    familyKey: 'docType1Family',
+    summaryKey: 'docType1Summary',
+    emittedByKey: 'docType1EmittedBy',
     bits: 168,
-    cadence: 'Every 2-10 s while underway, every 3 min at anchor',
+    cadenceKey: 'docType1Cadence',
   ),
   DocMessageType(
     type: 2,
-    name: 'Position Report Class A (assigned)',
-    family: 'Position reports',
-    summary:
-        'Identical to type 1, but sent on a slot schedule assigned to the '
-        'vessel by a base station (assignment mode).',
-    emittedBy: 'Class A transponders under assignment',
+    nameKey: 'docType2Name',
+    familyKey: 'docType2Family',
+    summaryKey: 'docType2Summary',
+    emittedByKey: 'docType2EmittedBy',
     bits: 168,
-    cadence: 'Assigned schedule',
+    cadenceKey: 'docType2Cadence',
   ),
   DocMessageType(
     type: 3,
-    name: 'Position Report Class A (response)',
-    family: 'Position reports',
-    summary:
-        'Identical to type 1, sent as the response to an interrogation '
-        '(type 15).',
-    emittedBy: 'Class A transponders answering an interrogation',
+    nameKey: 'docType3Name',
+    familyKey: 'docType3Family',
+    summaryKey: 'docType3Summary',
+    emittedByKey: 'docType3EmittedBy',
     bits: 168,
-    cadence: 'On interrogation',
+    cadenceKey: 'docType3Cadence',
   ),
   DocMessageType(
     type: 18,
-    name: 'Standard Class B CS Position Report',
-    family: 'Position reports',
-    summary:
-        'The standard Class B position report. Lighter than Class A: no '
-        'navigation status or rate of turn, but works with CSTDMA.',
-    emittedBy: 'Class B transponders',
+    nameKey: 'docType18Name',
+    familyKey: 'docType18Family',
+    summaryKey: 'docType18Summary',
+    emittedByKey: 'docType18EmittedBy',
     bits: 168,
-    cadence: 'Every 30 s (or less in some regions)',
+    cadenceKey: 'docType18Cadence',
   ),
   DocMessageType(
     type: 19,
-    name: 'Extended Class B Equipment Position Report',
-    family: 'Position reports',
-    summary:
-        'A larger Class B position report that also carries the vessel name, '
-        'ship type and dimensions — a one-shot static+position hybrid.',
-    emittedBy: 'Extended Class B transponders',
+    nameKey: 'docType19Name',
+    familyKey: 'docType19Family',
+    summaryKey: 'docType19Summary',
+    emittedByKey: 'docType19EmittedBy',
     bits: 312,
-    cadence: 'Every 30 s',
+    cadenceKey: 'docType19Cadence',
   ),
   DocMessageType(
     type: 27,
-    name: 'Position Report for Long-Range Applications',
-    family: 'Position reports',
-    summary:
-        'A very compact position report designed for reception by satellite '
-        'over long ranges, with reduced resolution.',
-    emittedBy: 'Vessels in long-range (satellite) mode',
+    nameKey: 'docType27Name',
+    familyKey: 'docType27Family',
+    summaryKey: 'docType27Summary',
+    emittedByKey: 'docType27EmittedBy',
     bits: 96,
-    cadence: 'Every 3 min (long-range mode)',
+    cadenceKey: 'docType27Cadence',
   ),
   DocMessageType(
     type: 9,
-    name: 'Standard SAR Aircraft Position Report',
-    family: 'Position reports',
-    summary:
-        'A position report used by search-and-rescue aircraft to be visible '
-        'to ships. Carries altitude and a special MMSI range (111MIDXXX).',
-    emittedBy: 'SAR aircraft',
+    nameKey: 'docType9Name',
+    familyKey: 'docType9Family',
+    summaryKey: 'docType9Summary',
+    emittedByKey: 'docType9EmittedBy',
     bits: 168,
-    cadence: 'Every 10 s while on station',
+    cadenceKey: 'docType9Cadence',
   ),
   // Static & voyage
   DocMessageType(
     type: 5,
-    name: 'Static and Voyage Related Data',
-    family: 'Static & voyage data',
-    summary:
-        'The "identity card" of a ship: name, call sign, IMO number, ship '
-        'type, dimensions, draught, ETA and destination.',
-    emittedBy: 'Class A transponders',
+    nameKey: 'docType5Name',
+    familyKey: 'docType5Family',
+    summaryKey: 'docType5Summary',
+    emittedByKey: 'docType5EmittedBy',
     bits: 424,
-    cadence: 'Every 6 min and on change of data',
+    cadenceKey: 'docType5Cadence',
   ),
   DocMessageType(
     type: 24,
-    name: 'Static Data Report',
-    family: 'Static & voyage data',
-    summary:
-        'The Class B equivalent of type 5, split into Part A (name) and '
-        'Part B (ship type, call sign, dimensions).',
-    emittedBy: 'Class B transponders',
+    nameKey: 'docType24Name',
+    familyKey: 'docType24Family',
+    summaryKey: 'docType24Summary',
+    emittedByKey: 'docType24EmittedBy',
     bits: 168,
-    cadence: 'Every 6 min',
+    cadenceKey: 'docType24Cadence',
   ),
   // Safety & text
   DocMessageType(
     type: 14,
-    name: 'Safety-Related Broadcast Message',
-    family: 'Safety & text',
-    summary:
-        'A free-text broadcast addressed to everyone in range — navigational '
-        'warnings, distress or traffic announcements.',
-    emittedBy: 'Any station (often base stations / VTS)',
+    nameKey: 'docType14Name',
+    familyKey: 'docType14Family',
+    summaryKey: 'docType14Summary',
+    emittedByKey: 'docType14EmittedBy',
     bits: 1008,
-    cadence: 'On demand',
+    cadenceKey: 'docType14Cadence',
   ),
   DocMessageType(
     type: 12,
-    name: 'Addressed Safety-Related Message',
-    family: 'Safety & text',
-    summary:
-        'A free-text safety message sent to a single destination MMSI '
-        '(e.g. a distress message to the nearest base station).',
-    emittedBy: 'Any station',
+    nameKey: 'docType12Name',
+    familyKey: 'docType12Family',
+    summaryKey: 'docType12Summary',
+    emittedByKey: 'docType12EmittedBy',
     bits: 1008,
-    cadence: 'On demand',
+    cadenceKey: 'docType12Cadence',
   ),
   DocMessageType(
     type: 13,
-    name: 'Safety-Related Acknowledgement',
-    family: 'Safety & text',
-    summary:
-        'The acknowledgement sent in reply to a type 12 addressed safety '
-        'message.',
-    emittedBy: 'Any station that received a type 12',
+    nameKey: 'docType13Name',
+    familyKey: 'docType13Family',
+    summaryKey: 'docType13Summary',
+    emittedByKey: 'docType13EmittedBy',
     bits: 168,
-    cadence: 'On reply',
+    cadenceKey: 'docType13Cadence',
   ),
   // Binary
   DocMessageType(
     type: 8,
-    name: 'Binary Broadcast Message',
-    family: 'Binary data',
-    summary:
-        'A structured binary payload broadcast to all — weather and '
-        'hydrographic reports, regional data, or private/encrypted messages.',
-    emittedBy: 'Any station',
+    nameKey: 'docType8Name',
+    familyKey: 'docType8Family',
+    summaryKey: 'docType8Summary',
+    emittedByKey: 'docType8EmittedBy',
     bits: 1008,
-    cadence: 'On demand',
+    cadenceKey: 'docType8Cadence',
   ),
   DocMessageType(
     type: 6,
-    name: 'Binary Addressed Message',
-    family: 'Binary data',
-    summary:
-        'A structured binary payload sent to one specific destination MMSI '
-        '(e.g. a requested meteo report).',
-    emittedBy: 'Any station',
+    nameKey: 'docType6Name',
+    familyKey: 'docType6Family',
+    summaryKey: 'docType6Summary',
+    emittedByKey: 'docType6EmittedBy',
     bits: 1008,
-    cadence: 'On demand',
+    cadenceKey: 'docType6Cadence',
   ),
   DocMessageType(
     type: 7,
-    name: 'Binary Acknowledge',
-    family: 'Binary data',
-    summary:
-        'The acknowledgement sent in reply to a type 6 binary addressed '
-        'message.',
-    emittedBy: 'Any station that received a type 6',
+    nameKey: 'docType7Name',
+    familyKey: 'docType7Family',
+    summaryKey: 'docType7Summary',
+    emittedByKey: 'docType7EmittedBy',
     bits: 168,
-    cadence: 'On reply',
+    cadenceKey: 'docType7Cadence',
   ),
   DocMessageType(
     type: 17,
-    name: 'DGNSS Binary Broadcast Message',
-    family: 'Binary data',
-    summary:
-        'Differential GNSS correction data broadcast by shore stations to '
-        'improve positioning accuracy in the covered area.',
-    emittedBy: 'DGNSS reference stations',
+    nameKey: 'docType17Name',
+    familyKey: 'docType17Family',
+    summaryKey: 'docType17Summary',
+    emittedByKey: 'docType17EmittedBy',
     bits: 816,
-    cadence: 'Periodic',
+    cadenceKey: 'docType17Cadence',
   ),
   DocMessageType(
     type: 25,
-    name: 'Single Slot Binary Message',
-    family: 'Binary data',
-    summary:
-        'A short binary message fitting in a single TDMA slot, with an '
-        'optional destination and application ID.',
-    emittedBy: 'Any station',
+    nameKey: 'docType25Name',
+    familyKey: 'docType25Family',
+    summaryKey: 'docType25Summary',
+    emittedByKey: 'docType25EmittedBy',
     bits: 168,
-    cadence: 'On demand',
+    cadenceKey: 'docType25Cadence',
   ),
   DocMessageType(
     type: 26,
-    name: 'Multiple Slot Binary Message',
-    family: 'Binary data',
-    summary:
-        'A longer binary message spread over several TDMA slots, carrying '
-        'radio-status information.',
-    emittedBy: 'Any station',
+    nameKey: 'docType26Name',
+    familyKey: 'docType26Family',
+    summaryKey: 'docType26Summary',
+    emittedByKey: 'docType26EmittedBy',
     bits: 1064,
-    cadence: 'On demand',
+    cadenceKey: 'docType26Cadence',
   ),
   // Base station & network
   DocMessageType(
     type: 4,
-    name: 'Base Station Report',
-    family: 'Base station & network',
-    summary:
-        'The periodic report of a fixed shore station: its position plus the '
-        'UTC date and time reference.',
-    emittedBy: 'Fixed base stations',
+    nameKey: 'docType4Name',
+    familyKey: 'docType4Family',
+    summaryKey: 'docType4Summary',
+    emittedByKey: 'docType4EmittedBy',
     bits: 168,
-    cadence: 'Every 10 s',
+    cadenceKey: 'docType4Cadence',
   ),
   DocMessageType(
     type: 11,
-    name: 'UTC and Date Response',
-    family: 'Base station & network',
-    summary:
-        'Identical in structure to type 4, sent as the answer to a type 10 '
-        'UTC/date inquiry.',
-    emittedBy: 'Base stations',
+    nameKey: 'docType11Name',
+    familyKey: 'docType11Family',
+    summaryKey: 'docType11Summary',
+    emittedByKey: 'docType11EmittedBy',
     bits: 168,
-    cadence: 'On inquiry',
+    cadenceKey: 'docType11Cadence',
   ),
   DocMessageType(
     type: 10,
-    name: 'UTC and Date Inquiry',
-    family: 'Base station & network',
-    summary:
-        'A small request asking a specific station for its UTC date and time.',
-    emittedBy: 'Any station',
+    nameKey: 'docType10Name',
+    familyKey: 'docType10Family',
+    summaryKey: 'docType10Summary',
+    emittedByKey: 'docType10EmittedBy',
     bits: 72,
-    cadence: 'On demand',
+    cadenceKey: 'docType10Cadence',
   ),
   DocMessageType(
     type: 20,
-    name: 'Data Link Management',
-    family: 'Base station & network',
-    summary:
-        'A network housekeeping message used to allocate and reserve TDMA '
-        'time slots in an area.',
-    emittedBy: 'Base stations',
+    nameKey: 'docType20Name',
+    familyKey: 'docType20Family',
+    summaryKey: 'docType20Summary',
+    emittedByKey: 'docType20EmittedBy',
     bits: 160,
-    cadence: 'Network management',
+    cadenceKey: 'docType20Cadence',
   ),
   DocMessageType(
     type: 22,
-    name: 'Channel Management',
-    family: 'Base station & network',
-    summary:
-        'Used by a base station to switch stations to different VHF '
-        'channels within a geographic zone.',
-    emittedBy: 'Base stations',
+    nameKey: 'docType22Name',
+    familyKey: 'docType22Family',
+    summaryKey: 'docType22Summary',
+    emittedByKey: 'docType22EmittedBy',
     bits: 168,
-    cadence: 'On demand',
+    cadenceKey: 'docType22Cadence',
   ),
   DocMessageType(
     type: 23,
-    name: 'Group Assignment Command',
-    family: 'Base station & network',
-    summary:
-        'A command sent by a base station to a group of vessels within a '
-        'zone, setting reporting intervals and transmission mode.',
-    emittedBy: 'Base stations',
+    nameKey: 'docType23Name',
+    familyKey: 'docType23Family',
+    summaryKey: 'docType23Summary',
+    emittedByKey: 'docType23EmittedBy',
     bits: 160,
-    cadence: 'On demand',
+    cadenceKey: 'docType23Cadence',
   ),
   DocMessageType(
     type: 15,
-    name: 'Interrogation',
-    family: 'Base station & network',
-    summary:
-        'A request asking one or two specific stations to send a particular '
-        'message type (usually type 3 or 5).',
-    emittedBy: 'Base stations',
+    nameKey: 'docType15Name',
+    familyKey: 'docType15Family',
+    summaryKey: 'docType15Summary',
+    emittedByKey: 'docType15EmittedBy',
     bits: 160,
-    cadence: 'On demand',
+    cadenceKey: 'docType15Cadence',
   ),
   DocMessageType(
     type: 16,
-    name: 'Assignment Mode Command',
-    family: 'Base station & network',
-    summary:
-        'Instructs up to two vessels to transmit on a specific slot '
-        'allocation (assignment mode).',
-    emittedBy: 'Base stations',
+    nameKey: 'docType16Name',
+    familyKey: 'docType16Family',
+    summaryKey: 'docType16Summary',
+    emittedByKey: 'docType16EmittedBy',
     bits: 144,
-    cadence: 'On demand',
+    cadenceKey: 'docType16Cadence',
   ),
   // AtoN
   DocMessageType(
     type: 21,
-    name: 'Aid-to-Navigation Report',
-    family: 'Aid to navigation',
-    summary:
-        'Broadcasts the position, name and status of an aid to navigation — '
-        'buoys, beacons, lighthouses, or virtual aids. Often sent from a '
-        'virtual position.',
-    emittedBy: 'AtoN stations (real or virtual)',
+    nameKey: 'docType21Name',
+    familyKey: 'docType21Family',
+    summaryKey: 'docType21Summary',
+    emittedByKey: 'docType21EmittedBy',
     bits: 360,
-    cadence: 'Every 3 min (or on event)',
+    cadenceKey: 'docType21Cadence',
   ),
 ];
+
+/// Resolves a [DocMessageType] name l10n key to its translated label.
+String docMessageTypeName(DocMessageType m, AppLocalizations l10n) =>
+    switch (m.nameKey) {
+      'docType1Name' => l10n.docType1Name,
+      'docType2Name' => l10n.docType2Name,
+      'docType3Name' => l10n.docType3Name,
+      'docType18Name' => l10n.docType18Name,
+      'docType19Name' => l10n.docType19Name,
+      'docType27Name' => l10n.docType27Name,
+      'docType9Name' => l10n.docType9Name,
+      'docType5Name' => l10n.docType5Name,
+      'docType24Name' => l10n.docType24Name,
+      'docType14Name' => l10n.docType14Name,
+      'docType12Name' => l10n.docType12Name,
+      'docType13Name' => l10n.docType13Name,
+      'docType8Name' => l10n.docType8Name,
+      'docType6Name' => l10n.docType6Name,
+      'docType7Name' => l10n.docType7Name,
+      'docType17Name' => l10n.docType17Name,
+      'docType25Name' => l10n.docType25Name,
+      'docType26Name' => l10n.docType26Name,
+      'docType4Name' => l10n.docType4Name,
+      'docType11Name' => l10n.docType11Name,
+      'docType10Name' => l10n.docType10Name,
+      'docType20Name' => l10n.docType20Name,
+      'docType22Name' => l10n.docType22Name,
+      'docType23Name' => l10n.docType23Name,
+      'docType15Name' => l10n.docType15Name,
+      'docType16Name' => l10n.docType16Name,
+      'docType21Name' => l10n.docType21Name,
+      _ => m.nameKey,
+    };
+
+/// Resolves a [DocMessageType] family l10n key to its translated label.
+String docMessageTypeFamily(DocMessageType m, AppLocalizations l10n) =>
+    switch (m.familyKey) {
+      'docType1Family' => l10n.docType1Family,
+      'docType2Family' => l10n.docType2Family,
+      'docType3Family' => l10n.docType3Family,
+      'docType18Family' => l10n.docType18Family,
+      'docType19Family' => l10n.docType19Family,
+      'docType27Family' => l10n.docType27Family,
+      'docType9Family' => l10n.docType9Family,
+      'docType5Family' => l10n.docType5Family,
+      'docType24Family' => l10n.docType24Family,
+      'docType14Family' => l10n.docType14Family,
+      'docType12Family' => l10n.docType12Family,
+      'docType13Family' => l10n.docType13Family,
+      'docType8Family' => l10n.docType8Family,
+      'docType6Family' => l10n.docType6Family,
+      'docType7Family' => l10n.docType7Family,
+      'docType17Family' => l10n.docType17Family,
+      'docType25Family' => l10n.docType25Family,
+      'docType26Family' => l10n.docType26Family,
+      'docType4Family' => l10n.docType4Family,
+      'docType11Family' => l10n.docType11Family,
+      'docType10Family' => l10n.docType10Family,
+      'docType20Family' => l10n.docType20Family,
+      'docType22Family' => l10n.docType22Family,
+      'docType23Family' => l10n.docType23Family,
+      'docType15Family' => l10n.docType15Family,
+      'docType16Family' => l10n.docType16Family,
+      'docType21Family' => l10n.docType21Family,
+      _ => m.familyKey,
+    };
+
+/// Resolves a [DocMessageType] summary l10n key to its translated label.
+String docMessageTypeSummary(DocMessageType m, AppLocalizations l10n) =>
+    switch (m.summaryKey) {
+      'docType1Summary' => l10n.docType1Summary,
+      'docType2Summary' => l10n.docType2Summary,
+      'docType3Summary' => l10n.docType3Summary,
+      'docType18Summary' => l10n.docType18Summary,
+      'docType19Summary' => l10n.docType19Summary,
+      'docType27Summary' => l10n.docType27Summary,
+      'docType9Summary' => l10n.docType9Summary,
+      'docType5Summary' => l10n.docType5Summary,
+      'docType24Summary' => l10n.docType24Summary,
+      'docType14Summary' => l10n.docType14Summary,
+      'docType12Summary' => l10n.docType12Summary,
+      'docType13Summary' => l10n.docType13Summary,
+      'docType8Summary' => l10n.docType8Summary,
+      'docType6Summary' => l10n.docType6Summary,
+      'docType7Summary' => l10n.docType7Summary,
+      'docType17Summary' => l10n.docType17Summary,
+      'docType25Summary' => l10n.docType25Summary,
+      'docType26Summary' => l10n.docType26Summary,
+      'docType4Summary' => l10n.docType4Summary,
+      'docType11Summary' => l10n.docType11Summary,
+      'docType10Summary' => l10n.docType10Summary,
+      'docType20Summary' => l10n.docType20Summary,
+      'docType22Summary' => l10n.docType22Summary,
+      'docType23Summary' => l10n.docType23Summary,
+      'docType15Summary' => l10n.docType15Summary,
+      'docType16Summary' => l10n.docType16Summary,
+      'docType21Summary' => l10n.docType21Summary,
+      _ => m.summaryKey,
+    };
+
+/// Resolves a [DocMessageType] emitted-by l10n key to its translated label.
+String docMessageTypeEmittedBy(DocMessageType m, AppLocalizations l10n) =>
+    switch (m.emittedByKey) {
+      'docType1EmittedBy' => l10n.docType1EmittedBy,
+      'docType2EmittedBy' => l10n.docType2EmittedBy,
+      'docType3EmittedBy' => l10n.docType3EmittedBy,
+      'docType18EmittedBy' => l10n.docType18EmittedBy,
+      'docType19EmittedBy' => l10n.docType19EmittedBy,
+      'docType27EmittedBy' => l10n.docType27EmittedBy,
+      'docType9EmittedBy' => l10n.docType9EmittedBy,
+      'docType5EmittedBy' => l10n.docType5EmittedBy,
+      'docType24EmittedBy' => l10n.docType24EmittedBy,
+      'docType14EmittedBy' => l10n.docType14EmittedBy,
+      'docType12EmittedBy' => l10n.docType12EmittedBy,
+      'docType13EmittedBy' => l10n.docType13EmittedBy,
+      'docType8EmittedBy' => l10n.docType8EmittedBy,
+      'docType6EmittedBy' => l10n.docType6EmittedBy,
+      'docType7EmittedBy' => l10n.docType7EmittedBy,
+      'docType17EmittedBy' => l10n.docType17EmittedBy,
+      'docType25EmittedBy' => l10n.docType25EmittedBy,
+      'docType26EmittedBy' => l10n.docType26EmittedBy,
+      'docType4EmittedBy' => l10n.docType4EmittedBy,
+      'docType11EmittedBy' => l10n.docType11EmittedBy,
+      'docType10EmittedBy' => l10n.docType10EmittedBy,
+      'docType20EmittedBy' => l10n.docType20EmittedBy,
+      'docType22EmittedBy' => l10n.docType22EmittedBy,
+      'docType23EmittedBy' => l10n.docType23EmittedBy,
+      'docType15EmittedBy' => l10n.docType15EmittedBy,
+      'docType16EmittedBy' => l10n.docType16EmittedBy,
+      'docType21EmittedBy' => l10n.docType21EmittedBy,
+      _ => m.emittedByKey,
+    };
+
+/// Resolves a [DocMessageType] cadence l10n key to its translated label.
+String docMessageTypeCadence(DocMessageType m, AppLocalizations l10n) =>
+    switch (m.cadenceKey) {
+      'docType1Cadence' => l10n.docType1Cadence,
+      'docType2Cadence' => l10n.docType2Cadence,
+      'docType3Cadence' => l10n.docType3Cadence,
+      'docType18Cadence' => l10n.docType18Cadence,
+      'docType19Cadence' => l10n.docType19Cadence,
+      'docType27Cadence' => l10n.docType27Cadence,
+      'docType9Cadence' => l10n.docType9Cadence,
+      'docType5Cadence' => l10n.docType5Cadence,
+      'docType24Cadence' => l10n.docType24Cadence,
+      'docType14Cadence' => l10n.docType14Cadence,
+      'docType12Cadence' => l10n.docType12Cadence,
+      'docType13Cadence' => l10n.docType13Cadence,
+      'docType8Cadence' => l10n.docType8Cadence,
+      'docType6Cadence' => l10n.docType6Cadence,
+      'docType7Cadence' => l10n.docType7Cadence,
+      'docType17Cadence' => l10n.docType17Cadence,
+      'docType25Cadence' => l10n.docType25Cadence,
+      'docType26Cadence' => l10n.docType26Cadence,
+      'docType4Cadence' => l10n.docType4Cadence,
+      'docType11Cadence' => l10n.docType11Cadence,
+      'docType10Cadence' => l10n.docType10Cadence,
+      'docType20Cadence' => l10n.docType20Cadence,
+      'docType22Cadence' => l10n.docType22Cadence,
+      'docType23Cadence' => l10n.docType23Cadence,
+      'docType15Cadence' => l10n.docType15Cadence,
+      'docType16Cadence' => l10n.docType16Cadence,
+      'docType21Cadence' => l10n.docType21Cadence,
+      _ => m.cadenceKey,
+    };
 
 /// A milestone in the history of AIS.
 class DocEvent {
   final String year;
-  final String title;
-  final String text;
+  final String titleKey;
+  final String textKey;
 
   const DocEvent({
     required this.year,
-    required this.title,
-    required this.text,
+    required this.titleKey,
+    required this.textKey,
   });
 }
 
@@ -346,161 +458,314 @@ class DocEvent {
 const List<DocEvent> kAisTimeline = [
   DocEvent(
     year: '1990s',
-    title: 'A Swedish invention',
-    text:
-        'The concept is born in Sweden: a VHF system where every ship '
-        'announces itself so that others "see and be seen", even in fog '
-        'and behind islands. It is presented to the IMO and becomes the '
-        'seed of AIS.',
+    titleKey: 'docTimeline1990sTitle',
+    textKey: 'docTimeline1990sText',
   ),
   DocEvent(
     year: '1998',
-    title: 'Standardisation begins',
-    text:
-        'The ITU and IEC start turning the concept into a radio standard '
-        'with precise bit-level formats, based on TDMA over two VHF '
-        'channels.',
+    titleKey: 'docTimeline1998Title',
+    textKey: 'docTimeline1998Text',
   ),
   DocEvent(
     year: '2001',
-    title: 'ITU-R M.1371 published',
-    text:
-        'Recommendation ITU-R M.1371 "Technical characteristics for a '
-        'universal shipborne automatic identification system" defines the '
-        '27 message types and their bit layout.',
+    titleKey: 'docTimeline2001Title',
+    textKey: 'docTimeline2001Text',
   ),
   DocEvent(
     year: '2002',
-    title: 'SOLAS mandate',
-    text:
-        'The IMO makes AIS mandatory for all international vessels over '
-        '300 gross tons and all passenger ships — roughly 100,000 vessels. '
-        'AIS becomes a standard anti-collision aid alongside radar.',
+    titleKey: 'docTimeline2002Title',
+    textKey: 'docTimeline2002Text',
   ),
   DocEvent(
     year: '2006',
-    title: 'Class B arrives',
-    text:
-        'The Class B standard is published, opening the door to cheap, '
-        'simpler transponders. The same year, the TacSat-2 satellite '
-        'becomes the first to capture AIS signals from space (S-AIS).',
+    titleKey: 'docTimeline2006Title',
+    textKey: 'docTimeline2006Text',
   ),
   DocEvent(
     year: '2008-2015',
-    title: 'Satellite constellations',
-    text:
-        'exactEarth, ORBCOMM, Spire and others deploy AIS receivers in '
-        'low-Earth orbit, extending coverage far beyond the VHF horizon '
-        'and enabling near-global vessel tracking.',
+    titleKey: 'docTimeline2008_2015Title',
+    textKey: 'docTimeline2008_2015Text',
   ),
   DocEvent(
     year: '2010',
-    title: 'AIS-SART in GMDSS',
-    text:
-        'The AIS search-and-rescue transmitter (AIS-SART, IEC 61097-14) '
-        'joins the Global Maritime Distress and Safety System, letting '
-        'lifeboats broadcast distress positions over AIS.',
+    titleKey: 'docTimeline2010Title',
+    textKey: 'docTimeline2010Text',
   ),
   DocEvent(
     year: '2014',
-    title: 'Fisheries & inland fleets',
-    text:
-        'European rules require Class A AIS on all EU fishing vessels over '
-        '15 m; inland-waterways AIS is widely deployed on European rivers.',
+    titleKey: 'docTimeline2014Title',
+    textKey: 'docTimeline2014Text',
   ),
   DocEvent(
     year: '2021',
-    title: '1.6 million ships',
-    text:
-        'More than 1.6 million vessels are fitted with AIS, feeding '
-        'terrestrial and satellite networks that power ship tracking, '
-        'fisheries control and maritime security worldwide.',
+    titleKey: 'docTimeline2021Title',
+    textKey: 'docTimeline2021Text',
   ),
   DocEvent(
     year: 'Next',
-    title: 'VDES — the successor',
-    text:
-        'The VHF Data Exchange System (ITU-R M.2092) is being rolled out '
-        'to relieve congested areas, adding far more bandwidth and secure '
-        'e-navigation services.',
+    titleKey: 'docTimelineVdesTitle',
+    textKey: 'docTimelineVdesText',
   ),
 ];
 
+/// Resolves a [DocEvent] title l10n key to its translated label.
+String docEventTitle(DocEvent e, AppLocalizations l10n) =>
+    switch (e.titleKey) {
+      'docTimeline1990sTitle' => l10n.docTimeline1990sTitle,
+      'docTimeline1998Title' => l10n.docTimeline1998Title,
+      'docTimeline2001Title' => l10n.docTimeline2001Title,
+      'docTimeline2002Title' => l10n.docTimeline2002Title,
+      'docTimeline2006Title' => l10n.docTimeline2006Title,
+      'docTimeline2008_2015Title' => l10n.docTimeline2008_2015Title,
+      'docTimeline2010Title' => l10n.docTimeline2010Title,
+      'docTimeline2014Title' => l10n.docTimeline2014Title,
+      'docTimeline2021Title' => l10n.docTimeline2021Title,
+      'docTimelineVdesTitle' => l10n.docTimelineVdesTitle,
+      _ => e.titleKey,
+    };
+
+/// Resolves a [DocEvent] text l10n key to its translated label.
+String docEventText(DocEvent e, AppLocalizations l10n) => switch (e.textKey) {
+      'docTimeline1990sText' => l10n.docTimeline1990sText,
+      'docTimeline1998Text' => l10n.docTimeline1998Text,
+      'docTimeline2001Text' => l10n.docTimeline2001Text,
+      'docTimeline2002Text' => l10n.docTimeline2002Text,
+      'docTimeline2006Text' => l10n.docTimeline2006Text,
+      'docTimeline2008_2015Text' => l10n.docTimeline2008_2015Text,
+      'docTimeline2010Text' => l10n.docTimeline2010Text,
+      'docTimeline2014Text' => l10n.docTimeline2014Text,
+      'docTimeline2021Text' => l10n.docTimeline2021Text,
+      'docTimelineVdesText' => l10n.docTimelineVdesText,
+      _ => e.textKey,
+    };
+
 /// Navigation status codes of the Common Navigation Block.
 const List<(int, String)> kNavStatus = [
-  (0, 'Under way using engine'),
-  (1, 'At anchor'),
-  (2, 'Not under command'),
-  (3, 'Restricted manoeuvrability'),
-  (4, 'Constrained by her draught'),
-  (5, 'Moored'),
-  (6, 'Aground'),
-  (7, 'Engaged in fishing'),
-  (8, 'Under way sailing'),
-  (9, 'Reserved (HSC)'),
-  (10, 'Reserved (WIG)'),
-  (11, 'Towing astern (regional)'),
-  (12, 'Pushing ahead / towing alongside (regional)'),
-  (13, 'Reserved for future use'),
-  (14, 'AIS-SART active'),
-  (15, 'Undefined (default)'),
+  (0, 'docNavStatus0'),
+  (1, 'docNavStatus1'),
+  (2, 'docNavStatus2'),
+  (3, 'docNavStatus3'),
+  (4, 'docNavStatus4'),
+  (5, 'docNavStatus5'),
+  (6, 'docNavStatus6'),
+  (7, 'docNavStatus7'),
+  (8, 'docNavStatus8'),
+  (9, 'docNavStatus9'),
+  (10, 'docNavStatus10'),
+  (11, 'docNavStatus11'),
+  (12, 'docNavStatus12'),
+  (13, 'docNavStatus13'),
+  (14, 'docNavStatus14'),
+  (15, 'docNavStatus15'),
 ];
+
+/// Resolves a [kNavStatus] l10n key to its translated label.
+String docNavStatusLabel(AppLocalizations l10n, String key) {
+  switch (key) {
+    case 'docNavStatus0':
+      return l10n.docNavStatus0;
+    case 'docNavStatus1':
+      return l10n.docNavStatus1;
+    case 'docNavStatus2':
+      return l10n.docNavStatus2;
+    case 'docNavStatus3':
+      return l10n.docNavStatus3;
+    case 'docNavStatus4':
+      return l10n.docNavStatus4;
+    case 'docNavStatus5':
+      return l10n.docNavStatus5;
+    case 'docNavStatus6':
+      return l10n.docNavStatus6;
+    case 'docNavStatus7':
+      return l10n.docNavStatus7;
+    case 'docNavStatus8':
+      return l10n.docNavStatus8;
+    case 'docNavStatus9':
+      return l10n.docNavStatus9;
+    case 'docNavStatus10':
+      return l10n.docNavStatus10;
+    case 'docNavStatus11':
+      return l10n.docNavStatus11;
+    case 'docNavStatus12':
+      return l10n.docNavStatus12;
+    case 'docNavStatus13':
+      return l10n.docNavStatus13;
+    case 'docNavStatus14':
+      return l10n.docNavStatus14;
+    case 'docNavStatus15':
+      return l10n.docNavStatus15;
+    default:
+      return key;
+  }
+}
 
 /// EPFD fix types.
 const List<(int, String)> kEpfdTypes = [
-  (0, 'Undefined (default)'),
-  (1, 'GPS'),
-  (2, 'GLONASS'),
-  (3, 'GPS + GLONASS'),
-  (4, 'Loran-C'),
-  (5, 'Chayka'),
-  (6, 'Integrated navigation system'),
-  (7, 'Surveyed (fixed)'),
-  (8, 'Galileo'),
-  (15, 'Internal GNSS'),
+  (0, 'docEpfd0'),
+  (1, 'docEpfd1'),
+  (2, 'docEpfd2'),
+  (3, 'docEpfd3'),
+  (4, 'docEpfd4'),
+  (5, 'docEpfd5'),
+  (6, 'docEpfd6'),
+  (7, 'docEpfd7'),
+  (8, 'docEpfd8'),
+  (15, 'docEpfd15'),
 ];
+
+/// Resolves a [kEpfdTypes] l10n key to its translated label.
+String docEpfdLabel(AppLocalizations l10n, String key) {
+  switch (key) {
+    case 'docEpfd0':
+      return l10n.docEpfd0;
+    case 'docEpfd1':
+      return l10n.docEpfd1;
+    case 'docEpfd2':
+      return l10n.docEpfd2;
+    case 'docEpfd3':
+      return l10n.docEpfd3;
+    case 'docEpfd4':
+      return l10n.docEpfd4;
+    case 'docEpfd5':
+      return l10n.docEpfd5;
+    case 'docEpfd6':
+      return l10n.docEpfd6;
+    case 'docEpfd7':
+      return l10n.docEpfd7;
+    case 'docEpfd8':
+      return l10n.docEpfd8;
+    case 'docEpfd15':
+      return l10n.docEpfd15;
+    default:
+      return key;
+  }
+}
 
 /// MMSI number formats (from gpsd / ITU).
 const List<(String, String)> kMmsiFormats = [
-  ('8MIDXXXXX', 'Diver\'s radio'),
-  ('MIDXXXXXX', 'Ship'),
-  ('0MIDXXXXX', 'Group of ships (e.g. a fleet or the USCG)'),
-  ('00MIDXXXX', 'Coastal / shore station'),
-  ('111MIDXXX', 'SAR aircraft'),
-  ('98MIDXXXX', 'Auxiliary craft associated with a parent ship'),
-  ('99MIDXXXX', 'Aid to navigation'),
-  ('970MIDXXX', 'AIS-SART (search & rescue transmitter)'),
-  ('972XXXXXX', 'MOB (man overboard) device'),
-  ('974XXXXXX', 'AIS EPIRB (emergency beacon)'),
+  ('8MIDXXXXX', 'docMmsiFmtDiversRadio'),
+  ('MIDXXXXXX', 'docMmsiFmtShip'),
+  ('0MIDXXXXX', 'docMmsiFmtGroupShips'),
+  ('00MIDXXXX', 'docMmsiFmtCoastalShore'),
+  ('111MIDXXX', 'docMmsiFmtSarAircraft'),
+  ('98MIDXXXX', 'docMmsiFmtAuxCraft'),
+  ('99MIDXXXX', 'docMmsiFmtAtoN'),
+  ('970MIDXXX', 'docMmsiFmtSart'),
+  ('972XXXXXX', 'docMmsiFmtMob'),
+  ('974XXXXXX', 'docMmsiFmtEpirb'),
 ];
+
+/// Resolves a [kMmsiFormats] l10n key to its translated label.
+String docMmsiFmtLabel(AppLocalizations l10n, String key) {
+  switch (key) {
+    case 'docMmsiFmtDiversRadio':
+      return l10n.docMmsiFmtDiversRadio;
+    case 'docMmsiFmtShip':
+      return l10n.docMmsiFmtShip;
+    case 'docMmsiFmtGroupShips':
+      return l10n.docMmsiFmtGroupShips;
+    case 'docMmsiFmtCoastalShore':
+      return l10n.docMmsiFmtCoastalShore;
+    case 'docMmsiFmtSarAircraft':
+      return l10n.docMmsiFmtSarAircraft;
+    case 'docMmsiFmtAuxCraft':
+      return l10n.docMmsiFmtAuxCraft;
+    case 'docMmsiFmtAtoN':
+      return l10n.docMmsiFmtAtoN;
+    case 'docMmsiFmtSart':
+      return l10n.docMmsiFmtSart;
+    case 'docMmsiFmtMob':
+      return l10n.docMmsiFmtMob;
+    case 'docMmsiFmtEpirb':
+      return l10n.docMmsiFmtEpirb;
+    default:
+      return key;
+  }
+}
 
 /// Coarse ITU-R M.1371 ship-type categories.
 const List<(String, String)> kVesselTypeCategories = [
-  ('0-9', 'Reserved / future use'),
-  ('10-19', 'Reserved for future use'),
-  ('20-29', 'Wing in ground (WIG) craft'),
-  ('30-39', 'Fishing'),
-  ('40-49', 'High-speed craft'),
-  ('50-59', 'Special craft (pilot, tugs, dredgers…)'),
-  ('60-69', 'Passenger ships'),
-  ('70-79', 'Cargo ships'),
-  ('80-89', 'Tankers'),
-  ('90-99', 'Other types'),
+  ('0-9', 'docVesselCat0_9'),
+  ('10-19', 'docVesselCat10_19'),
+  ('20-29', 'docVesselCat20_29'),
+  ('30-39', 'docVesselCat30_39'),
+  ('40-49', 'docVesselCat40_49'),
+  ('50-59', 'docVesselCat50_59'),
+  ('60-69', 'docVesselCat60_69'),
+  ('70-79', 'docVesselCat70_79'),
+  ('80-89', 'docVesselCat80_89'),
+  ('90-99', 'docVesselCat90_99'),
 ];
+
+/// Resolves a [kVesselTypeCategories] l10n key to its translated label.
+String docVesselCatLabel(AppLocalizations l10n, String key) {
+  switch (key) {
+    case 'docVesselCat0_9':
+      return l10n.docVesselCat0_9;
+    case 'docVesselCat10_19':
+      return l10n.docVesselCat10_19;
+    case 'docVesselCat20_29':
+      return l10n.docVesselCat20_29;
+    case 'docVesselCat30_39':
+      return l10n.docVesselCat30_39;
+    case 'docVesselCat40_49':
+      return l10n.docVesselCat40_49;
+    case 'docVesselCat50_59':
+      return l10n.docVesselCat50_59;
+    case 'docVesselCat60_69':
+      return l10n.docVesselCat60_69;
+    case 'docVesselCat70_79':
+      return l10n.docVesselCat70_79;
+    case 'docVesselCat80_89':
+      return l10n.docVesselCat80_89;
+    case 'docVesselCat90_99':
+      return l10n.docVesselCat90_99;
+    default:
+      return key;
+  }
+}
 
 /// NMEA 4.0 AIS talker IDs.
 const Map<String, String> kTalkerIds = {
-  'AB': 'Base AIS station',
-  'AD': 'Dependent AIS base station',
-  'AI': 'Mobile AIS station',
-  'AN': 'Aid-to-navigation AIS station',
-  'AR': 'AIS receiving station',
-  'AS': 'Limited base station',
-  'AT': 'AIS transmitting station',
-  'AX': 'AIS repeater station',
-  'BS': 'Base AIS station (deprecated)',
-  'SA': 'Physical shore AIS station',
+  'AB': 'docTalkerAB',
+  'AD': 'docTalkerAD',
+  'AI': 'docTalkerAI',
+  'AN': 'docTalkerAN',
+  'AR': 'docTalkerAR',
+  'AS': 'docTalkerAS',
+  'AT': 'docTalkerAT',
+  'AX': 'docTalkerAX',
+  'BS': 'docTalkerBS',
+  'SA': 'docTalkerSA',
 };
+
+/// Resolves a [kTalkerIds] l10n key to its translated label.
+String docTalkerLabel(AppLocalizations l10n, String key) {
+  switch (key) {
+    case 'docTalkerAB':
+      return l10n.docTalkerAB;
+    case 'docTalkerAD':
+      return l10n.docTalkerAD;
+    case 'docTalkerAI':
+      return l10n.docTalkerAI;
+    case 'docTalkerAN':
+      return l10n.docTalkerAN;
+    case 'docTalkerAR':
+      return l10n.docTalkerAR;
+    case 'docTalkerAS':
+      return l10n.docTalkerAS;
+    case 'docTalkerAT':
+      return l10n.docTalkerAT;
+    case 'docTalkerAX':
+      return l10n.docTalkerAX;
+    case 'docTalkerBS':
+      return l10n.docTalkerBS;
+    case 'docTalkerSA':
+      return l10n.docTalkerSA;
+    default:
+      return key;
+  }
+}
 
 /// Builds a plausible, always-decodable NMEA sample for a message type.
 String sampleSentencesFor(int type) {

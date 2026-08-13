@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'boat.dart';
+import 'l10n/generated/app_localizations.dart';
+import 'l10n_ext.dart';
+import 'value_labels.dart';
 import 'widgets.dart';
 
 class BoatInfoBubble extends StatelessWidget {
@@ -9,11 +12,12 @@ class BoatInfoBubble extends StatelessWidget {
 
   const BoatInfoBubble({super.key, required this.boat, this.onClose});
 
-  static String _kindLabel(BoatKind kind) => switch (kind) {
-        BoatKind.vessel => 'Vessel',
-        BoatKind.aircraft => 'SAR Aircraft',
-        BoatKind.aton => 'Aid to Navigation',
-        BoatKind.station => 'Base Station',
+  static String _kindLabel(BoatKind kind, AppLocalizations l10n) =>
+      switch (kind) {
+        BoatKind.vessel => l10n.bubbleKindVessel,
+        BoatKind.aircraft => l10n.bubbleKindAircraft,
+        BoatKind.aton => l10n.bubbleKindAton,
+        BoatKind.station => l10n.bubbleKindStation,
       };
 
   Widget buildRow(String title, dynamic value) {
@@ -57,6 +61,7 @@ class BoatInfoBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
 
     return Column(
       children: [
@@ -74,7 +79,7 @@ class BoatInfoBubble extends StatelessWidget {
                 child: Text(
                   boat.name?.trim().isNotEmpty == true
                       ? boat.name!.trim()
-                      : 'MMSI ${boat.mmsi}',
+                      : l10n.mapMmsi(boat.mmsi),
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -103,73 +108,73 @@ class BoatInfoBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _section('General Information'),
-                  buildRow('Kind', _kindLabel(boat.kind)),
-                  buildRow('MMSI', boat.mmsi),
-                  buildRow('Name', boat.name),
+                  _section(l10n.bubbleGeneralInfo),
+                  buildRow(l10n.bubbleKind, _kindLabel(boat.kind, l10n)),
+                  buildRow(l10n.fMmsi, boat.mmsi),
+                  buildRow(l10n.fName, boat.name),
                   if (boat.kind == BoatKind.aton) ...[
-                    buildRow('Aid Type', boat.aidType),
-                    buildRow('Virtual', boat.virtualAid),
+                    buildRow(l10n.bubbleAidType, boat.aidType == null ? null : valueLabel(l10n, boat.aidType!)),
+                    buildRow(l10n.bubbleVirtual, boat.virtualAid),
                   ],
                   if (boat.kind == BoatKind.aircraft)
                     buildRow(
-                      'Altitude',
+                      l10n.bubbleAltitude,
                       boat.altitude != null ? '${boat.altitude} m' : null,
                     ),
-                  buildRow('Call Sign', boat.callSign),
-                  buildRow('IMO', boat.imoNumber),
-                  _section('Position & Navigation'),
+                  buildRow(l10n.bubbleCallSign, boat.callSign),
+                  buildRow(l10n.fImo, boat.imoNumber),
+                  _section(l10n.bubblePosNav),
                   buildRow(
-                    'Latitude',
+                    l10n.fLatitude,
                     boat.lat?.toStringAsFixed(5),
                   ),
                   buildRow(
-                    'Longitude',
+                    l10n.fLongitude,
                     boat.lon?.toStringAsFixed(5),
                   ),
                   buildRow(
-                    'Heading',
+                    l10n.bubbleHeading,
                     boat.heading != null
                         ? '${boat.heading!.toStringAsFixed(0)}°'
                         : null,
                   ),
                   buildRow(
-                    'COG',
+                    l10n.bubbleCog,
                     boat.cog != null
                         ? '${boat.cog!.toStringAsFixed(1)}°'
                         : null,
                   ),
                   buildRow(
-                    'SOG',
+                    l10n.bubbleSog,
                     boat.sog != null
                         ? '${boat.sog!.toStringAsFixed(1)} kn'
                         : null,
                   ),
-                  buildRow('Navigation Status', boat.navigationStatus),
-                  buildRow('Timestamp', boat.timestamp),
-                  buildRow('RAIM', boat.raimFlag),
-                  _section('Vessel Details'),
-                  buildRow('Type', boat.vesselType),
-                  buildRow('Type (Int)', boat.vesselTypeInt),
+                  buildRow(l10n.fNavStatus, boat.navigationStatus == null ? null : valueLabel(l10n, boat.navigationStatus!)),
+                  buildRow(l10n.fTimestamp, boat.timestamp),
+                  buildRow(l10n.fRaim, boat.raimFlag),
+                  _section(l10n.bubbleVesselDetails),
+                  buildRow(l10n.bubbleType, boat.vesselType == null ? null : valueLabel(l10n, boat.vesselType!)),
+                  buildRow(l10n.bubbleTypeInt, boat.vesselTypeInt),
                   buildRow(
-                    'Dimensions Bow/Stern',
+                    l10n.bubbleDimsBowStern,
                     '${boat.dimensionBow ?? '-'} / '
                         '${boat.dimensionStern ?? '-'}',
                   ),
                   buildRow(
-                    'Dimensions Port/Starboard',
+                    l10n.bubbleDimsPortStarboard,
                     '${boat.dimensionPort ?? '-'} / '
                         '${boat.dimensionStarboard ?? '-'}',
                   ),
-                  buildRow('EPFD Fix Type', boat.epfdFixType),
-                  buildRow('Regional Reserved', boat.regionalReserved),
-                  buildRow('Assigned Mode', boat.assignedMode),
-                  buildRow('DTE', boat.dte),
-                  buildRow('Spare', boat.spare),
-                  buildRow('Draught', boat.draught),
-                  buildRow('Destination', boat.destination),
+                  buildRow(l10n.fEpfdFixType, boat.epfdFixType == null ? null : valueLabel(l10n, boat.epfdFixType!)),
+                  buildRow(l10n.fRegionalReserved, boat.regionalReserved),
+                  buildRow(l10n.fAssignedMode, boat.assignedMode),
+                  buildRow(l10n.fDte, boat.dte),
+                  buildRow(l10n.bubbleSpare, boat.spare),
+                  buildRow(l10n.bubbleDraught, boat.draught),
+                  buildRow(l10n.fDestination, boat.destination),
                   buildRow(
-                    'ETA',
+                    l10n.fEta,
                     '${boat.etaDay ?? '-'} / ${boat.etaMonth ?? '-'} '
                         '${boat.etaHour ?? '-'}:${boat.etaMinute ?? '-'}',
                   ),
@@ -223,7 +228,7 @@ class _BoatFrameLogState extends State<_BoatFrameLog> {
                 Icon(Icons.list_alt, size: 16, color: scheme.primary),
                 const SizedBox(width: 8),
                 Text(
-                  'Frames (${frames.length})',
+                  context.l10n.bubbleFrames('${frames.length}'),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -252,7 +257,7 @@ class _BoatFrameLogState extends State<_BoatFrameLog> {
             child: frames.isEmpty
                 ? Center(
                     child: Text(
-                      'No frames yet',
+                      context.l10n.bubbleNoFrames,
                       style: TextStyle(
                         fontSize: 11,
                         color: scheme.onSurfaceVariant,

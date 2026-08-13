@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'ais/ais_decoder.dart'
-    show NmeaFormat, NmeaTagBlock, buildTagBlock, msSinceUtcMidnight, nmeaFormatLabel;
+    show NmeaFormat, NmeaTagBlock, buildTagBlock, msSinceUtcMidnight;
 import 'app_settings.dart';
 import 'boat_animation.dart';
 import 'boatmanager.dart';
@@ -15,6 +15,8 @@ import 'feed_def.dart';
 import 'file_feed_player.dart';
 import 'forwarder_service.dart';
 import 'host_input_formatter.dart';
+import 'l10n_ext.dart';
+import 'labels.dart';
 import 'message_stats.dart';
 import 'port_input_formatter.dart';
 import 'serial_feed_player.dart';
@@ -127,6 +129,16 @@ class ReceptionPageState extends State<ReceptionPage> {
         if (boatManager.decodeEnabled && isAis) {
           boatManager.processMessage(sentence, feed: name);
         }
+      },
+      onStatus: (status) {
+        _pendingLogs.add(
+          LogEntry(
+            message: status.fallback,
+            status: status,
+            time: DateTime.now(),
+          ),
+        );
+        _logFlushTimer ??= Timer(_logFlushDelay, _flushLogs);
       },
     );
     forwarderService.setTargets(settings.targets);
@@ -495,8 +507,11 @@ class ReceptionPageState extends State<ReceptionPage> {
       dense: true,
       title: Row(
         children: [
-          const Expanded(
-            child: Text('Simulation', overflow: TextOverflow.ellipsis),
+          Expanded(
+            child: Text(
+              context.l10n.tabSimulation,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           _FeedStatusDot(
             statusSource: sim,
@@ -567,7 +582,7 @@ class ReceptionPageState extends State<ReceptionPage> {
     final FileSaveLocation? result = await getSaveLocation(
       suggestedName: fileName,
       acceptedTypeGroups: [
-        XTypeGroup(label: 'Text Files', extensions: ['txt']),
+        XTypeGroup(label: context.l10n.textFiles, extensions: ['txt']),
       ],
     );
     if (result == null) {
@@ -653,7 +668,7 @@ class ReceptionPageState extends State<ReceptionPage> {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: SectionHeader(
                 icon: Icons.rss_feed,
-                title: "Feeds",
+                title: context.l10n.receptionFeeds,
                 trailing: IconButton(
                   icon: const Icon(Icons.add, size: 18),
                   visualDensity: VisualDensity.compact,
@@ -702,15 +717,16 @@ class ReceptionPageState extends State<ReceptionPage> {
             SwitchListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 12),
               dense: true,
-              title: const Text(
-                "Validate NMEA checksums",
-                style: TextStyle(fontSize: 13),
+              title: Text(
+                context.l10n.receptionValidateChecksums,
+                style: const TextStyle(fontSize: 13),
               ),
               subtitle: AnimatedBuilder(
                 animation: boatManager,
                 builder: (_, __) => Text(
-                  "${boatManager.invalidChecksumCount} "
-                  "sentences dropped",
+                  context.l10n.receptionDroppedSentences(
+                    boatManager.invalidChecksumCount,
+                  ),
                   style: const TextStyle(fontSize: 11),
                 ),
               ),
@@ -728,9 +744,9 @@ class ReceptionPageState extends State<ReceptionPage> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(
                 children: [
-                  const Text(
-                    'Import frame format',
-                    style: TextStyle(fontSize: 13),
+                  Text(
+                    context.l10n.receptionImportFormat,
+                    style: const TextStyle(fontSize: 13),
                   ),
                   const Spacer(),
                   DropdownButton<NmeaFormat>(
@@ -742,7 +758,7 @@ class ReceptionPageState extends State<ReceptionPage> {
                         DropdownMenuItem(
                           value: f,
                           child: Text(
-                            nmeaFormatLabel(f),
+                            nmeaFormatLabelLocalized(f, context.l10n),
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
@@ -762,8 +778,8 @@ class ReceptionPageState extends State<ReceptionPage> {
                 padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
                 child: TextField(
                   controller: _importTagSourceC,
-                  decoration: const InputDecoration(
-                    labelText: 'Tag source ID',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldTagSourceId,
                     isDense: true,
                   ),
                   onChanged: (v) {
@@ -791,7 +807,9 @@ class ReceptionPageState extends State<ReceptionPage> {
                     icon: Icon(
                       isRunning ? Icons.stop : Icons.play_arrow,
                     ),
-                    label: Text(isRunning ? "Stop" : "Start"),
+                    label: Text(
+                      isRunning ? context.l10n.receptionStop : context.l10n.receptionStart,
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           isRunning ? Colors.red : Colors.green,
@@ -819,7 +837,7 @@ class ReceptionPageState extends State<ReceptionPage> {
                     padding: const EdgeInsets.only(left: 10),
                     child: Row(
                       children: [
-                        const Text("Logs"),
+                        Text(context.l10n.receptionLogs),
                         const Spacer(),
                         IconButton(
                           icon: const Icon(Icons.save_outlined),
@@ -852,22 +870,24 @@ class ReceptionPageState extends State<ReceptionPage> {
                           itemBuilder: (context, index) {
                             final entry = logEntries[index];
 
+                            final text = entry.status != null
+                                ? logMessageText(context.l10n, entry.status!)
+                                : (entry.name != null
+                                    ? "[${entry.name}] ${entry.message}"
+                                    : entry.message);
+
                             return Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 _buildStarterWidget(entry),
                                 const SizedBox(width: 5),
                                 Expanded(
-                                  child: Text(
-                                    entry.name != null
-                                        ? "[${entry.name}] ${entry.message}"
-                                        : entry.message,
-                                  ),
+                                  child: Text(text),
                                 ),
                                 if (entry.message.startsWith('!'))
                                   CopyIconButton(
                                     text: entry.message,
-                                    message: 'Frame copied',
+                                    message: context.l10n.receptionFrameCopied,
                                     padding: EdgeInsets.zero,
                                   ),
                               ],
@@ -931,12 +951,14 @@ class _FeedStatusDot extends StatelessWidget {
 
 class LogEntry {
   final String message;
+  final LogMessage? status;
   final String? starter;
   final String? name;
   final DateTime time;
 
   LogEntry({
     required this.message,
+    this.status,
     this.starter,
     this.name,
     required this.time,
@@ -1049,7 +1071,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add source'),
+      title: Text(context.l10n.receptionAddSource),
       content: SizedBox(
         width: 380,
         child: SingleChildScrollView(
@@ -1058,21 +1080,21 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SegmentedButton<FeedType>(
-                segments: const [
+                segments: [
                   ButtonSegment(
                     value: FeedType.network,
-                    label: Text('Network'),
-                    icon: Icon(Icons.dns_outlined),
+                    label: Text(context.l10n.receptionNetwork),
+                    icon: const Icon(Icons.dns_outlined),
                   ),
                   ButtonSegment(
                     value: FeedType.file,
-                    label: Text('File'),
-                    icon: Icon(Icons.description_outlined),
+                    label: Text(context.l10n.receptionFile),
+                    icon: const Icon(Icons.description_outlined),
                   ),
                   ButtonSegment(
                     value: FeedType.serial,
-                    label: Text('Serial'),
-                    icon: Icon(Icons.settings_ethernet_outlined),
+                    label: Text(context.l10n.receptionSerial),
+                    icon: const Icon(Icons.settings_ethernet_outlined),
                   ),
                 ],
                 selected: {_type},
@@ -1086,19 +1108,19 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
               const SizedBox(height: 16),
               TextField(
                 controller: _name,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(labelText: context.l10n.fieldName),
               ),
               const SizedBox(height: 12),
               if (_type == FeedType.network) ...[
                 TextField(
                   controller: _host,
-                  decoration: const InputDecoration(labelText: 'Host'),
+                  decoration: InputDecoration(labelText: context.l10n.fieldHost),
                   inputFormatters: [HostInputFormatter()],
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _port,
-                  decoration: const InputDecoration(labelText: 'Port'),
+                  decoration: InputDecoration(labelText: context.l10n.fieldPort),
                   keyboardType: TextInputType.number,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
@@ -1108,8 +1130,8 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: _header,
-                  decoration: const InputDecoration(
-                    labelText: 'Header (optional)',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.receptionHeaderOptional,
                   ),
                 ),
               ] else if (_type == FeedType.file) ...[
@@ -1118,9 +1140,9 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                     Expanded(
                       child: TextField(
                         controller: _path,
-                        decoration: const InputDecoration(
-                          labelText: 'File',
-                          hintText: 'Path or Browse…',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.fieldFile,
+                          hintText: context.l10n.receptionPathOrBrowse,
                         ),
                       ),
                     ),
@@ -1134,8 +1156,8 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: _interval,
-                  decoration: const InputDecoration(
-                    labelText: 'Interval between frames (ms)',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.receptionIntervalMs,
                   ),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1143,14 +1165,13 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                 SwitchListTile(
                   dense: true,
                   contentPadding: EdgeInsets.zero,
-                  title: const Text(
-                    'Replay using file timestamps',
-                    style: TextStyle(fontSize: 13),
+                  title: Text(
+                    context.l10n.receptionReplayTimestamps,
+                    style: const TextStyle(fontSize: 13),
                   ),
-                  subtitle: const Text(
-                    'Follows the recorded times (tag block t: or timestamp '
-                    'prefix) instead of a fixed interval',
-                    style: TextStyle(fontSize: 11),
+                  subtitle: Text(
+                    context.l10n.receptionReplayTimestampsHint,
+                    style: const TextStyle(fontSize: 11),
                   ),
                   value: _useTimestamps,
                   onChanged: (v) => setState(() => _useTimestamps = v),
@@ -1158,9 +1179,9 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                 if (_useTimestamps)
                   Row(
                     children: [
-                      const Text(
-                        'Speed',
-                        style: TextStyle(fontSize: 13),
+                      Text(
+                        context.l10n.receptionSpeed,
+                        style: const TextStyle(fontSize: 13),
                       ),
                       const Spacer(),
                       DropdownButton<int>(
@@ -1182,9 +1203,9 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                 SwitchListTile(
                   dense: true,
                   contentPadding: EdgeInsets.zero,
-                  title: const Text(
-                    'Loop (replay from the start)',
-                    style: TextStyle(fontSize: 13),
+                  title: Text(
+                    context.l10n.receptionReplayLoop,
+                    style: const TextStyle(fontSize: 13),
                   ),
                   value: _loop,
                   onChanged: (v) => setState(() => _loop = v),
@@ -1195,9 +1216,9 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                     Expanded(
                       child: TextField(
                         controller: _serialPort,
-                        decoration: const InputDecoration(
-                          labelText: 'Serial port',
-                          hintText: 'e.g. COM3 or /dev/ttyUSB0',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.receptionSerialPort,
+                          hintText: context.l10n.receptionSerialPortHint,
                         ),
                       ),
                     ),
@@ -1226,7 +1247,9 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<int>(
                   initialValue: _baudRate,
-                  decoration: const InputDecoration(labelText: 'Baud rate'),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.receptionBaudRate,
+                  ),
                   items: [
                     for (final rate in kBaudRates)
                       DropdownMenuItem(value: rate, child: Text('$rate')),
@@ -1243,7 +1266,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.fieldCancel),
         ),
         FilledButton(
           onPressed: () {
@@ -1252,7 +1275,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
               Navigator.pop(context, result);
             }
           },
-          child: const Text('Add'),
+          child: Text(context.l10n.fieldAdd),
         ),
       ],
     );

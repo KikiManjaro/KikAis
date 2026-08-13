@@ -11,6 +11,8 @@ import 'package:kik_ais/reception_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'l10n_test_utils.dart';
+
 void main() {
   late Directory tempDir;
   late String logPath;
@@ -61,9 +63,7 @@ void main() {
           ChangeNotifierProvider.value(value: settings),
           ChangeNotifierProvider.value(value: stats),
         ],
-        child: MaterialApp(
-          home: ReceptionPage(boat, running: running),
-        ),
+        child: withLocalizations(ReceptionPage(boat, running: running)),
       ),
     );
     await tester.pump();

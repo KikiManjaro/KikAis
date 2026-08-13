@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'ais/src/utils/convert_char_to_bin.dart' show aisDataChars;
 import 'documentation_content.dart';
+import 'l10n/generated/app_localizations.dart';
+import 'l10n_ext.dart';
 import 'themes.dart';
 import 'widgets.dart';
 
@@ -89,8 +91,11 @@ class _BitLayoutViewerState extends State<BitLayoutViewer> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${fields[_selected].name} · bits '
-                    '${fields[_selected].start}-${fields[_selected].end}',
+                    context.l10n.docBitFieldBits(
+                      fields[_selected].name,
+                      '${fields[_selected].start}',
+                      '${fields[_selected].end}',
+                    ),
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
@@ -107,8 +112,10 @@ class _BitLayoutViewerState extends State<BitLayoutViewer> {
             ),
             const SizedBox(height: 8),
             Text(
-              '${fields.length} fields · '
-              '${fields.last.end + 1} bits total · tap a segment',
+              context.l10n.docBitLayoutSummary(
+                '${fields.length}',
+                '${fields.last.end + 1}',
+              ),
               style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant),
             ),
           ],
@@ -197,9 +204,9 @@ class _SixBitEncoderState extends State<SixBitEncoder> {
     super.dispose();
   }
 
-  String _code(String c) {
+  String _code(String c, AppLocalizations l10n) {
     final v = aisDataChars.indexOf(c);
-    return v < 0 ? '—' : v.toRadixString(2).padLeft(6, '0');
+    return v < 0 ? l10n.docSixBitUnencodable : v.toRadixString(2).padLeft(6, '0');
   }
 
   @override
@@ -218,10 +225,10 @@ class _SixBitEncoderState extends State<SixBitEncoder> {
                 fontFamily: 'monospace',
                 fontSize: 13,
               ),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 isDense: true,
-                labelText: 'Text to encode',
-                border: OutlineInputBorder(),
+                labelText: context.l10n.docTextToEncode,
+                border: const OutlineInputBorder(),
               ),
               onChanged: (_) => setState(() {}),
             ),
@@ -252,7 +259,7 @@ class _SixBitEncoderState extends State<SixBitEncoder> {
                             ),
                           ),
                           Text(
-                            _code(c),
+                            _code(c, context.l10n),
                             style: TextStyle(
                               fontFamily: 'monospace',
                               fontSize: 9,
@@ -266,9 +273,7 @@ class _SixBitEncoderState extends State<SixBitEncoder> {
               ),
             const SizedBox(height: 8),
             Text(
-              'Each character is one 6-bit value ("@" = 0, space = 32, '
-              '"A" = 1…). Lowercase letters are not encodable and are '
-              'usually sent as uppercase.',
+              context.l10n.docSixBitExplanation,
               style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant),
             ),
           ],
@@ -333,10 +338,10 @@ class _ChecksumCalculatorState extends State<ChecksumCalculator> {
                       fontFamily: 'monospace',
                       fontSize: 12,
                     ),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       isDense: true,
-                      labelText: 'Body (without leading ! and trailing *XX)',
-                      border: OutlineInputBorder(),
+                      labelText: context.l10n.docChecksumBody,
+                      border: const OutlineInputBorder(),
                     ),
                     onChanged: (_) => _compute(),
                   ),
@@ -366,8 +371,7 @@ class _ChecksumCalculatorState extends State<ChecksumCalculator> {
             ),
             const SizedBox(height: 8),
             Text(
-              'The NMEA checksum is the XOR of every byte between the "!" '
-              'and the "*".',
+              context.l10n.docChecksumExplanation,
               style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant),
             ),
           ],
@@ -429,10 +433,10 @@ class _CoordinateEncoderState extends State<CoordinateEncoder> {
                   child: TextField(
                     controller: _latC,
                     style: const TextStyle(fontFamily: 'monospace'),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       isDense: true,
-                      labelText: 'Latitude',
-                      border: OutlineInputBorder(),
+                      labelText: context.l10n.docLatitude,
+                      border: const OutlineInputBorder(),
                     ),
                     onChanged: (_) => setState(() {}),
                   ),
@@ -442,10 +446,10 @@ class _CoordinateEncoderState extends State<CoordinateEncoder> {
                   child: TextField(
                     controller: _lonC,
                     style: const TextStyle(fontFamily: 'monospace'),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       isDense: true,
-                      labelText: 'Longitude',
-                      border: OutlineInputBorder(),
+                      labelText: context.l10n.docLongitude,
+                      border: const OutlineInputBorder(),
                     ),
                     onChanged: (_) => setState(() {}),
                   ),
@@ -456,10 +460,9 @@ class _CoordinateEncoderState extends State<CoordinateEncoder> {
             value(
               SelectableText(
                 rawLat == null
-                    ? 'Latitude: enter a number'
-                    : 'Latitude → ${rawLat < 0 ? '-' : ''}'
-                        '${rawLat.abs()} (${27}-bit signed, '
-                        'deg = $rawLat / 600000)',
+                    ? context.l10n.docLatitudeInvalid
+                    : context.l10n.docCoordLatitudeValue(
+                        '${rawLat < 0 ? '-' : ''}${rawLat.abs()}', '$rawLat'),
                 style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
               ),
             ),
@@ -467,17 +470,15 @@ class _CoordinateEncoderState extends State<CoordinateEncoder> {
             value(
               SelectableText(
                 rawLon == null
-                    ? 'Longitude: enter a number'
-                    : 'Longitude → ${rawLon < 0 ? '-' : ''}'
-                        '${rawLon.abs()} (${28}-bit signed, '
-                        'deg = $rawLon / 600000)',
+                    ? context.l10n.docLongitudeInvalid
+                    : context.l10n.docCoordLongitudeValue(
+                        '${rawLon < 0 ? '-' : ''}${rawLon.abs()}', '$rawLon'),
                 style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Coordinates are stored in 1/10 000 of a minute: divide by '
-              '600 000 to recover degrees.',
+              context.l10n.docCoordsExplanation,
               style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant),
             ),
           ],
@@ -512,7 +513,7 @@ class _ShipTypeBrowserState extends State<ShipTypeBrowser> {
           !'$t'.contains(q)) {
         continue;
       }
-      final cat = _categoryOf(t);
+      final cat = _categoryOf(t, context.l10n);
       grouped.putIfAbsent(cat, () => []).add((t, name));
     }
     return Card(
@@ -523,10 +524,10 @@ class _ShipTypeBrowserState extends State<ShipTypeBrowser> {
           children: [
             TextField(
               onChanged: (v) => setState(() => _query = v),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 isDense: true,
-                prefixIcon: Icon(Icons.search, size: 18),
-                labelText: 'Search ship types',
+                prefixIcon: const Icon(Icons.search, size: 18),
+                labelText: context.l10n.docSearchShipTypes,
               ),
             ),
             const SizedBox(height: 8),
@@ -582,16 +583,16 @@ class _ShipTypeBrowserState extends State<ShipTypeBrowser> {
     );
   }
 
-  String _categoryOf(int t) {
-    if (t < 20) return '0-19 · Reserved';
-    if (t < 30) return '20-29 · Wing in ground (WIG)';
-    if (t < 40) return '30-39 · Fishing';
-    if (t < 50) return '40-49 · High-speed craft';
-    if (t < 60) return '50-59 · Special craft';
-    if (t < 70) return '60-69 · Passenger';
-    if (t < 80) return '70-79 · Cargo';
-    if (t < 90) return '80-89 · Tanker';
-    return '90-99 · Other';
+  String _categoryOf(int t, AppLocalizations l10n) {
+    if (t < 20) return l10n.docShipCat0_19;
+    if (t < 30) return l10n.docShipCat20_29;
+    if (t < 40) return l10n.docShipCat30_39;
+    if (t < 50) return l10n.docShipCat40_49;
+    if (t < 60) return l10n.docShipCat50_59;
+    if (t < 70) return l10n.docShipCat60_69;
+    if (t < 80) return l10n.docShipCat70_79;
+    if (t < 90) return l10n.docShipCat80_89;
+    return l10n.docShipCat90_99;
   }
 }
 
@@ -625,10 +626,10 @@ class _GlossarySearchState extends State<GlossarySearch> {
           children: [
             TextField(
               onChanged: (v) => setState(() => _query = v),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 isDense: true,
-                prefixIcon: Icon(Icons.search, size: 18),
-                labelText: 'Search glossary',
+                prefixIcon: const Icon(Icons.search, size: 18),
+                labelText: context.l10n.docSearchGlossary,
               ),
             ),
             const SizedBox(height: 8),
@@ -659,7 +660,7 @@ class _GlossarySearchState extends State<GlossarySearch> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Text(
-                        'No matching terms.',
+                        context.l10n.docNoMatchingTerms,
                         style: TextStyle(
                           fontSize: 12,
                           color: scheme.onSurfaceVariant,
@@ -696,7 +697,7 @@ class ClassComparisonTable extends StatelessWidget {
                 SizedBox(
                   width: 110,
                   child: Text(
-                    'Aspect',
+                    context.l10n.docAspect,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -706,7 +707,7 @@ class ClassComparisonTable extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    'Class A',
+                    context.l10n.docClassA,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -716,7 +717,7 @@ class ClassComparisonTable extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    'Class B',
+                    context.l10n.docClassB,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -866,62 +867,65 @@ class CheatSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors =
         Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _block(
           context,
-          'Radio',
-          const [
-            ('Frequencies', 'AIS1 161.975 MHz (87B) · AIS2 162.025 MHz (88B)'),
-            ('Modulation', 'GMSK, 9 600 bits/s'),
-            ('Range', '~10-20 NM ship-to-ship, line of sight'),
+          l10n.docCheatRadio,
+          [
+            (l10n.docCheatFrequencies, l10n.docCheatFrequenciesValue),
+            (l10n.docCheatModulation, l10n.docCheatModulationValue),
+            (l10n.docCheatRange, l10n.docCheatRangeValue),
           ],
         ),
         _block(
           context,
-          'Reporting rates',
-          const [
-            ('Class A position (1)', 'Every 2-10 s underway, 3 min anchored'),
-            ('Static (5)', 'Every 6 min'),
-            ('Class B position (18)', '~Every 30 s'),
-            ('Aid to navigation (21)', 'Every 3 min'),
+          l10n.docCheatReportingRates,
+          [
+            (l10n.docCheatClassAPos1, l10n.docCheatClassAPos1Value),
+            (l10n.docCheatStatic5, l10n.docCheatStatic5Value),
+            (l10n.docCheatClassBPos18, l10n.docCheatClassBPos18Value),
+            (l10n.docCheatAtoN21, l10n.docCheatAtoN21Value),
           ],
         ),
         _block(
           context,
-          'Navigation status (0-15)',
-          const [
-            ('0', 'Under way using engine'),
-            ('1', 'At anchor'),
-            ('3', 'Restricted manoeuvrability'),
-            ('5', 'Moored'),
-            ('6', 'Aground'),
-            ('7', 'Fishing'),
-            ('8', 'Under way sailing'),
-            ('14', 'AIS-SART active'),
+          l10n.docCheatNavStatus0_15,
+          [
+            (l10n.docCheatNavStatus0, l10n.docCheatNavStatus0Value),
+            (l10n.docCheatNavStatus1, l10n.docCheatNavStatus1Value),
+            (l10n.docCheatNavStatus3, l10n.docCheatNavStatus3Value),
+            (l10n.docCheatNavStatus5, l10n.docCheatNavStatus5Value),
+            (l10n.docCheatNavStatus6, l10n.docCheatNavStatus6Value),
+            (l10n.docCheatNavStatus7, l10n.docCheatNavStatus7Value),
+            (l10n.docCheatNavStatus8, l10n.docCheatNavStatus8Value),
+            (l10n.docCheatNavStatus14, l10n.docCheatNavStatus14Value),
           ],
         ),
         _block(
           context,
-          'MMSI formats',
-          kMmsiFormats.take(6).toList(),
+          l10n.docCheatMmsiFormats,
+          kMmsiFormats
+              .take(6)
+              .map((e) => (e.$1, docMmsiFmtLabel(context.l10n, e.$2)))
+              .toList(),
         ),
         _block(
           context,
-          'Fix types (EPFD)',
-          const [
-            ('1', 'GPS'),
-            ('2', 'GLONASS'),
-            ('3', 'GPS + GLONASS'),
-            ('8', 'Galileo'),
-            ('15', 'Internal GNSS'),
+          l10n.docCheatFixTypes,
+          [
+            (l10n.docCheatEpfd1, l10n.docCheatEpfd1Value),
+            (l10n.docCheatEpfd2, l10n.docCheatEpfd2Value),
+            (l10n.docCheatEpfd3, l10n.docCheatEpfd3Value),
+            (l10n.docCheatEpfd8, l10n.docCheatEpfd8Value),
+            (l10n.docCheatEpfd15, l10n.docCheatEpfd15Value),
           ],
         ),
         const SizedBox(height: 4),
         Text(
-          'KikAis ships a full interactive reference on every tab — the '
-          'Editor can build any message, the Decoder reads them back.',
+          l10n.docCheatFooter,
           style: TextStyle(
             fontSize: 12,
             color: appColors.info,

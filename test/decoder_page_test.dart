@@ -4,7 +4,10 @@ import 'package:kik_ais/ais/ais_decoder.dart';
 import 'package:kik_ais/ais_message_details.dart';
 import 'package:kik_ais/app_settings.dart';
 import 'package:kik_ais/decoder_page.dart';
+import 'package:kik_ais/l10n/generated/app_localizations_en.dart';
 import 'package:provider/provider.dart';
+
+import 'l10n_test_utils.dart';
 
 String _checksum(String body) {
   int xor = 0;
@@ -35,7 +38,7 @@ void main() {
     final message = AisNmeaDecoder(validateChecksum: true).decode(sentence);
 
     expect(message, isNotNull);
-    final fields = describeMessage(message!);
+    final fields = describeMessage(message!, AppLocalizationsEn());
     final labels = fields.map((f) => f.$1).toList();
 
     expect(fields.first.$1, 'Message type');
@@ -53,7 +56,7 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider.value(
         value: settings,
-        child: const MaterialApp(home: DecoderPage()),
+        child: withLocalizations(const DecoderPage()),
       ),
     );
 
@@ -86,7 +89,7 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider.value(
         value: settings,
-        child: const MaterialApp(home: DecoderPage()),
+        child: withLocalizations(const DecoderPage()),
       ),
     );
 

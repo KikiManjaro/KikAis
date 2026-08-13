@@ -10,6 +10,8 @@ import 'boat.dart';
 import 'boat_map_layer.dart';
 import 'boatmanager.dart';
 import 'bubble_boat.dart';
+import 'l10n/country_names.dart';
+import 'l10n_ext.dart';
 import 'mid_countries.dart';
 
 class MapFilters {
@@ -146,7 +148,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
                   (b.imoNumber?.toString().contains(q) ?? false);
             }).toList();
             return AlertDialog(
-              title: const Text('Search vessels'),
+              title: Text(ctx.l10n.mapSearchVessels),
               content: SizedBox(
                 width: 420,
                 height: 420,
@@ -155,27 +157,29 @@ class _WorldMapPageState extends State<WorldMapPage> {
                     TextField(
                       controller: controller,
                       autofocus: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Name, MMSI or IMO',
+                      decoration: InputDecoration(
+                        labelText: ctx.l10n.mapSearchHint,
                       ),
                       onChanged: (_) => setDialogState(() {}),
                     ),
                     const SizedBox(height: 8),
                     Expanded(
                       child: results.isEmpty
-                          ? const Center(child: Text('No results'))
+                          ? Center(child: Text(ctx.l10n.mapNoResults))
                           : ListView.builder(
                               itemCount: results.length,
                               itemBuilder: (ctx, i) {
                                 final b = results[i];
+                                final parts = <String>[
+                                  ctx.l10n.mapMmsi(b.mmsi),
+                                  if (b.imoNumber != null)
+                                    ctx.l10n.mapImo('${b.imoNumber}'),
+                                  if (b.vesselType != null) b.vesselType!,
+                                ];
                                 return ListTile(
                                   dense: true,
                                   title: Text(b.name ?? b.mmsi),
-                                  subtitle: Text(
-                                    'MMSI ${b.mmsi}'
-                                    '${b.imoNumber != null ? ' · IMO ${b.imoNumber}' : ''}'
-                                    '${b.vesselType != null ? ' · ${b.vesselType}' : ''}',
-                                  ),
+                                  subtitle: Text(parts.join(' · ')),
                                   onTap: () {
                                     selected = b.mmsi;
                                     Navigator.pop(ctx);
@@ -190,7 +194,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Cancel'),
+                  child: Text(ctx.l10n.fieldCancel),
                 ),
               ],
             );
@@ -263,7 +267,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
                 items: [
                   DropdownMenuItem<T>(
                     value: null,
-                    child: Text('All ${label.toLowerCase()}'),
+                    child: Text(ctx.l10n.mapAllLabel(label.toLowerCase())),
                   ),
                   for (final o in options)
                     DropdownMenuItem<T>(value: o, child: Text(labelOf(o))),
@@ -274,7 +278,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
           }
 
             return AlertDialog(
-              title: const Text('Filters'),
+              title: Text(ctx.l10n.mapFilters),
               content: SizedBox(
                 width: 420,
                 child: SingleChildScrollView(
@@ -282,7 +286,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       buildDropdown<String>(
-                        label: 'Vessel type',
+                        label: ctx.l10n.mapVesselType,
                         options: types,
                         value: draft.vesselType,
                         labelOf: (t) => t,
@@ -290,7 +294,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
                       ),
                       const SizedBox(height: 12),
                       buildDropdown<String>(
-                        label: 'Navigation status',
+                        label: ctx.l10n.mapNavigationStatus,
                         options: statuses,
                         value: draft.navigationStatus,
                         labelOf: (t) => t,
@@ -298,10 +302,10 @@ class _WorldMapPageState extends State<WorldMapPage> {
                       ),
                       const SizedBox(height: 12),
                       buildDropdown<String>(
-                        label: 'Country',
+                        label: ctx.l10n.mapCountry,
                         options: countries,
                         value: draft.country,
-                        labelOf: (t) => t,
+                        labelOf: (t) => localizedCountryName(t, ctx),
                         onChanged: (v) => draft.country = v,
                       ),
                       const SizedBox(height: 12),
@@ -311,8 +315,8 @@ class _WorldMapPageState extends State<WorldMapPage> {
                             child: TextField(
                               controller: minSogController,
                               keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                labelText: 'Min SOG (kn)',
+                              decoration: InputDecoration(
+                                labelText: ctx.l10n.mapMinSog,
                               ),
                               onChanged: (_) => setDialogState(() {}),
                             ),
@@ -322,8 +326,8 @@ class _WorldMapPageState extends State<WorldMapPage> {
                             child: TextField(
                               controller: maxSogController,
                               keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                labelText: 'Max SOG (kn)',
+                              decoration: InputDecoration(
+                                labelText: ctx.l10n.mapMaxSog,
                               ),
                               onChanged: (_) => setDialogState(() {}),
                             ),
@@ -333,7 +337,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
                       const SizedBox(height: 4),
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text('Only vessels with a name'),
+                        title: Text(ctx.l10n.mapOnlyNamed),
                         value: draft.onlyNamed,
                         onChanged: (v) => setDialogState(() => draft.onlyNamed = v),
                       ),
@@ -349,11 +353,11 @@ class _WorldMapPageState extends State<WorldMapPage> {
                   maxSogController.clear();
                   setDialogState(() {});
                 },
-                child: const Text('Reset'),
+                child: Text(ctx.l10n.mapReset),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancel'),
+                child: Text(ctx.l10n.fieldCancel),
               ),
               FilledButton(
                 onPressed: () {
@@ -361,7 +365,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
                   draft.maxSog = double.tryParse(maxSogController.text);
                   Navigator.pop(ctx);
                 },
-                child: const Text('Apply'),
+                child: Text(ctx.l10n.mapApply),
               ),
             ],
           );
@@ -384,7 +388,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Map"),
+        title: Text(context.l10n.tabMap),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -446,7 +450,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
                       size: 18,
                     ),
                     const SizedBox(width: 8),
-                    const Text('Auto (follow theme)'),
+                    Text(context.l10n.mapAutoBasemap),
                   ],
                 ),
               ),
@@ -460,7 +464,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      Text(b.label),
+                      Text(basemapLabel(b, context.l10n)),
                     ],
                   ),
                 ),
@@ -500,7 +504,9 @@ class _WorldMapPageState extends State<WorldMapPage> {
                 onBoatHover: (boat) {
                   final name = boat?.name?.trim().isNotEmpty == true
                       ? boat!.name!.trim()
-                      : (boat != null ? 'MMSI ${boat.mmsi}' : null);
+                      : (boat != null
+                          ? context.l10n.mapMmsiHover(boat.mmsi)
+                          : null);
                   if (name != _hoverName) {
                     setState(() => _hoverName = name);
                   }
@@ -539,7 +545,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Following $_followingMmsi',
+                          context.l10n.mapFollowing(_followingMmsi!),
                           style: const TextStyle(fontSize: 13),
                         ),
                         IconButton(

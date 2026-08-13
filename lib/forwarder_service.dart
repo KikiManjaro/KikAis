@@ -10,6 +10,18 @@ enum ForwardProtocol { udpServer, tcpClient, udpClient, tcpServer }
 
 typedef LogCallback =
     void Function(String message, String? starter, String? name);
+typedef StatusCallback = void Function(LogMessage message);
+
+/// A structured, localizable status message shown in the reception log.
+/// [fallback] is the English text used when no localization is available.
+class LogMessage {
+  final String key;
+  final Map<String, Object?> args;
+  final String fallback;
+
+  const LogMessage(this.key, this.args, this.fallback);
+}
+
 typedef DataCallback =
     Future<void> Function(String feedName, String flag, String line);
 
@@ -49,8 +61,17 @@ class FeedStatus {
 /// enabled [TargetConfig] (send).
 class ForwarderService {
   final LogCallback onLog;
+  final StatusCallback? onStatus;
 
-  ForwarderService({required this.onLog});
+  ForwarderService({required this.onLog, this.onStatus});
+
+  void _status(LogMessage m) {
+    if (onStatus != null) {
+      onStatus!(m);
+    } else {
+      onLog(m.fallback, null, null);
+    }
+  }
 
   final Map<String, _FeedConnection> _feeds = {};
   final ValueNotifier<Map<String, FeedStatus>> feedStatuses = ValueNotifier({});
@@ -81,18 +102,31 @@ class ForwarderService {
     }
     for (final t in configuredTargets) {
       if (t.enabled && !_targets.containsKey(t.id)) {
-        final conn = _TargetConnection(t, onLog);
+        final conn = _TargetConnection(t, onLog, _status);
         _targets[t.id] = conn;
         try {
           await conn.connect();
-          onLog(
-            'Target ${t.name} connected '
-            '(${protocolLabel(t.protocol)} ${t.host}:${t.port}).',
-            null,
-            null,
+          _status(
+            LogMessage(
+              'targetConnected',
+              {
+                'name': t.name,
+                'protocol': t.protocol,
+                'host': t.host,
+                'port': t.port,
+              },
+              'Target ${t.name} connected '
+              '(${protocolLabel(t.protocol)} ${t.host}:${t.port}).',
+            ),
           );
         } catch (e) {
-          onLog('Failed to connect target ${t.name}: $e', null, null);
+          _status(
+            LogMessage(
+              'targetConnectFailed',
+              {'name': t.name, 'error': '$e'},
+              'Failed to connect target ${t.name}: $e',
+            ),
+          );
           _targets.remove(t.id);
         }
       }
@@ -111,7 +145,7 @@ class ForwarderService {
   Future<void> stop() async {
     _stopping = true;
     _running = false;
-    onLog("Stopping forwarder...", null, null);
+    _status(const LogMessage('stopping', {}, 'Stopping forwarder...'));
     for (var feed in _feeds.values) {
       await feed.disconnect();
     }
@@ -121,7 +155,7 @@ class ForwarderService {
     }
     _targets.clear();
     feedStatuses.value = {};
-    onLog("Forwarder stopped.", null, null);
+    _status(const LogMessage('stopped', {}, 'Forwarder stopped.'));
   }
 
   /// Forwards a raw NMEA line to every connected target, applying each
@@ -167,7 +201,13 @@ class ForwarderService {
       unawaited(_connectFeed(feed));
     }
 
-    onLog("Feed added: $name ($host:$port)", null, null);
+    _status(
+      LogMessage(
+        'feedAdded',
+        {'name': name, 'host': host, 'port': port},
+        'Feed added: $name ($host:$port)',
+      ),
+    );
   }
 
   Future<void> removeFeed(String name) async {
@@ -176,7 +216,13 @@ class ForwarderService {
       await feed.disconnect();
       feed.statusNotifier.dispose();
       feedStatuses.value = Map.of(feedStatuses.value)..remove(name);
-      onLog("Feed removed: $name", null, null);
+      _status(
+        LogMessage(
+          'feedRemoved',
+          {'name': name},
+          'Feed removed: $name',
+        ),
+      );
     }
   }
 
@@ -194,21 +240,28 @@ class ForwarderService {
     while (!_stopping) {
       try {
         await feed.connect(_handleData);
-        onLog("Feed ${feed.name} connected.", null, null);
+        _status(
+          LogMessage('feedConnected', {'name': feed.name},
+              'Feed ${feed.name} connected.'),
+        );
         await feed.closed;
         if (_stopping || feed.isDisposed) break;
-        onLog(
-          "Feed ${feed.name} disconnected. Reconnecting in 5s...",
-          null,
-          null,
+        _status(
+          LogMessage(
+            'feedDisconnected',
+            {'name': feed.name},
+            'Feed ${feed.name} disconnected. Reconnecting in 5s...',
+          ),
         );
         await Future.delayed(const Duration(seconds: 5));
       } catch (e) {
         if (_stopping || feed.isDisposed) break;
-        onLog(
-          "Failed to connect feed ${feed.name}: $e. Retrying in 5s...",
-          null,
-          null,
+        _status(
+          LogMessage(
+            'feedConnectFailed',
+            {'name': feed.name, 'error': '$e'},
+            'Failed to connect feed ${feed.name}: $e. Retrying in 5s...',
+          ),
         );
         await Future.delayed(const Duration(seconds: 5));
       }
@@ -236,13 +289,14 @@ class ForwarderService {
 class _TargetConnection {
   final TargetConfig config;
   final LogCallback onLog;
+  final StatusCallback onStatus;
 
   RawDatagramSocket? _udp;
   Socket? _tcp;
   ServerSocket? _server;
   final List<Socket> _clients = [];
 
-  _TargetConnection(this.config, this.onLog);
+  _TargetConnection(this.config, this.onLog, this.onStatus);
 
   Future<void> connect() async {
     switch (config.protocol) {
@@ -252,27 +306,47 @@ class _TargetConnection {
         _tcp = await Socket.connect(config.host, config.port);
       case ForwardProtocol.tcpServer:
         _server = await ServerSocket.bind(InternetAddress.anyIPv4, config.port);
-        onLog(
-          'Target ${config.name}: TCP server listening on port ${config.port}',
-          null,
-          null,
+        onStatus(
+          LogMessage(
+            'tcpListening',
+            {'name': config.name, 'port': config.port},
+            'Target ${config.name}: TCP server listening on port '
+                '${config.port}',
+          ),
         );
         _server!.listen((client) {
           _clients.add(client);
-          onLog(
-            'Target ${config.name}: client connected '
-            '${client.remoteAddress.address}:${client.remotePort}',
-            null,
-            null,
+          onStatus(
+            LogMessage(
+              'tcpClientConnected',
+              {
+                'name': config.name,
+                'address': client.remoteAddress.address,
+                'port': client.remotePort,
+              },
+              'Target ${config.name}: client connected '
+              '${client.remoteAddress.address}:${client.remotePort}',
+            ),
           );
           client.listen(
             (_) {},
             onDone: () {
               _clients.remove(client);
-              onLog('Target ${config.name}: client disconnected', null, null);
+              onStatus(
+                LogMessage(
+                  'tcpClientDisconnected',
+                  {'name': config.name},
+                  'Target ${config.name}: client disconnected',
+                ),
+              );
             },
-            onError: (e) =>
-                onLog('Target ${config.name}: client error $e', null, null),
+            onError: (e) => onStatus(
+              LogMessage(
+                'tcpClientError',
+                {'name': config.name, 'error': '$e'},
+                'Target ${config.name}: client error $e',
+              ),
+            ),
           );
         });
     }
@@ -297,7 +371,13 @@ class _TargetConnection {
           }
       }
     } catch (e) {
-      onLog('Target ${config.name} send error: $e', null, null);
+      onStatus(
+        LogMessage(
+          'sendError',
+          {'name': config.name, 'error': '$e'},
+          'Target ${config.name} send error: $e',
+        ),
+      );
     }
   }
 

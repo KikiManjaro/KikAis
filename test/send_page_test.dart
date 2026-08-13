@@ -8,12 +8,14 @@ import 'package:kik_ais/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'l10n_test_utils.dart';
+
 void main() {
   Widget harness(AppSettings settings, ValueNotifier<bool> running) {
     return ChangeNotifierProvider.value(
       value: settings,
-      child: MaterialApp(
-        home: SendPage(serviceGetter: () => null, running: running),
+      child: withLocalizations(
+        SendPage(serviceGetter: () => null, running: running),
       ),
     );
   }

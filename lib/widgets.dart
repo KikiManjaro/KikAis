@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'l10n_ext.dart';
+
 /// A tiny toast anchored next to a button ("Copied!"). Rendered in the app
 /// overlay so it floats above the current page.
 class MiniToast extends StatefulWidget {
@@ -70,14 +72,14 @@ class _MiniToastState extends State<MiniToast>
 /// next to it.
 class CopyIconButton extends StatelessWidget {
   final String text;
-  final String message;
+  final String? message;
   final double iconSize;
   final EdgeInsetsGeometry? padding;
 
   const CopyIconButton({
     super.key,
     required this.text,
-    this.message = 'Copied',
+    this.message,
     this.iconSize = 16,
     this.padding,
   });
@@ -94,7 +96,10 @@ class CopyIconButton extends StatelessWidget {
     );
     late OverlayEntry entry;
     entry = OverlayEntry(
-      builder: (_) => MiniToast(message: message, anchorBottomCenter: anchor),
+      builder: (_) => MiniToast(
+        message: message ?? context.l10n.copied,
+        anchorBottomCenter: anchor,
+      ),
     );
     overlay.insert(entry);
     Future.delayed(const Duration(milliseconds: 1100), () {

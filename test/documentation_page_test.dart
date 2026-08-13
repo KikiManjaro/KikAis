@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kik_ais/documentation_page.dart';
 
-Widget _app(DocumentationPage page) => MaterialApp(home: page);
+import 'l10n_test_utils.dart';
+
+Widget _app(DocumentationPage page) => withLocalizations(page);
 
 Future<void> _pump(WidgetTester tester, DocumentationPage page) async {
   await tester.pumpWidget(_app(page));

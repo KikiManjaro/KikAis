@@ -3,8 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kik_ais/documentation_content.dart';
 import 'package:kik_ais/documentation_widgets.dart';
 
-Widget _wrap(Widget child) =>
-    MaterialApp(home: Scaffold(body: SingleChildScrollView(child: child)));
+import 'l10n_test_utils.dart';
+
+Widget _wrap(Widget child) => withLocalizations(
+    Scaffold(body: SingleChildScrollView(child: child)));
 
 void main() {
   test('kVesselTypesFull exposes the full 0-99 table', () {

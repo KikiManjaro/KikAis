@@ -1,0 +1,17 @@
+# Flutter localization (gen-l10n) configuration.
+#
+# Source .arb files live in lib/l10n/. The English file (app_en.arb) is the
+# template: every other locale must provide a translation for each key.
+#
+# The generated, typed localizations class is written to
+# lib/l10n/generated/app_localizations.dart (synthetic-package: false) so it
+# is versioned with the project and reviewable.
+#
+# Docs: see docs/i18n.md
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+output-dir: lib/l10n/generated
+nullable-getter: false
+untranslated-messages-file: lib/l10n/untranslated.json

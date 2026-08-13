@@ -11,6 +11,8 @@ import 'package:kik_ais/message_stats.dart';
 import 'package:kik_ais/world_map_page.dart';
 import 'package:provider/provider.dart';
 
+import 'l10n_test_utils.dart';
+
 /// A tile provider that serves a 1x1 transparent PNG so widget tests never
 /// hit the network.
 class _FakeTileProvider extends TileProvider {
@@ -60,9 +62,7 @@ void main() {
           ChangeNotifierProvider.value(value: settings),
           ChangeNotifierProvider.value(value: stats),
         ],
-        child: MaterialApp(
-          home: WorldMapPage(tileProvider: _FakeTileProvider()),
-        ),
+        child: withLocalizations(WorldMapPage(tileProvider: _FakeTileProvider())),
       ),
     );
     await tester.pump(const Duration(milliseconds: 300));

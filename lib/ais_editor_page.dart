@@ -6,6 +6,7 @@ import 'ais/src/nmea/nmea_format.dart'
     show buildTagBlock, msSinceUtcMidnight, wrapNmea4;
 import 'ais_editor_specs.dart';
 import 'boatmanager.dart';
+import 'l10n_ext.dart';
 import 'sim_fleet.dart' show kSimTalkers;
 import 'widgets.dart';
 
@@ -98,9 +99,9 @@ class _AisEditorPageState extends State<AisEditorPage> {
         .processMessage(sentence, feed: 'KikAis');
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Message injected'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(context.l10n.editorInjected),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -113,9 +114,9 @@ class _AisEditorPageState extends State<AisEditorPage> {
     await onSend(sentence);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Message sent to target'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(context.l10n.editorSentToTarget),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -126,15 +127,15 @@ class _AisEditorPageState extends State<AisEditorPage> {
     final specs = fieldsForType(_type);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('AIS Message Editor')),
+      appBar: AppBar(title: Text(context.l10n.editorTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SectionHeader(
+            SectionHeader(
               icon: Icons.edit_note,
-              title: 'Compose message',
+              title: context.l10n.editorCompose,
             ),
             Card(
               child: Padding(
@@ -144,15 +145,15 @@ class _AisEditorPageState extends State<AisEditorPage> {
                   children: [
                     DropdownButtonFormField<int>(
                       initialValue: _type,
-                      decoration: const InputDecoration(
-                        labelText: 'Message type',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.editorMessageType,
                         isDense: true,
                       ),
-                      items: kEditorTypeLabels.entries
+                      items: kEditorTypeLabels.keys
                           .map(
-                            (e) => DropdownMenuItem(
-                              value: e.key,
-                              child: Text(e.value),
+                            (t) => DropdownMenuItem(
+                              value: t,
+                              child: Text(editorMessageTypeLabel(t, context.l10n)),
                             ),
                           )
                           .toList(),
@@ -180,7 +181,8 @@ class _AisEditorPageState extends State<AisEditorPage> {
                                     )
                                   : TextInputType.text,
                               decoration: InputDecoration(
-                                labelText: spec.label,
+                                labelText:
+                                    editorFieldLabel(context.l10n, spec.label),
                                 isDense: true,
                               ),
                             ),
@@ -192,9 +194,9 @@ class _AisEditorPageState extends State<AisEditorPage> {
               ),
             ),
             const SizedBox(height: 12),
-            const SectionHeader(
+            SectionHeader(
               icon: Icons.settings_input_antenna,
-              title: 'NMEA 4.0 framing',
+              title: context.l10n.editorAddTagBlock,
             ),
             Card(
               child: Padding(
@@ -211,8 +213,8 @@ class _AisEditorPageState extends State<AisEditorPage> {
                           width: 160,
                           child: DropdownButtonFormField<String>(
                             initialValue: _talker,
-                            decoration: const InputDecoration(
-                              labelText: 'Talker ID',
+                            decoration: InputDecoration(
+                              labelText: context.l10n.simTalkerId,
                               isDense: true,
                             ),
                             items: [
@@ -232,9 +234,9 @@ class _AisEditorPageState extends State<AisEditorPage> {
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
                           dense: true,
-                          title: const Text(
-                            'Add NMEA 4.0 tag block',
-                            style: TextStyle(fontSize: 12),
+                          title: Text(
+                            context.l10n.editorAddTagBlock,
+                            style: const TextStyle(fontSize: 12),
                           ),
                           value: _nmea4Tags,
                           onChanged: (v) {
@@ -247,8 +249,8 @@ class _AisEditorPageState extends State<AisEditorPage> {
                             width: 160,
                             child: TextField(
                               controller: _tagSourceC,
-                              decoration: const InputDecoration(
-                                labelText: 'Source ID',
+                              decoration: InputDecoration(
+                                labelText: context.l10n.editorSourceId,
                                 isDense: true,
                               ),
                               onChanged: (_) => _rebuild(),
@@ -267,7 +269,7 @@ class _AisEditorPageState extends State<AisEditorPage> {
                 FilledButton.icon(
                   onPressed: _sentence == null ? null : _inject,
                   icon: const Icon(Icons.map),
-                  label: const Text('Inject to map'),
+                  label: Text(context.l10n.editorInjectToMap),
                 ),
                 const SizedBox(width: 12),
                 ValueListenableBuilder<bool>(
@@ -279,7 +281,7 @@ class _AisEditorPageState extends State<AisEditorPage> {
                     return FilledButton.icon(
                       onPressed: enabled ? _sendToTarget : null,
                       icon: const Icon(Icons.send),
-                      label: const Text('Send to target'),
+                      label: Text(context.l10n.editorSendToTarget),
                     );
                   },
                 ),
@@ -295,14 +297,14 @@ class _AisEditorPageState extends State<AisEditorPage> {
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          'NMEA preview',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        Text(
+                          context.l10n.editorPreview,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const Spacer(),
                         CopyIconButton(
                           text: _sentence ?? '',
-                          message: 'NMEA copied',
+                          message: context.l10n.editorNmeaCopied,
                           padding: EdgeInsets.zero,
                         ),
                       ],

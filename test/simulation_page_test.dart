@@ -9,6 +9,8 @@ import 'package:kik_ais/simulator_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'l10n_test_utils.dart';
+
 Widget _app(
   SimulatorService sim,
   AppSettings settings,
@@ -19,9 +21,7 @@ Widget _app(
       ChangeNotifierProvider.value(value: boatManager),
       ChangeNotifierProvider.value(value: settings),
     ],
-    child: MaterialApp(
-      home: SimulationPage(simGetter: () => sim),
-    ),
+    child: withLocalizations(SimulationPage(simGetter: () => sim)),
   );
 }
 

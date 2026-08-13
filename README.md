@@ -72,7 +72,7 @@ This architecture keeps data handling performant while maintaining a responsive,
 ### ⚙️ Extras
 - **Isolate-based decoding** keeps the UI fluid even on high-volume streams
 - Light / dark / high-contrast **themes**
-- **Automatic updates** on Windows (WinSparkle)
+- **Automatic updates** on Windows (WinSparkle), with a manual **"Check for updates"** button in the top bar; a green badge appears next to the version number when a new release is available — click it to update
 - Portable executable, installer and zip distributions
 
 ## 📸 Screenshots
@@ -88,6 +88,10 @@ This architecture keeps data handling performant while maintaining a responsive,
 | Map without clustering | Vessel data |
 |---|---|
 | ![Unclustered](readme_images/img_4.png) | ![Ship data](readme_images/img_5.png) |
+
+## 🌍 Internationalization
+
+KikAis is available in **10 languages**: English (default), Français, Español, Deutsch, Português, Italiano, Nederlands, 中文, 日本語 and Русский. The UI follows the **operating system language** by default and can be changed at any time with the **language button** in the top bar (next to the theme button). See [`docs/i18n.md`](docs/i18n.md) for the full developer documentation on how strings, plurals and the translation workflow work.
 
 ## ⬇️ Download & Install
 
@@ -143,7 +147,6 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - Improve compatibility with other platforms (macOS, iOS and Android)
 - Make verification for memory leaks and performances
 - Find a way to make tooltips works
-- Add i18n
 
 ## 🤝 Contributing
 

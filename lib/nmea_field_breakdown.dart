@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
 import 'ais/ais_decoder.dart' show NmeaTagBlock;
+import 'l10n/generated/app_localizations.dart';
+import 'l10n_ext.dart';
 
-/// Labels for the comma-separated fields of an AIVDM/AIVDO sentence.
-const List<String> kNmeaFieldLabels = [
-  'Talker',
-  'Fragments',
-  'Fragment #',
-  'Message ID',
-  'Channel',
-  'Payload',
-  'Fill bits',
-];
+/// Localized label for the comma-separated fields of an AIVDM/AIVDO sentence.
+String nmeaFieldLabel(AppLocalizations l10n, int index) => switch (index) {
+      0 => l10n.nmeaTalker,
+      1 => l10n.nmeaFragments,
+      2 => l10n.nmeaFragmentN,
+      3 => l10n.nmeaMessageId,
+      4 => l10n.nmeaChannel,
+      5 => l10n.nmeaPayload,
+      6 => l10n.nmeaFillBits,
+      _ => '',
+    };
 
 /// Renders a single NMEA AIS sentence as coloured, per-field chips so the
 /// framing is obvious at a glance (the "sentence inspector").
@@ -56,7 +59,7 @@ class NmeaFieldBreakdown extends StatelessWidget {
             scheme,
             isDark,
             7 % _palette.length,
-            'Tag block',
+            context.l10n.nmeaTagBlock,
             tagBlock.sourceId != null
                 ? 's:${tagBlock.sourceId}'
                 : tagBlock.raw,
@@ -66,8 +69,8 @@ class NmeaFieldBreakdown extends StatelessWidget {
             scheme,
             isDark,
             i % _palette.length,
-            kNmeaFieldLabels[i],
-            parts[i].isEmpty ? '(empty)' : parts[i],
+            nmeaFieldLabel(context.l10n, i),
+            parts[i].isEmpty ? context.l10n.nmeaEmpty : parts[i],
           ),
         ],
         if (checksum.isNotEmpty)
@@ -75,7 +78,7 @@ class NmeaFieldBreakdown extends StatelessWidget {
             scheme,
             isDark,
             7 % _palette.length,
-            'Checksum',
+            context.l10n.nmeaChecksum,
             checksum,
           ),
       ],

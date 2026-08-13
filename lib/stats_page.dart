@@ -6,39 +6,46 @@ import 'package:provider/provider.dart';
 import 'app_settings.dart';
 import 'boatmanager.dart';
 import 'feed_def.dart';
+import 'l10n/generated/app_localizations.dart';
+import 'l10n_ext.dart';
 import 'message_stats.dart';
 import 'themes.dart';
 import 'widgets.dart';
 
-const Map<int, String> kMessageTypeLabels = {
-  1: 'Position Class A',
-  2: 'Position Class A (assigned)',
-  3: 'Position Class A (response)',
-  4: 'Base Station',
-  5: 'Static & Voyage',
-  6: 'Binary Addressed',
-  7: 'Binary Acknowledge',
-  8: 'Binary Broadcast',
-  9: 'SAR Aircraft Position',
-  10: 'UTC/Date Inquiry',
-  11: 'UTC/Date Response',
-  12: 'Addressed Safety',
-  13: 'Safety Acknowledge',
-  14: 'Safety Broadcast',
-  15: 'Interrogation',
-  16: 'Assignment Mode',
-  17: 'DGNSS Broadcast',
-  18: 'Class B Position',
-  19: 'Class B Extended',
-  20: 'Data Link Mgmt',
-  21: 'Aid to Navigation',
-  22: 'Channel Mgmt',
-  23: 'Group Assignment',
-  24: 'Static Data',
-  25: 'Single Slot Binary',
-  26: 'Multiple Slot Binary',
-  27: 'Long Range Position',
-};
+/// Localized name of an AIS message type (ITU-R M.1371, types 1-27).
+String messageTypeLabel(int type, AppLocalizations l10n) {
+  final label = switch (type) {
+    1 => l10n.msgType1,
+    2 => l10n.msgType2,
+    3 => l10n.msgType3,
+    4 => l10n.msgType4,
+    5 => l10n.msgType5,
+    6 => l10n.msgType6,
+    7 => l10n.msgType7,
+    8 => l10n.msgType8,
+    9 => l10n.msgType9,
+    10 => l10n.msgType10,
+    11 => l10n.msgType11,
+    12 => l10n.msgType12,
+    13 => l10n.msgType13,
+    14 => l10n.msgType14,
+    15 => l10n.msgType15,
+    16 => l10n.msgType16,
+    17 => l10n.msgType17,
+    18 => l10n.msgType18,
+    19 => l10n.msgType19,
+    20 => l10n.msgType20,
+    21 => l10n.msgType21,
+    22 => l10n.msgType22,
+    23 => l10n.msgType23,
+    24 => l10n.msgType24,
+    25 => l10n.msgType25,
+    26 => l10n.msgType26,
+    27 => l10n.msgType27,
+    _ => null,
+  };
+  return label ?? l10n.statsTypeFallback(type);
+}
 
 class StatsPage extends StatefulWidget {
   const StatsPage({super.key});
@@ -99,7 +106,7 @@ class _StatsPageState extends State<StatsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Statistics'),
+        title: Text(context.l10n.statsTitle),
         actions: [
           IconButton(
             icon: Icon(
@@ -131,14 +138,14 @@ class _StatsPageState extends State<StatsPage> {
           children: [
             DropdownButtonFormField<String?>(
               initialValue: filter,
-              decoration: const InputDecoration(
-                labelText: 'Feed',
+              decoration: InputDecoration(
+                labelText: context.l10n.statsFeed,
                 isDense: true,
               ),
               items: [
-                const DropdownMenuItem<String?>(
+                DropdownMenuItem<String?>(
                   value: null,
-                  child: Text('All feeds'),
+                  child: Text(context.l10n.statsAllFeeds),
                 ),
                 for (final f in feeds)
                   DropdownMenuItem<String?>(
@@ -169,56 +176,60 @@ class _StatsPageState extends State<StatsPage> {
                 ),
                 children: [
                   _KpiCard(
-                    label: 'Received',
+                    label: context.l10n.statsReceived,
                     value: received.toDouble(),
                     icon: Icons.south,
                     accent: appColors.info,
                     subtitle: filter == null
-                        ? '${stats.messagesPerSecond.toStringAsFixed(1)}/s'
-                        : '(all feeds)',
+                        ? context.l10n.statsPerSecond(
+                            stats.messagesPerSecond.toStringAsFixed(1))
+                        : context.l10n.statsAllFeedsShort,
                     live: stats.messagesPerSecond > 0,
                     chart: _MiniLineChart(
                       data: stats.rateHistory,
                       color: appColors.info,
+                      collectingLabel: context.l10n.statsCollecting,
                     ),
                   ),
                   _KpiCard(
-                    label: 'Decoded',
+                    label: context.l10n.statsDecoded,
                     value: decoded.toDouble(),
                     icon: Icons.check_circle_outline,
                     accent: appColors.success,
                     subtitle: filter == null
-                        ? '${decodedRate.toStringAsFixed(1)}/s'
-                        : '(all feeds)',
+                        ? context.l10n.statsPerSecond(
+                            decodedRate.toStringAsFixed(1))
+                        : context.l10n.statsAllFeedsShort,
                     live: decodedRate > 0,
                     chart: _MiniLineChart(
                       data: stats.decodedHistory,
                       color: appColors.success,
+                      collectingLabel: context.l10n.statsCollecting,
                     ),
                   ),
                   _KpiCard(
-                    label: 'Invalid checksums',
+                    label: context.l10n.statsInvalidChecksums,
                     value: boatManager.invalidChecksumCount.toDouble(),
                     icon: Icons.error_outline,
                     accent: appColors.danger,
-                    subtitle: filter == null ? null : '(all feeds)',
+                    subtitle: filter == null ? null : context.l10n.statsAllFeedsShort,
                   ),
                   _KpiCard(
-                    label: 'Dropped fragments',
+                    label: context.l10n.statsDroppedFragments,
                     value: boatManager.droppedFragmentCount.toDouble(),
                     icon: Icons.call_split,
                     accent: appColors.info,
-                    subtitle: filter == null ? null : '(all feeds)',
+                    subtitle: filter == null ? null : context.l10n.statsAllFeedsShort,
                   ),
                   _KpiCard(
-                    label: 'Parse errors',
+                    label: context.l10n.statsParseErrors,
                     value: boatManager.parseErrorCount.toDouble(),
                     icon: Icons.bug_report_outlined,
                     accent: appColors.danger,
-                    subtitle: filter == null ? null : '(all feeds)',
+                    subtitle: filter == null ? null : context.l10n.statsAllFeedsShort,
                   ),
                   _KpiCard(
-                    label: 'Pending fragments',
+                    label: context.l10n.statsPendingFragments,
                     value: boatManager.pendingFragmentCount.toDouble(),
                     icon: Icons.hourglass_bottom,
                     accent: appColors.warning,
@@ -229,7 +240,7 @@ class _StatsPageState extends State<StatsPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Received vs Decoded (last 60 s)',
+              context.l10n.statsReceivedVsDecoded,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -242,20 +253,22 @@ class _StatsPageState extends State<StatsPage> {
                       children: [
                         _LegendDot(color: appColors.info),
                         const SizedBox(width: 6),
-                        const Text(
-                          'Received',
-                          style: TextStyle(fontSize: 12),
+                        Text(
+                          context.l10n.statsReceived,
+                          style: const TextStyle(fontSize: 12),
                         ),
                         const SizedBox(width: 16),
                         _LegendDot(color: appColors.success),
                         const SizedBox(width: 6),
-                        const Text(
-                          'Decoded',
-                          style: TextStyle(fontSize: 12),
+                        Text(
+                          context.l10n.statsDecoded,
+                          style: const TextStyle(fontSize: 12),
                         ),
                         const Spacer(),
                         Text(
-                          filter == null ? 'per second' : '(all feeds)',
+                          filter == null
+                              ? context.l10n.statsPerSecondLabel
+                              : context.l10n.statsAllFeedsShort,
                           style: TextStyle(
                             fontSize: 11,
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -267,6 +280,7 @@ class _StatsPageState extends State<StatsPage> {
                     _DualLineChart(
                       received: stats.rateHistory,
                       decoded: stats.decodedHistory,
+                      collectingLabel: context.l10n.statsCollecting,
                     ),
                   ],
                 ),
@@ -275,7 +289,7 @@ class _StatsPageState extends State<StatsPage> {
             if (filter == null) ...[
               const SizedBox(height: 16),
               Text(
-                'Accounting',
+                context.l10n.statsAccounting,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
@@ -291,14 +305,14 @@ class _StatsPageState extends State<StatsPage> {
             ],
             const SizedBox(height: 16),
             Text(
-              'By message type',
+              context.l10n.statsByMessageType,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             if (byType.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: Text('No decoded messages yet')),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Center(child: Text(context.l10n.statsNoDecodedYet)),
               )
             else
               Card(
@@ -324,8 +338,7 @@ class _StatsPageState extends State<StatsPage> {
                               Expanded(
                                 flex: 2,
                                 child: Text(
-                                  kMessageTypeLabels[entry.key] ??
-                                      'Type ${entry.key}',
+                                  messageTypeLabel(entry.key, context.l10n),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -360,7 +373,9 @@ class _StatsPageState extends State<StatsPage> {
               ),
             const SizedBox(height: 16),
             Text(
-              filter == null ? 'By feed' : 'Feed: $filter',
+              filter == null
+                  ? context.l10n.statsByFeed
+                  : context.l10n.statsFeedFilter(filter),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -382,9 +397,9 @@ class _StatsPageState extends State<StatsPage> {
                 ),
               )
             else if (stats.byFeed.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: Text('No feed activity yet')),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Center(child: Text(context.l10n.statsNoActivityYet)),
               )
             else
               Card(
@@ -612,8 +627,13 @@ class _PulseDotState extends State<_PulseDot>
 class _DualLineChart extends StatelessWidget {
   final List<double> received;
   final List<double> decoded;
+  final String collectingLabel;
 
-  const _DualLineChart({required this.received, required this.decoded});
+  const _DualLineChart({
+    required this.received,
+    required this.decoded,
+    required this.collectingLabel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -628,6 +648,7 @@ class _DualLineChart extends StatelessWidget {
           decoded: decoded,
           receivedColor: appColors.info,
           decodedColor: appColors.success,
+          collectingLabel: collectingLabel,
         ),
       ),
     );
@@ -639,12 +660,14 @@ class _DualLinePainter extends CustomPainter {
   final List<double> decoded;
   final Color receivedColor;
   final Color decodedColor;
+  final String collectingLabel;
 
   _DualLinePainter({
     required this.received,
     required this.decoded,
     required this.receivedColor,
     required this.decodedColor,
+    required this.collectingLabel,
   });
 
   @override
@@ -652,7 +675,7 @@ class _DualLinePainter extends CustomPainter {
     if (received.length < 2 && decoded.length < 2) {
       final painter = TextPainter(
         text: TextSpan(
-          text: 'collecting…',
+          text: collectingLabel,
           style: TextStyle(
             fontSize: 10,
             color: receivedColor.withValues(alpha: 0.6),
@@ -811,7 +834,10 @@ class _ReconciliationCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Received ${_KpiCard._group(received)} = ${_KpiCard._group(sum)}',
+              context.l10n.statsReceivedAmountEquals(
+                _KpiCard._group(received),
+                _KpiCard._group(sum),
+              ),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
@@ -819,16 +845,18 @@ class _ReconciliationCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            row(Icons.check_circle_outline, appColors.success, 'Decoded',
-                decoded),
-            row(Icons.error_outline, appColors.danger, 'Invalid checksums',
-                invalid),
-            row(Icons.bug_report_outlined, appColors.danger, 'Parse errors',
-                parseErrors),
-            row(Icons.call_split, appColors.info, 'Multi-part parts',
-                multiOverhead),
-            row(Icons.hourglass_bottom, appColors.warning, 'Pending', pending),
-            row(Icons.delete_outline, appColors.warning, 'Dropped', dropped),
+            row(Icons.check_circle_outline, appColors.success,
+                context.l10n.statsDecoded, decoded),
+            row(Icons.error_outline, appColors.danger,
+                context.l10n.statsInvalidChecksums, invalid),
+            row(Icons.bug_report_outlined, appColors.danger,
+                context.l10n.statsParseErrors, parseErrors),
+            row(Icons.call_split, appColors.info,
+                context.l10n.statsMultiPartParts, multiOverhead),
+            row(Icons.hourglass_bottom, appColors.warning,
+                context.l10n.statsPending, pending),
+            row(Icons.delete_outline, appColors.warning,
+                context.l10n.statsDropped, dropped),
             const SizedBox(height: 6),
             Row(
               children: [
@@ -841,9 +869,8 @@ class _ReconciliationCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     balanced
-                        ? 'Received and decoded reconcile.'
-                        : 'Gap includes sentences received while decoding '
-                            'was paused.',
+                        ? context.l10n.statsReconcile
+                        : context.l10n.statsGapPaused,
                     style: TextStyle(
                       fontSize: 11,
                       color: scheme.onSurfaceVariant,
@@ -863,14 +890,23 @@ class _ReconciliationCard extends StatelessWidget {
 class _MiniLineChart extends StatelessWidget {
   final List<double> data;
   final Color color;
+  final String collectingLabel;
 
-  const _MiniLineChart({required this.data, required this.color});
+  const _MiniLineChart({
+    required this.data,
+    required this.color,
+    required this.collectingLabel,
+  });
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size.infinite,
-      painter: _MiniLinePainter(data: data, color: color),
+      painter: _MiniLinePainter(
+        data: data,
+        color: color,
+        collectingLabel: collectingLabel,
+      ),
     );
   }
 }
@@ -878,15 +914,20 @@ class _MiniLineChart extends StatelessWidget {
 class _MiniLinePainter extends CustomPainter {
   final List<double> data;
   final Color color;
+  final String collectingLabel;
 
-  _MiniLinePainter({required this.data, required this.color});
+  _MiniLinePainter({
+    required this.data,
+    required this.color,
+    required this.collectingLabel,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     if (data.length < 2) {
       final painter = TextPainter(
         text: TextSpan(
-          text: 'collecting…',
+          text: collectingLabel,
           style: TextStyle(fontSize: 10, color: color.withValues(alpha: 0.6)),
         ),
         textDirection: TextDirection.ltr,
