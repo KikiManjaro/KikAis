@@ -147,6 +147,8 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - Improve compatibility with other platforms (macOS, iOS and Android)
 - Make verification for memory leaks and performances
 - Find a way to make tooltips works
+- Add support for rtl-sdr antenna (including rtlsdrblog and others cf. https://github.com/rtlsdrblog/rtl-sdr-blog/releases)
+- Make some research on other way to provide ais input
 
 ## 🤝 Contributing
 
