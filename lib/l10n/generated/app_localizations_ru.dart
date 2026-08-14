@@ -616,6 +616,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get simRegenerateFleet => 'Перегенерировать флот';
 
   @override
+  String get simGenerating => 'Генерация…';
+
+  @override
   String get simLiveFleet => 'Живой флот';
 
   @override
@@ -2919,4 +2922,151 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get updateCheckFailed => 'Не удалось проверить обновления.';
+
+  @override
+  String get tooltipLanguage =>
+      'Изменить язык интерфейса. Все десять языков полностью переведены; выберите «Авто», чтобы следовать языку системы.';
+
+  @override
+  String get tooltipTheme =>
+      'Изменить цветовую тему: тёмная, светлая или высокая контрастность. Высокая контрастность улучшает читаемость.';
+
+  @override
+  String get tooltipUpdate =>
+      'Проверить наличие новой версии. Если она есть, рядом с номером версии появится зелёный значок.';
+
+  @override
+  String get tooltipMapSearch =>
+      'Найти судно по имени, MMSI или номеру IMO и центрировать/следить за ним на карте.';
+
+  @override
+  String get tooltipMapFilters =>
+      'Фильтровать отображаемые суда: по типу, статусу движения, стране (MID), скорости или только по имени.';
+
+  @override
+  String get tooltipMapCluster =>
+      'Переключить группировку судов. Когда включено, близкие суда объединяются в один маркер со счётчиком.';
+
+  @override
+  String get tooltipMapTrails =>
+      'Переключить следы. Когда включено, каждое судно рисует свой недавний маршрут на карте.';
+
+  @override
+  String get tooltipMapVectors =>
+      'Переключить векторы курса. Когда включено, каждое судно показывает стрелку по направлению движения.';
+
+  @override
+  String get tooltipMapSendToMap =>
+      'Переключить отправку декодированных судов на карту. Когда включено, каждое декодированное судно отображается маркером.';
+
+  @override
+  String get tooltipMapBasemap =>
+      'Выбрать подложку карты. «Авто» следует текущей теме.';
+
+  @override
+  String get tooltipSendAdd =>
+      'Добавить пункт назначения (UDP или TCP, клиент или сервер). Входящие кадры AIS пересылаются на каждый включённый пункт.';
+
+  @override
+  String get tooltipSendEdit =>
+      'Изменить имя, протокол, хост, порт и формат кадров этого пункта назначения.';
+
+  @override
+  String get tooltipSendDelete =>
+      'Удалить этот пункт назначения. Действие нельзя отменить.';
+
+  @override
+  String get tooltipSendToggle =>
+      'Включить или отключить пересылку на этот пункт назначения.';
+
+  @override
+  String get tooltipSendLocked =>
+      'Пункты назначения заблокированы, пока работает пересылка. Остановите источник на вкладке «Приём», чтобы изменить их.';
+
+  @override
+  String get tooltipReceptionAddSource =>
+      'Добавить источник данных: сетевой поток (UDP/TCP/gpsd), файл с записанными предложениями NMEA или последовательный порт.';
+
+  @override
+  String get tooltipReceptionStart =>
+      'Запустить приём и пересылку кадров AIS со всех включённых источников.';
+
+  @override
+  String get tooltipReceptionStop => 'Остановить приём и пересылку кадров AIS.';
+
+  @override
+  String get tooltipReceptionFeed =>
+      'Включить или отключить этот источник AIS.';
+
+  @override
+  String get tooltipReceptionSaveLogs =>
+      'Сохранить журнал подключений в текстовый файл.';
+
+  @override
+  String get tooltipReceptionClearLogs => 'Очистить журнал подключений.';
+
+  @override
+  String get tooltipReceptionRemoveSource => 'Удалить этот источник AIS.';
+
+  @override
+  String get tooltipReceptionValidateChecksums =>
+      'Когда включено, кадры с неверной контрольной суммой NMEA отклоняются.';
+
+  @override
+  String get tooltipReceptionImportFormat =>
+      'Как полученные кадры нормализуются перед декодированием.';
+
+  @override
+  String get tooltipReceptionLoop =>
+      'Когда включено, воспроизведение файла начинается заново после достижения конца.';
+
+  @override
+  String get tooltipReceptionSpeed =>
+      'Множитель скорости воспроизведения (1x = реальное время).';
+
+  @override
+  String get tooltipReceptionSerialPorts =>
+      'Обновить список доступных последовательных портов.';
+
+  @override
+  String get tooltipSimApply =>
+      'Применить текущие настройки и сгенерировать флот. Крупные флоты генерируются в фоновом режиме.';
+
+  @override
+  String get tooltipSimGenerate =>
+      'Сгенерировать новый случайный флот с новым зерном и применить его.';
+
+  @override
+  String get tooltipSimOpenReception =>
+      'Перейти на вкладку «Приём», чтобы запустить источник симуляции.';
+
+  @override
+  String get tooltipDecoderClear => 'Очистить ввод и результаты декодера.';
+
+  @override
+  String get tooltipStatsDecode =>
+      'Приостановить или возобновить декодирование входящих кадров AIS.';
+
+  @override
+  String get tooltipStatsReset => 'Сбросить все счётчики статистики в ноль.';
+
+  @override
+  String get tooltipDocOpenTab => 'Открыть этот раздел в отдельной вкладке.';
+
+  @override
+  String get tooltipEditorInject =>
+      'Вставить составленное сообщение в декодер, как если бы оно было получено.';
+
+  @override
+  String get tooltipEditorSend =>
+      'Отправить составленное сообщение на каждый включённый пункт назначения.';
+
+  @override
+  String get tooltipCopy => 'Скопировать в буфер обмена.';
+
+  @override
+  String get tooltipClose => 'Закрыть эту панель.';
+
+  @override
+  String get tooltipBrowse => 'Выбрать файл.';
 }

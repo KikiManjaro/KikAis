@@ -206,6 +206,7 @@
   "simMessagesSection": "Nachrichten",
   "simApplyFleet": "Flotte anwenden",
   "simRegenerateFleet": "Flotte neu erzeugen",
+  "simGenerating": "Generierung…",
   "simLiveFleet": "Live-Flotte",
   "simFleetSummary": "{boats} Boote · {frames} Frames gesendet",
 
@@ -940,5 +941,50 @@
   "updateChecking": "Suche nach Updates…",
   "updateNewVersion": "Neue Version {version}",
   "updateUpToDate": "Sie sind auf dem neuesten Stand.",
-  "updateCheckFailed": "Update-Suche fehlgeschlagen."
+  "updateCheckFailed": "Update-Suche fehlgeschlagen.",
+
+  "tooltipLanguage": "Sprache der Benutzeroberfläche ändern. Alle zehn Sprachen sind vollständig übersetzt; „Auto“ folgt der Sprache des Betriebssystems.",
+  "tooltipTheme": "Farbschema wechseln: dunkel, hell oder hoher Kontrast. Hoher Kontrast verbessert die Lesbarkeit.",
+  "tooltipUpdate": "Nach einer neuen Version suchen. Wenn eine verfügbar ist, erscheint ein grünes Abzeichen neben der Versionsnummer.",
+
+  "tooltipMapSearch": "Ein Schiff nach Name, MMSI oder IMO-Nummer suchen und die Karte darauf zentrieren und ihm folgen.",
+  "tooltipMapFilters": "Angezeigte Schiffe filtern: nach Typ, Navigationsstatus, Land (MID), Geschwindigkeit oder nur Namen.",
+  "tooltipMapCluster": "Schiffs-Clustering umschalten. Wenn aktiviert, werden nahe Schiffe zu einem Marker mit Zähler zusammengefasst.",
+  "tooltipMapTrails": "Spuren umschalten. Wenn aktiviert, zeichnet jedes Schiff seinen letzten Weg auf der Karte.",
+  "tooltipMapVectors": "Kursvektoren umschalten. Wenn aktiviert, zeigt jedes Schiff einen Pfeil in Fahrtrichtung.",
+  "tooltipMapSendToMap": "Übertragung dekodierter Schiffe auf die Karte umschalten. Wenn aktiviert, erscheint jedes dekodierte Schiff als Marker.",
+  "tooltipMapBasemap": "Kartenhintergrund wählen. „Auto“ folgt dem aktuellen Thema.",
+
+  "tooltipSendAdd": "Ein neues Sendeziel hinzufügen (UDP oder TCP, Client oder Server). Eingehende AIS-Frames werden an jedes aktivierte Ziel weitergeleitet.",
+  "tooltipSendEdit": "Name, Protokoll, Host, Port und Frame-Format dieses Ziels bearbeiten.",
+  "tooltipSendDelete": "Dieses Ziel löschen. Dies kann nicht rückgängig gemacht werden.",
+  "tooltipSendToggle": "Weiterleitung an dieses Ziel aktivieren oder deaktivieren.",
+  "tooltipSendLocked": "Die Ziele sind gesperrt, solange der Forwarder läuft. Stoppen Sie die Quelle auf der Registerkarte Empfang, um sie zu bearbeiten.",
+
+  "tooltipReceptionAddSource": "Eine Datenquelle hinzufügen: einen Netzwerk-Feed (UDP/TCP/gpsd), eine Datei mit aufgezeichneten NMEA-Sätzen oder einen seriellen Port.",
+  "tooltipReceptionStart": "Empfang und Weiterleitung von AIS-Frames aus allen aktivierten Quellen starten.",
+  "tooltipReceptionStop": "Empfang und Weiterleitung von AIS-Frames stoppen.",
+  "tooltipReceptionFeed": "Diese AIS-Quelle aktivieren oder deaktivieren.",
+  "tooltipReceptionSaveLogs": "Das Verbindungsprotokoll in eine Textdatei speichern.",
+  "tooltipReceptionClearLogs": "Das Verbindungsprotokoll löschen.",
+  "tooltipReceptionRemoveSource": "Diese AIS-Quelle entfernen.",
+  "tooltipReceptionValidateChecksums": "Wenn aktiviert, werden Frames mit ungültiger NMEA-Prüfsumme verworfen.",
+  "tooltipReceptionImportFormat": "Wie empfangene Frames vor dem Dekodieren normalisiert werden.",
+  "tooltipReceptionLoop": "Wenn aktiviert, startet die Dateiwiedergabe nach dem Ende wieder von vorn.",
+  "tooltipReceptionSpeed": "Wiedergabegeschwindigkeit (1x = Echtzeit).",
+  "tooltipReceptionSerialPorts": "Liste der verfügbaren seriellen Ports aktualisieren.",
+
+  "tooltipSimApply": "Aktuelle Einstellungen anwenden und die Flotte generieren. Große Flotten werden im Hintergrund generiert.",
+  "tooltipSimGenerate": "Eine neue zufällige Flotte mit einem neuen Seed generieren und dann anwenden.",
+  "tooltipSimOpenReception": "Zur Registerkarte Empfang gehen, um den Simulations-Feed zu starten.",
+
+  "tooltipDecoderClear": "Decoder-Eingabe und Ergebnisse löschen.",
+  "tooltipStatsDecode": "Dekodierung eingehender AIS-Frames anhalten oder fortsetzen.",
+  "tooltipStatsReset": "Alle Statistikzähler auf null zurücksetzen.",
+  "tooltipDocOpenTab": "Diesen Abschnitt in einer eigenen Registerkarte öffnen.",
+  "tooltipEditorInject": "Die zusammengesetzte Nachricht in den Decoder einspeisen, als ob sie empfangen worden wäre.",
+  "tooltipEditorSend": "Die zusammengesetzte Nachricht an jedes aktivierte Sendeziel senden.",
+  "tooltipCopy": "In die Zwischenablage kopieren.",
+  "tooltipClose": "Dieses Panel schließen.",
+  "tooltipBrowse": "Datei auswählen."
 }

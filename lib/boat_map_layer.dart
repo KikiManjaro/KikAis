@@ -121,14 +121,25 @@ class _BoatMapLayerState extends State<BoatMapLayer>
       final moved = prev != null &&
           (prev.to.latitude != cur.latitude ||
               prev.to.longitude != cur.longitude);
-      next[b.mmsi] = _AnimatedBoat(
-        boat: b,
-        from: moved ? prev.to : cur,
-        to: cur,
-        fromHeading: moved ? prev.toHeading : heading,
-        toHeading: heading,
-        start: now,
-      );
+      // Reuse the existing animation object when neither the position nor the
+      // heading changed, so unrelated rebuilds don't tear down every boat's
+      // interpolation state (and the painter can skip redrawing it).
+      final unchanged = prev != null &&
+          prev.boat == b &&
+          !moved &&
+          prev.toHeading == heading;
+      if (unchanged) {
+        next[b.mmsi] = prev;
+      } else {
+        next[b.mmsi] = _AnimatedBoat(
+          boat: b,
+          from: moved ? prev.to : cur,
+          to: cur,
+          fromHeading: moved ? prev.toHeading : heading,
+          toHeading: heading,
+          start: now,
+        );
+      }
       final trail = _trails.putIfAbsent(b.mmsi, () => []);
       if (trail.isEmpty ||
           (trail.last.latitude != cur.latitude ||

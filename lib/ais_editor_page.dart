@@ -14,11 +14,7 @@ class AisEditorPage extends StatefulWidget {
   final Future<void> Function(String nmea)? onSendToTarget;
   final ValueListenable<bool> running;
 
-  const AisEditorPage({
-    super.key,
-    this.onSendToTarget,
-    required this.running,
-  });
+  const AisEditorPage({super.key, this.onSendToTarget, required this.running});
 
   @override
   State<AisEditorPage> createState() => _AisEditorPageState();
@@ -94,9 +90,7 @@ class _AisEditorPageState extends State<AisEditorPage> {
   Future<void> _inject() async {
     final sentence = _sentence;
     if (sentence == null) return;
-    await context
-        .read<BoatManager>()
-        .processMessage(sentence, feed: 'KikAis');
+    await context.read<BoatManager>().processMessage(sentence, feed: 'KikAis');
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -153,7 +147,9 @@ class _AisEditorPageState extends State<AisEditorPage> {
                           .map(
                             (t) => DropdownMenuItem(
                               value: t,
-                              child: Text(editorMessageTypeLabel(t, context.l10n)),
+                              child: Text(
+                                editorMessageTypeLabel(t, context.l10n),
+                              ),
                             ),
                           )
                           .toList(),
@@ -181,8 +177,10 @@ class _AisEditorPageState extends State<AisEditorPage> {
                                     )
                                   : TextInputType.text,
                               decoration: InputDecoration(
-                                labelText:
-                                    editorFieldLabel(context.l10n, spec.label),
+                                labelText: editorFieldLabel(
+                                  context.l10n,
+                                  spec.label,
+                                ),
                                 isDense: true,
                               ),
                             ),
@@ -219,10 +217,7 @@ class _AisEditorPageState extends State<AisEditorPage> {
                             ),
                             items: [
                               for (final t in kSimTalkers)
-                                DropdownMenuItem(
-                                  value: t,
-                                  child: Text(t),
-                                ),
+                                DropdownMenuItem(value: t, child: Text(t)),
                             ],
                             onChanged: (t) {
                               if (t == null) return;
@@ -266,22 +261,29 @@ class _AisEditorPageState extends State<AisEditorPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FilledButton.icon(
-                  onPressed: _sentence == null ? null : _inject,
-                  icon: const Icon(Icons.map),
-                  label: Text(context.l10n.editorInjectToMap),
+                HoverTooltip(
+                  message: context.l10n.tooltipEditorInject,
+                  child: FilledButton.icon(
+                    onPressed: _sentence == null ? null : _inject,
+                    icon: const Icon(Icons.map),
+                    label: Text(context.l10n.editorInjectToMap),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 ValueListenableBuilder<bool>(
                   valueListenable: widget.running,
                   builder: (context, running, _) {
-                    final enabled = _sentence != null &&
+                    final enabled =
+                        _sentence != null &&
                         widget.onSendToTarget != null &&
                         running;
-                    return FilledButton.icon(
-                      onPressed: enabled ? _sendToTarget : null,
-                      icon: const Icon(Icons.send),
-                      label: Text(context.l10n.editorSendToTarget),
+                    return HoverTooltip(
+                      message: context.l10n.tooltipEditorSend,
+                      child: FilledButton.icon(
+                        onPressed: enabled ? _sendToTarget : null,
+                        icon: const Icon(Icons.send),
+                        label: Text(context.l10n.editorSendToTarget),
+                      ),
                     );
                   },
                 ),

@@ -611,6 +611,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get simRegenerateFleet => 'Regenerate fleet';
 
   @override
+  String get simGenerating => 'Generating…';
+
+  @override
   String get simLiveFleet => 'Live fleet';
 
   @override
@@ -2893,7 +2896,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateCheckForUpdates => 'Check for updates';
 
   @override
-  String get updateChecking => 'Checking for updates…';
+  String get updateChecking => 'Checking for updates.';
 
   @override
   String updateNewVersion(Object version) {
@@ -2905,4 +2908,151 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateCheckFailed => 'Update check failed.';
+
+  @override
+  String get tooltipLanguage =>
+      'Defines the interface language. All ten languages are fully translated; choose \"Auto\" to follow the operating system language.';
+
+  @override
+  String get tooltipTheme =>
+      'Defines the color theme: dark, light or high contrast. High contrast improves readability.';
+
+  @override
+  String get tooltipUpdate =>
+      'Checks for a new version. A green badge appears next to the version number when an update is available.';
+
+  @override
+  String get tooltipMapSearch =>
+      'Searches for a vessel by name, MMSI or IMO number, then centers and follows it on the map.';
+
+  @override
+  String get tooltipMapFilters =>
+      'Filters the displayed vessels by type, navigation status, country (MID), speed or name.';
+
+  @override
+  String get tooltipMapCluster =>
+      'Enables or disables vessel clustering. When enabled, nearby vessels are grouped into one marker with a count.';
+
+  @override
+  String get tooltipMapTrails =>
+      'Enables or disables the trails. When enabled, each vessel draws its recent path on the map.';
+
+  @override
+  String get tooltipMapVectors =>
+      'Enables or disables the heading vectors. When enabled, each vessel shows an arrow along its course.';
+
+  @override
+  String get tooltipMapSendToMap =>
+      'Enables or disables sending decoded vessels to the map. When enabled, every decoded vessel appears as a marker.';
+
+  @override
+  String get tooltipMapBasemap =>
+      'Defines the map background. \"Auto\" follows the current theme.';
+
+  @override
+  String get tooltipSendAdd =>
+      'Adds a new send destination (UDP or TCP, client or server). Incoming AIS frames are forwarded to every enabled destination.';
+
+  @override
+  String get tooltipSendEdit =>
+      'Edits this destination\'s name, protocol, host, port and frame format.';
+
+  @override
+  String get tooltipSendDelete =>
+      'Deletes this destination. This action cannot be undone.';
+
+  @override
+  String get tooltipSendToggle =>
+      'Enables or disables forwarding to this destination.';
+
+  @override
+  String get tooltipSendLocked =>
+      'Destinations are locked while the forwarder is running. Stop the feed on the Reception tab to edit them.';
+
+  @override
+  String get tooltipReceptionAddSource =>
+      'Adds a data source: a network feed (UDP/TCP/gpsd), a file of recorded NMEA sentences, or a serial port.';
+
+  @override
+  String get tooltipReceptionStart =>
+      'Starts receiving and forwarding AIS frames from all enabled sources.';
+
+  @override
+  String get tooltipReceptionStop =>
+      'Stops receiving and forwarding AIS frames.';
+
+  @override
+  String get tooltipReceptionFeed => 'Enables or disables this AIS source.';
+
+  @override
+  String get tooltipReceptionSaveLogs =>
+      'Saves the connection log to a text file.';
+
+  @override
+  String get tooltipReceptionClearLogs => 'Clears the connection log.';
+
+  @override
+  String get tooltipReceptionRemoveSource => 'Removes this AIS source.';
+
+  @override
+  String get tooltipReceptionValidateChecksums =>
+      'Rejects frames with an invalid NMEA checksum when enabled.';
+
+  @override
+  String get tooltipReceptionImportFormat =>
+      'Defines how received frames are normalized before decoding.';
+
+  @override
+  String get tooltipReceptionLoop =>
+      'Restarts the file replay from the beginning when the end is reached.';
+
+  @override
+  String get tooltipReceptionSpeed =>
+      'Defines the replay speed multiplier (1x = real time).';
+
+  @override
+  String get tooltipReceptionSerialPorts =>
+      'Refreshes the list of available serial ports.';
+
+  @override
+  String get tooltipSimApply =>
+      'Applies the current settings and generates the fleet. Large fleets are generated in the background.';
+
+  @override
+  String get tooltipSimGenerate =>
+      'Generates a new random fleet with a fresh seed, then applies it.';
+
+  @override
+  String get tooltipSimOpenReception =>
+      'Opens the Reception tab to start the Simulation feed.';
+
+  @override
+  String get tooltipDecoderClear => 'Clears the decoder input and results.';
+
+  @override
+  String get tooltipStatsDecode =>
+      'Pauses or resumes decoding of incoming AIS frames.';
+
+  @override
+  String get tooltipStatsReset => 'Resets all statistics counters to zero.';
+
+  @override
+  String get tooltipDocOpenTab => 'Opens this section in its own tab.';
+
+  @override
+  String get tooltipEditorInject =>
+      'Injects the composed message into the decoder as if it had been received.';
+
+  @override
+  String get tooltipEditorSend =>
+      'Sends the composed message to every enabled send destination.';
+
+  @override
+  String get tooltipCopy => 'Copies the selection to the clipboard.';
+
+  @override
+  String get tooltipClose => 'Closes this panel.';
+
+  @override
+  String get tooltipBrowse => 'Opens a file browser to choose a file.';
 }

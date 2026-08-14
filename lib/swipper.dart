@@ -15,6 +15,7 @@ import 'simulation_page.dart';
 import 'stats_page.dart';
 import 'themes.dart';
 import 'update_notifier.dart';
+import 'widgets.dart';
 import 'world_map_page.dart';
 
 class SwipperUi extends StatefulWidget {
@@ -90,10 +91,13 @@ class _SwipperUiState extends State<SwipperUi> {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context.watch<AppSettings>();
+    final settings = context
+        .select<AppSettings, ({AppTheme theme, String? locale})>(
+          (s) => (theme: s.appTheme, locale: s.localeCode),
+        );
     final update = context.watch<UpdateNotifier>();
-    final currentTheme = settings.appTheme;
-    final localeCode = settings.localeCode;
+    final currentTheme = settings.theme;
+    final localeCode = settings.locale;
     final onSurface = Theme.of(context).colorScheme.onSurface;
 
     return WindowBorder(
@@ -158,38 +162,41 @@ class _SwipperUiState extends State<SwipperUi> {
                                 ),
                               ),
                             )
-                          : IconButton(
-                              icon: const Icon(
-                                Icons.system_update_alt,
-                                size: 18,
-                              ),
-                              visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 4,
-                              ),
-                              onPressed: () async {
-                                await update.checkForUpdates();
-                                if (!context.mounted) return;
-                                if (!update.updateAvailable) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        update.lastError == null
-                                            ? context.l10n.updateUpToDate
-                                            : context.l10n.updateCheckFailed,
+                          : HoverTooltip(
+                              message: context.l10n.tooltipUpdate,
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.system_update_alt,
+                                  size: 18,
+                                ),
+                                visualDensity: VisualDensity.compact,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 4,
+                                ),
+                                onPressed: () async {
+                                  await update.checkForUpdates();
+                                  if (!context.mounted) return;
+                                  if (!update.updateAvailable) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          update.lastError == null
+                                              ? context.l10n.updateUpToDate
+                                              : context.l10n.updateCheckFailed,
+                                        ),
+                                        duration: const Duration(seconds: 2),
                                       ),
-                                      duration: const Duration(seconds: 2),
-                                    ),
-                                  );
-                                }
-                              },
+                                    );
+                                  }
+                                },
+                              ),
                             ),
                     ),
                   Material(
                     type: MaterialType.transparency,
                     child: PopupMenuButton<String?>(
+                      tooltip: '',
                       onSelected: (code) =>
                           context.read<AppSettings>().setLocale(code),
                       itemBuilder: (context) => [
@@ -221,15 +228,18 @@ class _SwipperUiState extends State<SwipperUi> {
                             ),
                           ),
                       ],
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 4,
-                        ),
-                        child: Icon(
-                          Icons.language,
-                          size: 18,
-                          color: onSurface,
+                      child: HoverTooltip(
+                        message: context.l10n.tooltipLanguage,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 4,
+                          ),
+                          child: Icon(
+                            Icons.language,
+                            size: 18,
+                            color: onSurface,
+                          ),
                         ),
                       ),
                     ),
@@ -237,6 +247,7 @@ class _SwipperUiState extends State<SwipperUi> {
                   Material(
                     type: MaterialType.transparency,
                     child: PopupMenuButton<AppTheme>(
+                      tooltip: '',
                       onSelected: (t) =>
                           context.read<AppSettings>().setTheme(t),
                       itemBuilder: (context) => [
@@ -255,15 +266,18 @@ class _SwipperUiState extends State<SwipperUi> {
                             ),
                           ),
                       ],
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 4,
-                        ),
-                        child: Icon(
-                          Icons.brightness_6,
-                          size: 18,
-                          color: onSurface,
+                      child: HoverTooltip(
+                        message: context.l10n.tooltipTheme,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 4,
+                          ),
+                          child: Icon(
+                            Icons.brightness_6,
+                            size: 18,
+                            color: onSurface,
+                          ),
                         ),
                       ),
                     ),

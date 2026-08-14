@@ -206,6 +206,7 @@
   "simMessagesSection": "Berichten",
   "simApplyFleet": "Vloot toepassen",
   "simRegenerateFleet": "Vloot opnieuw genereren",
+  "simGenerating": "Genereren…",
   "simLiveFleet": "Live vloot",
   "simFleetSummary": "{boats} vaartuigen · {frames} frames uitgezonden",
 
@@ -939,5 +940,50 @@
   "updateChecking": "Controleren op updates…",
   "updateNewVersion": "Nieuwe versie {version}",
   "updateUpToDate": "Je bent up-to-date.",
-  "updateCheckFailed": "Updatecontrole mislukt."
+  "updateCheckFailed": "Updatecontrole mislukt.",
+
+  "tooltipLanguage": "De taal van de interface wijzigen. Alle tien talen zijn volledig vertaald; kies \"Auto\" om de taal van het besturingssysteem te volgen.",
+  "tooltipTheme": "Het kleurenthema wijzigen: donker, licht of hoog contrast. Hoog contrast verbetert de leesbaarheid.",
+  "tooltipUpdate": "Controleren op een nieuwe versie. Als die beschikbaar is, verschijnt er een groene badge naast het versienummer.",
+
+  "tooltipMapSearch": "Een vaartuig zoeken op naam, MMSI of IMO-nummer en de kaart erop centreren en volgen.",
+  "tooltipMapFilters": "De getoonde vaartuigen filteren: op type, vaarstatus, land (MID), snelheid of alleen naam.",
+  "tooltipMapCluster": "Clustering van vaartuigen in- of uitschakelen. Als dit aanstaat, worden nabije vaartuigen gegroepeerd in één marker met telling.",
+  "tooltipMapTrails": "Sporen in- of uitschakelen. Als dit aanstaat, tekent elk vaartuig zijn recente route op de kaart.",
+  "tooltipMapVectors": "Koersvectoren in- of uitschakelen. Als dit aanstaat, toont elk vaartuig een pijl in zijn richting.",
+  "tooltipMapSendToMap": "Het versturen van gedecodeerde vaartuigen naar de kaart in- of uitschakelen. Als dit aanstaat, verschijnt elk gedecodeerd vaartuig als marker.",
+  "tooltipMapBasemap": "De kaartachtergrond kiezen. \"Auto\" volgt het huidige thema.",
+
+  "tooltipSendAdd": "Een nieuw verzenddoel toevoegen (UDP of TCP, client of server). Binnenkomende AIS-frames worden doorgestuurd naar elk ingeschakeld doel.",
+  "tooltipSendEdit": "De naam, het protocol, de host, de poort en het frameformaat van dit doel bewerken.",
+  "tooltipSendDelete": "Dit doel verwijderen. Dit kan niet ongedaan worden gemaakt.",
+  "tooltipSendToggle": "Doorsturen naar dit doel in- of uitschakelen.",
+  "tooltipSendLocked": "De doelen zijn vergrendeld zolang de forwarder draait. Stop de bron op het tabblad Ontvangst om ze te bewerken.",
+
+  "tooltipReceptionAddSource": "Een gegevensbron toevoegen: een netwerkfeed (UDP/TCP/gpsd), een bestand met opgenomen NMEA-zinnen of een seriële poort.",
+  "tooltipReceptionStart": "Ontvangst en doorsturen van AIS-frames uit alle ingeschakelde bronnen starten.",
+  "tooltipReceptionStop": "Ontvangst en doorsturen van AIS-frames stoppen.",
+  "tooltipReceptionFeed": "Deze AIS-bron in- of uitschakelen.",
+  "tooltipReceptionSaveLogs": "Het verbindingslogboek opslaan in een tekstbestand.",
+  "tooltipReceptionClearLogs": "Het verbindingslogboek wissen.",
+  "tooltipReceptionRemoveSource": "Deze AIS-bron verwijderen.",
+  "tooltipReceptionValidateChecksums": "Als dit aanstaat, worden frames met een ongeldige NMEA-checksom geweigerd.",
+  "tooltipReceptionImportFormat": "Hoe ontvangen frames worden genormaliseerd vóór het decoderen.",
+  "tooltipReceptionLoop": "Als dit aanstaat, herstart het bestandsafspelen na het einde vanaf het begin.",
+  "tooltipReceptionSpeed": "Afspeelsnelheid (1x = realtime).",
+  "tooltipReceptionSerialPorts": "Lijst met beschikbare seriële poorten verversen.",
+
+  "tooltipSimApply": "De huidige instellingen toepassen en de vloot genereren. Grote vloten worden op de achtergrond gegenereerd.",
+  "tooltipSimGenerate": "Een nieuwe willekeurige vloot met een nieuwe seed genereren en toepassen.",
+  "tooltipSimOpenReception": "Naar het tabblad Ontvangst gaan om de simulatie-feed te starten.",
+
+  "tooltipDecoderClear": "De invoer en resultaten van de decoder wissen.",
+  "tooltipStatsDecode": "Decodering van inkomende AIS-frames pauzeren of hervatten.",
+  "tooltipStatsReset": "Alle statistiektellers op nul zetten.",
+  "tooltipDocOpenTab": "Deze sectie in een eigen tabblad openen.",
+  "tooltipEditorInject": "Het samengestelde bericht in de decoder injecteren alsof het is ontvangen.",
+  "tooltipEditorSend": "Het samengestelde bericht naar elk ingeschakeld verzenddoel sturen.",
+  "tooltipCopy": "Naar het klembord kopiëren.",
+  "tooltipClose": "Dit paneel sluiten.",
+  "tooltipBrowse": "Bladeren om een bestand te kiezen."
 }

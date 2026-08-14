@@ -206,6 +206,7 @@
   "simMessagesSection": "メッセージ",
   "simApplyFleet": "船団を適用",
   "simRegenerateFleet": "船団を再生成",
+  "simGenerating": "生成中…",
   "simLiveFleet": "ライブ船団",
   "simFleetSummary": "{boats} 隻 · {frames} フレームを送信",
 
@@ -939,5 +940,50 @@
   "updateChecking": "更新を確認中…",
   "updateNewVersion": "新しいバージョン {version}",
   "updateUpToDate": "最新バージョンです。",
-  "updateCheckFailed": "更新の確認に失敗しました。"
+  "updateCheckFailed": "更新の確認に失敗しました。",
+
+  "tooltipLanguage": "インターフェースの言語を変更します。10言語すべて完全に翻訳されています。「自動」を選ぶとOSの言語に従います。",
+  "tooltipTheme": "配色テーマを変更します：ダーク、ライト、高コントラスト。高コントラストは読みやすさを向上させます。",
+  "tooltipUpdate": "新しいバージョンがあるか確認します。ある場合はバージョン番号の横に緑のバッジが表示されます。",
+
+  "tooltipMapSearch": "名前、MMSI、IMO番号で船舶を検索し、地図をその船に合わせて追跡します。",
+  "tooltipMapFilters": "表示する船舶を絞り込みます：種類、航行状態、国（MID）、速度、名前のみなど。",
+  "tooltipMapCluster": "船舶のクラスタリングを切り替えます。有効にすると近くの船舶が1つのマーカーにまとめられ、数が表示されます。",
+  "tooltipMapTrails": "航跡を切り替えます。有効にすると各船舶が最近の経路を地図上に描きます。",
+  "tooltipMapVectors": "針路ベクトルを切り替えます。有効にすると各船舶が進行方向に矢印を表示します。",
+  "tooltipMapSendToMap": "デコードした船舶を地図に送るかどうかを切り替えます。有効にするとデコードした船舶がすべてマーカーとして表示されます。",
+  "tooltipMapBasemap": "地図の背景を選択します。「自動」は現在のテーマに従います。",
+
+  "tooltipSendAdd": "送信先を追加します（UDPまたはTCP、クライアントまたはサーバー）。受信したAISフレームは有効な各送信先へ転送されます。",
+  "tooltipSendEdit": "この送信先の名前、プロトコル、ホスト、ポート、フレーム形式を編集します。",
+  "tooltipSendDelete": "この送信先を削除します。この操作は取り消せません。",
+  "tooltipSendToggle": "この送信先への転送を有効または無効にします。",
+  "tooltipSendLocked": "転送中は送信先はロックされています。編集するには受信タブでソースを停止してください。",
+
+  "tooltipReceptionAddSource": "データソースを追加します：ネットワークソース（UDP/TCP/gpsd）、録音したNMEA文のファイル、またはシリアルポート。",
+  "tooltipReceptionStart": "有効なすべてのソースからのAISフレームの受信と転送を開始します。",
+  "tooltipReceptionStop": "AISフレームの受信と転送を停止します。",
+  "tooltipReceptionFeed": "このAISソースを有効または無効にします。",
+  "tooltipReceptionSaveLogs": "接続ログをテキストファイルに保存します。",
+  "tooltipReceptionClearLogs": "接続ログを消去します。",
+  "tooltipReceptionRemoveSource": "このAISソースを削除します。",
+  "tooltipReceptionValidateChecksums": "有効にすると、NMEAチェックサムが無効なフレームは拒否されます。",
+  "tooltipReceptionImportFormat": "受信したフレームがデコード前にどのように正規化されるか。",
+  "tooltipReceptionLoop": "有効にすると、ファイルの再生は末尾に達した後、最初から再開します。",
+  "tooltipReceptionSpeed": "再生速度倍率（1x＝リアルタイム）。",
+  "tooltipReceptionSerialPorts": "利用可能なシリアルポートのリストを更新します。",
+
+  "tooltipSimApply": "現在の設定を適用して船団を生成します。大規模な船団はバックグラウンドで生成されます。",
+  "tooltipSimGenerate": "新しいシードで新しいランダムな船団を生成し、適用します。",
+  "tooltipSimOpenReception": "シミュレーションソースを開始するには受信タブに移動します。",
+
+  "tooltipDecoderClear": "デコーダーの入力と結果を消去します。",
+  "tooltipStatsDecode": "受信したAISフレームのデコードを一時停止または再開します。",
+  "tooltipStatsReset": "すべての統計カウンターをゼロにリセットします。",
+  "tooltipDocOpenTab": "このセクションを独自のタブで開きます。",
+  "tooltipEditorInject": "作成したメッセージを受信したかのようにデコーダーに注入します。",
+  "tooltipEditorSend": "作成したメッセージを有効な各送信先へ送信します。",
+  "tooltipCopy": "クリップボードにコピーします。",
+  "tooltipClose": "このパネルを閉じます。",
+  "tooltipBrowse": "ファイルを参照して選択します。"
 }

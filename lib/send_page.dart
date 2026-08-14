@@ -56,18 +56,23 @@ class _SendPageState extends State<SendPage> {
     await _apply(list);
   }
 
-  Future<void> _toggleEnabled(TargetConfig target, bool enabled) async {
-    await _upsert(target.copyWith(enabled: enabled));
+  void _editTarget(TargetConfig? target) {
+    _showEditor(existing: target);
+  }
+
+  void _toggleCard(TargetConfig target) {
+    _upsert(target);
   }
 
   Future<void> _showEditor({TargetConfig? existing}) async {
-    final nameController =
-        TextEditingController(text: existing?.name ?? '');
+    final nameController = TextEditingController(text: existing?.name ?? '');
     final hostController = TextEditingController(text: existing?.host ?? '');
-    final portController =
-        TextEditingController(text: (existing?.port ?? 33333).toString());
-    final tagSourceController =
-        TextEditingController(text: existing?.tagSourceId ?? '');
+    final portController = TextEditingController(
+      text: (existing?.port ?? 33333).toString(),
+    );
+    final tagSourceController = TextEditingController(
+      text: existing?.tagSourceId ?? '',
+    );
     var protocol = existing?.protocol ?? ForwardProtocol.udpServer;
     var sendFormat = existing?.sendFormat ?? NmeaFormat.passthrough;
 
@@ -75,9 +80,11 @@ class _SendPageState extends State<SendPage> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: Text(existing == null
-              ? ctx.l10n.sendAddDestination
-              : ctx.l10n.sendEditDestination),
+          title: Text(
+            existing == null
+                ? ctx.l10n.sendAddDestination
+                : ctx.l10n.sendEditDestination,
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -89,7 +96,9 @@ class _SendPageState extends State<SendPage> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<ForwardProtocol>(
                   initialValue: protocol,
-                  decoration: InputDecoration(labelText: ctx.l10n.fieldProtocol),
+                  decoration: InputDecoration(
+                    labelText: ctx.l10n.fieldProtocol,
+                  ),
                   items: [
                     for (final p in ForwardProtocol.values)
                       DropdownMenuItem(
@@ -152,9 +161,9 @@ class _SendPageState extends State<SendPage> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text(existing == null
-                  ? ctx.l10n.fieldAdd
-                  : ctx.l10n.sendSave),
+              child: Text(
+                existing == null ? ctx.l10n.fieldAdd : ctx.l10n.sendSave,
+              ),
             ),
           ],
         ),
@@ -188,8 +197,11 @@ class _SendPageState extends State<SendPage> {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context.watch<AppSettings>();
-    final appColors = Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+    final targetIds = context.select<AppSettings, List<String>>(
+      (s) => [for (final t in s.targets) t.id],
+    );
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -197,9 +209,12 @@ class _SendPageState extends State<SendPage> {
         actions: [
           ValueListenableBuilder<bool>(
             valueListenable: widget.running,
-            builder: (context, running, _) => IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: running ? null : () => _showEditor(),
+            builder: (context, running, _) => HoverTooltip(
+              message: context.l10n.tooltipSendAdd,
+              child: IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: running ? null : () => _showEditor(),
+              ),
             ),
           ),
         ],
@@ -234,77 +249,107 @@ class _SendPageState extends State<SendPage> {
                         ],
                       ),
                     ),
-                  if (settings.targets.isEmpty)
+                  if (targetIds.isEmpty)
                     Padding(
                       padding: const EdgeInsets.all(24),
-                      child: Center(
-                        child: Text(context.l10n.sendEmpty),
-                      ),
+                      child: Center(child: Text(context.l10n.sendEmpty)),
                     )
                   else
-                    for (final target in settings.targets)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: TintedCard(
-                          accent: target.enabled
-                              ? appColors.success
-                              : Colors.grey,
-                          child: Row(
-                            children: [
-                              Switch(
-                                value: target.enabled,
-                                onChanged: (v) => _toggleEnabled(target, v),
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      target.name,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      '${protocolLabelLocalized(target.protocol, context.l10n)} · '
-                                      '${target.host}:${target.port} · '
-                                      '${nmeaFormatLabelLocalized(target.sendFormat, context.l10n)}',
-                                      style: const TextStyle(fontSize: 12),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.edit_outlined,
-                                  size: 18,
-                                ),
-                                visualDensity: VisualDensity.compact,
-                                onPressed: () =>
-                                    _showEditor(existing: target),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete_outline,
-                                  size: 18,
-                                ),
-                                visualDensity: VisualDensity.compact,
-                                onPressed: () => _remove(target),
-                              ),
-                            ],
-                          ),
-                        ),
+                    for (final id in targetIds)
+                      _TargetCard(
+                        key: ValueKey(id),
+                        targetId: id,
+                        onToggle: _toggleCard,
+                        onEdit: _editTarget,
+                        onDelete: _remove,
                       ),
                 ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// A single destination card. It watches only its own [TargetConfig] from
+/// [AppSettings] (via [context.select]), so toggling a switch rebuilds just
+/// this card instead of the whole page and the entire application.
+class _TargetCard extends StatelessWidget {
+  final String targetId;
+  final ValueChanged<TargetConfig> onToggle;
+  final ValueChanged<TargetConfig?> onEdit;
+  final ValueChanged<TargetConfig> onDelete;
+
+  const _TargetCard({
+    super.key,
+    required this.targetId,
+    required this.onToggle,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final target = context.select<AppSettings, TargetConfig>(
+      (s) => s.targets.firstWhere((t) => t.id == targetId),
+    );
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: TintedCard(
+        accent: target.enabled ? appColors.success : Colors.grey,
+        child: Row(
+          children: [
+            HoverTooltip(
+              message: context.l10n.tooltipSendToggle,
+              child: Switch(
+                value: target.enabled,
+                onChanged: (v) => onToggle(target.copyWith(enabled: v)),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    target.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${protocolLabelLocalized(target.protocol, context.l10n)} · '
+                    '${target.host}:${target.port} · '
+                    '${nmeaFormatLabelLocalized(target.sendFormat, context.l10n)}',
+                    style: const TextStyle(fontSize: 12),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            HoverTooltip(
+              message: context.l10n.tooltipSendEdit,
+              child: IconButton(
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                visualDensity: VisualDensity.compact,
+                onPressed: () => onEdit(target),
+              ),
+            ),
+            HoverTooltip(
+              message: context.l10n.tooltipSendDelete,
+              child: IconButton(
+                icon: const Icon(Icons.delete_outline, size: 18),
+                visualDensity: VisualDensity.compact,
+                onPressed: () => onDelete(target),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -614,6 +614,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get simRegenerateFleet => 'Regenerar flota';
 
   @override
+  String get simGenerating => 'Generando…';
+
+  @override
   String get simLiveFleet => 'Flota en vivo';
 
   @override
@@ -2918,4 +2921,153 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get updateCheckFailed => 'Error al buscar actualizaciones.';
+
+  @override
+  String get tooltipLanguage =>
+      'Cambiar el idioma de la interfaz. Los diez idiomas están totalmente traducidos; elige «Automático» para seguir el idioma del sistema.';
+
+  @override
+  String get tooltipTheme =>
+      'Cambiar el tema de colores: oscuro, claro o alto contraste. El alto contraste mejora la legibilidad.';
+
+  @override
+  String get tooltipUpdate =>
+      'Buscar una nueva versión. Si hay alguna, aparece una insignia verde junto al número de versión.';
+
+  @override
+  String get tooltipMapSearch =>
+      'Buscar un buque por nombre, MMSI o número IMO y centrar y seguir el mapa sobre él.';
+
+  @override
+  String get tooltipMapFilters =>
+      'Filtrar los buques mostrados: por tipo, estado de navegación, país (MID), velocidad o solo nombre.';
+
+  @override
+  String get tooltipMapCluster =>
+      'Alternar la agrupación de buques. Cuando está activada, los buques cercanos se agrupan en un marcador con un contador.';
+
+  @override
+  String get tooltipMapTrails =>
+      'Alternar las estelas. Cuando está activada, cada buque dibuja su recorrido reciente en el mapa.';
+
+  @override
+  String get tooltipMapVectors =>
+      'Alternar los vectores de rumbo. Cuando está activada, cada buque muestra una flecha en su dirección.';
+
+  @override
+  String get tooltipMapSendToMap =>
+      'Alternar el envío de buques decodificados al mapa. Cuando está activada, cada buque decodificado aparece como marcador.';
+
+  @override
+  String get tooltipMapBasemap =>
+      'Elegir el fondo del mapa. «Automático» sigue el tema actual.';
+
+  @override
+  String get tooltipSendAdd =>
+      'Añadir un destino de envío (UDP o TCP, cliente o servidor). Las tramas AIS recibidas se reenvían a cada destino activado.';
+
+  @override
+  String get tooltipSendEdit =>
+      'Editar el nombre, protocolo, host, puerto y formato de trama de este destino.';
+
+  @override
+  String get tooltipSendDelete =>
+      'Eliminar este destino. Esta acción no se puede deshacer.';
+
+  @override
+  String get tooltipSendToggle =>
+      'Activar o desactivar el reenvío a este destino.';
+
+  @override
+  String get tooltipSendLocked =>
+      'Los destinos están bloqueados mientras el reenviador está en marcha. Detén la fuente en la pestaña Recepción para editarlos.';
+
+  @override
+  String get tooltipReceptionAddSource =>
+      'Añadir una fuente de datos: una fuente de red (UDP/TCP/gpsd), un archivo de sentencias NMEA grabadas o un puerto serie.';
+
+  @override
+  String get tooltipReceptionStart =>
+      'Iniciar la recepción y el reenvío de tramas AIS desde todas las fuentes activadas.';
+
+  @override
+  String get tooltipReceptionStop =>
+      'Detener la recepción y el reenvío de tramas AIS.';
+
+  @override
+  String get tooltipReceptionFeed => 'Activar o desactivar esta fuente AIS.';
+
+  @override
+  String get tooltipReceptionSaveLogs =>
+      'Guardar el registro de conexión en un archivo de texto.';
+
+  @override
+  String get tooltipReceptionClearLogs => 'Borrar el registro de conexión.';
+
+  @override
+  String get tooltipReceptionRemoveSource => 'Eliminar esta fuente AIS.';
+
+  @override
+  String get tooltipReceptionValidateChecksums =>
+      'Cuando está activado, se rechazan las tramas con suma de comprobación NMEA no válida.';
+
+  @override
+  String get tooltipReceptionImportFormat =>
+      'Cómo se normalizan las tramas recibidas antes de decodificarlas.';
+
+  @override
+  String get tooltipReceptionLoop =>
+      'Cuando está activado, la reproducción del archivo vuelve a empezar tras llegar al final.';
+
+  @override
+  String get tooltipReceptionSpeed =>
+      'Multiplicador de velocidad de reproducción (1x = tiempo real).';
+
+  @override
+  String get tooltipReceptionSerialPorts =>
+      'Actualizar la lista de puertos serie disponibles.';
+
+  @override
+  String get tooltipSimApply =>
+      'Aplicar la configuración actual y generar la flota. Las flotas grandes se generan en segundo plano.';
+
+  @override
+  String get tooltipSimGenerate =>
+      'Generar una nueva flota aleatoria con una semilla nueva y aplicarla.';
+
+  @override
+  String get tooltipSimOpenReception =>
+      'Ir a la pestaña Recepción para iniciar la fuente de simulación.';
+
+  @override
+  String get tooltipDecoderClear =>
+      'Borrar la entrada y los resultados del decodificador.';
+
+  @override
+  String get tooltipStatsDecode =>
+      'Pausar o reanudar el decodificado de las tramas AIS recibidas.';
+
+  @override
+  String get tooltipStatsReset =>
+      'Poner a cero todos los contadores de estadísticas.';
+
+  @override
+  String get tooltipDocOpenTab => 'Abrir esta sección en su propia pestaña.';
+
+  @override
+  String get tooltipEditorInject =>
+      'Inyectar el mensaje compuesto en el decodificador como si hubiera sido recibido.';
+
+  @override
+  String get tooltipEditorSend =>
+      'Enviar el mensaje compuesto a cada destino de envío activado.';
+
+  @override
+  String get tooltipCopy => 'Copiar al portapapeles.';
+
+  @override
+  String get tooltipClose => 'Cerrar este panel.';
+
+  @override
+  String get tooltipBrowse => 'Buscar un archivo.';
 }

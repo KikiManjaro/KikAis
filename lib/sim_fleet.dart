@@ -1167,8 +1167,7 @@ class SimBoat {
 class SimFleet {
   final List<SimBoat> boats = [];
 
-  void generate(SimFleetConfig config, {int? seed}) {
-    boats.clear();
+  void generate(SimFleetConfig config, {int? seed}) {    boats.clear();
     final random = math.Random(seed ?? config.seed);
     final posTypes = config.enabledPositionTypes;
     final classAPosTypes = posTypes
@@ -1470,4 +1469,22 @@ class SimFleet {
     final dLon = math.sin(ang) * r / lonDegKm;
     return (config.centerLat + dLat, config.centerLon + dLon);
   }
+}
+
+/// A plain, isolate-safe snapshot of the parameters needed to generate a fleet
+/// (both classes carry only primitive / collection fields).
+class SimFleetGenerationArgs {
+  final SimFleetConfig config;
+  final int seed;
+
+  const SimFleetGenerationArgs(this.config, this.seed);
+}
+
+/// Top-level entry point used by `compute` to generate a fleet off the UI
+/// thread. Building a fresh [SimFleet] keeps the (mutable) in-flight boats list
+/// of the service untouched until the result is ready.
+List<SimBoat> generateFleetIsolate(SimFleetGenerationArgs args) {
+  final fleet = SimFleet();
+  fleet.generate(args.config, seed: args.seed);
+  return fleet.boats;
 }

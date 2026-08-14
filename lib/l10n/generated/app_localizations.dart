@@ -1272,6 +1272,12 @@ abstract class AppLocalizations {
   /// **'Regenerate fleet'**
   String get simRegenerateFleet;
 
+  /// No description provided for @simGenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating…'**
+  String get simGenerating;
+
   /// No description provided for @simLiveFleet.
   ///
   /// In en, this message translates to:
@@ -5383,7 +5389,7 @@ abstract class AppLocalizations {
   /// No description provided for @updateChecking.
   ///
   /// In en, this message translates to:
-  /// **'Checking for updates…'**
+  /// **'Checking for updates.'**
   String get updateChecking;
 
   /// No description provided for @updateNewVersion.
@@ -5403,6 +5409,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update check failed.'**
   String get updateCheckFailed;
+
+  /// No description provided for @tooltipLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Defines the interface language. All ten languages are fully translated; choose \"Auto\" to follow the operating system language.'**
+  String get tooltipLanguage;
+
+  /// No description provided for @tooltipTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Defines the color theme: dark, light or high contrast. High contrast improves readability.'**
+  String get tooltipTheme;
+
+  /// No description provided for @tooltipUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Checks for a new version. A green badge appears next to the version number when an update is available.'**
+  String get tooltipUpdate;
+
+  /// No description provided for @tooltipMapSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Searches for a vessel by name, MMSI or IMO number, then centers and follows it on the map.'**
+  String get tooltipMapSearch;
+
+  /// No description provided for @tooltipMapFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters the displayed vessels by type, navigation status, country (MID), speed or name.'**
+  String get tooltipMapFilters;
+
+  /// No description provided for @tooltipMapCluster.
+  ///
+  /// In en, this message translates to:
+  /// **'Enables or disables vessel clustering. When enabled, nearby vessels are grouped into one marker with a count.'**
+  String get tooltipMapCluster;
+
+  /// No description provided for @tooltipMapTrails.
+  ///
+  /// In en, this message translates to:
+  /// **'Enables or disables the trails. When enabled, each vessel draws its recent path on the map.'**
+  String get tooltipMapTrails;
+
+  /// No description provided for @tooltipMapVectors.
+  ///
+  /// In en, this message translates to:
+  /// **'Enables or disables the heading vectors. When enabled, each vessel shows an arrow along its course.'**
+  String get tooltipMapVectors;
+
+  /// No description provided for @tooltipMapSendToMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Enables or disables sending decoded vessels to the map. When enabled, every decoded vessel appears as a marker.'**
+  String get tooltipMapSendToMap;
+
+  /// No description provided for @tooltipMapBasemap.
+  ///
+  /// In en, this message translates to:
+  /// **'Defines the map background. \"Auto\" follows the current theme.'**
+  String get tooltipMapBasemap;
+
+  /// No description provided for @tooltipSendAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds a new send destination (UDP or TCP, client or server). Incoming AIS frames are forwarded to every enabled destination.'**
+  String get tooltipSendAdd;
+
+  /// No description provided for @tooltipSendEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edits this destination\'s name, protocol, host, port and frame format.'**
+  String get tooltipSendEdit;
+
+  /// No description provided for @tooltipSendDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Deletes this destination. This action cannot be undone.'**
+  String get tooltipSendDelete;
+
+  /// No description provided for @tooltipSendToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enables or disables forwarding to this destination.'**
+  String get tooltipSendToggle;
+
+  /// No description provided for @tooltipSendLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Destinations are locked while the forwarder is running. Stop the feed on the Reception tab to edit them.'**
+  String get tooltipSendLocked;
+
+  /// No description provided for @tooltipReceptionAddSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds a data source: a network feed (UDP/TCP/gpsd), a file of recorded NMEA sentences, or a serial port.'**
+  String get tooltipReceptionAddSource;
+
+  /// No description provided for @tooltipReceptionStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts receiving and forwarding AIS frames from all enabled sources.'**
+  String get tooltipReceptionStart;
+
+  /// No description provided for @tooltipReceptionStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stops receiving and forwarding AIS frames.'**
+  String get tooltipReceptionStop;
+
+  /// No description provided for @tooltipReceptionFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Enables or disables this AIS source.'**
+  String get tooltipReceptionFeed;
+
+  /// No description provided for @tooltipReceptionSaveLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Saves the connection log to a text file.'**
+  String get tooltipReceptionSaveLogs;
+
+  /// No description provided for @tooltipReceptionClearLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Clears the connection log.'**
+  String get tooltipReceptionClearLogs;
+
+  /// No description provided for @tooltipReceptionRemoveSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes this AIS source.'**
+  String get tooltipReceptionRemoveSource;
+
+  /// No description provided for @tooltipReceptionValidateChecksums.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejects frames with an invalid NMEA checksum when enabled.'**
+  String get tooltipReceptionValidateChecksums;
+
+  /// No description provided for @tooltipReceptionImportFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Defines how received frames are normalized before decoding.'**
+  String get tooltipReceptionImportFormat;
+
+  /// No description provided for @tooltipReceptionLoop.
+  ///
+  /// In en, this message translates to:
+  /// **'Restarts the file replay from the beginning when the end is reached.'**
+  String get tooltipReceptionLoop;
+
+  /// No description provided for @tooltipReceptionSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Defines the replay speed multiplier (1x = real time).'**
+  String get tooltipReceptionSpeed;
+
+  /// No description provided for @tooltipReceptionSerialPorts.
+  ///
+  /// In en, this message translates to:
+  /// **'Refreshes the list of available serial ports.'**
+  String get tooltipReceptionSerialPorts;
+
+  /// No description provided for @tooltipSimApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies the current settings and generates the fleet. Large fleets are generated in the background.'**
+  String get tooltipSimApply;
+
+  /// No description provided for @tooltipSimGenerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Generates a new random fleet with a fresh seed, then applies it.'**
+  String get tooltipSimGenerate;
+
+  /// No description provided for @tooltipSimOpenReception.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens the Reception tab to start the Simulation feed.'**
+  String get tooltipSimOpenReception;
+
+  /// No description provided for @tooltipDecoderClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clears the decoder input and results.'**
+  String get tooltipDecoderClear;
+
+  /// No description provided for @tooltipStatsDecode.
+  ///
+  /// In en, this message translates to:
+  /// **'Pauses or resumes decoding of incoming AIS frames.'**
+  String get tooltipStatsDecode;
+
+  /// No description provided for @tooltipStatsReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Resets all statistics counters to zero.'**
+  String get tooltipStatsReset;
+
+  /// No description provided for @tooltipDocOpenTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens this section in its own tab.'**
+  String get tooltipDocOpenTab;
+
+  /// No description provided for @tooltipEditorInject.
+  ///
+  /// In en, this message translates to:
+  /// **'Injects the composed message into the decoder as if it had been received.'**
+  String get tooltipEditorInject;
+
+  /// No description provided for @tooltipEditorSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends the composed message to every enabled send destination.'**
+  String get tooltipEditorSend;
+
+  /// No description provided for @tooltipCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copies the selection to the clipboard.'**
+  String get tooltipCopy;
+
+  /// No description provided for @tooltipClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes this panel.'**
+  String get tooltipClose;
+
+  /// No description provided for @tooltipBrowse.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens a file browser to choose a file.'**
+  String get tooltipBrowse;
 }
 
 class _AppLocalizationsDelegate

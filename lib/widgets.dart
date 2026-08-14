@@ -1,7 +1,177 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'l10n_ext.dart';
+
+/// A hover tooltip that does NOT use Flutter's built-in [Tooltip] widget.
+///
+/// The stock tooltip triggers a NULL_PTR_READ crash in the Windows engine
+/// (`UpdateTooltipPosition`, see flutter/flutter#182444) whenever a hover
+/// tooltip shows or dismisses. This implementation drives its own overlay
+/// entry from a [MouseRegion], so it never touches that engine code path.
+class HoverTooltip extends StatefulWidget {
+  final String message;
+  final Widget child;
+
+  /// Delay before the tooltip appears once the pointer is over the child.
+  final Duration delay;
+
+  const HoverTooltip({
+    super.key,
+    required this.message,
+    required this.child,
+    this.delay = const Duration(milliseconds: 500),
+  });
+
+  @override
+  State<HoverTooltip> createState() => _HoverTooltipState();
+}
+
+class _HoverTooltipState extends State<HoverTooltip> {
+  final GlobalKey _targetKey = GlobalKey();
+  Timer? _timer;
+  OverlayEntry? _entry;
+  bool _shown = false;
+
+  void _onEnter(PointerEnterEvent event) {
+    _timer?.cancel();
+    _timer = Timer(widget.delay, _show);
+  }
+
+  void _onExit(PointerExitEvent event) {
+    _timer?.cancel();
+    _hide();
+  }
+
+  void _show() {
+    if (!mounted || _shown || _entry != null) return;
+    final box = _targetKey.currentContext?.findRenderObject() as RenderBox?;
+    final overlay = Overlay.of(context, rootOverlay: true);
+    if (box == null || !box.attached) return;
+    final anchor = box.localToGlobal(Offset.zero);
+    _shown = true;
+    _entry = OverlayEntry(
+      builder: (context) => _HoverTooltipOverlay(
+        message: widget.message,
+        anchorTopLeft: anchor,
+        anchorSize: box.size,
+      ),
+    );
+    overlay.insert(_entry!);
+  }
+
+  void _hide() {
+    _shown = false;
+    _entry?.remove();
+    _entry = null;
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _hide();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      key: _targetKey,
+      onEnter: _onEnter,
+      onExit: _onExit,
+      child: widget.child,
+    );
+  }
+}
+
+/// The tooltip bubble shown by [HoverTooltip], positioned under its anchor and
+/// clamped to the screen edges. Uses a plain [Positioned] in the app overlay.
+class _HoverTooltipOverlay extends StatefulWidget {
+  final String message;
+  final Offset anchorTopLeft;
+  final Size anchorSize;
+
+  const _HoverTooltipOverlay({
+    required this.message,
+    required this.anchorTopLeft,
+    required this.anchorSize,
+  });
+
+  @override
+  State<_HoverTooltipOverlay> createState() => _HoverTooltipOverlayState();
+}
+
+class _HoverTooltipOverlayState extends State<_HoverTooltipOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _fade = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 120),
+  )..forward();
+
+  @override
+  void dispose() {
+    _fade.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final screen = MediaQuery.sizeOf(context);
+    final maxWidth = math.min(360.0, screen.width - 24);
+    final centerX = widget.anchorTopLeft.dx + widget.anchorSize.width / 2;
+    // Clamp so the (centered) bubble stays fully on screen.
+    final left = centerX.clamp(
+      maxWidth / 2 + 12,
+      screen.width - maxWidth / 2 - 12,
+    );
+    // Place below the anchor, or above it when near the bottom edge.
+    final placeBelow = widget.anchorTopLeft.dy < screen.height * 0.6;
+    final top = placeBelow
+        ? widget.anchorTopLeft.dy + widget.anchorSize.height + 6
+        : widget.anchorTopLeft.dy - 10;
+
+    return Positioned(
+      left: left,
+      top: top,
+      child: IgnorePointer(
+        child: FractionalTranslation(
+          translation: const Offset(-0.5, 0),
+          child: FadeTransition(
+            opacity: _fade,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: scheme.inverseSurface,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black26, blurRadius: 6),
+                  ],
+                ),
+                child: Text(
+                  widget.message,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: scheme.onInverseSurface,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 /// A tiny toast anchored next to a button ("Copied!"). Rendered in the app
 /// overlay so it floats above the current page.
@@ -41,10 +211,7 @@ class _MiniToastState extends State<MiniToast>
       child: FractionalTranslation(
         translation: const Offset(-0.5, 0),
         child: FadeTransition(
-          opacity: CurvedAnimation(
-            parent: _controller,
-            curve: Curves.easeOut,
-          ),
+          opacity: CurvedAnimation(parent: _controller, curve: Curves.easeOut),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
@@ -56,10 +223,7 @@ class _MiniToastState extends State<MiniToast>
             ),
             child: Text(
               widget.message,
-              style: TextStyle(
-                fontSize: 12,
-                color: scheme.onInverseSurface,
-              ),
+              style: TextStyle(fontSize: 12, color: scheme.onInverseSurface),
             ),
           ),
         ),
@@ -109,11 +273,14 @@ class CopyIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.copy, size: iconSize),
-      visualDensity: VisualDensity.compact,
-      padding: padding,
-      onPressed: () => _copy(context),
+    return HoverTooltip(
+      message: context.l10n.tooltipCopy,
+      child: IconButton(
+        icon: Icon(Icons.copy, size: iconSize),
+        visualDensity: VisualDensity.compact,
+        padding: padding,
+        onPressed: () => _copy(context),
+      ),
     );
   }
 }
@@ -144,9 +311,9 @@ class SectionHeader extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const Spacer(),
           if (trailing != null) trailing!,

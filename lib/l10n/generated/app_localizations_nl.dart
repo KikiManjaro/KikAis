@@ -612,6 +612,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get simRegenerateFleet => 'Vloot opnieuw genereren';
 
   @override
+  String get simGenerating => 'Genereren…';
+
+  @override
   String get simLiveFleet => 'Live vloot';
 
   @override
@@ -2910,4 +2913,151 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get updateCheckFailed => 'Updatecontrole mislukt.';
+
+  @override
+  String get tooltipLanguage =>
+      'De taal van de interface wijzigen. Alle tien talen zijn volledig vertaald; kies \"Auto\" om de taal van het besturingssysteem te volgen.';
+
+  @override
+  String get tooltipTheme =>
+      'Het kleurenthema wijzigen: donker, licht of hoog contrast. Hoog contrast verbetert de leesbaarheid.';
+
+  @override
+  String get tooltipUpdate =>
+      'Controleren op een nieuwe versie. Als die beschikbaar is, verschijnt er een groene badge naast het versienummer.';
+
+  @override
+  String get tooltipMapSearch =>
+      'Een vaartuig zoeken op naam, MMSI of IMO-nummer en de kaart erop centreren en volgen.';
+
+  @override
+  String get tooltipMapFilters =>
+      'De getoonde vaartuigen filteren: op type, vaarstatus, land (MID), snelheid of alleen naam.';
+
+  @override
+  String get tooltipMapCluster =>
+      'Clustering van vaartuigen in- of uitschakelen. Als dit aanstaat, worden nabije vaartuigen gegroepeerd in één marker met telling.';
+
+  @override
+  String get tooltipMapTrails =>
+      'Sporen in- of uitschakelen. Als dit aanstaat, tekent elk vaartuig zijn recente route op de kaart.';
+
+  @override
+  String get tooltipMapVectors =>
+      'Koersvectoren in- of uitschakelen. Als dit aanstaat, toont elk vaartuig een pijl in zijn richting.';
+
+  @override
+  String get tooltipMapSendToMap =>
+      'Het versturen van gedecodeerde vaartuigen naar de kaart in- of uitschakelen. Als dit aanstaat, verschijnt elk gedecodeerd vaartuig als marker.';
+
+  @override
+  String get tooltipMapBasemap =>
+      'De kaartachtergrond kiezen. \"Auto\" volgt het huidige thema.';
+
+  @override
+  String get tooltipSendAdd =>
+      'Een nieuw verzenddoel toevoegen (UDP of TCP, client of server). Binnenkomende AIS-frames worden doorgestuurd naar elk ingeschakeld doel.';
+
+  @override
+  String get tooltipSendEdit =>
+      'De naam, het protocol, de host, de poort en het frameformaat van dit doel bewerken.';
+
+  @override
+  String get tooltipSendDelete =>
+      'Dit doel verwijderen. Dit kan niet ongedaan worden gemaakt.';
+
+  @override
+  String get tooltipSendToggle =>
+      'Doorsturen naar dit doel in- of uitschakelen.';
+
+  @override
+  String get tooltipSendLocked =>
+      'De doelen zijn vergrendeld zolang de forwarder draait. Stop de bron op het tabblad Ontvangst om ze te bewerken.';
+
+  @override
+  String get tooltipReceptionAddSource =>
+      'Een gegevensbron toevoegen: een netwerkfeed (UDP/TCP/gpsd), een bestand met opgenomen NMEA-zinnen of een seriële poort.';
+
+  @override
+  String get tooltipReceptionStart =>
+      'Ontvangst en doorsturen van AIS-frames uit alle ingeschakelde bronnen starten.';
+
+  @override
+  String get tooltipReceptionStop =>
+      'Ontvangst en doorsturen van AIS-frames stoppen.';
+
+  @override
+  String get tooltipReceptionFeed => 'Deze AIS-bron in- of uitschakelen.';
+
+  @override
+  String get tooltipReceptionSaveLogs =>
+      'Het verbindingslogboek opslaan in een tekstbestand.';
+
+  @override
+  String get tooltipReceptionClearLogs => 'Het verbindingslogboek wissen.';
+
+  @override
+  String get tooltipReceptionRemoveSource => 'Deze AIS-bron verwijderen.';
+
+  @override
+  String get tooltipReceptionValidateChecksums =>
+      'Als dit aanstaat, worden frames met een ongeldige NMEA-checksom geweigerd.';
+
+  @override
+  String get tooltipReceptionImportFormat =>
+      'Hoe ontvangen frames worden genormaliseerd vóór het decoderen.';
+
+  @override
+  String get tooltipReceptionLoop =>
+      'Als dit aanstaat, herstart het bestandsafspelen na het einde vanaf het begin.';
+
+  @override
+  String get tooltipReceptionSpeed => 'Afspeelsnelheid (1x = realtime).';
+
+  @override
+  String get tooltipReceptionSerialPorts =>
+      'Lijst met beschikbare seriële poorten verversen.';
+
+  @override
+  String get tooltipSimApply =>
+      'De huidige instellingen toepassen en de vloot genereren. Grote vloten worden op de achtergrond gegenereerd.';
+
+  @override
+  String get tooltipSimGenerate =>
+      'Een nieuwe willekeurige vloot met een nieuwe seed genereren en toepassen.';
+
+  @override
+  String get tooltipSimOpenReception =>
+      'Naar het tabblad Ontvangst gaan om de simulatie-feed te starten.';
+
+  @override
+  String get tooltipDecoderClear =>
+      'De invoer en resultaten van de decoder wissen.';
+
+  @override
+  String get tooltipStatsDecode =>
+      'Decodering van inkomende AIS-frames pauzeren of hervatten.';
+
+  @override
+  String get tooltipStatsReset => 'Alle statistiektellers op nul zetten.';
+
+  @override
+  String get tooltipDocOpenTab => 'Deze sectie in een eigen tabblad openen.';
+
+  @override
+  String get tooltipEditorInject =>
+      'Het samengestelde bericht in de decoder injecteren alsof het is ontvangen.';
+
+  @override
+  String get tooltipEditorSend =>
+      'Het samengestelde bericht naar elk ingeschakeld verzenddoel sturen.';
+
+  @override
+  String get tooltipCopy => 'Naar het klembord kopiëren.';
+
+  @override
+  String get tooltipClose => 'Dit paneel sluiten.';
+
+  @override
+  String get tooltipBrowse => 'Bladeren om een bestand te kiezen.';
 }

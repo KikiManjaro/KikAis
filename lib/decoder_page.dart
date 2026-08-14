@@ -129,12 +129,15 @@ class DecoderPageState extends State<DecoderPage> {
       appBar: AppBar(
         title: Text(context.l10n.tabDecoder),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () {
-              _controller.clear();
-              setState(() => _results = []);
-            },
+          HoverTooltip(
+            message: context.l10n.tooltipDecoderClear,
+            child: IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () {
+                _controller.clear();
+                setState(() => _results = []);
+              },
+            ),
           ),
         ],
       ),
@@ -144,150 +147,154 @@ class DecoderPageState extends State<DecoderPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
-            controller: _controller,
-            maxLines: 5,
-            minLines: 3,
-            decoration: InputDecoration(
-              labelText: context.l10n.decoderInputLabel,
-              alignLabelWithHint: true,
-              border: const OutlineInputBorder(),
+              controller: _controller,
+              maxLines: 5,
+              minLines: 3,
+              decoration: InputDecoration(
+                labelText: context.l10n.decoderInputLabel,
+                alignLabelWithHint: true,
+                border: const OutlineInputBorder(),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                  title: Text(context.l10n.decoderValidateChecksums),
-                  value: _validateChecksum,
-                  onChanged: (v) => setState(() => _validateChecksum = v),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    title: Text(context.l10n.decoderValidateChecksums),
+                    value: _validateChecksum,
+                    onChanged: (v) => setState(() => _validateChecksum = v),
+                  ),
                 ),
-              ),
-              FilledButton.icon(
-                onPressed: _decode,
-                icon: const Icon(Icons.manage_search),
-                label: Text(context.l10n.decoderDecode),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          for (final result in _results)
-            Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          result.decoded
-                              ? Icons.check_circle_outline
-                              : Icons.warning_amber_rounded,
-                          size: 18,
-                          color: result.decoded
-                              ? appColors.success
-                              : appColors.warning,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: SelectableText(
-                            result.raws.join('\n'),
-                            style: TextStyle(
-                              fontFamily: 'monospace',
-                              fontSize: 12,
-                              color: Theme.of(context).colorScheme.primary,
+                FilledButton.icon(
+                  onPressed: _decode,
+                  icon: const Icon(Icons.manage_search),
+                  label: Text(context.l10n.decoderDecode),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            for (final result in _results)
+              Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            result.decoded
+                                ? Icons.check_circle_outline
+                                : Icons.warning_amber_rounded,
+                            size: 18,
+                            color: result.decoded
+                                ? appColors.success
+                                : appColors.warning,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: SelectableText(
+                              result.raws.join('\n'),
+                              style: TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 12,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
                           ),
-                        ),
-                        CopyIconButton(
-                          text: result.raws.join('\n'),
-                          message: context.l10n.receptionFrameCopied,
-                          padding: EdgeInsets.zero,
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Text(
-                        result.status,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: result.decoded
-                              ? appColors.success
-                              : appColors.warning,
-                        ),
+                          CopyIconButton(
+                            text: result.raws.join('\n'),
+                            message: context.l10n.receptionFrameCopied,
+                            padding: EdgeInsets.zero,
+                          ),
+                        ],
                       ),
-                    ),
-                    if (result.raws.isNotEmpty)
-                      Builder(builder: (context) {
-                        final (tag, _) = NmeaTagBlock.split(result.raws.first);
-                        if (tag == null) return const SizedBox.shrink();
-                        final parts = <String>[
-                          if (tag.sourceId != null)
-                            context.l10n.decoderTagSource(tag.sourceId!),
-                          if (tag.timeMs != null) 't:${tag.timeMs}',
-                          if (tag.relativeTime != null)
-                            'r:${tag.relativeTime}',
-                        ];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(
-                            context.l10n.decoderTagBlock(
-                              parts.isEmpty ? tag.raw : parts.join(' · '),
-                            ),
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
-                            ),
-                          ),
-                        );
-                      }),
-                    for (final raw in result.raws)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: NmeaFieldBreakdown(sentence: raw),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(
+                          result.status,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: result.decoded
+                                ? appColors.success
+                                : appColors.warning,
+                          ),
+                        ),
                       ),
-                    if (result.decoded)
-                      for (final field in result.fields)
+                      if (result.raws.isNotEmpty)
+                        Builder(
+                          builder: (context) {
+                            final (tag, _) = NmeaTagBlock.split(
+                              result.raws.first,
+                            );
+                            if (tag == null) return const SizedBox.shrink();
+                            final parts = <String>[
+                              if (tag.sourceId != null)
+                                context.l10n.decoderTagSource(tag.sourceId!),
+                              if (tag.timeMs != null) 't:${tag.timeMs}',
+                              if (tag.relativeTime != null)
+                                'r:${tag.relativeTime}',
+                            ];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(
+                                context.l10n.decoderTagBlock(
+                                  parts.isEmpty ? tag.raw : parts.join(' · '),
+                                ),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      for (final raw in result.raws)
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 2),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 200,
-                                child: Text(
-                                  field.$1,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: NmeaFieldBreakdown(sentence: raw),
+                        ),
+                      if (result.decoded)
+                        for (final field in result.fields)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 200,
+                                  child: Text(
+                                    field.$1,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                child: SelectableText(
-                                  field.$2,
-                                  style: const TextStyle(fontSize: 12),
+                                Expanded(
+                                  child: SelectableText(
+                                    field.$2,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 }

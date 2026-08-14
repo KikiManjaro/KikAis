@@ -30,10 +30,7 @@ class BoatInfoBubble extends StatelessWidget {
             width: 180,
             child: Text(
               title,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
             ),
           ),
           Expanded(
@@ -48,15 +45,12 @@ class BoatInfoBubble extends StatelessWidget {
   }
 
   Widget _section(String title) => Padding(
-        padding: const EdgeInsets.only(top: 8, bottom: 2),
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.only(top: 8, bottom: 2),
+    child: Text(
+      title,
+      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +63,7 @@ class BoatInfoBubble extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(12, 10, 6, 6),
           child: Row(
             children: [
-              Icon(
-                _kindIcon(boat.kind),
-                color: scheme.primary,
-                size: 20,
-              ),
+              Icon(_kindIcon(boat.kind), color: scheme.primary, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -88,10 +78,13 @@ class BoatInfoBubble extends StatelessWidget {
                 ),
               ),
               if (onClose != null)
-                IconButton(
-                  icon: const Icon(Icons.close, size: 18),
-                  visualDensity: VisualDensity.compact,
-                  onPressed: onClose,
+                HoverTooltip(
+                  message: context.l10n.tooltipClose,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, size: 18),
+                    visualDensity: VisualDensity.compact,
+                    onPressed: onClose,
+                  ),
                 ),
             ],
           ),
@@ -101,10 +94,7 @@ class BoatInfoBubble extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
             child: DefaultTextStyle(
-              style: TextStyle(
-                fontSize: 12,
-                color: scheme.onSurface,
-              ),
+              style: TextStyle(fontSize: 12, color: scheme.onSurface),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -113,7 +103,12 @@ class BoatInfoBubble extends StatelessWidget {
                   buildRow(l10n.fMmsi, boat.mmsi),
                   buildRow(l10n.fName, boat.name),
                   if (boat.kind == BoatKind.aton) ...[
-                    buildRow(l10n.bubbleAidType, boat.aidType == null ? null : valueLabel(l10n, boat.aidType!)),
+                    buildRow(
+                      l10n.bubbleAidType,
+                      boat.aidType == null
+                          ? null
+                          : valueLabel(l10n, boat.aidType!),
+                    ),
                     buildRow(l10n.bubbleVirtual, boat.virtualAid),
                   ],
                   if (boat.kind == BoatKind.aircraft)
@@ -124,14 +119,8 @@ class BoatInfoBubble extends StatelessWidget {
                   buildRow(l10n.bubbleCallSign, boat.callSign),
                   buildRow(l10n.fImo, boat.imoNumber),
                   _section(l10n.bubblePosNav),
-                  buildRow(
-                    l10n.fLatitude,
-                    boat.lat?.toStringAsFixed(5),
-                  ),
-                  buildRow(
-                    l10n.fLongitude,
-                    boat.lon?.toStringAsFixed(5),
-                  ),
+                  buildRow(l10n.fLatitude, boat.lat?.toStringAsFixed(5)),
+                  buildRow(l10n.fLongitude, boat.lon?.toStringAsFixed(5)),
                   buildRow(
                     l10n.bubbleHeading,
                     boat.heading != null
@@ -150,23 +139,38 @@ class BoatInfoBubble extends StatelessWidget {
                         ? '${boat.sog!.toStringAsFixed(1)} kn'
                         : null,
                   ),
-                  buildRow(l10n.fNavStatus, boat.navigationStatus == null ? null : valueLabel(l10n, boat.navigationStatus!)),
+                  buildRow(
+                    l10n.fNavStatus,
+                    boat.navigationStatus == null
+                        ? null
+                        : valueLabel(l10n, boat.navigationStatus!),
+                  ),
                   buildRow(l10n.fTimestamp, boat.timestamp),
                   buildRow(l10n.fRaim, boat.raimFlag),
                   _section(l10n.bubbleVesselDetails),
-                  buildRow(l10n.bubbleType, boat.vesselType == null ? null : valueLabel(l10n, boat.vesselType!)),
+                  buildRow(
+                    l10n.bubbleType,
+                    boat.vesselType == null
+                        ? null
+                        : valueLabel(l10n, boat.vesselType!),
+                  ),
                   buildRow(l10n.bubbleTypeInt, boat.vesselTypeInt),
                   buildRow(
                     l10n.bubbleDimsBowStern,
                     '${boat.dimensionBow ?? '-'} / '
-                        '${boat.dimensionStern ?? '-'}',
+                    '${boat.dimensionStern ?? '-'}',
                   ),
                   buildRow(
                     l10n.bubbleDimsPortStarboard,
                     '${boat.dimensionPort ?? '-'} / '
-                        '${boat.dimensionStarboard ?? '-'}',
+                    '${boat.dimensionStarboard ?? '-'}',
                   ),
-                  buildRow(l10n.fEpfdFixType, boat.epfdFixType == null ? null : valueLabel(l10n, boat.epfdFixType!)),
+                  buildRow(
+                    l10n.fEpfdFixType,
+                    boat.epfdFixType == null
+                        ? null
+                        : valueLabel(l10n, boat.epfdFixType!),
+                  ),
                   buildRow(l10n.fRegionalReserved, boat.regionalReserved),
                   buildRow(l10n.fAssignedMode, boat.assignedMode),
                   buildRow(l10n.fDte, boat.dte),
@@ -176,7 +180,7 @@ class BoatInfoBubble extends StatelessWidget {
                   buildRow(
                     l10n.fEta,
                     '${boat.etaDay ?? '-'} / ${boat.etaMonth ?? '-'} '
-                        '${boat.etaHour ?? '-'}:${boat.etaMinute ?? '-'}',
+                    '${boat.etaHour ?? '-'}:${boat.etaMinute ?? '-'}',
                   ),
                 ],
               ),
@@ -190,11 +194,11 @@ class BoatInfoBubble extends StatelessWidget {
   }
 
   IconData _kindIcon(BoatKind kind) => switch (kind) {
-        BoatKind.vessel => Icons.directions_boat,
-        BoatKind.aircraft => Icons.flight,
-        BoatKind.aton => Icons.waves,
-        BoatKind.station => Icons.cell_tower,
-      };
+    BoatKind.vessel => Icons.directions_boat,
+    BoatKind.aircraft => Icons.flight,
+    BoatKind.aton => Icons.waves,
+    BoatKind.station => Icons.cell_tower,
+  };
 }
 
 /// Bottom panel listing the raw NMEA frames that decoded for this boat, with
@@ -299,10 +303,7 @@ class _FrameRow extends StatelessWidget {
         children: [
           Text(
             _time(frame.time),
-            style: TextStyle(
-              fontSize: 10,
-              color: scheme.onSurfaceVariant,
-            ),
+            style: TextStyle(fontSize: 10, color: scheme.onSurfaceVariant),
           ),
           const SizedBox(width: 8),
           if (frame.feed != null) ...[

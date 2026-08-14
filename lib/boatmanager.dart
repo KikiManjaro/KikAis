@@ -28,6 +28,11 @@ class BoatManager extends ChangeNotifier {
   bool decodeEnabled = true;
   bool validateChecksum = true;
 
+  /// Incremented whenever the set of boats or their positions change. The map
+  /// page uses it to memoize the visible-boat list so that unrelated rebuilds
+  /// (button clicks, settings toggles) don't re-sync every animated boat.
+  int boatsVersion = 0;
+
   int invalidChecksumCount = 0;
   int droppedFragmentCount = 0;
   int parseErrorCount = 0;
@@ -321,6 +326,7 @@ class BoatManager extends ChangeNotifier {
       boat.callSign = message.callSign.trim();
     }
 
+    boatsVersion++;
     _notifyThrottled();
   }
 
@@ -352,6 +358,7 @@ class BoatManager extends ChangeNotifier {
       return last == null || last.isBefore(cutoff);
     });
     if (_boats.length != before) {
+      boatsVersion++;
       notifyListeners();
     }
   }

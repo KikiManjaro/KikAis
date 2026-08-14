@@ -206,6 +206,7 @@
   "simMessagesSection": "报文",
   "simApplyFleet": "应用舰队",
   "simRegenerateFleet": "重新生成舰队",
+  "simGenerating": "正在生成…",
   "simLiveFleet": "实时舰队",
   "simFleetSummary": "{boats} 艘船 · 发出 {frames} 帧",
 
@@ -939,5 +940,50 @@
   "updateChecking": "正在检查更新…",
   "updateNewVersion": "新版本 {version}",
   "updateUpToDate": "您已是最新版本。",
-  "updateCheckFailed": "检查更新失败。"
+  "updateCheckFailed": "检查更新失败。",
+
+  "tooltipLanguage": "更改界面语言。十种语言均已完整翻译；选择「自动」可跟随操作系统语言。",
+  "tooltipTheme": "更改配色主题：深色、浅色或高对比度。高对比度可提高可读性。",
+  "tooltipUpdate": "检查是否有新版本。如果有，版本号旁边会出现一个绿色徽章。",
+
+  "tooltipMapSearch": "按名称、MMSI 或 IMO 编号搜索船舶，然后在地图上居中并跟踪该船。",
+  "tooltipMapFilters": "筛选显示的船舶：按类型、航行状态、国家（MID）、速度或仅限名称。",
+  "tooltipMapCluster": "切换船舶聚合。启用后，附近的船舶会合并为一个带计数的标记。",
+  "tooltipMapTrails": "切换航迹。启用后，每艘船都会在地图上绘制其最近路线。",
+  "tooltipMapVectors": "切换航向矢量。启用后，每艘船都会显示一个沿航向的箭头。",
+  "tooltipMapSendToMap": "切换是否将解码后的船舶发送到地图。启用后，每艘解码的船舶都会显示为标记。",
+  "tooltipMapBasemap": "选择地图底图。「自动」跟随当前主题。",
+
+  "tooltipSendAdd": "添加新的发送目标（UDP 或 TCP，客户端或服务器）。收到的 AIS 帧会转发到每个已启用的目标。",
+  "tooltipSendEdit": "编辑此目标的名称、协议、主机、端口和帧格式。",
+  "tooltipSendDelete": "删除此目标。此操作无法撤销。",
+  "tooltipSendToggle": "启用或禁用转发到此目标。",
+  "tooltipSendLocked": "转发器运行时目标被锁定。请先停止「接收」标签页中的源，再编辑它们。",
+
+  "tooltipReceptionAddSource": "添加数据源：网络源（UDP/TCP/gpsd）、录制的 NMEA 语句文件或串行端口。",
+  "tooltipReceptionStart": "开始接收所有已启用来源的 AIS 帧并转发。",
+  "tooltipReceptionStop": "停止接收和转发 AIS 帧。",
+  "tooltipReceptionFeed": "启用或禁用此 AIS 源。",
+  "tooltipReceptionSaveLogs": "将连接日志保存到文本文件。",
+  "tooltipReceptionClearLogs": "清除连接日志。",
+  "tooltipReceptionRemoveSource": "移除此 AIS 源。",
+  "tooltipReceptionValidateChecksums": "启用后，校验和无效的 NMEA 帧将被拒绝。",
+  "tooltipReceptionImportFormat": "接收到的帧在解码前如何规范化。",
+  "tooltipReceptionLoop": "启用后，文件回放在到达末尾后从头开始。",
+  "tooltipReceptionSpeed": "回放速度倍率（1x = 实时）。",
+  "tooltipReceptionSerialPorts": "刷新可用串行端口列表。",
+
+  "tooltipSimApply": "应用当前设置并生成船队。大型船队在后台生成。",
+  "tooltipSimGenerate": "使用新种子生成新的随机船队，然后应用。",
+  "tooltipSimOpenReception": "前往「接收」标签页以启动模拟源。",
+
+  "tooltipDecoderClear": "清除解码器输入和结果。",
+  "tooltipStatsDecode": "暂停或恢复对收到的 AIS 帧的解码。",
+  "tooltipStatsReset": "将所有统计计数器归零。",
+  "tooltipDocOpenTab": "在自己的标签页中打开此部分。",
+  "tooltipEditorInject": "将组成的消息注入解码器，就像它被接收到一样。",
+  "tooltipEditorSend": "将组成的消息发送到每个已启用的发送目标。",
+  "tooltipCopy": "复制到剪贴板。",
+  "tooltipClose": "关闭此面板。",
+  "tooltipBrowse": "浏览选择文件。"
 }

@@ -75,16 +75,25 @@ class AppColors extends ThemeExtension<AppColors> {
 }
 
 /// Builds the full [ThemeData] for the requested [AppTheme].
+///
+/// Results are cached per [AppTheme] so that widget rebuilds triggered by
+/// unrelated settings changes (locale, targets, map toggles...) don't create a
+/// brand-new [ThemeData] every time, which would otherwise cascade a theme
+/// change to the whole widget tree via `Theme.of(context)`.
 ThemeData buildAppTheme(AppTheme theme) {
-  switch (theme) {
-    case AppTheme.dark:
-      return _darkTheme();
-    case AppTheme.light:
-      return _lightTheme();
-    case AppTheme.highContrast:
-      return _highContrastTheme();
-  }
+  return _themeCache.putIfAbsent(theme, () {
+    switch (theme) {
+      case AppTheme.dark:
+        return _darkTheme();
+      case AppTheme.light:
+        return _lightTheme();
+      case AppTheme.highContrast:
+        return _highContrastTheme();
+    }
+  });
 }
+
+final Map<AppTheme, ThemeData> _themeCache = {};
 
 ThemeData _darkTheme() {
   final scheme = ColorScheme.dark(
@@ -230,10 +239,6 @@ ThemeData _base({
       color: scheme.outlineVariant.withValues(alpha: 0.6),
     ),
     tooltipTheme: TooltipThemeData(
-      // The Windows engine crashes (NULL_PTR_READ in UpdateTooltipPosition)
-      // when hover tooltips show/dismiss; keep tooltips programmatic-only to
-      // avoid triggering the engine bug. See flutter/flutter#182444.
-      triggerMode: TooltipTriggerMode.manual,
       textStyle: const TextStyle(color: Colors.white, fontSize: 12),
       decoration: BoxDecoration(
         color: tooltipBackground,

@@ -607,6 +607,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get simRegenerateFleet => '船団を再生成';
 
   @override
+  String get simGenerating => '生成中…';
+
+  @override
   String get simLiveFleet => 'ライブ船団';
 
   @override
@@ -2859,4 +2862,128 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get updateCheckFailed => '更新の確認に失敗しました。';
+
+  @override
+  String get tooltipLanguage =>
+      'インターフェースの言語を変更します。10言語すべて完全に翻訳されています。「自動」を選ぶとOSの言語に従います。';
+
+  @override
+  String get tooltipTheme =>
+      '配色テーマを変更します：ダーク、ライト、高コントラスト。高コントラストは読みやすさを向上させます。';
+
+  @override
+  String get tooltipUpdate => '新しいバージョンがあるか確認します。ある場合はバージョン番号の横に緑のバッジが表示されます。';
+
+  @override
+  String get tooltipMapSearch => '名前、MMSI、IMO番号で船舶を検索し、地図をその船に合わせて追跡します。';
+
+  @override
+  String get tooltipMapFilters => '表示する船舶を絞り込みます：種類、航行状態、国（MID）、速度、名前のみなど。';
+
+  @override
+  String get tooltipMapCluster =>
+      '船舶のクラスタリングを切り替えます。有効にすると近くの船舶が1つのマーカーにまとめられ、数が表示されます。';
+
+  @override
+  String get tooltipMapTrails => '航跡を切り替えます。有効にすると各船舶が最近の経路を地図上に描きます。';
+
+  @override
+  String get tooltipMapVectors => '針路ベクトルを切り替えます。有効にすると各船舶が進行方向に矢印を表示します。';
+
+  @override
+  String get tooltipMapSendToMap =>
+      'デコードした船舶を地図に送るかどうかを切り替えます。有効にするとデコードした船舶がすべてマーカーとして表示されます。';
+
+  @override
+  String get tooltipMapBasemap => '地図の背景を選択します。「自動」は現在のテーマに従います。';
+
+  @override
+  String get tooltipSendAdd =>
+      '送信先を追加します（UDPまたはTCP、クライアントまたはサーバー）。受信したAISフレームは有効な各送信先へ転送されます。';
+
+  @override
+  String get tooltipSendEdit => 'この送信先の名前、プロトコル、ホスト、ポート、フレーム形式を編集します。';
+
+  @override
+  String get tooltipSendDelete => 'この送信先を削除します。この操作は取り消せません。';
+
+  @override
+  String get tooltipSendToggle => 'この送信先への転送を有効または無効にします。';
+
+  @override
+  String get tooltipSendLocked => '転送中は送信先はロックされています。編集するには受信タブでソースを停止してください。';
+
+  @override
+  String get tooltipReceptionAddSource =>
+      'データソースを追加します：ネットワークソース（UDP/TCP/gpsd）、録音したNMEA文のファイル、またはシリアルポート。';
+
+  @override
+  String get tooltipReceptionStart => '有効なすべてのソースからのAISフレームの受信と転送を開始します。';
+
+  @override
+  String get tooltipReceptionStop => 'AISフレームの受信と転送を停止します。';
+
+  @override
+  String get tooltipReceptionFeed => 'このAISソースを有効または無効にします。';
+
+  @override
+  String get tooltipReceptionSaveLogs => '接続ログをテキストファイルに保存します。';
+
+  @override
+  String get tooltipReceptionClearLogs => '接続ログを消去します。';
+
+  @override
+  String get tooltipReceptionRemoveSource => 'このAISソースを削除します。';
+
+  @override
+  String get tooltipReceptionValidateChecksums =>
+      '有効にすると、NMEAチェックサムが無効なフレームは拒否されます。';
+
+  @override
+  String get tooltipReceptionImportFormat => '受信したフレームがデコード前にどのように正規化されるか。';
+
+  @override
+  String get tooltipReceptionLoop => '有効にすると、ファイルの再生は末尾に達した後、最初から再開します。';
+
+  @override
+  String get tooltipReceptionSpeed => '再生速度倍率（1x＝リアルタイム）。';
+
+  @override
+  String get tooltipReceptionSerialPorts => '利用可能なシリアルポートのリストを更新します。';
+
+  @override
+  String get tooltipSimApply => '現在の設定を適用して船団を生成します。大規模な船団はバックグラウンドで生成されます。';
+
+  @override
+  String get tooltipSimGenerate => '新しいシードで新しいランダムな船団を生成し、適用します。';
+
+  @override
+  String get tooltipSimOpenReception => 'シミュレーションソースを開始するには受信タブに移動します。';
+
+  @override
+  String get tooltipDecoderClear => 'デコーダーの入力と結果を消去します。';
+
+  @override
+  String get tooltipStatsDecode => '受信したAISフレームのデコードを一時停止または再開します。';
+
+  @override
+  String get tooltipStatsReset => 'すべての統計カウンターをゼロにリセットします。';
+
+  @override
+  String get tooltipDocOpenTab => 'このセクションを独自のタブで開きます。';
+
+  @override
+  String get tooltipEditorInject => '作成したメッセージを受信したかのようにデコーダーに注入します。';
+
+  @override
+  String get tooltipEditorSend => '作成したメッセージを有効な各送信先へ送信します。';
+
+  @override
+  String get tooltipCopy => 'クリップボードにコピーします。';
+
+  @override
+  String get tooltipClose => 'このパネルを閉じます。';
+
+  @override
+  String get tooltipBrowse => 'ファイルを参照して選択します。';
 }

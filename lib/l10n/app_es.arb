@@ -206,6 +206,7 @@
   "simMessagesSection": "Mensajes",
   "simApplyFleet": "Aplicar flota",
   "simRegenerateFleet": "Regenerar flota",
+  "simGenerating": "Generando…",
   "simLiveFleet": "Flota en vivo",
   "simFleetSummary": "{boats} barcos · {frames} tramas emitidas",
 
@@ -939,5 +940,50 @@
   "updateChecking": "Buscando actualizaciones…",
   "updateNewVersion": "Nueva versión {version}",
   "updateUpToDate": "Estás actualizado.",
-  "updateCheckFailed": "Error al buscar actualizaciones."
+  "updateCheckFailed": "Error al buscar actualizaciones.",
+
+  "tooltipLanguage": "Cambiar el idioma de la interfaz. Los diez idiomas están totalmente traducidos; elige «Automático» para seguir el idioma del sistema.",
+  "tooltipTheme": "Cambiar el tema de colores: oscuro, claro o alto contraste. El alto contraste mejora la legibilidad.",
+  "tooltipUpdate": "Buscar una nueva versión. Si hay alguna, aparece una insignia verde junto al número de versión.",
+
+  "tooltipMapSearch": "Buscar un buque por nombre, MMSI o número IMO y centrar y seguir el mapa sobre él.",
+  "tooltipMapFilters": "Filtrar los buques mostrados: por tipo, estado de navegación, país (MID), velocidad o solo nombre.",
+  "tooltipMapCluster": "Alternar la agrupación de buques. Cuando está activada, los buques cercanos se agrupan en un marcador con un contador.",
+  "tooltipMapTrails": "Alternar las estelas. Cuando está activada, cada buque dibuja su recorrido reciente en el mapa.",
+  "tooltipMapVectors": "Alternar los vectores de rumbo. Cuando está activada, cada buque muestra una flecha en su dirección.",
+  "tooltipMapSendToMap": "Alternar el envío de buques decodificados al mapa. Cuando está activada, cada buque decodificado aparece como marcador.",
+  "tooltipMapBasemap": "Elegir el fondo del mapa. «Automático» sigue el tema actual.",
+
+  "tooltipSendAdd": "Añadir un destino de envío (UDP o TCP, cliente o servidor). Las tramas AIS recibidas se reenvían a cada destino activado.",
+  "tooltipSendEdit": "Editar el nombre, protocolo, host, puerto y formato de trama de este destino.",
+  "tooltipSendDelete": "Eliminar este destino. Esta acción no se puede deshacer.",
+  "tooltipSendToggle": "Activar o desactivar el reenvío a este destino.",
+  "tooltipSendLocked": "Los destinos están bloqueados mientras el reenviador está en marcha. Detén la fuente en la pestaña Recepción para editarlos.",
+
+  "tooltipReceptionAddSource": "Añadir una fuente de datos: una fuente de red (UDP/TCP/gpsd), un archivo de sentencias NMEA grabadas o un puerto serie.",
+  "tooltipReceptionStart": "Iniciar la recepción y el reenvío de tramas AIS desde todas las fuentes activadas.",
+  "tooltipReceptionStop": "Detener la recepción y el reenvío de tramas AIS.",
+  "tooltipReceptionFeed": "Activar o desactivar esta fuente AIS.",
+  "tooltipReceptionSaveLogs": "Guardar el registro de conexión en un archivo de texto.",
+  "tooltipReceptionClearLogs": "Borrar el registro de conexión.",
+  "tooltipReceptionRemoveSource": "Eliminar esta fuente AIS.",
+  "tooltipReceptionValidateChecksums": "Cuando está activado, se rechazan las tramas con suma de comprobación NMEA no válida.",
+  "tooltipReceptionImportFormat": "Cómo se normalizan las tramas recibidas antes de decodificarlas.",
+  "tooltipReceptionLoop": "Cuando está activado, la reproducción del archivo vuelve a empezar tras llegar al final.",
+  "tooltipReceptionSpeed": "Multiplicador de velocidad de reproducción (1x = tiempo real).",
+  "tooltipReceptionSerialPorts": "Actualizar la lista de puertos serie disponibles.",
+
+  "tooltipSimApply": "Aplicar la configuración actual y generar la flota. Las flotas grandes se generan en segundo plano.",
+  "tooltipSimGenerate": "Generar una nueva flota aleatoria con una semilla nueva y aplicarla.",
+  "tooltipSimOpenReception": "Ir a la pestaña Recepción para iniciar la fuente de simulación.",
+
+  "tooltipDecoderClear": "Borrar la entrada y los resultados del decodificador.",
+  "tooltipStatsDecode": "Pausar o reanudar el decodificado de las tramas AIS recibidas.",
+  "tooltipStatsReset": "Poner a cero todos los contadores de estadísticas.",
+  "tooltipDocOpenTab": "Abrir esta sección en su propia pestaña.",
+  "tooltipEditorInject": "Inyectar el mensaje compuesto en el decodificador como si hubiera sido recibido.",
+  "tooltipEditorSend": "Enviar el mensaje compuesto a cada destino de envío activado.",
+  "tooltipCopy": "Copiar al portapapeles.",
+  "tooltipClose": "Cerrar este panel.",
+  "tooltipBrowse": "Buscar un archivo."
 }

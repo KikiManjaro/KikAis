@@ -23,22 +23,50 @@ class SimulatorService extends ChangeNotifier {
   Timer? _timer;
   int _tick = 0;
 
+  /// True while a background fleet generation is in flight.
+  bool generating = false;
+
+  /// Below this fleet size, generation is done synchronously: building a few
+  /// hundred vessels costs well under a frame, so an isolate round-trip would
+  /// only add latency. Larger fleets are generated off the UI thread.
+  static const int _syncGenerationThreshold = 1000;
+
   SimulatorService({SimFleetConfig? config}) : config = config ?? SimFleetConfig() {
     fleet.generate(this.config);
   }
 
-  void setConfig(SimFleetConfig next) {
+  Future<void> setConfig(SimFleetConfig next) async {
     config = next;
-    fleet.generate(next);
+    await _generateInBackground(next);
     if (isRunning) {
       _restartTimer();
     }
     notifyListeners();
   }
 
-  void regenerate() {
-    fleet.generate(config);
+  Future<void> regenerate() async {
+    await _generateInBackground(config);
     notifyListeners();
+  }
+
+  Future<void> _generateInBackground(SimFleetConfig next, {int? seed}) async {
+    if (generating) return;
+    if (next.boatCount <= _syncGenerationThreshold) {
+      fleet.generate(next, seed: seed ?? next.seed);
+      return;
+    }
+    generating = true;
+    try {
+      final boats = await compute(
+        generateFleetIsolate,
+        SimFleetGenerationArgs(next, seed ?? next.seed),
+      );
+      fleet.boats
+        ..clear()
+        ..addAll(boats);
+    } finally {
+      generating = false;
+    }
   }
 
   void start() {

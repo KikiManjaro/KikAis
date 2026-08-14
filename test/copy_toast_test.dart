@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kik_ais/widgets.dart';
 
+import 'l10n_test_utils.dart';
+
 void main() {
   testWidgets('copy button shows a mini toast next to it', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(
+      withLocalizations(
+        const Scaffold(
           body: Center(
             child: CopyIconButton(text: 'hello', message: 'Copied!'),
           ),

@@ -206,6 +206,7 @@
   "simMessagesSection": "Messaggi",
   "simApplyFleet": "Applica flotta",
   "simRegenerateFleet": "Rigenera flotta",
+  "simGenerating": "Generazione…",
   "simLiveFleet": "Flotta live",
   "simFleetSummary": "{boats} barche · {frames} frame emessi",
 
@@ -939,6 +940,51 @@
   "updateChecking": "Controllo aggiornamenti…",
   "updateNewVersion": "Nuova versione {version}",
   "updateUpToDate": "Sei aggiornato.",
-  "updateCheckFailed": "Controllo aggiornamenti non riuscito."
+  "updateCheckFailed": "Controllo aggiornamenti non riuscito.",
+
+  "tooltipLanguage": "Cambiare la lingua dell'interfaccia. Tutte e dieci le lingue sono completamente tradotte; scegli \"Auto\" per seguire la lingua del sistema.",
+  "tooltipTheme": "Cambiare il tema dei colori: scuro, chiaro o ad alto contrasto. L'alto contrasto migliora la leggibilità.",
+  "tooltipUpdate": "Verificare la presenza di una nuova versione. Se disponibile, appare un badge verde accanto al numero di versione.",
+
+  "tooltipMapSearch": "Cercare un'imbarcazione per nome, MMSI o numero IMO, quindi centrare e seguire la mappa su di essa.",
+  "tooltipMapFilters": "Filtrare le imbarcazioni visualizzate: per tipo, stato di navigazione, paese (MID), velocità o solo nome.",
+  "tooltipMapCluster": "Attiva/disattiva il raggruppamento delle imbarcazioni. Quando è attivo, le imbarcazioni vicine vengono raggruppate in un unico marker con conteggio.",
+  "tooltipMapTrails": "Attiva/disattiva le tracce. Quando sono attive, ogni imbarcazione disegna il proprio percorso recente sulla mappa.",
+  "tooltipMapVectors": "Attiva/disattiva i vettori di rotta. Quando sono attivi, ogni imbarcazione mostra una freccia lungo la propria rotta.",
+  "tooltipMapSendToMap": "Attiva/disattiva l'invio delle imbarcazioni decodificate alla mappa. Quando è attivo, ogni imbarcazione decodificata appare come marker.",
+  "tooltipMapBasemap": "Scegliere lo sfondo della mappa. \"Auto\" segue il tema corrente.",
+
+  "tooltipSendAdd": "Aggiungere una nuova destinazione di invio (UDP o TCP, client o server). I frame AIS ricevuti vengono inoltrati a ogni destinazione attivata.",
+  "tooltipSendEdit": "Modificare nome, protocollo, host, porta e formato dei frame di questa destinazione.",
+  "tooltipSendDelete": "Eliminare questa destinazione. L'operazione non può essere annullata.",
+  "tooltipSendToggle": "Attivare o disattivare l'inoltro a questa destinazione.",
+  "tooltipSendLocked": "Le destinazioni sono bloccate mentre il forwarder è in esecuzione. Ferma la sorgente nella scheda Ricezione per modificarle.",
+
+  "tooltipReceptionAddSource": "Aggiungere una sorgente dati: un feed di rete (UDP/TCP/gpsd), un file di frasi NMEA registrate o una porta seriale.",
+  "tooltipReceptionStart": "Avviare la ricezione e l'inoltro dei frame AIS da tutte le sorgenti attivate.",
+  "tooltipReceptionStop": "Fermare la ricezione e l'inoltro dei frame AIS.",
+  "tooltipReceptionFeed": "Attivare o disattivare questa sorgente AIS.",
+  "tooltipReceptionSaveLogs": "Salvare il registro di connessione in un file di testo.",
+  "tooltipReceptionClearLogs": "Cancellare il registro di connessione.",
+  "tooltipReceptionRemoveSource": "Rimuovere questa sorgente AIS.",
+  "tooltipReceptionValidateChecksums": "Quando è attivo, i frame con checksum NMEA non valido vengono rifiutati.",
+  "tooltipReceptionImportFormat": "Come i frame ricevuti vengono normalizzati prima della decodifica.",
+  "tooltipReceptionLoop": "Quando è attivo, la riproduzione del file ricomincia dall'inizio dopo la fine.",
+  "tooltipReceptionSpeed": "Moltiplicatore di velocità di riproduzione (1x = tempo reale).",
+  "tooltipReceptionSerialPorts": "Aggiornare l'elenco delle porte seriali disponibili.",
+
+  "tooltipSimApply": "Applicare le impostazioni correnti e generare la flotta. Le flotte grandi vengono generate in background.",
+  "tooltipSimGenerate": "Generare una nuova flotta casuale con un nuovo seed, quindi applicarla.",
+  "tooltipSimOpenReception": "Andare alla scheda Ricezione per avviare il feed di simulazione.",
+
+  "tooltipDecoderClear": "Cancellare l'input e i risultati del decodificatore.",
+  "tooltipStatsDecode": "Mettere in pausa o riprendere la decodifica dei frame AIS ricevuti.",
+  "tooltipStatsReset": "Azzerare tutti i contatori delle statistiche.",
+  "tooltipDocOpenTab": "Aprire questa sezione nella propria scheda.",
+  "tooltipEditorInject": "Iniettare il messaggio composto nel decodificatore come se fosse stato ricevuto.",
+  "tooltipEditorSend": "Inviare il messaggio composto a ogni destinazione di invio attivata.",
+  "tooltipCopy": "Copia negli appunti.",
+  "tooltipClose": "Chiudi questo pannello.",
+  "tooltipBrowse": "Sfoglia per scegliere un file."
 }
 

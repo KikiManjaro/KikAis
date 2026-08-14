@@ -13,6 +13,8 @@ import 'bubble_boat.dart';
 import 'l10n/country_names.dart';
 import 'l10n_ext.dart';
 import 'mid_countries.dart';
+import 'themes.dart';
+import 'widgets.dart';
 
 class MapFilters {
   String? vesselType;
@@ -51,6 +53,12 @@ class _WorldMapPageState extends State<WorldMapPage> {
   String? _hoverName;
   late BoatManager _boatManager;
   late AppSettings _settings;
+
+  /// Memoized result of [_visibleBoats], keyed by [BoatManager.boatsVersion]
+  /// and the current filters so unrelated rebuilds reuse the same list instance
+  /// (and [BoatMapLayer] skips re-syncing every animated boat).
+  List<Boat>? _cachedVisibleBoats;
+  String? _cachedVisibleKey;
 
   @override
   void initState() {
@@ -98,13 +106,13 @@ class _WorldMapPageState extends State<WorldMapPage> {
       clusterEnabled = !clusterEnabled;
     });
     _settings.mapClusterEnabled = clusterEnabled;
-    _settings.save();
+    _settings.saveMapClusterEnabled(clusterEnabled);
   }
 
   void toggleCompute() {
     _boatManager.setSendToMap(!_boatManager.sendToMap);
     _settings.sendToMap = _boatManager.sendToMap;
-    _settings.save();
+    _settings.saveSendToMap(_boatManager.sendToMap);
   }
 
   bool _matchesFilters(Boat boat) {
@@ -126,7 +134,14 @@ class _WorldMapPageState extends State<WorldMapPage> {
   }
 
   List<Boat> _visibleBoats() {
-    return _boatManager.boats
+    final filters = _filters;
+    final key =
+        '${_boatManager.boatsVersion}|${filters.vesselType}|${filters.navigationStatus}|${filters.country}|${filters.minSog}|${filters.maxSog}|${filters.onlyNamed}';
+    if (_cachedVisibleKey == key && _cachedVisibleBoats != null) {
+      return _cachedVisibleBoats!;
+    }
+    _cachedVisibleKey = key;
+    return _cachedVisibleBoats = _boatManager.boats
         .where((b) => b.lat != null && b.lon != null && _matchesFilters(b))
         .toList();
   }
@@ -242,10 +257,12 @@ class _WorldMapPageState extends State<WorldMapPage> {
       ..maxSog = _filters.maxSog
       ..onlyNamed = _filters.onlyNamed;
 
-    final minSogController =
-        TextEditingController(text: _filters.minSog?.toString() ?? '');
-    final maxSogController =
-        TextEditingController(text: _filters.maxSog?.toString() ?? '');
+    final minSogController = TextEditingController(
+      text: _filters.minSog?.toString() ?? '',
+    );
+    final maxSogController = TextEditingController(
+      text: _filters.maxSog?.toString() ?? '',
+    );
 
     await showDialog<void>(
       context: context,
@@ -277,74 +294,75 @@ class _WorldMapPageState extends State<WorldMapPage> {
             );
           }
 
-            return AlertDialog(
-              title: Text(ctx.l10n.mapFilters),
-              content: SizedBox(
-                width: 420,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      buildDropdown<String>(
-                        label: ctx.l10n.mapVesselType,
-                        options: types,
-                        value: draft.vesselType,
-                        labelOf: (t) => t,
-                        onChanged: (v) => draft.vesselType = v,
-                      ),
-                      const SizedBox(height: 12),
-                      buildDropdown<String>(
-                        label: ctx.l10n.mapNavigationStatus,
-                        options: statuses,
-                        value: draft.navigationStatus,
-                        labelOf: (t) => t,
-                        onChanged: (v) => draft.navigationStatus = v,
-                      ),
-                      const SizedBox(height: 12),
-                      buildDropdown<String>(
-                        label: ctx.l10n.mapCountry,
-                        options: countries,
-                        value: draft.country,
-                        labelOf: (t) => localizedCountryName(t, ctx),
-                        onChanged: (v) => draft.country = v,
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: minSogController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: ctx.l10n.mapMinSog,
-                              ),
-                              onChanged: (_) => setDialogState(() {}),
+          return AlertDialog(
+            title: Text(ctx.l10n.mapFilters),
+            content: SizedBox(
+              width: 420,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    buildDropdown<String>(
+                      label: ctx.l10n.mapVesselType,
+                      options: types,
+                      value: draft.vesselType,
+                      labelOf: (t) => t,
+                      onChanged: (v) => draft.vesselType = v,
+                    ),
+                    const SizedBox(height: 12),
+                    buildDropdown<String>(
+                      label: ctx.l10n.mapNavigationStatus,
+                      options: statuses,
+                      value: draft.navigationStatus,
+                      labelOf: (t) => t,
+                      onChanged: (v) => draft.navigationStatus = v,
+                    ),
+                    const SizedBox(height: 12),
+                    buildDropdown<String>(
+                      label: ctx.l10n.mapCountry,
+                      options: countries,
+                      value: draft.country,
+                      labelOf: (t) => localizedCountryName(t, ctx),
+                      onChanged: (v) => draft.country = v,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: minSogController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: ctx.l10n.mapMinSog,
                             ),
+                            onChanged: (_) => setDialogState(() {}),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextField(
-                              controller: maxSogController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: ctx.l10n.mapMaxSog,
-                              ),
-                              onChanged: (_) => setDialogState(() {}),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: maxSogController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: ctx.l10n.mapMaxSog,
                             ),
+                            onChanged: (_) => setDialogState(() {}),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(ctx.l10n.mapOnlyNamed),
-                        value: draft.onlyNamed,
-                        onChanged: (v) => setDialogState(() => draft.onlyNamed = v),
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(ctx.l10n.mapOnlyNamed),
+                      value: draft.onlyNamed,
+                      onChanged: (v) =>
+                          setDialogState(() => draft.onlyNamed = v),
+                    ),
+                  ],
                 ),
               ),
+            ),
             actions: [
               TextButton(
                 onPressed: () {
@@ -379,7 +397,23 @@ class _WorldMapPageState extends State<WorldMapPage> {
   @override
   Widget build(BuildContext context) {
     final boatManager = context.watch<BoatManager>();
-    final settings = context.watch<AppSettings>();
+    final settings = context
+        .select<
+          AppSettings,
+          ({
+            String basemapId,
+            AppTheme appTheme,
+            bool showTrails,
+            bool showVectors,
+          })
+        >(
+          (s) => (
+            basemapId: s.basemapId,
+            appTheme: s.appTheme,
+            showTrails: s.showTrails,
+            showVectors: s.showVectors,
+          ),
+        );
 
     final baseMap = settings.basemapId.isEmpty
         ? baseMapById(defaultBasemapIdFor(settings.appTheme))
@@ -390,85 +424,107 @@ class _WorldMapPageState extends State<WorldMapPage> {
       appBar: AppBar(
         title: Text(context.l10n.tabMap),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: _handleSearch,
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.filter_list,
-              color: _filters.active
-                  ? Theme.of(context).colorScheme.primary
-                  : null,
+          HoverTooltip(
+            message: context.l10n.tooltipMapSearch,
+            child: IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: _handleSearch,
             ),
-            onPressed: _showFiltersDialog,
           ),
-          IconButton(
-            icon: Icon(
-              clusterEnabled ? Icons.scatter_plot : Icons.group_work,
-            ),
-            onPressed: toggleMarkers,
-          ),
-          IconButton(
-            icon: Icon(
-              settings.showTrails ? Icons.route : Icons.route_outlined,
-              color: settings.showTrails
-                  ? Theme.of(context).colorScheme.primary
-                  : null,
-            ),
-            onPressed: () => settings.setShowTrails(!settings.showTrails),
-          ),
-          IconButton(
-            icon: Icon(
-              settings.showVectors ? Icons.explore : Icons.explore_outlined,
-              color: settings.showVectors
-                  ? Theme.of(context).colorScheme.primary
-                  : null,
-            ),
-            onPressed: () => settings.setShowVectors(!settings.showVectors),
-          ),
-          IconButton(
-            icon: Icon(
-              boatManager.sendToMap
-                  ? Icons.directions_boat
-                  : Icons.hide_source_rounded,
-            ),
-            onPressed: toggleCompute,
-          ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.layers_outlined),
-            onSelected: (id) => settings.setBasemap(id),
-            itemBuilder: (context) => [
-              PopupMenuItem<String>(
-                value: '',
-                child: Row(
-                  children: [
-                    Icon(
-                      settings.basemapId.isEmpty
-                          ? Icons.check
-                          : Icons.auto_awesome,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(context.l10n.mapAutoBasemap),
-                  ],
-                ),
+          HoverTooltip(
+            message: context.l10n.tooltipMapFilters,
+            child: IconButton(
+              icon: Icon(
+                Icons.filter_list,
+                color: _filters.active
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
               ),
-              for (final b in kBaseMaps)
+              onPressed: _showFiltersDialog,
+            ),
+          ),
+          HoverTooltip(
+            message: context.l10n.tooltipMapCluster,
+            child: IconButton(
+              icon: Icon(
+                clusterEnabled ? Icons.scatter_plot : Icons.group_work,
+              ),
+              onPressed: toggleMarkers,
+            ),
+          ),
+          HoverTooltip(
+            message: context.l10n.tooltipMapTrails,
+            child: IconButton(
+              icon: Icon(
+                settings.showTrails ? Icons.route : Icons.route_outlined,
+                color: settings.showTrails
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+              onPressed: () => _settings.setShowTrails(!settings.showTrails),
+            ),
+          ),
+          HoverTooltip(
+            message: context.l10n.tooltipMapVectors,
+            child: IconButton(
+              icon: Icon(
+                settings.showVectors ? Icons.explore : Icons.explore_outlined,
+                color: settings.showVectors
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+              onPressed: () => _settings.setShowVectors(!settings.showVectors),
+            ),
+          ),
+          HoverTooltip(
+            message: context.l10n.tooltipMapSendToMap,
+            child: IconButton(
+              icon: Icon(
+                boatManager.sendToMap
+                    ? Icons.directions_boat
+                    : Icons.hide_source_rounded,
+              ),
+              onPressed: toggleCompute,
+            ),
+          ),
+          HoverTooltip(
+            message: context.l10n.tooltipMapBasemap,
+            child: PopupMenuButton<String>(
+              tooltip: '',
+              icon: const Icon(Icons.layers_outlined),
+              onSelected: (id) => _settings.setBasemap(id),
+              itemBuilder: (context) => [
                 PopupMenuItem<String>(
-                  value: b.id,
+                  value: '',
                   child: Row(
                     children: [
                       Icon(
-                        baseMap.id == b.id ? Icons.check : Icons.map_outlined,
+                        settings.basemapId.isEmpty
+                            ? Icons.check
+                            : Icons.auto_awesome,
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      Text(basemapLabel(b, context.l10n)),
+                      Text(context.l10n.mapAutoBasemap),
                     ],
                   ),
                 ),
-            ],
+                for (final b in kBaseMaps)
+                  PopupMenuItem<String>(
+                    value: b.id,
+                    child: Row(
+                      children: [
+                        Icon(
+                          baseMap.id == b.id ? Icons.check : Icons.map_outlined,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(basemapLabel(b, context.l10n)),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
         ],
       ),
@@ -479,15 +535,14 @@ class _WorldMapPageState extends State<WorldMapPage> {
             options: MapOptions(
               initialCenter: const LatLng(48.8566, 2.3522),
               initialZoom: 5.0,
-              onPositionChanged: (camera, hasGesture) =>
-                  _zoom = camera.zoom,
+              onPositionChanged: (camera, hasGesture) => _zoom = camera.zoom,
             ),
             children: [
               TileLayer(
                 urlTemplate: baseMap.urlTemplate,
                 subdomains: baseMap.subdomains,
-                tileProvider: widget.tileProvider ??
-                    CancellableNetworkTileProvider(),
+                tileProvider:
+                    widget.tileProvider ?? CancellableNetworkTileProvider(),
                 userAgentPackageName: 'com.kikimanjaro.kikais',
               ),
               BoatMapLayer(
@@ -505,8 +560,8 @@ class _WorldMapPageState extends State<WorldMapPage> {
                   final name = boat?.name?.trim().isNotEmpty == true
                       ? boat!.name!.trim()
                       : (boat != null
-                          ? context.l10n.mapMmsiHover(boat.mmsi)
-                          : null);
+                            ? context.l10n.mapMmsiHover(boat.mmsi)
+                            : null);
                   if (name != _hoverName) {
                     setState(() => _hoverName = name);
                   }
@@ -548,12 +603,14 @@ class _WorldMapPageState extends State<WorldMapPage> {
                           context.l10n.mapFollowing(_followingMmsi!),
                           style: const TextStyle(fontSize: 13),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.close, size: 16),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          onPressed: () => setState(
-                            () => _followingMmsi = null,
+                        HoverTooltip(
+                          message: context.l10n.tooltipClose,
+                          child: IconButton(
+                            icon: const Icon(Icons.close, size: 16),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () =>
+                                setState(() => _followingMmsi = null),
                           ),
                         ),
                       ],

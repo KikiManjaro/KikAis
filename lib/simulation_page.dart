@@ -13,36 +13,36 @@ import 'widgets.dart';
 
 /// Localized name of an ITU-R M.1371 ship type used by the simulated fleet.
 String vesselTypeLabel(int type, AppLocalizations l10n) => switch (type) {
-      70 => l10n.simVesselCargo,
-      80 => l10n.simVesselTanker,
-      30 => l10n.simVesselFishing,
-      36 => l10n.simVesselSailing,
-      60 => l10n.simVesselPassenger,
-      52 => l10n.simVesselTug,
-      40 => l10n.simVesselHsc,
-      90 => l10n.simVesselOther,
-      _ => '$type',
-    };
+  70 => l10n.simVesselCargo,
+  80 => l10n.simVesselTanker,
+  30 => l10n.simVesselFishing,
+  36 => l10n.simVesselSailing,
+  60 => l10n.simVesselPassenger,
+  52 => l10n.simVesselTug,
+  40 => l10n.simVesselHsc,
+  90 => l10n.simVesselOther,
+  _ => '$type',
+};
 
 /// Localized name of a simulated AIS message type.
 String simTypeLabel(int type, AppLocalizations l10n) => switch (type) {
-      1 => l10n.simType1,
-      5 => l10n.simType5,
-      9 => l10n.simType9,
-      18 => l10n.simType18,
-      19 => l10n.simType19,
-      27 => l10n.simType27,
-      4 => l10n.simType4,
-      21 => l10n.simType21,
-      8 => l10n.simType8,
-      11 => l10n.simType11,
-      12 => l10n.simType12,
-      14 => l10n.simType14,
-      22 => l10n.simType22,
-      23 => l10n.simType23,
-      24 => l10n.simType24,
-      _ => 'T$type',
-    };
+  1 => l10n.simType1,
+  5 => l10n.simType5,
+  9 => l10n.simType9,
+  18 => l10n.simType18,
+  19 => l10n.simType19,
+  27 => l10n.simType27,
+  4 => l10n.simType4,
+  21 => l10n.simType21,
+  8 => l10n.simType8,
+  11 => l10n.simType11,
+  12 => l10n.simType12,
+  14 => l10n.simType14,
+  22 => l10n.simType22,
+  23 => l10n.simType23,
+  24 => l10n.simType24,
+  _ => 'T$type',
+};
 
 /// Simulation tab: configures a personalizable fleet of vessels around a chosen
 /// location. The fleet is emitted when the "Simulation" feed on the Reception
@@ -178,8 +178,7 @@ class _SimulationPageState extends State<SimulationPage> {
     _errorRateC.text = (config.errorRate * 100).toStringAsFixed(0);
     _namePrefixC.text = config.namePrefix;
     _mmsiMidC.text = '${config.mmsiMid}';
-    _locationC.text =
-        _presetNameFor(config.centerLat, config.centerLon) ?? '';
+    _locationC.text = _presetNameFor(config.centerLat, config.centerLon) ?? '';
     _wanderC.text = config.wanderStrength.toStringAsFixed(1);
     _transitC.text = '${config.transitPercent}';
     _classBPctC.text = '${config.classBPercent}';
@@ -205,7 +204,7 @@ class _SimulationPageState extends State<SimulationPage> {
     return null;
   }
 
-  void _apply() {
+  Future<void> _apply() async {
     final config = SimFleetConfig(
       centerLat: double.tryParse(_latC.text) ?? sim.config.centerLat,
       centerLon: double.tryParse(_lonC.text) ?? sim.config.centerLon,
@@ -220,7 +219,8 @@ class _SimulationPageState extends State<SimulationPage> {
       vesselTypes: Set.of(_draftVesselTypes),
       realisticNames: _draftRealisticNames,
       realisticDimensions: _draftRealisticDimensions,
-      anchoredPercent: int.tryParse(_anchoredC.text) ?? sim.config.anchoredPercent,
+      anchoredPercent:
+          int.tryParse(_anchoredC.text) ?? sim.config.anchoredPercent,
       varySpeed: _draftVarySpeed,
       reportIntervalMax:
           int.tryParse(_reportIntervalC.text) ?? sim.config.reportIntervalMax,
@@ -228,8 +228,7 @@ class _SimulationPageState extends State<SimulationPage> {
           int.tryParse(_baseStationsC.text) ?? sim.config.baseStationCount,
       atonCount: int.tryParse(_atonC.text) ?? sim.config.atonCount,
       injectErrors: _draftInjectErrors,
-      errorRate:
-          (int.tryParse(_errorRateC.text) ?? 0) / 100,
+      errorRate: (int.tryParse(_errorRateC.text) ?? 0) / 100,
       mmsiMid: int.tryParse(_mmsiMidC.text) ?? sim.config.mmsiMid,
       realisticMmsi: _draftRealisticMmsi,
       namePrefix: _namePrefixC.text,
@@ -249,42 +248,40 @@ class _SimulationPageState extends State<SimulationPage> {
       nmeaTalker: _draftNmeaTalker,
       nmea4Tags: _draftNmea4Tags,
     );
-    sim.setConfig(config);
+    await sim.setConfig(config);
     settings.simConfig = config;
-    settings.save();
+    settings.saveSimConfig(config);
   }
 
   void _regenerate() {
-    _seedC.text =
-        '${DateTime.now().millisecondsSinceEpoch % 100000}';
+    _seedC.text = '${DateTime.now().millisecondsSinceEpoch % 100000}';
     _apply();
   }
 
   IconData _kindIcon(int emitType) => switch (simBoatKind(emitType)) {
-        SimBoatKind.vessel => Icons.directions_boat,
-        SimBoatKind.aircraft => Icons.flight_takeoff,
-        SimBoatKind.baseStation => Icons.radio,
-        SimBoatKind.aton => Icons.anchor,
-        SimBoatKind.safety => Icons.warning_amber,
-        SimBoatKind.weather => Icons.cloud,
-      };
+    SimBoatKind.vessel => Icons.directions_boat,
+    SimBoatKind.aircraft => Icons.flight_takeoff,
+    SimBoatKind.baseStation => Icons.radio,
+    SimBoatKind.aton => Icons.anchor,
+    SimBoatKind.safety => Icons.warning_amber,
+    SimBoatKind.weather => Icons.cloud,
+  };
 
   Color _kindColor(int emitType) => switch (simBoatKind(emitType)) {
-        SimBoatKind.vessel => Colors.lightBlue,
-        SimBoatKind.aircraft => Colors.deepPurpleAccent,
-        SimBoatKind.baseStation => Colors.orange,
-        SimBoatKind.aton => Colors.teal,
-        SimBoatKind.safety => Colors.redAccent,
-        SimBoatKind.weather => Colors.cyan,
-      };
+    SimBoatKind.vessel => Colors.lightBlue,
+    SimBoatKind.aircraft => Colors.deepPurpleAccent,
+    SimBoatKind.baseStation => Colors.orange,
+    SimBoatKind.aton => Colors.teal,
+    SimBoatKind.safety => Colors.redAccent,
+    SimBoatKind.weather => Colors.cyan,
+  };
 
   Widget _field(TextEditingController controller, String label) {
     return SizedBox(
       width: 150,
       child: TextField(
         controller: controller,
-        keyboardType:
-            const TextInputType.numberWithOptions(decimal: true),
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(labelText: label, isDense: true),
       ),
     );
@@ -415,20 +412,13 @@ class _SimulationPageState extends State<SimulationPage> {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Icon(
-            _kindIcon(b.emitType),
-            size: 16,
-            color: _kindColor(b.emitType),
-          ),
+          Icon(_kindIcon(b.emitType), size: 16, color: _kindColor(b.emitType)),
           const SizedBox(width: 6),
           SizedBox(
             width: 110,
             child: Text(
               '${b.mmsi}',
-              style: const TextStyle(
-                fontSize: 11,
-                fontFamily: 'monospace',
-              ),
+              style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
             ),
           ),
           SizedBox(
@@ -441,10 +431,7 @@ class _SimulationPageState extends State<SimulationPage> {
           ),
           SizedBox(
             width: 60,
-            child: Text(
-              'T${b.emitType}',
-              style: const TextStyle(fontSize: 11),
-            ),
+            child: Text('T${b.emitType}', style: const TextStyle(fontSize: 11)),
           ),
           SizedBox(
             width: 50,
@@ -465,10 +452,7 @@ class _SimulationPageState extends State<SimulationPage> {
               '${b.lat.toStringAsFixed(4)}, '
               '${b.lon.toStringAsFixed(4)}',
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 11,
-                fontFamily: 'monospace',
-              ),
+              style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
             ),
           ),
         ],
@@ -482,469 +466,494 @@ class _SimulationPageState extends State<SimulationPage> {
         Theme.of(context).extension<AppColors>() ?? AppColors.dark;
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.simTitle)),
-      body: ListenableBuilder(
-        listenable: sim,
-        builder: (context, _) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        Icon(
-                          sim.isRunning
-                              ? Icons.play_circle
-                              : Icons.pause_circle,
-                          color: sim.isRunning
-                              ? appColors.success
-                              : appColors.warning,
-                          size: 28,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ListenableBuilder(
+              listenable: sim,
+              builder: (context, _) => Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Icon(
+                        sim.isRunning ? Icons.play_circle : Icons.pause_circle,
+                        color: sim.isRunning
+                            ? appColors.success
+                            : appColors.warning,
+                        size: 28,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          context.l10n.simInfoBanner,
+                          style: const TextStyle(fontSize: 12),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            context.l10n.simInfoBanner,
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        ),
-                        if (widget.onGoToReception != null)
-                          OutlinedButton.icon(
+                      ),
+                      if (widget.onGoToReception != null)
+                        HoverTooltip(
+                          message: context.l10n.tooltipSimOpenReception,
+                          child: OutlinedButton.icon(
                             onPressed: widget.onGoToReception,
                             icon: const Icon(Icons.rss_feed, size: 18),
                             label: Text(context.l10n.simOpenReception),
                           ),
-                      ],
-                    ),
+                        ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                SectionHeader(
-                  icon: Icons.workspaces,
-                  title: context.l10n.simFleetSection,
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 12,
-                          children: [
-                            _field(_radiusC, context.l10n.simRadiusKm),
-                            _field(_countC, context.l10n.simVessels),
-                            _field(_sogMinC, context.l10n.simSpeedMinKn),
-                            _field(_sogMaxC, context.l10n.simSpeedMaxKn),
-                            _field(_intervalC, context.l10n.simIntervalS),
-                            _field(_seedC, context.l10n.simSeed),
-                            _field(_anchoredC, context.l10n.simAnchoredPct),
-                            _field(_namePrefixC, context.l10n.simNamePrefix),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 4,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            _searchCombo<int>(
-                              controller: _mmsiMidC,
-                              focusNode: _mmsiMidFocus,
-                              label: context.l10n.simMmsiMid,
-                              hint: context.l10n.simSearchMmid,
-                              optionsBuilder: (value) {
-                                final q = value.text.trim().toLowerCase();
-                                final matches = q.isEmpty
-                                    ? kSimMids.keys.toList()
-                                    : kSimMids.keys
-                                        .where((m) =>
-                                            '${kSimMids[m]}'
-                                                .toLowerCase()
-                                                .contains(q) ||
-                                            '$m'.contains(q))
-                                        .toList();
-                                final custom = int.tryParse(value.text.trim());
-                                if (custom != null &&
-                                    !kSimMids.containsKey(custom)) {
-                                  return [...matches, custom];
-                                }
-                                return matches;
-                              },
-                              displayForOption: (m) => '$m',
-                              labelForOption: (m) => '${kSimMids[m] == null ? context.l10n.simCustom : localizedCountryName(kSimMids[m]!, context)} ($m)',
-                              onSelected: (_) {},
-                            ),
-                          ],
-                        ),
-                        const Divider(height: 20),
-                        Text(
-                          context.l10n.simVesselTypes,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 4,
-                          children: [
-                            for (final vt in kSimVesselTypes)
-                              SizedBox(
-                                width: 130,
-                                child: CheckboxListTile(
-                                  dense: true,
-                                  contentPadding: EdgeInsets.zero,
-                                  controlAffinity:
-                                      ListTileControlAffinity.leading,
-                                  title: Text(
-                                    vesselTypeLabel(vt.$1, context.l10n),
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  value:
-                                      _draftVesselTypes.contains(vt.$1),
-                                  onChanged: (v) => setState(() {
-                                    if (v == true) {
-                                      _draftVesselTypes.add(vt.$1);
-                                    } else {
-                                      _draftVesselTypes.remove(vt.$1);
-                                    }
-                                  }),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Wrap(
-                          spacing: 16,
-                          runSpacing: 4,
-                          children: [
-                            _switchTile(
-                              context.l10n.simRealisticNames,
-                              _draftRealisticNames,
-                              (v) => setState(() => _draftRealisticNames = v),
-                            ),
-                            _switchTile(
-                              context.l10n.simRealisticDimensions,
-                              _draftRealisticDimensions,
-                              (v) =>
-                                  setState(() => _draftRealisticDimensions = v),
-                            ),
-                            _switchTile(
-                              context.l10n.simRealisticMmsi,
-                              _draftRealisticMmsi,
-                              (v) => setState(() => _draftRealisticMmsi = v),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SectionHeader(
-                  icon: Icons.map_outlined,
-                  title: context.l10n.simZoneSection,
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Wrap(
-                      spacing: 16,
-                      runSpacing: 4,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        _searchCombo<String>(
-                          controller: _locationC,
-                          focusNode: _locationFocus,
-                          label: context.l10n.simLocationPreset,
-                          hint: context.l10n.simSearchPort,
-                          optionsBuilder: (value) {
-                            final q = value.text.trim().toLowerCase();
-                            final names = kSimLocationPresets.keys.toList();
-                            if (q.isEmpty) return names;
-                            return names
-                                .where((n) => n.toLowerCase().contains(q))
-                                .toList();
-                          },
-                          displayForOption: (n) => n,
-                          labelForOption: (n) {
-                            final (lat, lon) = kSimLocationPresets[n]!;
-                            return '$n — ${lat.toStringAsFixed(2)}, '
-                                '${lon.toStringAsFixed(2)}';
-                          },
-                          onSelected: (name) {
-                            final (lat, lon) = kSimLocationPresets[name]!;
-                            setState(() {
-                              _latC.text = lat.toStringAsFixed(5);
-                              _lonC.text = lon.toStringAsFixed(5);
-                            });
-                          },
-                        ),
-                        _field(_latC, context.l10n.simCenterLat),
-                        _field(_lonC, context.l10n.simCenterLon),
-                        _labelDropdown<SimZoneShape>(
-                          context.l10n.simZoneShape,
-                          _draftZoneShape,
-                          [
-                            for (final s in SimZoneShape.values)
-                              DropdownMenuItem(
-                                value: s,
-                                child: Text(
-                                  s.name,
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              ),
-                          ],
-                          (v) => setState(() {
-                            if (v != null) _draftZoneShape = v;
-                          }),
-                        ),
-                        _field(_transitC, context.l10n.simTransitPct),
-                        _switchTile(
-                          context.l10n.simRegeneratePeriodically,
-                          _draftAutoRegenerate,
-                          (v) => setState(() => _draftAutoRegenerate = v),
-                        ),
-                        _field(_regenEveryC, context.l10n.simRegenerateTicks),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Text(
-                    context.l10n.simPresetHint,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SectionHeader(
-                  icon: Icons.timeline,
-                  title: context.l10n.simMovementSection,
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Wrap(
-                      spacing: 16,
-                      runSpacing: 4,
-                      children: [
-                        _switchTile(
-                          context.l10n.simVarySpeed,
-                          _draftVarySpeed,
-                          (v) => setState(() => _draftVarySpeed = v),
-                        ),
-                        _field(_reportIntervalC, context.l10n.simReportIntervalTicks),
-                        _field(_wanderC, context.l10n.simWander),
-                        _switchTile(
-                          context.l10n.simSpeedByType,
-                          _draftSpeedByType,
-                          (v) => setState(() => _draftSpeedByType = v),
-                        ),
-                        _field(_classBPctC, context.l10n.simClassBSharePct),
-                        _switchTile(
-                          context.l10n.simHighAccuracy,
-                          _draftAccuratePosition,
-                          (v) => setState(() => _draftAccuratePosition = v),
-                        ),
-                        _switchTile(
-                          context.l10n.simRealisticRot,
-                          _draftRealisticRot,
-                          (v) => setState(() => _draftRealisticRot = v),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SectionHeader(
-                  icon: Icons.text_snippet_outlined,
-                  title: context.l10n.simContentSection,
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Wrap(
-                      spacing: 16,
-                      runSpacing: 4,
-                      children: [
-                        _multiField(
-                          _safetyTextsC,
-                          context.l10n.simSafetyTexts,
-                        ),
-                        _multiField(
-                          _destinationsC,
-                          context.l10n.simDestinations,
-                          lines: 3,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SectionHeader(
-                  icon: Icons.cell_tower,
-                  title: context.l10n.simStationsSection,
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Wrap(
+              ),
+            ),
+            const SizedBox(height: 12),
+            SectionHeader(
+              icon: Icons.workspaces,
+              title: context.l10n.simFleetSection,
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
                       spacing: 12,
                       runSpacing: 12,
                       children: [
-                        _field(_baseStationsC, context.l10n.simBaseStations),
-                        _field(_atonC, context.l10n.simAtoN),
+                        _field(_radiusC, context.l10n.simRadiusKm),
+                        _field(_countC, context.l10n.simVessels),
+                        _field(_sogMinC, context.l10n.simSpeedMinKn),
+                        _field(_sogMaxC, context.l10n.simSpeedMaxKn),
+                        _field(_intervalC, context.l10n.simIntervalS),
+                        _field(_seedC, context.l10n.simSeed),
+                        _field(_anchoredC, context.l10n.simAnchoredPct),
+                        _field(_namePrefixC, context.l10n.simNamePrefix),
                       ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SectionHeader(
-                  icon: Icons.error_outline,
-                  title: context.l10n.simQualitySection,
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Wrap(
-                      spacing: 16,
+                    const SizedBox(height: 4),
+                    Wrap(
+                      spacing: 12,
                       runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        _switchTile(
-                          context.l10n.simInjectErrors,
-                          _draftInjectErrors,
-                          (v) => setState(() => _draftInjectErrors = v),
-                        ),
-                        _field(_errorRateC, context.l10n.simErrorRatePct),
-                        _labelDropdown<String>(
-                          context.l10n.simTalkerId,
-                          _draftNmeaTalker,
-                          [
-                            for (final t in kSimTalkers)
-                              DropdownMenuItem(
-                                value: t,
-                                child: Text(
-                                  t,
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              ),
-                          ],
-                          (v) => setState(() {
-                            if (v != null) _draftNmeaTalker = v;
-                          }),
-                        ),
-                        _switchTile(
-                          context.l10n.simNmea4Tag,
-                          _draftNmea4Tags,
-                          (v) => setState(() => _draftNmea4Tags = v),
+                        _searchCombo<int>(
+                          controller: _mmsiMidC,
+                          focusNode: _mmsiMidFocus,
+                          label: context.l10n.simMmsiMid,
+                          hint: context.l10n.simSearchMmid,
+                          optionsBuilder: (value) {
+                            final q = value.text.trim().toLowerCase();
+                            final matches = q.isEmpty
+                                ? kSimMids.keys.toList()
+                                : kSimMids.keys
+                                      .where(
+                                        (m) =>
+                                            '${kSimMids[m]}'
+                                                .toLowerCase()
+                                                .contains(q) ||
+                                            '$m'.contains(q),
+                                      )
+                                      .toList();
+                            final custom = int.tryParse(value.text.trim());
+                            if (custom != null &&
+                                !kSimMids.containsKey(custom)) {
+                              return [...matches, custom];
+                            }
+                            return matches;
+                          },
+                          displayForOption: (m) => '$m',
+                          labelForOption: (m) =>
+                              '${kSimMids[m] == null ? context.l10n.simCustom : localizedCountryName(kSimMids[m]!, context)} ($m)',
+                          onSelected: (_) {},
                         ),
                       ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SectionHeader(
-                  icon: Icons.message_outlined,
-                  title: context.l10n.simMessagesSection,
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Wrap(
-                      spacing: 16,
+                    const Divider(height: 20),
+                    Text(
+                      context.l10n.simVesselTypes,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Wrap(
+                      spacing: 12,
                       runSpacing: 4,
                       children: [
-                        for (final entry in kSimTypeLabels.entries)
+                        for (final vt in kSimVesselTypes)
                           SizedBox(
-                            width: 210,
+                            width: 130,
                             child: CheckboxListTile(
                               dense: true,
                               contentPadding: EdgeInsets.zero,
                               controlAffinity: ListTileControlAffinity.leading,
                               title: Text(
-                                simTypeLabel(entry.key, context.l10n),
+                                vesselTypeLabel(vt.$1, context.l10n),
                                 style: const TextStyle(fontSize: 12),
                               ),
-                              value: _draftTypes.contains(entry.key),
+                              value: _draftVesselTypes.contains(vt.$1),
                               onChanged: (v) => setState(() {
                                 if (v == true) {
-                                  _draftTypes.add(entry.key);
+                                  _draftVesselTypes.add(vt.$1);
                                 } else {
-                                  _draftTypes.remove(entry.key);
+                                  _draftVesselTypes.remove(vt.$1);
                                 }
                               }),
                             ),
                           ),
                       ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    FilledButton.icon(
-                      onPressed: _apply,
-                      icon: const Icon(Icons.check),
-                      label: Text(context.l10n.simApplyFleet),
-                    ),
-                    const SizedBox(width: 8),
-                    OutlinedButton.icon(
-                      onPressed: _regenerate,
-                      icon: const Icon(Icons.shuffle),
-                      label: Text(context.l10n.simRegenerateFleet),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                SectionHeader(
-                  icon: Icons.directions_boat,
-                  title: context.l10n.simLiveFleet,
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    const SizedBox(height: 4),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 4,
                       children: [
-                        Text(
-                          context.l10n.simFleetSummary(
-                            '${sim.fleet.boats.length}',
-                            '${sim.emittedCount}',
-                          ),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant,
-                          ),
+                        _switchTile(
+                          context.l10n.simRealisticNames,
+                          _draftRealisticNames,
+                          (v) => setState(() => _draftRealisticNames = v),
                         ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          height: 320,
-                          child: ListView.builder(
-                            itemCount: sim.fleet.boats.length,
-                            itemBuilder: (context, index) =>
-                                _buildBoatRow(sim.fleet.boats[index]),
-                          ),
+                        _switchTile(
+                          context.l10n.simRealisticDimensions,
+                          _draftRealisticDimensions,
+                          (v) => setState(() => _draftRealisticDimensions = v),
+                        ),
+                        _switchTile(
+                          context.l10n.simRealisticMmsi,
+                          _draftRealisticMmsi,
+                          (v) => setState(() => _draftRealisticMmsi = v),
                         ),
                       ],
                     ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SectionHeader(
+              icon: Icons.map_outlined,
+              title: context.l10n.simZoneSection,
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  spacing: 16,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    _searchCombo<String>(
+                      controller: _locationC,
+                      focusNode: _locationFocus,
+                      label: context.l10n.simLocationPreset,
+                      hint: context.l10n.simSearchPort,
+                      optionsBuilder: (value) {
+                        final q = value.text.trim().toLowerCase();
+                        final names = kSimLocationPresets.keys.toList();
+                        if (q.isEmpty) return names;
+                        return names
+                            .where((n) => n.toLowerCase().contains(q))
+                            .toList();
+                      },
+                      displayForOption: (n) => n,
+                      labelForOption: (n) {
+                        final (lat, lon) = kSimLocationPresets[n]!;
+                        return '$n — ${lat.toStringAsFixed(2)}, '
+                            '${lon.toStringAsFixed(2)}';
+                      },
+                      onSelected: (name) {
+                        final (lat, lon) = kSimLocationPresets[name]!;
+                        setState(() {
+                          _latC.text = lat.toStringAsFixed(5);
+                          _lonC.text = lon.toStringAsFixed(5);
+                        });
+                      },
+                    ),
+                    _field(_latC, context.l10n.simCenterLat),
+                    _field(_lonC, context.l10n.simCenterLon),
+                    _labelDropdown<SimZoneShape>(
+                      context.l10n.simZoneShape,
+                      _draftZoneShape,
+                      [
+                        for (final s in SimZoneShape.values)
+                          DropdownMenuItem(
+                            value: s,
+                            child: Text(
+                              s.name,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                      ],
+                      (v) => setState(() {
+                        if (v != null) _draftZoneShape = v;
+                      }),
+                    ),
+                    _field(_transitC, context.l10n.simTransitPct),
+                    _switchTile(
+                      context.l10n.simRegeneratePeriodically,
+                      _draftAutoRegenerate,
+                      (v) => setState(() => _draftAutoRegenerate = v),
+                    ),
+                    _field(_regenEveryC, context.l10n.simRegenerateTicks),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Text(
+                context.l10n.simPresetHint,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SectionHeader(
+              icon: Icons.timeline,
+              title: context.l10n.simMovementSection,
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  spacing: 16,
+                  runSpacing: 4,
+                  children: [
+                    _switchTile(
+                      context.l10n.simVarySpeed,
+                      _draftVarySpeed,
+                      (v) => setState(() => _draftVarySpeed = v),
+                    ),
+                    _field(
+                      _reportIntervalC,
+                      context.l10n.simReportIntervalTicks,
+                    ),
+                    _field(_wanderC, context.l10n.simWander),
+                    _switchTile(
+                      context.l10n.simSpeedByType,
+                      _draftSpeedByType,
+                      (v) => setState(() => _draftSpeedByType = v),
+                    ),
+                    _field(_classBPctC, context.l10n.simClassBSharePct),
+                    _switchTile(
+                      context.l10n.simHighAccuracy,
+                      _draftAccuratePosition,
+                      (v) => setState(() => _draftAccuratePosition = v),
+                    ),
+                    _switchTile(
+                      context.l10n.simRealisticRot,
+                      _draftRealisticRot,
+                      (v) => setState(() => _draftRealisticRot = v),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SectionHeader(
+              icon: Icons.text_snippet_outlined,
+              title: context.l10n.simContentSection,
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  spacing: 16,
+                  runSpacing: 4,
+                  children: [
+                    _multiField(_safetyTextsC, context.l10n.simSafetyTexts),
+                    _multiField(
+                      _destinationsC,
+                      context.l10n.simDestinations,
+                      lines: 3,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SectionHeader(
+              icon: Icons.cell_tower,
+              title: context.l10n.simStationsSection,
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    _field(_baseStationsC, context.l10n.simBaseStations),
+                    _field(_atonC, context.l10n.simAtoN),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SectionHeader(
+              icon: Icons.error_outline,
+              title: context.l10n.simQualitySection,
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  spacing: 16,
+                  runSpacing: 4,
+                  children: [
+                    _switchTile(
+                      context.l10n.simInjectErrors,
+                      _draftInjectErrors,
+                      (v) => setState(() => _draftInjectErrors = v),
+                    ),
+                    _field(_errorRateC, context.l10n.simErrorRatePct),
+                    _labelDropdown<String>(
+                      context.l10n.simTalkerId,
+                      _draftNmeaTalker,
+                      [
+                        for (final t in kSimTalkers)
+                          DropdownMenuItem(
+                            value: t,
+                            child: Text(
+                              t,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                      ],
+                      (v) => setState(() {
+                        if (v != null) _draftNmeaTalker = v;
+                      }),
+                    ),
+                    _switchTile(
+                      context.l10n.simNmea4Tag,
+                      _draftNmea4Tags,
+                      (v) => setState(() => _draftNmea4Tags = v),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SectionHeader(
+              icon: Icons.message_outlined,
+              title: context.l10n.simMessagesSection,
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  spacing: 16,
+                  runSpacing: 4,
+                  children: [
+                    for (final entry in kSimTypeLabels.entries)
+                      SizedBox(
+                        width: 210,
+                        child: CheckboxListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          title: Text(
+                            simTypeLabel(entry.key, context.l10n),
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          value: _draftTypes.contains(entry.key),
+                          onChanged: (v) => setState(() {
+                            if (v == true) {
+                              _draftTypes.add(entry.key);
+                            } else {
+                              _draftTypes.remove(entry.key);
+                            }
+                          }),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            ListenableBuilder(
+              listenable: sim,
+              builder: (context, _) => Row(
+                children: [
+                  HoverTooltip(
+                    message: context.l10n.tooltipSimApply,
+                    child: FilledButton.icon(
+                      onPressed: sim.generating ? null : _apply,
+                      icon: sim.generating
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.check),
+                      label: Text(
+                        sim.generating
+                            ? context.l10n.simGenerating
+                            : context.l10n.simApplyFleet,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  HoverTooltip(
+                    message: context.l10n.tooltipSimGenerate,
+                    child: OutlinedButton.icon(
+                      onPressed: sim.generating ? null : _regenerate,
+                      icon: sim.generating
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.shuffle),
+                      label: Text(context.l10n.simRegenerateFleet),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            SectionHeader(
+              icon: Icons.directions_boat,
+              title: context.l10n.simLiveFleet,
+            ),
+            ListenableBuilder(
+              listenable: sim,
+              builder: (context, _) => Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.l10n.simFleetSummary(
+                          '${sim.fleet.boats.length}',
+                          '${sim.emittedCount}',
+                        ),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 320,
+                        child: ListView.builder(
+                          itemCount: sim.fleet.boats.length,
+                          itemBuilder: (context, index) =>
+                              _buildBoatRow(sim.fleet.boats[index]),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }

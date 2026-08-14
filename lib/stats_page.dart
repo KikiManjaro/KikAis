@@ -108,26 +108,32 @@ class _StatsPageState extends State<StatsPage> {
       appBar: AppBar(
         title: Text(context.l10n.statsTitle),
         actions: [
-          IconButton(
-            icon: Icon(
-              boatManager.decodeEnabled ? Icons.track_changes : Icons.pause,
-              color: boatManager.decodeEnabled
-                  ? Theme.of(context).colorScheme.primary
-                  : null,
+          HoverTooltip(
+            message: context.l10n.tooltipStatsDecode,
+            child: IconButton(
+              icon: Icon(
+                boatManager.decodeEnabled ? Icons.track_changes : Icons.pause,
+                color: boatManager.decodeEnabled
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+              onPressed: () {
+                final next = !boatManager.decodeEnabled;
+                boatManager.setDecodeEnabled(next);
+                settings.decodeEnabled = next;
+                settings.save();
+              },
             ),
-            onPressed: () {
-              final next = !boatManager.decodeEnabled;
-              boatManager.setDecodeEnabled(next);
-              settings.decodeEnabled = next;
-              settings.save();
-            },
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              stats.reset();
-              boatManager.resetCounters();
-            },
+          HoverTooltip(
+            message: context.l10n.tooltipStatsReset,
+            child: IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                stats.reset();
+                boatManager.resetCounters();
+              },
+            ),
           ),
         ],
       ),
@@ -152,7 +158,8 @@ class _StatsPageState extends State<StatsPage> {
                     value: f,
                     child: _FeedOption(
                       name: f,
-                      hasData: stats.byFeed.containsKey(f) ||
+                      hasData:
+                          stats.byFeed.containsKey(f) ||
                           stats.byFeedDecoded.containsKey(f),
                     ),
                   ),
@@ -182,7 +189,8 @@ class _StatsPageState extends State<StatsPage> {
                     accent: appColors.info,
                     subtitle: filter == null
                         ? context.l10n.statsPerSecond(
-                            stats.messagesPerSecond.toStringAsFixed(1))
+                            stats.messagesPerSecond.toStringAsFixed(1),
+                          )
                         : context.l10n.statsAllFeedsShort,
                     live: stats.messagesPerSecond > 0,
                     chart: _MiniLineChart(
@@ -198,7 +206,8 @@ class _StatsPageState extends State<StatsPage> {
                     accent: appColors.success,
                     subtitle: filter == null
                         ? context.l10n.statsPerSecond(
-                            decodedRate.toStringAsFixed(1))
+                            decodedRate.toStringAsFixed(1),
+                          )
                         : context.l10n.statsAllFeedsShort,
                     live: decodedRate > 0,
                     chart: _MiniLineChart(
@@ -212,21 +221,27 @@ class _StatsPageState extends State<StatsPage> {
                     value: boatManager.invalidChecksumCount.toDouble(),
                     icon: Icons.error_outline,
                     accent: appColors.danger,
-                    subtitle: filter == null ? null : context.l10n.statsAllFeedsShort,
+                    subtitle: filter == null
+                        ? null
+                        : context.l10n.statsAllFeedsShort,
                   ),
                   _KpiCard(
                     label: context.l10n.statsDroppedFragments,
                     value: boatManager.droppedFragmentCount.toDouble(),
                     icon: Icons.call_split,
                     accent: appColors.info,
-                    subtitle: filter == null ? null : context.l10n.statsAllFeedsShort,
+                    subtitle: filter == null
+                        ? null
+                        : context.l10n.statsAllFeedsShort,
                   ),
                   _KpiCard(
                     label: context.l10n.statsParseErrors,
                     value: boatManager.parseErrorCount.toDouble(),
                     icon: Icons.bug_report_outlined,
                     accent: appColors.danger,
-                    subtitle: filter == null ? null : context.l10n.statsAllFeedsShort,
+                    subtitle: filter == null
+                        ? null
+                        : context.l10n.statsAllFeedsShort,
                   ),
                   _KpiCard(
                     label: context.l10n.statsPendingFragments,
@@ -271,7 +286,9 @@ class _StatsPageState extends State<StatsPage> {
                               : context.l10n.statsAllFeedsShort,
                           style: TextStyle(
                             fontSize: 11,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -320,8 +337,9 @@ class _StatsPageState extends State<StatsPage> {
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     children: [
-                      for (final entry in byType.entries.toList()
-                        ..sort((a, b) => b.value.compareTo(a.value)))
+                      for (final entry
+                          in byType.entries.toList()
+                            ..sort((a, b) => b.value.compareTo(a.value)))
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
@@ -351,9 +369,9 @@ class _StatsPageState extends State<StatsPage> {
                                         ? 0
                                         : entry.value / maxType,
                                     minHeight: 10,
-                                    backgroundColor: Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainerHighest,
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainerHighest,
                                   ),
                                 ),
                               ),
@@ -386,10 +404,7 @@ class _StatsPageState extends State<StatsPage> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          filter,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        child: Text(filter, overflow: TextOverflow.ellipsis),
                       ),
                       Text('${stats.byFeed[filter] ?? 0}'),
                     ],
@@ -407,8 +422,9 @@ class _StatsPageState extends State<StatsPage> {
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     children: [
-                      for (final entry in stats.byFeed.entries.toList()
-                        ..sort((a, b) => b.value.compareTo(a.value)))
+                      for (final entry
+                          in stats.byFeed.entries.toList()
+                            ..sort((a, b) => b.value.compareTo(a.value)))
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
@@ -510,59 +526,59 @@ class _KpiCard extends StatelessWidget {
                   children: [
                     TweenAnimationBuilder<double>(
                       tween: Tween(end: value),
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeOutCubic,
-                        builder: (context, v, _) => Text(
-                          _format(v),
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                            height: 1.1,
-                          ),
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeOutCubic,
+                      builder: (context, v, _) => Text(
+                        _format(v),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                          height: 1.1,
                         ),
                       ),
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              label,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: textColor.withValues(alpha: 0.75),
-                              ),
+                    ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: textColor.withValues(alpha: 0.75),
                             ),
                           ),
-                          if (subtitle != null) ...[
-                            const SizedBox(width: 4),
-                            Text(
-                              subtitle!,
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: textColor.withValues(alpha: 0.5),
-                              ),
+                        ),
+                        if (subtitle != null) ...[
+                          const SizedBox(width: 4),
+                          Text(
+                            subtitle!,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: textColor.withValues(alpha: 0.5),
                             ),
-                          ],
-                          if (live) ...[
-                            const SizedBox(width: 6),
-                            _PulseDot(color: accent, size: 7),
-                          ],
+                          ),
                         ],
-                      ),
-                    ],
-                  ),
+                        if (live) ...[
+                          const SizedBox(width: 6),
+                          _PulseDot(color: accent, size: 7),
+                        ],
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            if (chart != null) ...[
-              const SizedBox(height: 10),
-              Expanded(child: chart!),
+              ),
             ],
+          ),
+          if (chart != null) ...[
+            const SizedBox(height: 10),
+            Expanded(child: chart!),
           ],
-        ),
-      );
+        ],
+      ),
+    );
   }
 
   static String _group(int value) {
@@ -693,8 +709,7 @@ class _DualLinePainter extends CustomPainter {
       return;
     }
 
-    double maxOf(List<double> data) =>
-        data.fold(0.0, (m, v) => v > m ? v : m);
+    double maxOf(List<double> data) => data.fold(0.0, (m, v) => v > m ? v : m);
     final maxV = math.max(maxOf(received), maxOf(decoded));
     final top = maxV == 0 ? 1.0 : maxV;
     final left = 2.0;
@@ -812,15 +827,10 @@ class _ReconciliationCard extends StatelessWidget {
           children: [
             Icon(icon, size: 14, color: color),
             const SizedBox(width: 8),
-            Expanded(
-              child: Text(label, style: const TextStyle(fontSize: 12)),
-            ),
+            Expanded(child: Text(label, style: const TextStyle(fontSize: 12))),
             Text(
               _KpiCard._group(value),
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -845,18 +855,42 @@ class _ReconciliationCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            row(Icons.check_circle_outline, appColors.success,
-                context.l10n.statsDecoded, decoded),
-            row(Icons.error_outline, appColors.danger,
-                context.l10n.statsInvalidChecksums, invalid),
-            row(Icons.bug_report_outlined, appColors.danger,
-                context.l10n.statsParseErrors, parseErrors),
-            row(Icons.call_split, appColors.info,
-                context.l10n.statsMultiPartParts, multiOverhead),
-            row(Icons.hourglass_bottom, appColors.warning,
-                context.l10n.statsPending, pending),
-            row(Icons.delete_outline, appColors.warning,
-                context.l10n.statsDropped, dropped),
+            row(
+              Icons.check_circle_outline,
+              appColors.success,
+              context.l10n.statsDecoded,
+              decoded,
+            ),
+            row(
+              Icons.error_outline,
+              appColors.danger,
+              context.l10n.statsInvalidChecksums,
+              invalid,
+            ),
+            row(
+              Icons.bug_report_outlined,
+              appColors.danger,
+              context.l10n.statsParseErrors,
+              parseErrors,
+            ),
+            row(
+              Icons.call_split,
+              appColors.info,
+              context.l10n.statsMultiPartParts,
+              multiOverhead,
+            ),
+            row(
+              Icons.hourglass_bottom,
+              appColors.warning,
+              context.l10n.statsPending,
+              pending,
+            ),
+            row(
+              Icons.delete_outline,
+              appColors.warning,
+              context.l10n.statsDropped,
+              dropped,
+            ),
             const SizedBox(height: 6),
             Row(
               children: [
@@ -934,7 +968,10 @@ class _MiniLinePainter extends CustomPainter {
       )..layout();
       painter.paint(
         canvas,
-        Offset((size.width - painter.width) / 2, (size.height - painter.height) / 2),
+        Offset(
+          (size.width - painter.width) / 2,
+          (size.height - painter.height) / 2,
+        ),
       );
       return;
     }

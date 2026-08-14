@@ -70,10 +70,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context.watch<AppSettings>();
+    final localeCode = context.select<AppSettings, String?>(
+      (s) => s.localeCode,
+    );
+    final appTheme = context.select<AppSettings, AppTheme>(
+      (s) => s.appTheme,
+    );
 
     // Null means "follow the operating system"; otherwise the selected code.
-    final localeCode = settings.localeCode;
     final Locale? locale = localeCode == null
         ? null
         : Locale(resolveSystemLocaleCode(
@@ -87,7 +91,7 @@ class MyApp extends StatelessWidget {
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      theme: buildAppTheme(settings.appTheme),
+      theme: buildAppTheme(appTheme),
       themeMode: ThemeMode.light,
       home: SwipperUi(version: version),
     );

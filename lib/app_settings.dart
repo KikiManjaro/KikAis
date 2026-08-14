@@ -71,7 +71,7 @@ class AppSettings extends ChangeNotifier {
     if (appTheme == theme) return;
     appTheme = theme;
     notifyListeners();
-    save();
+    saveTheme(theme);
   }
 
   /// Sets the UI language ([localeCode] is an ISO 639-1 code, `null` = system).
@@ -79,35 +79,35 @@ class AppSettings extends ChangeNotifier {
     if (localeCode == code) return;
     localeCode = code;
     notifyListeners();
-    save();
+    saveLocale(code);
   }
 
   void setBasemap(String id) {
     if (basemapId == id) return;
     basemapId = id;
     notifyListeners();
-    save();
+    saveBasemap(id);
   }
 
   void setShowTrails(bool value) {
     if (showTrails == value) return;
     showTrails = value;
     notifyListeners();
-    save();
+    saveShowTrails(value);
   }
 
   void setShowVectors(bool value) {
     if (showVectors == value) return;
     showVectors = value;
     notifyListeners();
-    save();
+    saveShowVectors(value);
   }
 
   void setTargets(List<TargetConfig> value) {
     if (identical(targets, value)) return;
     targets = value;
     notifyListeners();
-    save();
+    saveTargets(value);
   }
 
   Future<void> load() async {
@@ -201,6 +201,58 @@ class AppSettings extends ChangeNotifier {
   Future<void> saveFeedEnabled(String key, bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kFeedPrefix + key, value);
+  }
+
+  Future<void> saveTheme(AppTheme value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kTheme, value.name);
+  }
+
+  Future<void> saveLocale(String? value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value == null) {
+      await prefs.remove(_kLocale);
+    } else {
+      await prefs.setString(_kLocale, value);
+    }
+  }
+
+  Future<void> saveBasemap(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kBasemap, value);
+  }
+
+  Future<void> saveShowTrails(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kShowTrails, value);
+  }
+
+  Future<void> saveShowVectors(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kShowVectors, value);
+  }
+
+  Future<void> saveMapClusterEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kCluster, value);
+  }
+
+  Future<void> saveSendToMap(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kSendToMap, value);
+  }
+
+  Future<void> saveTargets(List<TargetConfig> value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _kTargets,
+      jsonEncode(value.map((t) => t.toJson()).toList()),
+    );
+  }
+
+  Future<void> saveSimConfig(SimFleetConfig value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kSimulation, jsonEncode(value.toJson()));
   }
 
   Future<void> save() async {

@@ -123,7 +123,12 @@ class ReceptionPageState extends State<ReceptionPage> {
         // Batched: a single setState per flush instead of one per frame, so
         // high-volume feeds (e.g. a large simulated fleet) don't stall the UI.
         _pendingLogs.add(
-          LogEntry(message: message, starter: starter, name: name, time: DateTime.now()),
+          LogEntry(
+            message: message,
+            starter: starter,
+            name: name,
+            time: DateTime.now(),
+          ),
         );
         _logFlushTimer ??= Timer(_logFlushDelay, _flushLogs);
         if (boatManager.decodeEnabled && isAis) {
@@ -175,12 +180,9 @@ class ReceptionPageState extends State<ReceptionPage> {
     // The feed tiles are cached and their status dots listen to [_statusTick]
     // on their own, so the card only rebuilds on explicit state changes
     // (toggles, add/remove) instead of on every status update or every second.
-    _statusTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (_) {
-        if (isRunning) _statusTick.value++;
-      },
-    );
+    _statusTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (isRunning) _statusTick.value++;
+    });
   }
 
   List<FeedDef> get _allFeeds => [...kFeedDefs, ..._customFeeds];
@@ -532,10 +534,7 @@ class ReceptionPageState extends State<ReceptionPage> {
       title: Row(
         children: [
           Expanded(
-            child: Text(
-              feed.displayName,
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: Text(feed.displayName, overflow: TextOverflow.ellipsis),
           ),
           _FeedStatusDot(
             statusSource: forwarderService.feedStatuses,
@@ -544,11 +543,14 @@ class ReceptionPageState extends State<ReceptionPage> {
                 forwarderService.feedStatuses.value[feed.displayName],
           ),
           if (!feed.builtIn)
-            IconButton(
-              icon: const Icon(Icons.delete_outline, size: 16),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              onPressed: () => _removeCustomFeed(feed),
+            HoverTooltip(
+              message: context.l10n.tooltipReceptionRemoveSource,
+              child: IconButton(
+                icon: const Icon(Icons.delete_outline, size: 16),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () => _removeCustomFeed(feed),
+              ),
             ),
         ],
       ),
@@ -646,15 +648,15 @@ class ReceptionPageState extends State<ReceptionPage> {
 
   /// Keys of the file-type custom feeds, used to pick a log starter icon.
   Set<String> get _fileFeedKeys => {
-        for (final f in _allFeeds)
-          if (f.type == FeedType.file) f.key,
-      };
+    for (final f in _allFeeds)
+      if (f.type == FeedType.file) f.key,
+  };
 
   /// Keys of the serial-type custom feeds, used to pick a log starter icon.
   Set<String> get _serialFeedKeys => {
-        for (final f in _allFeeds)
-          if (f.type == FeedType.serial) f.key,
-      };
+    for (final f in _allFeeds)
+      if (f.type == FeedType.serial) f.key,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -669,15 +671,18 @@ class ReceptionPageState extends State<ReceptionPage> {
               child: SectionHeader(
                 icon: Icons.rss_feed,
                 title: context.l10n.receptionFeeds,
-                trailing: IconButton(
-                  icon: const Icon(Icons.add, size: 18),
-                  visualDensity: VisualDensity.compact,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 32,
-                    minHeight: 32,
+                trailing: HoverTooltip(
+                  message: context.l10n.tooltipReceptionAddSource,
+                  child: IconButton(
+                    icon: const Icon(Icons.add, size: 18),
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
+                    onPressed: _showAddFeedDialog,
                   ),
-                  onPressed: _showAddFeedDialog,
                 ),
               ),
             ),
@@ -688,57 +693,60 @@ class ReceptionPageState extends State<ReceptionPage> {
                     vertical: 4,
                     horizontal: 4,
                   ),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final tiles = <Widget>[
-                          _simTileCached(),
-                          for (final feed in _allFeeds) _feedTileCached(feed),
-                        ];
-                        const itemHeight = 48.0;
-                        final fits =
-                            tiles.length * itemHeight <= constraints.maxHeight;
-                        if (fits) {
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: tiles,
-                          );
-                        }
-                        return ListView.builder(
-                          itemCount: tiles.length,
-                          itemBuilder: (context, i) => tiles[i],
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final tiles = <Widget>[
+                        _simTileCached(),
+                        for (final feed in _allFeeds) _feedTileCached(feed),
+                      ];
+                      const itemHeight = 48.0;
+                      final fits =
+                          tiles.length * itemHeight <= constraints.maxHeight;
+                      if (fits) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: tiles,
                         );
-                      },
-                    ),
+                      }
+                      return ListView.builder(
+                        itemCount: tiles.length,
+                        itemBuilder: (context, i) => tiles[i],
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 8),
-            SwitchListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-              dense: true,
-              title: Text(
-                context.l10n.receptionValidateChecksums,
-                style: const TextStyle(fontSize: 13),
-              ),
-              subtitle: AnimatedBuilder(
-                animation: boatManager,
-                builder: (_, __) => Text(
-                  context.l10n.receptionDroppedSentences(
-                    boatManager.invalidChecksumCount,
-                  ),
-                  style: const TextStyle(fontSize: 11),
+            HoverTooltip(
+              message: context.l10n.tooltipReceptionValidateChecksums,
+              child: SwitchListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                dense: true,
+                title: Text(
+                  context.l10n.receptionValidateChecksums,
+                  style: const TextStyle(fontSize: 13),
                 ),
+                subtitle: AnimatedBuilder(
+                  animation: boatManager,
+                  builder: (_, __) => Text(
+                    context.l10n.receptionDroppedSentences(
+                      boatManager.invalidChecksumCount,
+                    ),
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                ),
+                value: _validateChecksum,
+                onChanged: (v) {
+                  setState(() {
+                    _validateChecksum = v;
+                  });
+                  boatManager.setValidateChecksum(v);
+                  settings.validateChecksum = v;
+                  settings.save();
+                },
               ),
-              value: _validateChecksum,
-              onChanged: (v) {
-                setState(() {
-                  _validateChecksum = v;
-                });
-                boatManager.setValidateChecksum(v);
-                settings.validateChecksum = v;
-                settings.save();
-              },
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -749,26 +757,29 @@ class ReceptionPageState extends State<ReceptionPage> {
                     style: const TextStyle(fontSize: 13),
                   ),
                   const Spacer(),
-                  DropdownButton<NmeaFormat>(
-                    value: _importFormat,
-                    isDense: true,
-                    underline: const SizedBox.shrink(),
-                    items: [
-                      for (final f in NmeaFormat.values)
-                        DropdownMenuItem(
-                          value: f,
-                          child: Text(
-                            nmeaFormatLabelLocalized(f, context.l10n),
-                            style: const TextStyle(fontSize: 12),
+                  HoverTooltip(
+                    message: context.l10n.tooltipReceptionImportFormat,
+                    child: DropdownButton<NmeaFormat>(
+                      value: _importFormat,
+                      isDense: true,
+                      underline: const SizedBox.shrink(),
+                      items: [
+                        for (final f in NmeaFormat.values)
+                          DropdownMenuItem(
+                            value: f,
+                            child: Text(
+                              nmeaFormatLabelLocalized(f, context.l10n),
+                              style: const TextStyle(fontSize: 12),
+                            ),
                           ),
-                        ),
-                    ],
-                    onChanged: (f) {
-                      if (f == null) return;
-                      setState(() => _importFormat = f);
-                      forwarderService.importFormat = f;
-                      settings.setImportFormat(f, _importTagSource);
-                    },
+                      ],
+                      onChanged: (f) {
+                        if (f == null) return;
+                        setState(() => _importFormat = f);
+                        forwarderService.importFormat = f;
+                        settings.setImportFormat(f, _importTagSource);
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -797,33 +808,34 @@ class ReceptionPageState extends State<ReceptionPage> {
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   transitionBuilder: (child, animation) {
-                    return ScaleTransition(
-                      scale: animation,
-                      child: child,
-                    );
+                    return ScaleTransition(scale: animation, child: child);
                   },
-                  child: ElevatedButton.icon(
-                    key: ValueKey(isRunning),
-                    icon: Icon(
-                      isRunning ? Icons.stop : Icons.play_arrow,
+                  child: HoverTooltip(
+                    message: isRunning
+                        ? context.l10n.tooltipReceptionStop
+                        : context.l10n.tooltipReceptionStart,
+                    child: ElevatedButton.icon(
+                      key: ValueKey(isRunning),
+                      icon: Icon(isRunning ? Icons.stop : Icons.play_arrow),
+                      label: Text(
+                        isRunning
+                            ? context.l10n.receptionStop
+                            : context.l10n.receptionStart,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isRunning ? Colors.red : Colors.green,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () {
+                        if (isRunning) {
+                          stopForwarder();
+                          widget.boat.stop();
+                        } else {
+                          startForwarder();
+                          widget.boat.start();
+                        }
+                      },
                     ),
-                    label: Text(
-                      isRunning ? context.l10n.receptionStop : context.l10n.receptionStart,
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          isRunning ? Colors.red : Colors.green,
-                      foregroundColor: Colors.white,
-                    ),
-                    onPressed: () {
-                      if (isRunning) {
-                        stopForwarder();
-                        widget.boat.stop();
-                      } else {
-                        startForwarder();
-                        widget.boat.start();
-                      }
-                    },
                   ),
                 ),
               ],
@@ -839,22 +851,28 @@ class ReceptionPageState extends State<ReceptionPage> {
                       children: [
                         Text(context.l10n.receptionLogs),
                         const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.save_outlined),
-                          iconSize: 18,
-                          visualDensity: VisualDensity.compact,
-                          onPressed: saveLogs,
+                        HoverTooltip(
+                          message: context.l10n.tooltipReceptionSaveLogs,
+                          child: IconButton(
+                            icon: const Icon(Icons.save_outlined),
+                            iconSize: 18,
+                            visualDensity: VisualDensity.compact,
+                            onPressed: saveLogs,
+                          ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          iconSize: 18,
-                          visualDensity: VisualDensity.compact,
-                          onPressed: () {
-                            setState(() {
-                              logEntries.clear();
-                              _scrollController.jumpTo(0);
-                            });
-                          },
+                        HoverTooltip(
+                          message: context.l10n.tooltipReceptionClearLogs,
+                          child: IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            iconSize: 18,
+                            visualDensity: VisualDensity.compact,
+                            onPressed: () {
+                              setState(() {
+                                logEntries.clear();
+                                _scrollController.jumpTo(0);
+                              });
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -873,17 +891,15 @@ class ReceptionPageState extends State<ReceptionPage> {
                             final text = entry.status != null
                                 ? logMessageText(context.l10n, entry.status!)
                                 : (entry.name != null
-                                    ? "[${entry.name}] ${entry.message}"
-                                    : entry.message);
+                                      ? "[${entry.name}] ${entry.message}"
+                                      : entry.message);
 
                             return Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 _buildStarterWidget(entry),
                                 const SizedBox(width: 5),
-                                Expanded(
-                                  child: Text(text),
-                                ),
+                                Expanded(child: Text(text)),
                                 if (entry.message.startsWith('!'))
                                   CopyIconButton(
                                     text: entry.message,
@@ -977,9 +993,7 @@ class _AddFeedDialog extends StatefulWidget {
 }
 
 class _AddFeedDialogState extends State<_AddFeedDialog> {
-  static const List<int> kBaudRates = [
-    4800, 9600, 19200, 38400, 57600, 115200,
-  ];
+  static const List<int> kBaudRates = [4800, 9600, 19200, 38400, 57600, 115200];
 
   FeedType _type = FeedType.network;
   final _name = TextEditingController();
@@ -1054,8 +1068,9 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
     }
     final path = _path.text.trim();
     if (path.isEmpty) return null;
-    final interval =
-        (int.tryParse(_interval.text) ?? 1000).clamp(1, 60000).toInt();
+    final interval = (int.tryParse(_interval.text) ?? 1000)
+        .clamp(1, 60000)
+        .toInt();
     return FeedDef(
       key: name,
       displayName: name,
@@ -1114,13 +1129,17 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
               if (_type == FeedType.network) ...[
                 TextField(
                   controller: _host,
-                  decoration: InputDecoration(labelText: context.l10n.fieldHost),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldHost,
+                  ),
                   inputFormatters: [HostInputFormatter()],
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _port,
-                  decoration: InputDecoration(labelText: context.l10n.fieldPort),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldPort,
+                  ),
                   keyboardType: TextInputType.number,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
@@ -1147,9 +1166,12 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    IconButton(
-                      icon: const Icon(Icons.folder_open),
-                      onPressed: _browse,
+                    HoverTooltip(
+                      message: context.l10n.tooltipBrowse,
+                      child: IconButton(
+                        icon: const Icon(Icons.folder_open),
+                        onPressed: _browse,
+                      ),
                     ),
                   ],
                 ),
@@ -1184,19 +1206,22 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                         style: const TextStyle(fontSize: 13),
                       ),
                       const Spacer(),
-                      DropdownButton<int>(
-                        value: _speed,
-                        isDense: true,
-                        underline: const SizedBox.shrink(),
-                        items: const [
-                          DropdownMenuItem(value: 1, child: Text('×1')),
-                          DropdownMenuItem(value: 2, child: Text('×2')),
-                          DropdownMenuItem(value: 5, child: Text('×5')),
-                          DropdownMenuItem(value: 10, child: Text('×10')),
-                        ],
-                        onChanged: (v) {
-                          if (v != null) setState(() => _speed = v);
-                        },
+                      HoverTooltip(
+                        message: context.l10n.tooltipReceptionSpeed,
+                        child: DropdownButton<int>(
+                          value: _speed,
+                          isDense: true,
+                          underline: const SizedBox.shrink(),
+                          items: const [
+                            DropdownMenuItem(value: 1, child: Text('×1')),
+                            DropdownMenuItem(value: 2, child: Text('×2')),
+                            DropdownMenuItem(value: 5, child: Text('×5')),
+                            DropdownMenuItem(value: 10, child: Text('×10')),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) setState(() => _speed = v);
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -1223,9 +1248,12 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: _refreshSerialPorts,
+                    HoverTooltip(
+                      message: context.l10n.tooltipReceptionSerialPorts,
+                      child: IconButton(
+                        icon: const Icon(Icons.refresh),
+                        onPressed: _refreshSerialPorts,
+                      ),
                     ),
                   ],
                 ),

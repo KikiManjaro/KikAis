@@ -38,38 +38,152 @@ class _Chapter {
 
 List<_Chapter> _chapters(AppLocalizations l10n) {
   return [
-    _Chapter(l10n.docChapterOverview, Icons.info_outline,
-        ['AIS', 'introduction', 'radar', 'VTS', 'SOLAS', 'ADS-B']),
-    _Chapter(l10n.docChapterHistory, Icons.history,
-        ['history', 'Sweden', 'IMO', 'SOLAS', '2002', 'class b', 'satellite']),
-    _Chapter(l10n.docChapterHowItWorks, Icons.radio,
-        ['VHF', 'channel', '161.975', '162.025', 'TDMA', 'slot', 'range', 'report']),
-    _Chapter(l10n.docChapterRadio, Icons.settings_input_antenna,
-        ['radio', 'SOTDMA', 'CSTDMA', 'HDLC', 'GMSK', '9600', 'NRZI', 'frame', 'slots', 'VDES']),
-    _Chapter(l10n.docChapterClasses, Icons.architecture,
-        ['class a', 'class b', 'SOTDMA', 'CSTDMA', 'transponder', 'SART', 'MOB', 'EPIRB', 'comparison']),
-    _Chapter(l10n.docChapterMmsi, Icons.badge_outlined,
-        ['MMSI', 'MID', 'country', 'format', 'identity']),
-    _Chapter(l10n.docChapterShipTypes, Icons.inventory_2,
-        ['ship type', 'vessel type', 'cargo', 'tanker', 'fishing', 'tug', 'passenger', '0-99']),
-    _Chapter(l10n.docChapterMessages, Icons.message_outlined,
-        ['message', 'catalog', 'position', 'static', 'safety', 'binary', 'type 1']),
-    _Chapter(l10n.docChapterNmea, Icons.code,
-        ['NMEA', 'AIVDM', 'AIVDO', 'sentence', 'payload', 'checksum', 'fragment', 'armoring', 'six-bit']),
-    _Chapter(l10n.docChapterPayload, Icons.hexagon_outlined,
-        ['bits', 'bit layout', 'coordinate', 'longitude', 'latitude', 'six-bit', 'nav status', 'EPFD']),
-    _Chapter(l10n.docChapterSecurity, Icons.shield_outlined,
-        ['security', 'spoofing', 'jamming', 'meaconing', 'data quality']),
-    _Chapter(l10n.docChapterFieldNotes, Icons.tips_and_updates,
-        ['gotchas', 'quirks', 'length', 'noise', 'timestamp', 'regional', '8-digit']),
-    _Chapter(l10n.docChapterKikais, Icons.directions_boat,
-        ['kikais', 'reception', 'decoder', 'editor', 'simulation', 'map', 'stats']),
-    _Chapter(l10n.docChapterGlossary, Icons.translate,
-        ['glossary', 'terms', 'dictionary', 'SOTDMA', 'MMSI', 'VDES']),
-    _Chapter(l10n.docChapterCheatSheet, Icons.bolt,
-        ['cheat sheet', 'reference', 'frequencies', 'report rates', 'at a glance']),
-    _Chapter(l10n.docChapterSources, Icons.link,
-        ['sources', 'gpsd', 'wikipedia', 'navcen', 'ITU', 'IALA', 'IEC']),
+    _Chapter(l10n.docChapterOverview, Icons.info_outline, [
+      'AIS',
+      'introduction',
+      'radar',
+      'VTS',
+      'SOLAS',
+      'ADS-B',
+    ]),
+    _Chapter(l10n.docChapterHistory, Icons.history, [
+      'history',
+      'Sweden',
+      'IMO',
+      'SOLAS',
+      '2002',
+      'class b',
+      'satellite',
+    ]),
+    _Chapter(l10n.docChapterHowItWorks, Icons.radio, [
+      'VHF',
+      'channel',
+      '161.975',
+      '162.025',
+      'TDMA',
+      'slot',
+      'range',
+      'report',
+    ]),
+    _Chapter(l10n.docChapterRadio, Icons.settings_input_antenna, [
+      'radio',
+      'SOTDMA',
+      'CSTDMA',
+      'HDLC',
+      'GMSK',
+      '9600',
+      'NRZI',
+      'frame',
+      'slots',
+      'VDES',
+    ]),
+    _Chapter(l10n.docChapterClasses, Icons.architecture, [
+      'class a',
+      'class b',
+      'SOTDMA',
+      'CSTDMA',
+      'transponder',
+      'SART',
+      'MOB',
+      'EPIRB',
+      'comparison',
+    ]),
+    _Chapter(l10n.docChapterMmsi, Icons.badge_outlined, [
+      'MMSI',
+      'MID',
+      'country',
+      'format',
+      'identity',
+    ]),
+    _Chapter(l10n.docChapterShipTypes, Icons.inventory_2, [
+      'ship type',
+      'vessel type',
+      'cargo',
+      'tanker',
+      'fishing',
+      'tug',
+      'passenger',
+      '0-99',
+    ]),
+    _Chapter(l10n.docChapterMessages, Icons.message_outlined, [
+      'message',
+      'catalog',
+      'position',
+      'static',
+      'safety',
+      'binary',
+      'type 1',
+    ]),
+    _Chapter(l10n.docChapterNmea, Icons.code, [
+      'NMEA',
+      'AIVDM',
+      'AIVDO',
+      'sentence',
+      'payload',
+      'checksum',
+      'fragment',
+      'armoring',
+      'six-bit',
+    ]),
+    _Chapter(l10n.docChapterPayload, Icons.hexagon_outlined, [
+      'bits',
+      'bit layout',
+      'coordinate',
+      'longitude',
+      'latitude',
+      'six-bit',
+      'nav status',
+      'EPFD',
+    ]),
+    _Chapter(l10n.docChapterSecurity, Icons.shield_outlined, [
+      'security',
+      'spoofing',
+      'jamming',
+      'meaconing',
+      'data quality',
+    ]),
+    _Chapter(l10n.docChapterFieldNotes, Icons.tips_and_updates, [
+      'gotchas',
+      'quirks',
+      'length',
+      'noise',
+      'timestamp',
+      'regional',
+      '8-digit',
+    ]),
+    _Chapter(l10n.docChapterKikais, Icons.directions_boat, [
+      'kikais',
+      'reception',
+      'decoder',
+      'editor',
+      'simulation',
+      'map',
+      'stats',
+    ]),
+    _Chapter(l10n.docChapterGlossary, Icons.translate, [
+      'glossary',
+      'terms',
+      'dictionary',
+      'SOTDMA',
+      'MMSI',
+      'VDES',
+    ]),
+    _Chapter(l10n.docChapterCheatSheet, Icons.bolt, [
+      'cheat sheet',
+      'reference',
+      'frequencies',
+      'report rates',
+      'at a glance',
+    ]),
+    _Chapter(l10n.docChapterSources, Icons.link, [
+      'sources',
+      'gpsd',
+      'wikipedia',
+      'navcen',
+      'ITU',
+      'IALA',
+      'IEC',
+    ]),
   ];
 }
 
@@ -94,7 +208,8 @@ class _DocumentationPageState extends State<DocumentationPage> {
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: TextField(
-                    onChanged: (v) => setState(() => _query = v.trim().toLowerCase()),
+                    onChanged: (v) =>
+                        setState(() => _query = v.trim().toLowerCase()),
                     decoration: InputDecoration(
                       isDense: true,
                       prefixIcon: const Icon(Icons.search, size: 18),
@@ -160,9 +275,9 @@ class _DocumentationPageState extends State<DocumentationPage> {
       child: Text(
         text,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: scheme.primary,
-            ),
+          fontWeight: FontWeight.bold,
+          color: scheme.primary,
+        ),
       ),
     );
   }
@@ -172,9 +287,9 @@ class _DocumentationPageState extends State<DocumentationPage> {
       padding: const EdgeInsets.only(top: 16, bottom: 6),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -302,10 +417,7 @@ class _DocumentationPageState extends State<DocumentationPage> {
       _h1(l10n.docOverviewTitle),
       _p(l10n.docOverviewIntro),
       _p(l10n.docOverviewRadar),
-      _factCard(
-        l10n.docOverviewAdsBTitle,
-        l10n.docOverviewAdsBText,
-      ),
+      _factCard(l10n.docOverviewAdsBTitle, l10n.docOverviewAdsBText),
       const SizedBox(height: 12),
       _h2(l10n.docOverviewTransponder),
       _bullets([
@@ -662,7 +774,8 @@ class _TimelineWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final appColors = Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
     return Column(
       children: [
         for (var i = 0; i < kAisTimeline.length; i++)
@@ -785,7 +898,8 @@ class _MmsiLookupWidgetState extends State<_MmsiLookupWidget> {
               country == null
                   ? l10n.docMmsiUnknownCountry
                   : localizedCountryName(country, context),
-              mid)
+              mid,
+            )
           : cls;
     });
   }
@@ -888,7 +1002,9 @@ class _MessageCatalog extends StatelessWidget {
   Widget build(BuildContext context) {
     final families = <String, List<DocMessageType>>{};
     for (final m in kDocMessageTypes) {
-      families.putIfAbsent(docMessageTypeFamily(m, context.l10n), () => []).add(m);
+      families
+          .putIfAbsent(docMessageTypeFamily(m, context.l10n), () => [])
+          .add(m);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -908,9 +1024,9 @@ class _MessageCatalog extends StatelessWidget {
       child: Text(
         name,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+          fontWeight: FontWeight.w700,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
   }
@@ -940,7 +1056,8 @@ class _MessageTypeCardState extends State<_MessageTypeCard> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final appColors = Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
     final m = widget.message;
     final decoded = _decodeSample(_sample, context.l10n);
     return Card(
@@ -961,12 +1078,16 @@ class _MessageTypeCardState extends State<_MessageTypeCard> {
         ),
         title: Text(
           context.l10n.docTypeCardTitle(
-              docMessageTypeName(m, context.l10n), '${m.type}'),
+            docMessageTypeName(m, context.l10n),
+            '${m.type}',
+          ),
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
           context.l10n.docTypeCardSubtitle(
-              '${m.bits}', docMessageTypeCadence(m, context.l10n)),
+            '${m.bits}',
+            docMessageTypeCadence(m, context.l10n),
+          ),
           style: const TextStyle(fontSize: 12),
         ),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -980,7 +1101,8 @@ class _MessageTypeCardState extends State<_MessageTypeCard> {
           const SizedBox(height: 8),
           Text(
             context.l10n.docTypeCardEmittedBy(
-                docMessageTypeEmittedBy(m, context.l10n)),
+              docMessageTypeEmittedBy(m, context.l10n),
+            ),
             style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 8),
@@ -1018,7 +1140,10 @@ class _MessageTypeCardState extends State<_MessageTypeCard> {
                     ),
                   ),
                   Expanded(
-                    child: Text(field.$2, style: const TextStyle(fontSize: 11.5)),
+                    child: Text(
+                      field.$2,
+                      style: const TextStyle(fontSize: 11.5),
+                    ),
                   ),
                 ],
               ),
@@ -1026,10 +1151,13 @@ class _MessageTypeCardState extends State<_MessageTypeCard> {
           if (widget.onOpenInDecoder != null)
             Padding(
               padding: const EdgeInsets.only(top: 8),
-              child: OutlinedButton.icon(
-                onPressed: () => widget.onOpenInDecoder!(_sample),
-                icon: const Icon(Icons.manage_search, size: 16),
-                label: Text(context.l10n.docOpenInDecoder),
+              child: HoverTooltip(
+                message: context.l10n.tooltipDocOpenTab,
+                child: OutlinedButton.icon(
+                  onPressed: () => widget.onOpenInDecoder!(_sample),
+                  icon: const Icon(Icons.manage_search, size: 16),
+                  label: Text(context.l10n.docOpenInDecoder),
+                ),
               ),
             ),
         ],
@@ -1097,9 +1225,11 @@ class _NavStatusTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _TwoColList(kNavStatus
-        .map((e) => ('${e.$1}', docNavStatusLabel(context.l10n, e.$2)))
-        .toList());
+    return _TwoColList(
+      kNavStatus
+          .map((e) => ('${e.$1}', docNavStatusLabel(context.l10n, e.$2)))
+          .toList(),
+    );
   }
 }
 
@@ -1108,9 +1238,11 @@ class _EpfdTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _TwoColList(kEpfdTypes
-        .map((e) => ('${e.$1}', docEpfdLabel(context.l10n, e.$2)))
-        .toList());
+    return _TwoColList(
+      kEpfdTypes
+          .map((e) => ('${e.$1}', docEpfdLabel(context.l10n, e.$2)))
+          .toList(),
+    );
   }
 }
 
@@ -1145,7 +1277,9 @@ class _TwoColList extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Expanded(child: Text(v, style: const TextStyle(fontSize: 12))),
+                      Expanded(
+                        child: Text(v, style: const TextStyle(fontSize: 12)),
+                      ),
                     ],
                   ),
                 ),
@@ -1211,8 +1345,9 @@ class _SentenceInspectorState extends State<_SentenceInspector> {
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
               l10n.docInspectorDecoded(
-                  kEditorTypeLabel(message.messageType),
-                  '${message.messageType}'),
+                kEditorTypeLabel(message.messageType),
+                '${message.messageType}',
+              ),
               style: TextStyle(fontSize: 12, color: appColors.success),
             ),
           ),
@@ -1238,7 +1373,9 @@ class _SentenceInspectorState extends State<_SentenceInspector> {
                     ),
                   ),
                 ),
-                Expanded(child: Text(field.$2, style: const TextStyle(fontSize: 12))),
+                Expanded(
+                  child: Text(field.$2, style: const TextStyle(fontSize: 12)),
+                ),
               ],
             ),
           ),
@@ -1269,10 +1406,7 @@ class _SentenceInspectorState extends State<_SentenceInspector> {
               controller: _controller,
               maxLines: 3,
               minLines: 1,
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 12,
-              ),
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
               decoration: InputDecoration(
                 isDense: true,
                 labelText: l10n.docInspectorNmeaLabel,
@@ -1342,9 +1476,12 @@ class _TabCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              OutlinedButton(
-                onPressed: () => onOpen(tabIndex),
-                child: Text(context.l10n.docTabOpen),
+              HoverTooltip(
+                message: context.l10n.tooltipDocOpenTab,
+                child: OutlinedButton(
+                  onPressed: () => onOpen(tabIndex),
+                  child: Text(context.l10n.docTabOpen),
+                ),
               ),
             ],
           ),
