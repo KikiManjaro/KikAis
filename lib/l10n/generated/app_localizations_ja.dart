@@ -2961,6 +2961,100 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tooltipSimOpenReception => 'シミュレーションソースを開始するには受信タブに移動します。';
 
   @override
+  String get tooltipSimRadius => '中心の周囲の航行ゾーンの半径（キロメートル）。';
+
+  @override
+  String get tooltipSimVessels => '船団に生成する船舶の数。';
+
+  @override
+  String get tooltipSimSpeedMin => '船舶の最低速度（ノット）。';
+
+  @override
+  String get tooltipSimSpeedMax => '船舶の最高速度（ノット）。';
+
+  @override
+  String get tooltipSimInterval => '2回の送信間の遅延（秒）。';
+
+  @override
+  String get tooltipSimSeed => '乱数のシード。同じシードからは常に同じ船団が生成されます。';
+
+  @override
+  String get tooltipSimAnchored => '移動せずに停泊または係留されたままになる船舶の割合。';
+
+  @override
+  String get tooltipSimNamePrefix => '生成された船舶名に使用される接頭辞。';
+
+  @override
+  String get tooltipSimMmsiMid => 'MMSIの構築に使う海事識別番号（3桁の国コード）。';
+
+  @override
+  String get tooltipSimCenterLat => '航行ゾーンの中心の緯度。';
+
+  @override
+  String get tooltipSimCenterLon => '航行ゾーンの中心の経度。';
+
+  @override
+  String get tooltipSimTransit => '直行ルートでゾーンを横断する船舶の割合。';
+
+  @override
+  String get tooltipSimRegenEvery => '定期的な再生成が有効な場合、Nティックごとに船団を再生成します。';
+
+  @override
+  String get tooltipSimReportInterval => '船舶ごとの最大位置通報間隔（ティック単位）。';
+
+  @override
+  String get tooltipSimWander => 'ランダムな針路のふらつきの強さ（0 = 直線）。';
+
+  @override
+  String get tooltipSimClassBShare => '両方が有効な場合のクラスBとクラスAの位置通報の割合。';
+
+  @override
+  String get tooltipSimErrorRate => '送信する各文を破損または重複させる確率。';
+
+  @override
+  String get tooltipSimBaseStations => '生成する固定基地局の数。';
+
+  @override
+  String get tooltipSimAtoN => '生成する固定の航路標識（灯標）の数。';
+
+  @override
+  String get tooltipSimRealisticNames => '現実的な船名、呼出符号、目的地を使用します。';
+
+  @override
+  String get tooltipSimRealisticDimensions => '船種に応じて船の寸法と喫水を拡大縮小します。';
+
+  @override
+  String get tooltipSimRealisticMmsi => '船舶カテゴリごとにITU構造に従ったMMSIを構築します。';
+
+  @override
+  String get tooltipSimVarySpeed => '設定範囲内で速度をゆっくり変動させます。';
+
+  @override
+  String get tooltipSimSpeedByType => '各船種の代表的な範囲から速度を選択します。';
+
+  @override
+  String get tooltipSimHighAccuracy => '送信する通報に高精度位置フラグを設定します。';
+
+  @override
+  String get tooltipSimRealisticRot => '針路の変化から導出した旋回率を送信します。';
+
+  @override
+  String get tooltipSimRegeneratePeriodically =>
+      '変化する交通を再現するため、Nティックごとに自動的に船団を再生成します。';
+
+  @override
+  String get tooltipSimInjectErrors => 'エラー処理をテストするため、一部の送信文を破損または重複させます。';
+
+  @override
+  String get tooltipSimNmea4Tag => '送信する各フレームの前にNMEA 4.0タグブロックを付けます。';
+
+  @override
+  String get tooltipSimVesselType => 'この船種を船団に含めます。';
+
+  @override
+  String get tooltipSimMessageType => 'このAISメッセージタイプを送信します。';
+
+  @override
   String get tooltipDecoderClear => 'デコーダーの入力と結果を消去します。';
 
   @override

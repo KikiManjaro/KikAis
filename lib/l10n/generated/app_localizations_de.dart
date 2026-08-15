@@ -3034,6 +3034,128 @@ class AppLocalizationsDe extends AppLocalizations {
       'Zur Registerkarte Empfang gehen, um den Simulations-Feed zu starten.';
 
   @override
+  String get tooltipSimRadius =>
+      'Radius der Navigationszone um den Mittelpunkt, in Kilometern.';
+
+  @override
+  String get tooltipSimVessels =>
+      'Anzahl der zu generierenden Schiffe in der Flotte.';
+
+  @override
+  String get tooltipSimSpeedMin =>
+      'Mindestgeschwindigkeit der Schiffe, in Knoten.';
+
+  @override
+  String get tooltipSimSpeedMax =>
+      'Höchstgeschwindigkeit der Schiffe, in Knoten.';
+
+  @override
+  String get tooltipSimInterval =>
+      'Verzögerung zwischen zwei Emissions-Ticks, in Sekunden.';
+
+  @override
+  String get tooltipSimSeed =>
+      'Zufallsseed. Derselbe Seed erzeugt immer dieselbe Flotte.';
+
+  @override
+  String get tooltipSimAnchored =>
+      'Prozentsatz der Schiffe, die ankern oder vertäut bleiben statt sich zu bewegen.';
+
+  @override
+  String get tooltipSimNamePrefix => 'Präfix für die generierten Schiffsnamen.';
+
+  @override
+  String get tooltipSimMmsiMid =>
+      'Maritime Identifikationsziffern (3-stelliger Ländercode) für den MMSI-Aufbau.';
+
+  @override
+  String get tooltipSimCenterLat =>
+      'Breitengrad des Zentrums der Navigationszone.';
+
+  @override
+  String get tooltipSimCenterLon =>
+      'Längengrad des Zentrums der Navigationszone.';
+
+  @override
+  String get tooltipSimTransit =>
+      'Prozentsatz der Schiffe, die die Zone auf direkter Route durchqueren.';
+
+  @override
+  String get tooltipSimRegenEvery =>
+      'Flotte alle N Ticks neu generieren, wenn periodische Regenerierung aktiviert ist.';
+
+  @override
+  String get tooltipSimReportInterval =>
+      'Maximales Positionsberichtsintervall pro Schiff, in Ticks.';
+
+  @override
+  String get tooltipSimWander =>
+      'Stärke der zufälligen Kursabweichung (0 = gerade Linien).';
+
+  @override
+  String get tooltipSimClassBShare =>
+      'Anteil von Klasse-B- gegenüber Klasse-A-Positionsberichten, wenn beide aktiviert sind.';
+
+  @override
+  String get tooltipSimErrorRate =>
+      'Wahrscheinlichkeit, jeden ausgegebenen Satz zu beschädigen oder zu duplizieren.';
+
+  @override
+  String get tooltipSimBaseStations =>
+      'Anzahl der zu generierenden festen Basisstationen.';
+
+  @override
+  String get tooltipSimAtoN =>
+      'Anzahl der zu generierenden festen Navigationshilfen (Baken).';
+
+  @override
+  String get tooltipSimRealisticNames =>
+      'Realistische Schiffsnamen, Rufzeichen und Ziele verwenden.';
+
+  @override
+  String get tooltipSimRealisticDimensions =>
+      'Schiffsmaße und Tiefgang nach Schiffstyp skalieren.';
+
+  @override
+  String get tooltipSimRealisticMmsi =>
+      'MMSIs entsprechend der ITU-Struktur je Schiffskategorie aufbauen.';
+
+  @override
+  String get tooltipSimVarySpeed =>
+      'Die Geschwindigkeit innerhalb des konfigurierten Bereichs sanft driften lassen.';
+
+  @override
+  String get tooltipSimSpeedByType =>
+      'Die Geschwindigkeit aus dem typischen Bereich jedes Schiffstyps wählen.';
+
+  @override
+  String get tooltipSimHighAccuracy =>
+      'Das Hochpräzisions-Positionsflag auf ausgegebenen Berichten setzen.';
+
+  @override
+  String get tooltipSimRealisticRot =>
+      'Eine aus der Kursänderung abgeleitete Drehrate ausgeben.';
+
+  @override
+  String get tooltipSimRegeneratePeriodically =>
+      'Flotte automatisch alle N Ticks neu generieren, um wechselnden Verkehr zu simulieren.';
+
+  @override
+  String get tooltipSimInjectErrors =>
+      'Einige ausgegebene Sätze beschädigen oder duplizieren, um die Fehlerbehandlung zu testen.';
+
+  @override
+  String get tooltipSimNmea4Tag =>
+      'Jeden ausgegebenen Frame mit einem NMEA-4.0-Tagblock versehen.';
+
+  @override
+  String get tooltipSimVesselType =>
+      'Diesen Schiffstyp in die Flotte aufnehmen.';
+
+  @override
+  String get tooltipSimMessageType => 'Diesen AIS-Meldungstyp ausgeben.';
+
+  @override
   String get tooltipDecoderClear => 'Decoder-Eingabe und Ergebnisse löschen.';
 
   @override

@@ -316,7 +316,7 @@ class SectionHeader extends StatelessWidget {
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const Spacer(),
-          if (trailing != null) trailing!,
+          ?trailing,
         ],
       ),
     );

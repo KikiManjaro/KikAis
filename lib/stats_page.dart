@@ -144,6 +144,7 @@ class _StatsPageState extends State<StatsPage> {
           children: [
             DropdownButtonFormField<String?>(
               initialValue: filter,
+              mouseCursor: WidgetStateMouseCursor.clickable,
               decoration: InputDecoration(
                 labelText: context.l10n.statsFeed,
                 isDense: true,

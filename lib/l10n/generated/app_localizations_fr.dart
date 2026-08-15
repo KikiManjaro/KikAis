@@ -3045,6 +3045,125 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ouvre l\'onglet Réception pour démarrer le flux de simulation.';
 
   @override
+  String get tooltipSimRadius =>
+      'Rayon de la zone de navigation autour du centre, en kilomètres.';
+
+  @override
+  String get tooltipSimVessels => 'Nombre de navires à générer dans la flotte.';
+
+  @override
+  String get tooltipSimSpeedMin => 'Vitesse minimale des navires, en nœuds.';
+
+  @override
+  String get tooltipSimSpeedMax => 'Vitesse maximale des navires, en nœuds.';
+
+  @override
+  String get tooltipSimInterval => 'Délai entre deux émissions, en secondes.';
+
+  @override
+  String get tooltipSimSeed =>
+      'Graine aléatoire. La même graine produit toujours la même flotte.';
+
+  @override
+  String get tooltipSimAnchored =>
+      'Pourcentage de navires ancrés ou amarrés au lieu de se déplacer.';
+
+  @override
+  String get tooltipSimNamePrefix =>
+      'Préfixe utilisé pour les noms des navires générés.';
+
+  @override
+  String get tooltipSimMmsiMid =>
+      'Identifiant maritime (code pays à 3 chiffres) utilisé pour construire les MMSI.';
+
+  @override
+  String get tooltipSimCenterLat =>
+      'Latitude du centre de la zone de navigation.';
+
+  @override
+  String get tooltipSimCenterLon =>
+      'Longitude du centre de la zone de navigation.';
+
+  @override
+  String get tooltipSimTransit =>
+      'Pourcentage de navires traversant la zone en route directe.';
+
+  @override
+  String get tooltipSimRegenEvery =>
+      'Régénérer la flotte toutes les N émissions lorsque la régénération périodique est activée.';
+
+  @override
+  String get tooltipSimReportInterval =>
+      'Intervalle maximal de rapport de position par navire, en émissions.';
+
+  @override
+  String get tooltipSimWander =>
+      'Intensité de la dérive aléatoire du cap (0 = lignes droites).';
+
+  @override
+  String get tooltipSimClassBShare =>
+      'Pourcentage de rapports de position classe B par rapport à classe A lorsque les deux sont activés.';
+
+  @override
+  String get tooltipSimErrorRate =>
+      'Probabilité de corrompre ou dupliquer chaque trame émise.';
+
+  @override
+  String get tooltipSimBaseStations =>
+      'Nombre de stations de base fixes à générer.';
+
+  @override
+  String get tooltipSimAtoN =>
+      'Nombre d\'aides à la navigation (balises) fixes à générer.';
+
+  @override
+  String get tooltipSimRealisticNames =>
+      'Utiliser des noms, indicatifs et destinations de navires réalistes.';
+
+  @override
+  String get tooltipSimRealisticDimensions =>
+      'Adapter les dimensions et le tirant d\'eau au type de navire.';
+
+  @override
+  String get tooltipSimRealisticMmsi =>
+      'Construire des MMSI conformes à la structure ITU selon la catégorie de navire.';
+
+  @override
+  String get tooltipSimVarySpeed =>
+      'Laisser la vitesse dériver légèrement dans la plage configurée.';
+
+  @override
+  String get tooltipSimSpeedByType =>
+      'Choisir la vitesse dans la plage typique de chaque type de navire.';
+
+  @override
+  String get tooltipSimHighAccuracy =>
+      'Activer le drapeau de position haute précision sur les rapports émis.';
+
+  @override
+  String get tooltipSimRealisticRot =>
+      'Émettre un taux de virage dérivé du changement de cap.';
+
+  @override
+  String get tooltipSimRegeneratePeriodically =>
+      'Régénérer automatiquement la flotte toutes les N émissions pour simuler un trafic changeant.';
+
+  @override
+  String get tooltipSimInjectErrors =>
+      'Corrompre ou dupliquer certaines trames émises pour tester la gestion des erreurs.';
+
+  @override
+  String get tooltipSimNmea4Tag =>
+      'Préfixer chaque trame émise avec un bloc de balise NMEA 4.0.';
+
+  @override
+  String get tooltipSimVesselType =>
+      'Inclure ce type de navire dans la flotte.';
+
+  @override
+  String get tooltipSimMessageType => 'Émettre ce type de message AIS.';
+
+  @override
   String get tooltipDecoderClear =>
       'Efface l\'entrée et les résultats du décodeur.';
 

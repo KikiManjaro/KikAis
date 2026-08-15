@@ -276,8 +276,12 @@ class _SimulationPageState extends State<SimulationPage> {
     SimBoatKind.weather => Colors.cyan,
   };
 
-  Widget _field(TextEditingController controller, String label) {
-    return SizedBox(
+  Widget _field(
+    TextEditingController controller,
+    String label, {
+    String? tooltip,
+  }) {
+    final field = SizedBox(
       width: 150,
       child: TextField(
         controller: controller,
@@ -285,10 +289,18 @@ class _SimulationPageState extends State<SimulationPage> {
         decoration: InputDecoration(labelText: label, isDense: true),
       ),
     );
+    return tooltip == null
+        ? field
+        : HoverTooltip(message: tooltip, child: field);
   }
 
-  Widget _switchTile(String title, bool value, ValueChanged<bool> onChanged) {
-    return SizedBox(
+  Widget _switchTile(
+    String title,
+    bool value,
+    ValueChanged<bool> onChanged, {
+    String? tooltip,
+  }) {
+    final tile = SizedBox(
       width: 280,
       child: SwitchListTile(
         dense: true,
@@ -299,6 +311,7 @@ class _SimulationPageState extends State<SimulationPage> {
         onChanged: onChanged,
       ),
     );
+    return tooltip == null ? tile : HoverTooltip(message: tooltip, child: tile);
   }
 
   Widget _labelDropdown<T>(
@@ -307,8 +320,9 @@ class _SimulationPageState extends State<SimulationPage> {
     List<DropdownMenuItem<T>> items,
     ValueChanged<T?> onChanged, {
     Widget? hint,
+    String? tooltip,
   }) {
-    return SizedBox(
+    final dropdown = SizedBox(
       width: 210,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,6 +330,7 @@ class _SimulationPageState extends State<SimulationPage> {
           Text(label, style: const TextStyle(fontSize: 12)),
           DropdownButton<T>(
             value: value,
+            mouseCursor: WidgetStateMouseCursor.clickable,
             isExpanded: true,
             items: items,
             hint: hint,
@@ -324,6 +339,9 @@ class _SimulationPageState extends State<SimulationPage> {
         ],
       ),
     );
+    return tooltip == null
+        ? dropdown
+        : HoverTooltip(message: tooltip, child: dropdown);
   }
 
   Widget _multiField(
@@ -355,8 +373,9 @@ class _SimulationPageState extends State<SimulationPage> {
     required String Function(T) labelForOption,
     required ValueChanged<T> onSelected,
     double width = 260,
+    String? tooltip,
   }) {
-    return SizedBox(
+    final combo = SizedBox(
       width: width,
       child: RawAutocomplete<T>(
         textEditingController: controller,
@@ -405,6 +424,9 @@ class _SimulationPageState extends State<SimulationPage> {
         },
       ),
     );
+    return tooltip == null
+        ? combo
+        : HoverTooltip(message: tooltip, child: combo);
   }
 
   Widget _buildBoatRow(SimBoat b) {
@@ -521,14 +543,46 @@ class _SimulationPageState extends State<SimulationPage> {
                       spacing: 12,
                       runSpacing: 12,
                       children: [
-                        _field(_radiusC, context.l10n.simRadiusKm),
-                        _field(_countC, context.l10n.simVessels),
-                        _field(_sogMinC, context.l10n.simSpeedMinKn),
-                        _field(_sogMaxC, context.l10n.simSpeedMaxKn),
-                        _field(_intervalC, context.l10n.simIntervalS),
-                        _field(_seedC, context.l10n.simSeed),
-                        _field(_anchoredC, context.l10n.simAnchoredPct),
-                        _field(_namePrefixC, context.l10n.simNamePrefix),
+                        _field(
+                          _radiusC,
+                          context.l10n.simRadiusKm,
+                          tooltip: context.l10n.tooltipSimRadius,
+                        ),
+                        _field(
+                          _countC,
+                          context.l10n.simVessels,
+                          tooltip: context.l10n.tooltipSimVessels,
+                        ),
+                        _field(
+                          _sogMinC,
+                          context.l10n.simSpeedMinKn,
+                          tooltip: context.l10n.tooltipSimSpeedMin,
+                        ),
+                        _field(
+                          _sogMaxC,
+                          context.l10n.simSpeedMaxKn,
+                          tooltip: context.l10n.tooltipSimSpeedMax,
+                        ),
+                        _field(
+                          _intervalC,
+                          context.l10n.simIntervalS,
+                          tooltip: context.l10n.tooltipSimInterval,
+                        ),
+                        _field(
+                          _seedC,
+                          context.l10n.simSeed,
+                          tooltip: context.l10n.tooltipSimSeed,
+                        ),
+                        _field(
+                          _anchoredC,
+                          context.l10n.simAnchoredPct,
+                          tooltip: context.l10n.tooltipSimAnchored,
+                        ),
+                        _field(
+                          _namePrefixC,
+                          context.l10n.simNamePrefix,
+                          tooltip: context.l10n.tooltipSimNamePrefix,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -542,6 +596,7 @@ class _SimulationPageState extends State<SimulationPage> {
                           focusNode: _mmsiMidFocus,
                           label: context.l10n.simMmsiMid,
                           hint: context.l10n.simSearchMmid,
+                          tooltip: context.l10n.tooltipSimMmsiMid,
                           optionsBuilder: (value) {
                             final q = value.text.trim().toLowerCase();
                             final matches = q.isEmpty
@@ -582,24 +637,28 @@ class _SimulationPageState extends State<SimulationPage> {
                       runSpacing: 4,
                       children: [
                         for (final vt in kSimVesselTypes)
-                          SizedBox(
-                            width: 130,
-                            child: CheckboxListTile(
-                              dense: true,
-                              contentPadding: EdgeInsets.zero,
-                              controlAffinity: ListTileControlAffinity.leading,
-                              title: Text(
-                                vesselTypeLabel(vt.$1, context.l10n),
-                                style: const TextStyle(fontSize: 12),
+                          HoverTooltip(
+                            message: context.l10n.tooltipSimVesselType,
+                            child: SizedBox(
+                              width: 130,
+                              child: CheckboxListTile(
+                                dense: true,
+                                contentPadding: EdgeInsets.zero,
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                                title: Text(
+                                  vesselTypeLabel(vt.$1, context.l10n),
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                value: _draftVesselTypes.contains(vt.$1),
+                                onChanged: (v) => setState(() {
+                                  if (v == true) {
+                                    _draftVesselTypes.add(vt.$1);
+                                  } else {
+                                    _draftVesselTypes.remove(vt.$1);
+                                  }
+                                }),
                               ),
-                              value: _draftVesselTypes.contains(vt.$1),
-                              onChanged: (v) => setState(() {
-                                if (v == true) {
-                                  _draftVesselTypes.add(vt.$1);
-                                } else {
-                                  _draftVesselTypes.remove(vt.$1);
-                                }
-                              }),
                             ),
                           ),
                       ],
@@ -613,16 +672,19 @@ class _SimulationPageState extends State<SimulationPage> {
                           context.l10n.simRealisticNames,
                           _draftRealisticNames,
                           (v) => setState(() => _draftRealisticNames = v),
+                          tooltip: context.l10n.tooltipSimRealisticNames,
                         ),
                         _switchTile(
                           context.l10n.simRealisticDimensions,
                           _draftRealisticDimensions,
                           (v) => setState(() => _draftRealisticDimensions = v),
+                          tooltip: context.l10n.tooltipSimRealisticDimensions,
                         ),
                         _switchTile(
                           context.l10n.simRealisticMmsi,
                           _draftRealisticMmsi,
                           (v) => setState(() => _draftRealisticMmsi = v),
+                          tooltip: context.l10n.tooltipSimRealisticMmsi,
                         ),
                       ],
                     ),
@@ -670,8 +732,16 @@ class _SimulationPageState extends State<SimulationPage> {
                         });
                       },
                     ),
-                    _field(_latC, context.l10n.simCenterLat),
-                    _field(_lonC, context.l10n.simCenterLon),
+                    _field(
+                      _latC,
+                      context.l10n.simCenterLat,
+                      tooltip: context.l10n.tooltipSimCenterLat,
+                    ),
+                    _field(
+                      _lonC,
+                      context.l10n.simCenterLon,
+                      tooltip: context.l10n.tooltipSimCenterLon,
+                    ),
                     _labelDropdown<SimZoneShape>(
                       context.l10n.simZoneShape,
                       _draftZoneShape,
@@ -689,13 +759,22 @@ class _SimulationPageState extends State<SimulationPage> {
                         if (v != null) _draftZoneShape = v;
                       }),
                     ),
-                    _field(_transitC, context.l10n.simTransitPct),
+                    _field(
+                      _transitC,
+                      context.l10n.simTransitPct,
+                      tooltip: context.l10n.tooltipSimTransit,
+                    ),
                     _switchTile(
                       context.l10n.simRegeneratePeriodically,
                       _draftAutoRegenerate,
                       (v) => setState(() => _draftAutoRegenerate = v),
+                      tooltip: context.l10n.tooltipSimRegeneratePeriodically,
                     ),
-                    _field(_regenEveryC, context.l10n.simRegenerateTicks),
+                    _field(
+                      _regenEveryC,
+                      context.l10n.simRegenerateTicks,
+                      tooltip: context.l10n.tooltipSimRegenEvery,
+                    ),
                   ],
                 ),
               ),
@@ -727,27 +806,40 @@ class _SimulationPageState extends State<SimulationPage> {
                       context.l10n.simVarySpeed,
                       _draftVarySpeed,
                       (v) => setState(() => _draftVarySpeed = v),
+                      tooltip: context.l10n.tooltipSimVarySpeed,
                     ),
                     _field(
                       _reportIntervalC,
                       context.l10n.simReportIntervalTicks,
+                      tooltip: context.l10n.tooltipSimReportInterval,
                     ),
-                    _field(_wanderC, context.l10n.simWander),
+                    _field(
+                      _wanderC,
+                      context.l10n.simWander,
+                      tooltip: context.l10n.tooltipSimWander,
+                    ),
                     _switchTile(
                       context.l10n.simSpeedByType,
                       _draftSpeedByType,
                       (v) => setState(() => _draftSpeedByType = v),
+                      tooltip: context.l10n.tooltipSimSpeedByType,
                     ),
-                    _field(_classBPctC, context.l10n.simClassBSharePct),
+                    _field(
+                      _classBPctC,
+                      context.l10n.simClassBSharePct,
+                      tooltip: context.l10n.tooltipSimClassBShare,
+                    ),
                     _switchTile(
                       context.l10n.simHighAccuracy,
                       _draftAccuratePosition,
                       (v) => setState(() => _draftAccuratePosition = v),
+                      tooltip: context.l10n.tooltipSimHighAccuracy,
                     ),
                     _switchTile(
                       context.l10n.simRealisticRot,
                       _draftRealisticRot,
                       (v) => setState(() => _draftRealisticRot = v),
+                      tooltip: context.l10n.tooltipSimRealisticRot,
                     ),
                   ],
                 ),
@@ -787,8 +879,16 @@ class _SimulationPageState extends State<SimulationPage> {
                   spacing: 12,
                   runSpacing: 12,
                   children: [
-                    _field(_baseStationsC, context.l10n.simBaseStations),
-                    _field(_atonC, context.l10n.simAtoN),
+                    _field(
+                      _baseStationsC,
+                      context.l10n.simBaseStations,
+                      tooltip: context.l10n.tooltipSimBaseStations,
+                    ),
+                    _field(
+                      _atonC,
+                      context.l10n.simAtoN,
+                      tooltip: context.l10n.tooltipSimAtoN,
+                    ),
                   ],
                 ),
               ),
@@ -809,8 +909,13 @@ class _SimulationPageState extends State<SimulationPage> {
                       context.l10n.simInjectErrors,
                       _draftInjectErrors,
                       (v) => setState(() => _draftInjectErrors = v),
+                      tooltip: context.l10n.tooltipSimInjectErrors,
                     ),
-                    _field(_errorRateC, context.l10n.simErrorRatePct),
+                    _field(
+                      _errorRateC,
+                      context.l10n.simErrorRatePct,
+                      tooltip: context.l10n.tooltipSimErrorRate,
+                    ),
                     _labelDropdown<String>(
                       context.l10n.simTalkerId,
                       _draftNmeaTalker,
@@ -832,6 +937,7 @@ class _SimulationPageState extends State<SimulationPage> {
                       context.l10n.simNmea4Tag,
                       _draftNmea4Tags,
                       (v) => setState(() => _draftNmea4Tags = v),
+                      tooltip: context.l10n.tooltipSimNmea4Tag,
                     ),
                   ],
                 ),
@@ -850,24 +956,27 @@ class _SimulationPageState extends State<SimulationPage> {
                   runSpacing: 4,
                   children: [
                     for (final entry in kSimTypeLabels.entries)
-                      SizedBox(
-                        width: 210,
-                        child: CheckboxListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                          controlAffinity: ListTileControlAffinity.leading,
-                          title: Text(
-                            simTypeLabel(entry.key, context.l10n),
-                            style: const TextStyle(fontSize: 12),
+                      HoverTooltip(
+                        message: context.l10n.tooltipSimMessageType,
+                        child: SizedBox(
+                          width: 210,
+                          child: CheckboxListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                            controlAffinity: ListTileControlAffinity.leading,
+                            title: Text(
+                              simTypeLabel(entry.key, context.l10n),
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            value: _draftTypes.contains(entry.key),
+                            onChanged: (v) => setState(() {
+                              if (v == true) {
+                                _draftTypes.add(entry.key);
+                              } else {
+                                _draftTypes.remove(entry.key);
+                              }
+                            }),
                           ),
-                          value: _draftTypes.contains(entry.key),
-                          onChanged: (v) => setState(() {
-                            if (v == true) {
-                              _draftTypes.add(entry.key);
-                            } else {
-                              _draftTypes.remove(entry.key);
-                            }
-                          }),
                         ),
                       ),
                   ],

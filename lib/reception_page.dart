@@ -471,7 +471,10 @@ class ReceptionPageState extends State<ReceptionPage> {
       return const Icon(Icons.public, size: 30);
     }
     if (feed.key.length == 2) {
-      return CountryFlag.fromCountryCode(feed.key, width: 30, height: 18);
+      return CountryFlag.fromCountryCode(
+        feed.key,
+        theme: const ImageTheme(width: 30, height: 18),
+      );
     }
     return const Icon(Icons.directions_boat, size: 30);
   }
@@ -636,8 +639,7 @@ class ReceptionPageState extends State<ReceptionPage> {
       try {
         return CountryFlag.fromCountryCode(
           entry.starter!,
-          width: 16,
-          height: 10,
+          theme: const ImageTheme(width: 16, height: 10),
         );
       } catch (_) {
         return Text(entry.starter!);
@@ -730,7 +732,7 @@ class ReceptionPageState extends State<ReceptionPage> {
                 ),
                 subtitle: AnimatedBuilder(
                   animation: boatManager,
-                  builder: (_, __) => Text(
+                  builder: (_, _) => Text(
                     context.l10n.receptionDroppedSentences(
                       boatManager.invalidChecksumCount,
                     ),
@@ -761,6 +763,7 @@ class ReceptionPageState extends State<ReceptionPage> {
                     message: context.l10n.tooltipReceptionImportFormat,
                     child: DropdownButton<NmeaFormat>(
                       value: _importFormat,
+                      mouseCursor: WidgetStateMouseCursor.clickable,
                       isDense: true,
                       underline: const SizedBox.shrink(),
                       items: [
@@ -1210,6 +1213,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                         message: context.l10n.tooltipReceptionSpeed,
                         child: DropdownButton<int>(
                           value: _speed,
+                          mouseCursor: WidgetStateMouseCursor.clickable,
                           isDense: true,
                           underline: const SizedBox.shrink(),
                           items: const [
@@ -1265,6 +1269,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                       for (final p in _serialPorts)
                         ActionChip(
                           label: Text(p),
+                          mouseCursor: WidgetStateMouseCursor.clickable,
                           onPressed: () {
                             setState(() => _serialPort.text = p);
                           },
@@ -1275,6 +1280,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<int>(
                   initialValue: _baudRate,
+                  mouseCursor: WidgetStateMouseCursor.clickable,
                   decoration: InputDecoration(
                     labelText: context.l10n.receptionBaudRate,
                   ),

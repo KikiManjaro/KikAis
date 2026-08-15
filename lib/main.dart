@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
@@ -35,11 +36,14 @@ Future<void> main() async {
   // Auto-update is only meaningful for the installed app. The portable
   // self-extracting exe runs from a temporary directory, so skip it there.
   final exePath = Platform.resolvedExecutable.toLowerCase();
-  final updatesSupported =
-      !exePath.startsWith(Directory.systemTemp.path.toLowerCase());
-  await updateNotifier.initialize(
-    _appcastUrl,
-    supported: updatesSupported,
+  final updatesSupported = !exePath.startsWith(
+    Directory.systemTemp.path.toLowerCase(),
+  );
+  // Fire-and-forget: the updater talks to a remote appcast on a native thread
+  // and must never delay the first frame (a hung call would keep the window
+  // blank). [UpdateNotifier.initialize] also enforces an internal timeout.
+  unawaited(
+    updateNotifier.initialize(_appcastUrl, supported: updatesSupported),
   );
 
   runApp(
@@ -73,16 +77,12 @@ class MyApp extends StatelessWidget {
     final localeCode = context.select<AppSettings, String?>(
       (s) => s.localeCode,
     );
-    final appTheme = context.select<AppSettings, AppTheme>(
-      (s) => s.appTheme,
-    );
+    final appTheme = context.select<AppSettings, AppTheme>((s) => s.appTheme);
 
     // Null means "follow the operating system"; otherwise the selected code.
     final Locale? locale = localeCode == null
         ? null
-        : Locale(resolveSystemLocaleCode(
-            Locale(localeCode),
-          ));
+        : Locale(resolveSystemLocaleCode(Locale(localeCode)));
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

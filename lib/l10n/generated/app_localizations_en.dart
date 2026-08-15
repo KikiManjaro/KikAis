@@ -3027,6 +3027,125 @@ class AppLocalizationsEn extends AppLocalizations {
       'Opens the Reception tab to start the Simulation feed.';
 
   @override
+  String get tooltipSimRadius =>
+      'Radius of the navigation zone around the center, in kilometers.';
+
+  @override
+  String get tooltipSimVessels => 'Number of vessels to generate in the fleet.';
+
+  @override
+  String get tooltipSimSpeedMin =>
+      'Minimum vessel speed over ground, in knots.';
+
+  @override
+  String get tooltipSimSpeedMax =>
+      'Maximum vessel speed over ground, in knots.';
+
+  @override
+  String get tooltipSimInterval =>
+      'Delay between two emission ticks, in seconds.';
+
+  @override
+  String get tooltipSimSeed =>
+      'Random seed. The same seed always produces the same fleet.';
+
+  @override
+  String get tooltipSimAnchored =>
+      'Percentage of vessels left anchored or moored instead of moving.';
+
+  @override
+  String get tooltipSimNamePrefix =>
+      'Prefix used for the generated vessel names.';
+
+  @override
+  String get tooltipSimMmsiMid =>
+      'Maritime Identification Digits (3-digit country code) used to build the MMSIs.';
+
+  @override
+  String get tooltipSimCenterLat => 'Latitude of the navigation zone center.';
+
+  @override
+  String get tooltipSimCenterLon => 'Longitude of the navigation zone center.';
+
+  @override
+  String get tooltipSimTransit =>
+      'Percentage of vessels crossing the zone on a straight transit route.';
+
+  @override
+  String get tooltipSimRegenEvery =>
+      'Regenerate the fleet every N ticks when periodic regeneration is enabled.';
+
+  @override
+  String get tooltipSimReportInterval =>
+      'Maximum position-report interval per vessel, in ticks.';
+
+  @override
+  String get tooltipSimWander =>
+      'Strength of the random heading wander (0 = straight lines).';
+
+  @override
+  String get tooltipSimClassBShare =>
+      'Percentage of Class B versus Class A position reports when both are enabled.';
+
+  @override
+  String get tooltipSimErrorRate =>
+      'Probability of corrupting or duplicating each emitted sentence.';
+
+  @override
+  String get tooltipSimBaseStations =>
+      'Number of fixed base stations to generate.';
+
+  @override
+  String get tooltipSimAtoN =>
+      'Number of fixed Aids to Navigation (beacons) to generate.';
+
+  @override
+  String get tooltipSimRealisticNames =>
+      'Use realistic vessel names, call signs and destinations.';
+
+  @override
+  String get tooltipSimRealisticDimensions =>
+      'Scale vessel dimensions and draught by ship type.';
+
+  @override
+  String get tooltipSimRealisticMmsi =>
+      'Build MMSIs that follow the ITU structure per vessel category.';
+
+  @override
+  String get tooltipSimVarySpeed =>
+      'Let vessel speed drift gently within the configured range.';
+
+  @override
+  String get tooltipSimSpeedByType =>
+      'Pick the speed from the typical range of each ship type.';
+
+  @override
+  String get tooltipSimHighAccuracy =>
+      'Set the high-accuracy position flag on emitted reports.';
+
+  @override
+  String get tooltipSimRealisticRot =>
+      'Emit a rate of turn derived from the heading change.';
+
+  @override
+  String get tooltipSimRegeneratePeriodically =>
+      'Automatically regenerate the fleet every N ticks to simulate changing traffic.';
+
+  @override
+  String get tooltipSimInjectErrors =>
+      'Corrupt or duplicate some emitted sentences to test error handling.';
+
+  @override
+  String get tooltipSimNmea4Tag =>
+      'Prefix every emitted frame with an NMEA 4.0 tag block.';
+
+  @override
+  String get tooltipSimVesselType => 'Include this ship type in the fleet.';
+
+  @override
+  String get tooltipSimMessageType => 'Emit this AIS message type.';
+
+  @override
   String get tooltipDecoderClear => 'Clears the decoder input and results.';
 
   @override

@@ -139,6 +139,7 @@ class _AisEditorPageState extends State<AisEditorPage> {
                   children: [
                     DropdownButtonFormField<int>(
                       initialValue: _type,
+                      mouseCursor: WidgetStateMouseCursor.clickable,
                       decoration: InputDecoration(
                         labelText: context.l10n.editorMessageType,
                         isDense: true,
@@ -211,6 +212,7 @@ class _AisEditorPageState extends State<AisEditorPage> {
                           width: 160,
                           child: DropdownButtonFormField<String>(
                             initialValue: _talker,
+                            mouseCursor: WidgetStateMouseCursor.clickable,
                             decoration: InputDecoration(
                               labelText: context.l10n.simTalkerId,
                               isDense: true,

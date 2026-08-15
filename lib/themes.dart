@@ -220,8 +220,44 @@ ThemeData _base({
         borderSide: BorderSide(color: scheme.outlineVariant),
       ),
     ),
+    // On desktop Flutter, Material buttons default to the plain arrow cursor
+    // (WidgetStateMouseCursor.adaptiveClickable resolves to basic off-web).
+    // Force the pointing hand on every clickable control instead, while keeping
+    // the arrow on disabled ones.
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(
+        mouseCursor: WidgetStatePropertyAll(_clickableCursor),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(
+        mouseCursor: WidgetStatePropertyAll(_clickableCursor),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: ButtonStyle(
+        mouseCursor: WidgetStatePropertyAll(_clickableCursor),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: ButtonStyle(
+        mouseCursor: WidgetStatePropertyAll(_clickableCursor),
+      ),
+    ),
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        mouseCursor: WidgetStatePropertyAll(_clickableCursor),
+      ),
+    ),
+    checkboxTheme: CheckboxThemeData(
+      mouseCursor: WidgetStatePropertyAll(_clickableCursor),
+    ),
+    radioTheme: RadioThemeData(
+      mouseCursor: WidgetStatePropertyAll(_clickableCursor),
+    ),
     switchTheme: SwitchThemeData(
       overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+      mouseCursor: WidgetStatePropertyAll(_clickableCursor),
       thumbColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return scheme.onPrimary;
@@ -260,6 +296,7 @@ ThemeData _base({
     ),
     popupMenuTheme: PopupMenuThemeData(
       color: card,
+      mouseCursor: WidgetStatePropertyAll(_clickableCursor),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: strongBorders
@@ -270,3 +307,6 @@ ThemeData _base({
     extensions: [appColors],
   );
 }
+
+/// The hand cursor on enabled controls, the plain arrow on disabled ones.
+const WidgetStateMouseCursor _clickableCursor = WidgetStateMouseCursor.clickable;

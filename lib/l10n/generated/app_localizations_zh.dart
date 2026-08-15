@@ -2918,6 +2918,99 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tooltipSimOpenReception => '前往「接收」标签页以启动模拟源。';
 
   @override
+  String get tooltipSimRadius => '导航区域围绕中心的半径，以公里为单位。';
+
+  @override
+  String get tooltipSimVessels => '要生成到船队中的船舶数量。';
+
+  @override
+  String get tooltipSimSpeedMin => '船舶最小速度，以节为单位。';
+
+  @override
+  String get tooltipSimSpeedMax => '船舶最大速度，以节为单位。';
+
+  @override
+  String get tooltipSimInterval => '两次发射之间的延迟，以秒为单位。';
+
+  @override
+  String get tooltipSimSeed => '随机种子。相同的种子始终产生相同的船队。';
+
+  @override
+  String get tooltipSimAnchored => '保持锚泊或系泊而不是移动的船舶百分比。';
+
+  @override
+  String get tooltipSimNamePrefix => '用于生成的船舶名称的前缀。';
+
+  @override
+  String get tooltipSimMmsiMid => '用于构建 MMSI 的海事识别码（3 位国家代码）。';
+
+  @override
+  String get tooltipSimCenterLat => '导航区域中心的纬度。';
+
+  @override
+  String get tooltipSimCenterLon => '导航区域中心的经度。';
+
+  @override
+  String get tooltipSimTransit => '沿直线过境路线穿越该区域的船舶百分比。';
+
+  @override
+  String get tooltipSimRegenEvery => '启用定期重新生成时，每 N 个刻度重新生成船队。';
+
+  @override
+  String get tooltipSimReportInterval => '每艘船舶的最大位置报告间隔，以刻度为单位。';
+
+  @override
+  String get tooltipSimWander => '随机航向漂移强度（0 = 直线）。';
+
+  @override
+  String get tooltipSimClassBShare => '当两者都启用时，B 类与 A 类位置报告的比例。';
+
+  @override
+  String get tooltipSimErrorRate => '损坏或重复每条发射语句的概率。';
+
+  @override
+  String get tooltipSimBaseStations => '要生成的固定基站数量。';
+
+  @override
+  String get tooltipSimAtoN => '要生成的固定助航设备（航标）数量。';
+
+  @override
+  String get tooltipSimRealisticNames => '使用真实的船舶名称、呼号和目的地。';
+
+  @override
+  String get tooltipSimRealisticDimensions => '按船舶类型缩放船舶尺寸和吃水。';
+
+  @override
+  String get tooltipSimRealisticMmsi => '按船舶类别构建符合 ITU 结构的 MMSI。';
+
+  @override
+  String get tooltipSimVarySpeed => '让船舶速度在配置范围内轻微漂移。';
+
+  @override
+  String get tooltipSimSpeedByType => '从每种船舶类型的典型范围中选择速度。';
+
+  @override
+  String get tooltipSimHighAccuracy => '在发射的报告上设置高精度位置标志。';
+
+  @override
+  String get tooltipSimRealisticRot => '发射由航向变化导出的转向速率。';
+
+  @override
+  String get tooltipSimRegeneratePeriodically => '每 N 个刻度自动重新生成船队，以模拟变化的交通。';
+
+  @override
+  String get tooltipSimInjectErrors => '损坏或重复一些发射的语句以测试错误处理。';
+
+  @override
+  String get tooltipSimNmea4Tag => '为每个发射的帧添加 NMEA 4.0 标签块前缀。';
+
+  @override
+  String get tooltipSimVesselType => '将此船舶类型包含在船队中。';
+
+  @override
+  String get tooltipSimMessageType => '发射此 AIS 消息类型。';
+
+  @override
   String get tooltipDecoderClear => '清除解码器输入和结果。';
 
   @override

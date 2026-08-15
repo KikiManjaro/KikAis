@@ -56,6 +56,7 @@ class _BitLayoutViewerState extends State<BitLayoutViewer> {
           children: [
             DropdownButton<int>(
               value: _layoutIndex,
+              mouseCursor: WidgetStateMouseCursor.clickable,
               isExpanded: true,
               items: [
                 for (var i = 0; i < kBitLayouts.length; i++)
@@ -132,14 +133,17 @@ class _BitLayoutViewerState extends State<BitLayoutViewer> {
           for (var i = 0; i < fields.length; i++)
             Expanded(
               flex: (fields[i].end - fields[i].start + 1).round(),
-              child: GestureDetector(
-                onTap: () => setState(() => _selected = i),
-                child: Container(
-                  margin: const EdgeInsets.only(right: 1),
-                  decoration: BoxDecoration(
-                    color: _accent(context, i % 8)
-                        .withValues(alpha: i == _selected ? 0.95 : 0.45),
-                    borderRadius: BorderRadius.circular(3),
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () => setState(() => _selected = i),
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 1),
+                    decoration: BoxDecoration(
+                      color: _accent(context, i % 8)
+                          .withValues(alpha: i == _selected ? 0.95 : 0.45),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
                   ),
                 ),
               ),
@@ -158,21 +162,24 @@ class _BitLayoutViewerState extends State<BitLayoutViewer> {
           for (var i = 0; i < fields.length; i++)
             Expanded(
               flex: (fields[i].end - fields[i].start + 1).round(),
-              child: GestureDetector(
-                onTap: () => setState(() => _selected = i),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 1),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      fields[i].name,
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: i == _selected
-                            ? _accent(context, i % 8)
-                            : scheme.onSurfaceVariant,
-                        fontWeight:
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () => setState(() => _selected = i),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 1),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        fields[i].name,
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: i == _selected
+                              ? _accent(context, i % 8)
+                              : scheme.onSurfaceVariant,
+                          fontWeight:
                             i == _selected ? FontWeight.w700 : FontWeight.w400,
+                        ),
                       ),
                     ),
                   ),

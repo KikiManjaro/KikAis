@@ -5590,6 +5590,192 @@ abstract class AppLocalizations {
   /// **'Opens the Reception tab to start the Simulation feed.'**
   String get tooltipSimOpenReception;
 
+  /// No description provided for @tooltipSimRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Radius of the navigation zone around the center, in kilometers.'**
+  String get tooltipSimRadius;
+
+  /// No description provided for @tooltipSimVessels.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of vessels to generate in the fleet.'**
+  String get tooltipSimVessels;
+
+  /// No description provided for @tooltipSimSpeedMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum vessel speed over ground, in knots.'**
+  String get tooltipSimSpeedMin;
+
+  /// No description provided for @tooltipSimSpeedMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum vessel speed over ground, in knots.'**
+  String get tooltipSimSpeedMax;
+
+  /// No description provided for @tooltipSimInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay between two emission ticks, in seconds.'**
+  String get tooltipSimInterval;
+
+  /// No description provided for @tooltipSimSeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Random seed. The same seed always produces the same fleet.'**
+  String get tooltipSimSeed;
+
+  /// No description provided for @tooltipSimAnchored.
+  ///
+  /// In en, this message translates to:
+  /// **'Percentage of vessels left anchored or moored instead of moving.'**
+  String get tooltipSimAnchored;
+
+  /// No description provided for @tooltipSimNamePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefix used for the generated vessel names.'**
+  String get tooltipSimNamePrefix;
+
+  /// No description provided for @tooltipSimMmsiMid.
+  ///
+  /// In en, this message translates to:
+  /// **'Maritime Identification Digits (3-digit country code) used to build the MMSIs.'**
+  String get tooltipSimMmsiMid;
+
+  /// No description provided for @tooltipSimCenterLat.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude of the navigation zone center.'**
+  String get tooltipSimCenterLat;
+
+  /// No description provided for @tooltipSimCenterLon.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude of the navigation zone center.'**
+  String get tooltipSimCenterLon;
+
+  /// No description provided for @tooltipSimTransit.
+  ///
+  /// In en, this message translates to:
+  /// **'Percentage of vessels crossing the zone on a straight transit route.'**
+  String get tooltipSimTransit;
+
+  /// No description provided for @tooltipSimRegenEvery.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate the fleet every N ticks when periodic regeneration is enabled.'**
+  String get tooltipSimRegenEvery;
+
+  /// No description provided for @tooltipSimReportInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum position-report interval per vessel, in ticks.'**
+  String get tooltipSimReportInterval;
+
+  /// No description provided for @tooltipSimWander.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength of the random heading wander (0 = straight lines).'**
+  String get tooltipSimWander;
+
+  /// No description provided for @tooltipSimClassBShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Percentage of Class B versus Class A position reports when both are enabled.'**
+  String get tooltipSimClassBShare;
+
+  /// No description provided for @tooltipSimErrorRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Probability of corrupting or duplicating each emitted sentence.'**
+  String get tooltipSimErrorRate;
+
+  /// No description provided for @tooltipSimBaseStations.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of fixed base stations to generate.'**
+  String get tooltipSimBaseStations;
+
+  /// No description provided for @tooltipSimAtoN.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of fixed Aids to Navigation (beacons) to generate.'**
+  String get tooltipSimAtoN;
+
+  /// No description provided for @tooltipSimRealisticNames.
+  ///
+  /// In en, this message translates to:
+  /// **'Use realistic vessel names, call signs and destinations.'**
+  String get tooltipSimRealisticNames;
+
+  /// No description provided for @tooltipSimRealisticDimensions.
+  ///
+  /// In en, this message translates to:
+  /// **'Scale vessel dimensions and draught by ship type.'**
+  String get tooltipSimRealisticDimensions;
+
+  /// No description provided for @tooltipSimRealisticMmsi.
+  ///
+  /// In en, this message translates to:
+  /// **'Build MMSIs that follow the ITU structure per vessel category.'**
+  String get tooltipSimRealisticMmsi;
+
+  /// No description provided for @tooltipSimVarySpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Let vessel speed drift gently within the configured range.'**
+  String get tooltipSimVarySpeed;
+
+  /// No description provided for @tooltipSimSpeedByType.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the speed from the typical range of each ship type.'**
+  String get tooltipSimSpeedByType;
+
+  /// No description provided for @tooltipSimHighAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the high-accuracy position flag on emitted reports.'**
+  String get tooltipSimHighAccuracy;
+
+  /// No description provided for @tooltipSimRealisticRot.
+  ///
+  /// In en, this message translates to:
+  /// **'Emit a rate of turn derived from the heading change.'**
+  String get tooltipSimRealisticRot;
+
+  /// No description provided for @tooltipSimRegeneratePeriodically.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically regenerate the fleet every N ticks to simulate changing traffic.'**
+  String get tooltipSimRegeneratePeriodically;
+
+  /// No description provided for @tooltipSimInjectErrors.
+  ///
+  /// In en, this message translates to:
+  /// **'Corrupt or duplicate some emitted sentences to test error handling.'**
+  String get tooltipSimInjectErrors;
+
+  /// No description provided for @tooltipSimNmea4Tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefix every emitted frame with an NMEA 4.0 tag block.'**
+  String get tooltipSimNmea4Tag;
+
+  /// No description provided for @tooltipSimVesselType.
+  ///
+  /// In en, this message translates to:
+  /// **'Include this ship type in the fleet.'**
+  String get tooltipSimVesselType;
+
+  /// No description provided for @tooltipSimMessageType.
+  ///
+  /// In en, this message translates to:
+  /// **'Emit this AIS message type.'**
+  String get tooltipSimMessageType;
+
   /// No description provided for @tooltipDecoderClear.
   ///
   /// In en, this message translates to:

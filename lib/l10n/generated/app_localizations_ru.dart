@@ -3041,6 +3041,122 @@ class AppLocalizationsRu extends AppLocalizations {
       'Перейти на вкладку «Приём», чтобы запустить источник симуляции.';
 
   @override
+  String get tooltipSimRadius =>
+      'Радиус зоны плавания вокруг центра, в километрах.';
+
+  @override
+  String get tooltipSimVessels => 'Количество судов для генерации во флоте.';
+
+  @override
+  String get tooltipSimSpeedMin => 'Минимальная скорость судов, в узлах.';
+
+  @override
+  String get tooltipSimSpeedMax => 'Максимальная скорость судов, в узлах.';
+
+  @override
+  String get tooltipSimInterval =>
+      'Задержка между двумя тактами передачи, в секундах.';
+
+  @override
+  String get tooltipSimSeed =>
+      'Случайное зерно. Одно и то же зерно всегда даёт один и тот же флот.';
+
+  @override
+  String get tooltipSimAnchored =>
+      'Доля судов, остающихся на якоре или у причала вместо движения.';
+
+  @override
+  String get tooltipSimNamePrefix => 'Префикс для генерируемых имён судов.';
+
+  @override
+  String get tooltipSimMmsiMid =>
+      'Морские идентификационные цифры (3-значный код страны) для построения MMSI.';
+
+  @override
+  String get tooltipSimCenterLat => 'Широта центра зоны плавания.';
+
+  @override
+  String get tooltipSimCenterLon => 'Долгота центра зоны плавания.';
+
+  @override
+  String get tooltipSimTransit =>
+      'Доля судов, пересекающих зону по прямому транзитному маршруту.';
+
+  @override
+  String get tooltipSimRegenEvery =>
+      'Перегенерировать флот каждые N тактов, если включена периодическая перегенерация.';
+
+  @override
+  String get tooltipSimReportInterval =>
+      'Максимальный интервал позиционного донесения на судно, в тактах.';
+
+  @override
+  String get tooltipSimWander =>
+      'Сила случайного дрейфа курса (0 = прямые линии).';
+
+  @override
+  String get tooltipSimClassBShare =>
+      'Доля позиционных донесений класса B по сравнению с классом A, когда включены оба.';
+
+  @override
+  String get tooltipSimErrorRate =>
+      'Вероятность повреждения или дублирования каждого передаваемого предложения.';
+
+  @override
+  String get tooltipSimBaseStations =>
+      'Количество генерируемых фиксированных базовых станций.';
+
+  @override
+  String get tooltipSimAtoN =>
+      'Количество генерируемых фиксированных средств навигации (маяков).';
+
+  @override
+  String get tooltipSimRealisticNames =>
+      'Использовать реалистичные имена, позывные и пункты назначения судов.';
+
+  @override
+  String get tooltipSimRealisticDimensions =>
+      'Масштабировать размеры и осадку судна по его типу.';
+
+  @override
+  String get tooltipSimRealisticMmsi =>
+      'Строить MMSI по структуре ITU в зависимости от категории судна.';
+
+  @override
+  String get tooltipSimVarySpeed =>
+      'Позволить скорости слегка колебаться в заданном диапазоне.';
+
+  @override
+  String get tooltipSimSpeedByType =>
+      'Выбирать скорость из типичного диапазона каждого типа судна.';
+
+  @override
+  String get tooltipSimHighAccuracy =>
+      'Устанавливать флаг высокой точности позиции на передаваемые донесения.';
+
+  @override
+  String get tooltipSimRealisticRot =>
+      'Передавать скорость поворота, рассчитанную по изменению курса.';
+
+  @override
+  String get tooltipSimRegeneratePeriodically =>
+      'Автоматически перегенерировать флот каждые N тактов для имитации изменяющегося трафика.';
+
+  @override
+  String get tooltipSimInjectErrors =>
+      'Повреждать или дублировать некоторые передаваемые предложения для проверки обработки ошибок.';
+
+  @override
+  String get tooltipSimNmea4Tag =>
+      'Добавлять к каждому передаваемому кадру префикс с блоком тегов NMEA 4.0.';
+
+  @override
+  String get tooltipSimVesselType => 'Включить этот тип судна во флот.';
+
+  @override
+  String get tooltipSimMessageType => 'Передавать этот тип сообщения AIS.';
+
+  @override
   String get tooltipDecoderClear => 'Очистить ввод и результаты декодера.';
 
   @override

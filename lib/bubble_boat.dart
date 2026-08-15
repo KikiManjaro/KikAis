@@ -225,6 +225,7 @@ class _BoatFrameLogState extends State<_BoatFrameLog> {
       children: [
         InkWell(
           onTap: () => setState(() => _expanded = !_expanded),
+          mouseCursor: WidgetStateMouseCursor.clickable,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(12, 4, 4, 4),
             child: Row(

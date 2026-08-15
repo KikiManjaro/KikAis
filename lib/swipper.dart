@@ -401,6 +401,7 @@ class _UpdateBadge extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(10),
           onTap: onPressed,
+          mouseCursor: WidgetStateMouseCursor.clickable,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(

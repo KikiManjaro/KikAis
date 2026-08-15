@@ -96,6 +96,7 @@ class _SendPageState extends State<SendPage> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<ForwardProtocol>(
                   initialValue: protocol,
+                  mouseCursor: WidgetStateMouseCursor.clickable,
                   decoration: InputDecoration(
                     labelText: ctx.l10n.fieldProtocol,
                   ),
@@ -129,6 +130,7 @@ class _SendPageState extends State<SendPage> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<NmeaFormat>(
                   initialValue: sendFormat,
+                  mouseCursor: WidgetStateMouseCursor.clickable,
                   decoration: InputDecoration(labelText: ctx.l10n.sendFormat),
                   items: [
                     for (final f in NmeaFormat.values)

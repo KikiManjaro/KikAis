@@ -279,6 +279,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
               decoration: InputDecoration(labelText: label, isDense: true),
               child: DropdownButton<T>(
                 value: value,
+                mouseCursor: WidgetStateMouseCursor.clickable,
                 isExpanded: true,
                 underline: const SizedBox.shrink(),
                 items: [

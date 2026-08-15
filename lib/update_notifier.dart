@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_updater/auto_updater.dart';
 import 'package:flutter/foundation.dart';
 
@@ -8,6 +10,11 @@ import 'package:flutter/foundation.dart';
 /// restart-and-install. The portable self-extracting exe runs from a temporary
 /// directory, so auto-update is disabled there ([updatesSupported] is false).
 class UpdateNotifier extends ChangeNotifier with UpdaterListener {
+  /// Hard ceiling for every startup call. Startup must never be blocked by the
+  /// updater plugin (it talks to a remote appcast and runs on a native thread,
+  /// which can hang or crash); [main] awaits [initialize] before showing UI.
+  static const Duration _startupTimeout = Duration(seconds: 3);
+
   bool _updatesSupported = false;
   bool _feedSet = false;
   bool _checking = false;
@@ -23,19 +30,26 @@ class UpdateNotifier extends ChangeNotifier with UpdaterListener {
   String? get availableVersion => _availableVersion;
   String? get lastError => _lastError;
 
+  /// Runs [future], but returns early after [_startupTimeout] so a hung plugin
+  /// call can never stall the app (runApp is awaited right after this).
+  Future<T?> _withTimeout<T>(Future<T> future) async {
+    try {
+      return await future.timeout(_startupTimeout);
+    } catch (_) {
+      // Timeout or plugin error: updates are best-effort, never fatal.
+      return null;
+    }
+  }
+
   /// Sets the appcast feed URL, schedules the hourly background check and
   /// runs one immediately. Called once at startup.
   Future<void> initialize(String feedUrl, {required bool supported}) async {
     _updatesSupported = supported;
     if (!supported) return;
-    try {
-      await autoUpdater.setFeedURL(feedUrl);
-      _feedSet = true;
-      await autoUpdater.setScheduledCheckInterval(3600);
-      await checkForUpdates(inBackground: true);
-    } catch (_) {
-      // Updates are best-effort; never block startup.
-    }
+    await _withTimeout(autoUpdater.setFeedURL(feedUrl));
+    _feedSet = true;
+    await _withTimeout(autoUpdater.setScheduledCheckInterval(3600));
+    await checkForUpdates(inBackground: true);
   }
 
   /// Checks for a newer version. In the foreground ([inBackground] false) the
@@ -46,7 +60,9 @@ class UpdateNotifier extends ChangeNotifier with UpdaterListener {
     _lastError = null;
     notifyListeners();
     try {
-      await autoUpdater.checkForUpdates(inBackground: inBackground);
+      await autoUpdater
+          .checkForUpdates(inBackground: inBackground)
+          .timeout(_startupTimeout);
     } catch (e) {
       _lastError = '$e';
     } finally {

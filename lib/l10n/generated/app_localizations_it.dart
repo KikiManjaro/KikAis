@@ -3040,6 +3040,128 @@ class AppLocalizationsIt extends AppLocalizations {
       'Andare alla scheda Ricezione per avviare il feed di simulazione.';
 
   @override
+  String get tooltipSimRadius =>
+      'Raggio della zona di navigazione attorno al centro, in chilometri.';
+
+  @override
+  String get tooltipSimVessels =>
+      'Numero di imbarcazioni da generare nella flotta.';
+
+  @override
+  String get tooltipSimSpeedMin =>
+      'Velocità minima delle imbarcazioni, in nodi.';
+
+  @override
+  String get tooltipSimSpeedMax =>
+      'Velocità massima delle imbarcazioni, in nodi.';
+
+  @override
+  String get tooltipSimInterval => 'Ritardo tra due emissioni, in secondi.';
+
+  @override
+  String get tooltipSimSeed =>
+      'Seme casuale. Lo stesso seme produce sempre la stessa flotta.';
+
+  @override
+  String get tooltipSimAnchored =>
+      'Percentuale di imbarcazioni all\'ancora o ormeggiate invece che in movimento.';
+
+  @override
+  String get tooltipSimNamePrefix =>
+      'Prefisso usato per i nomi delle imbarcazioni generate.';
+
+  @override
+  String get tooltipSimMmsiMid =>
+      'Cifre di identificazione marittima (codice paese a 3 cifre) per costruire gli MMSI.';
+
+  @override
+  String get tooltipSimCenterLat =>
+      'Latitudine del centro della zona di navigazione.';
+
+  @override
+  String get tooltipSimCenterLon =>
+      'Longitudine del centro della zona di navigazione.';
+
+  @override
+  String get tooltipSimTransit =>
+      'Percentuale di imbarcazioni che attraversano la zona in rotta diretta.';
+
+  @override
+  String get tooltipSimRegenEvery =>
+      'Rigenera la flotta ogni N emissioni quando la rigenerazione periodica è attiva.';
+
+  @override
+  String get tooltipSimReportInterval =>
+      'Intervallo massimo del rapporto di posizione per imbarcazione, in emissioni.';
+
+  @override
+  String get tooltipSimWander =>
+      'Intensità della deriva casuale della rotta (0 = linee rette).';
+
+  @override
+  String get tooltipSimClassBShare =>
+      'Percentuale di rapporti di posizione classe B rispetto a classe A quando entrambi sono attivi.';
+
+  @override
+  String get tooltipSimErrorRate =>
+      'Probabilità di corrompere o duplicare ogni frase emessa.';
+
+  @override
+  String get tooltipSimBaseStations =>
+      'Numero di stazioni base fisse da generare.';
+
+  @override
+  String get tooltipSimAtoN =>
+      'Numero di ausili alla navigazione (boe) fissi da generare.';
+
+  @override
+  String get tooltipSimRealisticNames =>
+      'Usare nomi, nominativi e destinazioni realistici.';
+
+  @override
+  String get tooltipSimRealisticDimensions =>
+      'Scalare dimensioni e pescaggio in base al tipo di imbarcazione.';
+
+  @override
+  String get tooltipSimRealisticMmsi =>
+      'Costruire MMSI conformi alla struttura ITU per categoria di imbarcazione.';
+
+  @override
+  String get tooltipSimVarySpeed =>
+      'Lasciare che la velocità vari leggermente nel range configurato.';
+
+  @override
+  String get tooltipSimSpeedByType =>
+      'Scegliere la velocità dal range tipico di ogni tipo di imbarcazione.';
+
+  @override
+  String get tooltipSimHighAccuracy =>
+      'Impostare il flag di posizione ad alta precisione sui rapporti emessi.';
+
+  @override
+  String get tooltipSimRealisticRot =>
+      'Emettere una velocità di rotazione derivata dal cambio di rotta.';
+
+  @override
+  String get tooltipSimRegeneratePeriodically =>
+      'Rigenerare automaticamente la flotta ogni N emissioni per simulare traffico variabile.';
+
+  @override
+  String get tooltipSimInjectErrors =>
+      'Corrompere o duplicare alcune frasi emesse per testare la gestione degli errori.';
+
+  @override
+  String get tooltipSimNmea4Tag =>
+      'Prefissare ogni frame emesso con un blocco di tag NMEA 4.0.';
+
+  @override
+  String get tooltipSimVesselType =>
+      'Includere questo tipo di imbarcazione nella flotta.';
+
+  @override
+  String get tooltipSimMessageType => 'Emettere questo tipo di messaggio AIS.';
+
+  @override
   String get tooltipDecoderClear =>
       'Cancellare l\'input e i risultati del decodificatore.';
 

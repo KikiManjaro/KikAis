@@ -3040,6 +3040,124 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ir a la pestaña Recepción para iniciar la fuente de simulación.';
 
   @override
+  String get tooltipSimRadius =>
+      'Radio de la zona de navegación alrededor del centro, en kilómetros.';
+
+  @override
+  String get tooltipSimVessels => 'Número de buques que generar en la flota.';
+
+  @override
+  String get tooltipSimSpeedMin => 'Velocidad mínima de los buques, en nudos.';
+
+  @override
+  String get tooltipSimSpeedMax => 'Velocidad máxima de los buques, en nudos.';
+
+  @override
+  String get tooltipSimInterval => 'Retardo entre dos emisiones, en segundos.';
+
+  @override
+  String get tooltipSimSeed =>
+      'Semilla aleatoria. La misma semilla siempre produce la misma flota.';
+
+  @override
+  String get tooltipSimAnchored =>
+      'Porcentaje de buques anclados o amarrados en lugar de moverse.';
+
+  @override
+  String get tooltipSimNamePrefix =>
+      'Prefijo usado para los nombres de los buques generados.';
+
+  @override
+  String get tooltipSimMmsiMid =>
+      'Dígitos de identificación marítima (código de país de 3 cifras) para construir los MMSI.';
+
+  @override
+  String get tooltipSimCenterLat =>
+      'Latitud del centro de la zona de navegación.';
+
+  @override
+  String get tooltipSimCenterLon =>
+      'Longitud del centro de la zona de navegación.';
+
+  @override
+  String get tooltipSimTransit =>
+      'Porcentaje de buques que cruzan la zona en ruta directa.';
+
+  @override
+  String get tooltipSimRegenEvery =>
+      'Regenerar la flota cada N emisiones cuando la regeneración periódica está activada.';
+
+  @override
+  String get tooltipSimReportInterval =>
+      'Intervalo máximo de informe de posición por buque, en emisiones.';
+
+  @override
+  String get tooltipSimWander =>
+      'Intensidad de la deriva aleatoria del rumbo (0 = líneas rectas).';
+
+  @override
+  String get tooltipSimClassBShare =>
+      'Porcentaje de informes de posición clase B frente a clase A cuando ambos están activados.';
+
+  @override
+  String get tooltipSimErrorRate =>
+      'Probabilidad de corromper o duplicar cada sentencia emitida.';
+
+  @override
+  String get tooltipSimBaseStations =>
+      'Número de estaciones base fijas que generar.';
+
+  @override
+  String get tooltipSimAtoN =>
+      'Número de ayudas a la navegación (balizas) fijas que generar.';
+
+  @override
+  String get tooltipSimRealisticNames =>
+      'Usar nombres, indicativos y destinos de buques realistas.';
+
+  @override
+  String get tooltipSimRealisticDimensions =>
+      'Escalar las dimensiones y el calado según el tipo de buque.';
+
+  @override
+  String get tooltipSimRealisticMmsi =>
+      'Construir MMSI que sigan la estructura ITU según la categoría de buque.';
+
+  @override
+  String get tooltipSimVarySpeed =>
+      'Dejar que la velocidad varíe suavemente dentro del rango configurado.';
+
+  @override
+  String get tooltipSimSpeedByType =>
+      'Elegir la velocidad del rango típico de cada tipo de buque.';
+
+  @override
+  String get tooltipSimHighAccuracy =>
+      'Activar el indicador de posición de alta precisión en los informes emitidos.';
+
+  @override
+  String get tooltipSimRealisticRot =>
+      'Emitir una velocidad de giro derivada del cambio de rumbo.';
+
+  @override
+  String get tooltipSimRegeneratePeriodically =>
+      'Regenerar automáticamente la flota cada N emisiones para simular tráfico cambiante.';
+
+  @override
+  String get tooltipSimInjectErrors =>
+      'Corromper o duplicar algunas sentencias emitidas para probar el manejo de errores.';
+
+  @override
+  String get tooltipSimNmea4Tag =>
+      'Prefijar cada trama emitida con un bloque de etiqueta NMEA 4.0.';
+
+  @override
+  String get tooltipSimVesselType => 'Incluir este tipo de buque en la flota.';
+
+  @override
+  String get tooltipSimMessageType => 'Emitir este tipo de mensaje AIS.';
+
+  @override
   String get tooltipDecoderClear =>
       'Borrar la entrada y los resultados del decodificador.';
 

@@ -3031,6 +3031,128 @@ class AppLocalizationsNl extends AppLocalizations {
       'Naar het tabblad Ontvangst gaan om de simulatie-feed te starten.';
 
   @override
+  String get tooltipSimRadius =>
+      'Straal van de navigatiezone rond het centrum, in kilometers.';
+
+  @override
+  String get tooltipSimVessels =>
+      'Aantal vaartuigen dat in de vloot wordt gegenereerd.';
+
+  @override
+  String get tooltipSimSpeedMin =>
+      'Minimale snelheid van de vaartuigen, in knopen.';
+
+  @override
+  String get tooltipSimSpeedMax =>
+      'Maximale snelheid van de vaartuigen, in knopen.';
+
+  @override
+  String get tooltipSimInterval =>
+      'Vertraging tussen twee emissie-ticks, in seconden.';
+
+  @override
+  String get tooltipSimSeed =>
+      'Willekeurige seed. Dezelfde seed levert altijd dezelfde vloot op.';
+
+  @override
+  String get tooltipSimAnchored =>
+      'Percentage vaartuigen dat voor anker of afgemeerd blijft in plaats van te varen.';
+
+  @override
+  String get tooltipSimNamePrefix =>
+      'Voorvoegsel voor de gegenereerde vaartuignamen.';
+
+  @override
+  String get tooltipSimMmsiMid =>
+      'Maritieme identificatiecijfers (3-cijferige landcode) voor de opbouw van MMSI\'s.';
+
+  @override
+  String get tooltipSimCenterLat =>
+      'Breedtegraad van het centrum van de navigatiezone.';
+
+  @override
+  String get tooltipSimCenterLon =>
+      'Lengtegraad van het centrum van de navigatiezone.';
+
+  @override
+  String get tooltipSimTransit =>
+      'Percentage vaartuigen dat de zone op een rechtstreekse route doorkruist.';
+
+  @override
+  String get tooltipSimRegenEvery =>
+      'De vloot elke N ticks regenereren wanneer periodieke regeneratie is ingeschakeld.';
+
+  @override
+  String get tooltipSimReportInterval =>
+      'Maximaal positierapportinterval per vaartuig, in ticks.';
+
+  @override
+  String get tooltipSimWander =>
+      'Sterkte van de willekeurige koersafwijking (0 = rechte lijnen).';
+
+  @override
+  String get tooltipSimClassBShare =>
+      'Percentage klasse B- tegenover klasse A-positierapporten wanneer beide zijn ingeschakeld.';
+
+  @override
+  String get tooltipSimErrorRate =>
+      'Kans dat elke uitgezonden zin wordt beschadigd of gedupliceerd.';
+
+  @override
+  String get tooltipSimBaseStations =>
+      'Aantal vaste basisstations dat wordt gegenereerd.';
+
+  @override
+  String get tooltipSimAtoN =>
+      'Aantal vaste navigatiehulpmiddelen (bakens) dat wordt gegenereerd.';
+
+  @override
+  String get tooltipSimRealisticNames =>
+      'Realistische vaartuignamen, roepnamen en bestemmingen gebruiken.';
+
+  @override
+  String get tooltipSimRealisticDimensions =>
+      'Vaartuigafmetingen en diepgang schalen per vaartuigtype.';
+
+  @override
+  String get tooltipSimRealisticMmsi =>
+      'MMSI\'s opbouwen volgens de ITU-structuur per vaartuigcategorie.';
+
+  @override
+  String get tooltipSimVarySpeed =>
+      'De snelheid zachtjes laten variëren binnen het ingestelde bereik.';
+
+  @override
+  String get tooltipSimSpeedByType =>
+      'De snelheid kiezen uit het typische bereik van elk vaartuigtype.';
+
+  @override
+  String get tooltipSimHighAccuracy =>
+      'De vlag voor hoge nauwkeurigheid instellen op uitgezonden rapporten.';
+
+  @override
+  String get tooltipSimRealisticRot =>
+      'Een draaisnelheid uitzenden die is afgeleid van de koersverandering.';
+
+  @override
+  String get tooltipSimRegeneratePeriodically =>
+      'De vloot automatisch elke N ticks regenereren om wisselend verkeer te simuleren.';
+
+  @override
+  String get tooltipSimInjectErrors =>
+      'Sommige uitgezonden zinnen beschadigen of dupliceren om foutafhandeling te testen.';
+
+  @override
+  String get tooltipSimNmea4Tag =>
+      'Elk uitgezonden frame voorzien van een NMEA 4.0-tagblok.';
+
+  @override
+  String get tooltipSimVesselType => 'Dit vaartuigtype opnemen in de vloot.';
+
+  @override
+  String get tooltipSimMessageType => 'Dit AIS-berichttype uitzenden.';
+
+  @override
   String get tooltipDecoderClear =>
       'De invoer en resultaten van de decoder wissen.';
 
