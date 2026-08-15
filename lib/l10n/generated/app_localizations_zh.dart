@@ -63,7 +63,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tabEditor => '编辑器';
 
   @override
-  String get tabDecoder => '解码器';
+  String get tabTools => '工具';
 
   @override
   String get tabStats => '统计';
@@ -742,7 +742,329 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get toolDecoder => 'NMEA 解码器';
+
+  @override
+  String get toolDecoderSub => '解码 AIS 语句';
+
+  @override
+  String get toolChecksum => '校验和';
+
+  @override
+  String get toolChecksumSub => '计算 NMEA XOR';
+
+  @override
+  String get toolMmsi => 'MMSI 查询';
+
+  @override
+  String get toolMmsiSub => '验证并识别 MMSI';
+
+  @override
+  String get toolSpeed => '速度换算';
+
+  @override
+  String get toolSpeedSub => '节 · km/h · m/s · mph';
+
+  @override
+  String get toolBinary => '二进制检查器';
+
+  @override
+  String get toolBinarySub => '逐位查看载荷';
+
+  @override
+  String get toolEta => 'ETA 计算器';
+
+  @override
+  String get toolEtaSub => '按类型 5 字段显示 ETA';
+
+  @override
+  String get toolRadio => '无线电覆盖范围';
+
+  @override
+  String get toolRadioSub => 'VHF-AIS 无线电地平线';
+
+  @override
+  String get toolTextToBinary => '文本转二进制';
+
+  @override
+  String get toolTextToBinarySub => '6 位 ASCII 转十六进制/位';
+
+  @override
+  String get checksumInputLabel => '粘贴一条或多条 NMEA 语句';
+
+  @override
+  String get checksumComputed => '计算值';
+
+  @override
+  String get checksumDeclared => '声明值';
+
+  @override
+  String get checksumValid => '校验和有效';
+
+  @override
+  String get checksumInvalid => '校验和不匹配';
+
+  @override
+  String get checksumFix => '修复校验和';
+
+  @override
+  String get mmsiInputLabel => 'MMSI（9 位数字）';
+
+  @override
+  String get mmsiValid => '有效 MMSI';
+
+  @override
+  String get mmsiInvalid => '不是有效的 9 位 MMSI';
+
+  @override
+  String get mmsiMid => 'MID';
+
+  @override
+  String get mmsiCountry => '国家/地区';
+
+  @override
+  String get mmsiCountryUnknown => '未知 MID';
+
+  @override
+  String get mmsiType => '电台类型';
+
+  @override
+  String get mmsiGroupCall => '群呼';
+
+  @override
+  String get mmsiSarAircraft => '搜救飞机';
+
+  @override
+  String get mmsiCoastStation => '海岸电台';
+
+  @override
+  String get mmsiShipStation => '船舶电台';
+
+  @override
+  String get mmsiHandheldVhf => '手持 VHF';
+
+  @override
+  String get mmsiAton => '助航设施（AtoN）';
+
+  @override
+  String get mmsiSar => '搜救单元';
+
+  @override
+  String get mmsiOther => '其他';
+
+  @override
+  String get speedValue => '数值';
+
+  @override
+  String get speedUnit => '单位';
+
+  @override
+  String get binaryInputLabel => 'NMEA 语句或原始 6 位载荷';
+
+  @override
+  String get binaryPayload => '载荷';
+
+  @override
+  String get binaryBits => '位数';
+
+  @override
+  String get binaryBinary => '二进制';
+
+  @override
+  String get binaryHex => '十六进制';
+
+  @override
+  String get binaryHexBytes => '十六进制字节';
+
+  @override
+  String get binarySixBit => '6 位字符';
+
+  @override
+  String get etaDistance => '距离';
+
+  @override
+  String get etaUnitNm => '海里';
+
+  @override
+  String get etaUnitKm => '公里';
+
+  @override
+  String get etaSpeed => '速度';
+
+  @override
+  String get etaDuration => '时长';
+
+  @override
+  String get etaEtaLocal => 'ETA（本地）';
+
+  @override
+  String get etaEtaUtc => 'ETA（UTC）';
+
+  @override
+  String get etaAisFields => '类型 5 ETA 字段';
+
+  @override
+  String get etaMonth => '月';
+
+  @override
+  String get etaDay => '日';
+
+  @override
+  String get etaHour => '时';
+
+  @override
+  String get etaMinute => '分';
+
+  @override
+  String get etaCombined => '月/日 时:分';
+
+  @override
+  String get radioHeight1 => '天线高度 1';
+
+  @override
+  String get radioHeight2 => '天线高度 2';
+
+  @override
+  String get radioHorizon => '无线电地平线';
+
+  @override
+  String get radioHorizonKm => '无线电地平线（公里）';
+
+  @override
+  String get radioFrequencies => 'AIS 频道';
+
+  @override
+  String get radioAis1 => 'AIS 1';
+
+  @override
+  String get radioAis2 => 'AIS 2';
+
+  @override
+  String get t2bInputLabel => '输入文本（AIS 6 位字母表）';
+
+  @override
+  String get t2bCharTable => '字符 · 值 · 6 位';
+
+  @override
+  String get t2bBinary => '二进制';
+
+  @override
+  String get t2bHex => '十六进制';
+
+  @override
+  String get t2bBytes => '字节（编辑器格式）';
+
+  @override
+  String get t2bPayload => '加固载荷';
+
+  @override
+  String get t2bNote =>
+      '字节列表可粘贴到编辑器 6/8/25/26 消息的「Data bytes」字段；加固载荷即 NMEA 的精确载荷字段。';
+
+  @override
+  String editorAsmDetected(Object name) {
+    return '应用特定消息 — $name';
+  }
+
+  @override
+  String get editorAsmRawHint => '匹配 ASM 的字段。若填写了原始「Data bytes」字段，仍以其为准。';
+
+  @override
   String get fMessageType => '报文类型';
+
+  @override
+  String get editorAsmPreset => 'ASM 预设';
+
+  @override
+  String get editorAsmPresetManual => '自定义 — 手动输入 DAC/FID';
+
+  @override
+  String get editorDataSourceRaw => 'Data bytes';
+
+  @override
+  String get editorDataSourceAsm => 'ASM 字段';
+
+  @override
+  String get asmStateInForce => '现行';
+
+  @override
+  String get asmStateDeprecated => '已弃用';
+
+  @override
+  String get asmStateReplaced => '已替换';
+
+  @override
+  String get asmStateDiscontinued => '已停用';
+
+  @override
+  String get asmStateDraft => '草稿';
+
+  @override
+  String get asmStateProposal => '提案';
+
+  @override
+  String get asmStateTesting => '测试中';
+
+  @override
+  String asmDeprecatedSince(Object note) {
+    return '自 $note 起弃用';
+  }
+
+  @override
+  String asmLayoutUnknown(Object name) {
+    return '未记录 $name 的位布局 — 请编辑原始 Data bytes。';
+  }
+
+  @override
+  String get docChapterAsm => '应用特定消息';
+
+  @override
+  String get docAsmIntro =>
+      '并非所有 AIS 载荷都是标准位置报告。类型 6、8、25 和 26 携带应用特定的二进制数据（ASM），其含义由两个数字定义：指定区域代码（DAC）和功能标识符（FID）。';
+
+  @override
+  String get docAsmWhatTitle => '什么是 ASM？';
+
+  @override
+  String get docAsmWhat =>
+      '应用特定消息是由组织（IMO、IALA、国家管理部门、制造商）针对特定用途发布的结构化载荷：气象和水文数据、助航设施监控、DGPS 修正、港口服务等。类型 6/8 携带 DAC/FID 头；类型 25/26 在时隙消息中重复相同的 DAC/FID 布局。';
+
+  @override
+  String get docAsmDacFidTitle => 'DAC 和 FID';
+
+  @override
+  String get docAsmDacFid1 =>
+      'DAC 是识别发证组织或国家的 10 位代码（例如 001 = IMO，002 = IALA）。FID 是该 DAC 命名空间内的 6 位功能代码（例如 001/11 = IMO 气象与水文数据）。';
+
+  @override
+  String get docAsmDacFid2 =>
+      'DAC/FID 头之后的数据字节根据匹配的应用标准解码。不同的 DAC/FID 组合可能以完全不同的方式解释相同的字节，因此必须始终先知道该组合。';
+
+  @override
+  String get docAsmWhereTitle => '在哪里查找定义';
+
+  @override
+  String get docAsmWhere1 => 'IMO 通告和 ITU-R M.1371（附录）——IMO DAC 001 的权威来源。';
+
+  @override
+  String get docAsmWhere2 => 'IALA 指南（例如 G1139）和国家管理部门——用于区域性 DAC。';
+
+  @override
+  String get docAsmWhere3 => 'gpsd AIVDM 文档——最常见 DAC/FID 布局的开放、机器可读目录。';
+
+  @override
+  String get docAsmInKikaisTitle => '在 KikAis 中';
+
+  @override
+  String get docAsmInKikais =>
+      '编辑器识别一组精选的知名 ASM：当 6/8/25/26 消息的 DAC/FID 匹配时，数据字段会显示为命名子字段并自动打包。填写的原始「Data bytes」字段始终优先。列表位于 asm_formats.dart，易于扩展。';
+
+  @override
+  String get docAsmExampleTitle => '示例：IMO 气象与水文（001/11）';
+
+  @override
+  String get docAsmExample =>
+      '在编辑器中选择类型 8、DAC=1、FID=11 来构建 IMO 气象消息：风、气温和水温、气压、能见度、海流和波浪即可逐字段编辑，而非作为字节块。';
 
   @override
   String get fMmsi => 'MMSI';

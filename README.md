@@ -53,10 +53,18 @@ This architecture keeps data handling performant while maintaining a responsive,
 ### ✏️ Editor
 - Compose and send messages of **all 27 AIS message types**
 - Live NMEA preview with copy, plus inject-to-map or send-to-target actions
+- **Application Specific Messages** (ASM): a catalog of **148 DAC/FID messages** with a searchable preset picker, per-type filtering and structured field editing (raw bytes or ASM fields toggle); free-text messages accept the text directly
 
-### 🔍 Decoder
-- Paste and decode one or more NMEA sentences
-- Multi-part messages regrouped into a single block with full field-by-field breakdown
+### 🔍 Tools
+- A hub of AIS/NMEA utilities with a side rail:
+  - **NMEA decoder** — paste and decode one or more sentences, multi-part messages regrouped with full field-by-field breakdown
+  - **Checksum** — compute / verify / fix NMEA XOR checksums
+  - **MMSI lookup** — validate and identify an MMSI (MID country, station type)
+  - **Speed converter** — kn · km/h · m/s · mph
+  - **Binary inspector** — payload down to bits (hex, bytes, 6-bit characters)
+  - **ETA calculator** — distance + speed → AIS type-5 ETA fields
+  - **Radio range** — VHF-AIS radio horizon between antennas
+  - **Text to binary** — free text → AIS 6-bit ASCII, hex and byte list
 
 ### 📊 Stats
 - KPI cards: received / decoded rates, invalid checksums, dropped & pending fragments, parse errors
@@ -149,6 +157,7 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - Find a way to make tooltips works
 - Add support for rtl-sdr antenna (including rtlsdrblog and others cf. https://github.com/rtlsdrblog/rtl-sdr-blog/releases)
 - Make some research on other way to provide ais input
+- faire une boucle de test avec aidecoder ou autre (pyais etc)
 
 ## 🤝 Contributing
 

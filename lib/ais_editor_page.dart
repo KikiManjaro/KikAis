@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 import 'ais/src/nmea/nmea_format.dart'
     show buildTagBlock, msSinceUtcMidnight, wrapNmea4;
 import 'ais_editor_specs.dart';
+import 'asm_registry.dart';
 import 'boatmanager.dart';
 import 'l10n_ext.dart';
 import 'sim_fleet.dart' show kSimTalkers;
+import 'themes.dart';
 import 'widgets.dart';
 
 class AisEditorPage extends StatefulWidget {
@@ -29,6 +31,12 @@ class _AisEditorPageState extends State<AisEditorPage> {
 
   String? _sentence;
   String? _error;
+  AsmFormat? _asm;
+  AsmFormat? _lockedPreset;
+  EditorDataSource _dataSource = EditorDataSource.asm;
+
+  bool get _isBinaryType =>
+      _type == 6 || _type == 8 || _type == 25 || _type == 26;
 
   @override
   void initState() {
@@ -51,12 +59,15 @@ class _AisEditorPageState extends State<AisEditorPage> {
       c.dispose();
     }
     _controllers.clear();
+    _lockedPreset = null;
+    _dataSource = EditorDataSource.asm;
     for (final spec in fieldsForType(_type)) {
       _controllers[spec.key] = TextEditingController(text: spec.defaultText);
     }
+    _syncAsm();
   }
 
-  Map<String, dynamic> _values() {
+  Map<String, dynamic> _specValues() {
     final map = <String, dynamic>{};
     for (final spec in fieldsForType(_type)) {
       final c = _controllers[spec.key];
@@ -67,9 +78,125 @@ class _AisEditorPageState extends State<AisEditorPage> {
     return map;
   }
 
+  Map<String, dynamic> _values() {
+    final map = _specValues();
+    final asm = _asm;
+    if (asm != null) {
+      for (final spec in asmFieldsFor(asm)) {
+        final c = _controllers[spec.key];
+        if (c != null) {
+          map[spec.key] = parseField(spec, c.text);
+        }
+      }
+    }
+    return map;
+  }
+
+  /// Recomputes the active ASM and keeps a matching set of sub-field
+  /// controllers. In "Custom" mode (no preset locked) no ASM is active, so the
+  /// structured fields stay hidden and the raw Data bytes field is used.
+  void _syncAsm() {
+    final asm = _lockedPreset;
+    if (identical(asm, _asm)) return;
+    if (_asm != null) {
+      for (final spec in asmFieldsFor(_asm!)) {
+        _controllers.remove(spec.key)?.dispose();
+      }
+    }
+    _asm = asm;
+    if (asm != null) {
+      for (final spec in asmFieldsFor(asm)) {
+        _controllers[spec.key] =
+            TextEditingController(text: spec.defaultText);
+      }
+    }
+  }
+
+  /// Writes the DAC/FID (or App DAC/FID) of [asm] into their controllers.
+  void _setAsmControllers(AsmFormat asm) {
+    final dacKey = _type == 25 || _type == 26 ? 'appDac' : 'dac';
+    final fidKey = _type == 25 || _type == 26 ? 'appFid' : 'fid';
+    _controllers[dacKey]?.text = '${asm.dac}';
+    _controllers[fidKey]?.text = '${asm.fid}';
+  }
+
+  /// Locks a catalog ASM as the current preset.
+  void _selectAsm(AsmFormat asm) {
+    _setAsmControllers(asm);
+    setState(() {
+      _lockedPreset = asm;
+      _dataSource = EditorDataSource.asm;
+    });
+    _rebuild();
+  }
+
+  /// Stable identifier used as the picker value.
+  static String _asmKey(AsmFormat asm) => asmKey(asm);
+
+  static String _asmShortKey(AsmFormat asm) => asmShortKey(asm);
+
+  String _stateLabel(AsmState state) => switch (state) {
+        AsmState.inForce => context.l10n.asmStateInForce,
+        AsmState.deprecated => context.l10n.asmStateDeprecated,
+        AsmState.replaced => context.l10n.asmStateReplaced,
+        AsmState.discontinued => context.l10n.asmStateDiscontinued,
+        AsmState.draft => context.l10n.asmStateDraft,
+        AsmState.proposal => context.l10n.asmStateProposal,
+        AsmState.testing => context.l10n.asmStateTesting,
+      };
+
+  /// Small colored badge for the ASM lifecycle state.
+  Widget _stateBadge(AsmFormat asm) {
+    final scheme = Theme.of(context).colorScheme;
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+    final color = asm.isDeprecated
+        ? appColors.danger
+        : (asm.state == AsmState.draft ||
+                asm.state == AsmState.proposal ||
+                asm.state == AsmState.testing)
+            ? appColors.warning
+            : scheme.onSurfaceVariant;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        _stateLabel(asm.state),
+        style: TextStyle(fontSize: 10, color: color),
+      ),
+    );
+  }
+
+  /// Whether the generic field [spec] should be rendered, given the ASM preset
+  /// lock and the active data source.
+  bool _showSpecField(FieldSpec spec) {
+    if (spec.key == 'data' &&
+        _asm != null &&
+        _asm!.hasLayout &&
+        _dataSource == EditorDataSource.asm) {
+      return false;
+    }
+    if (_lockedPreset != null &&
+        (spec.key == 'dac' ||
+            spec.key == 'fid' ||
+            spec.key == 'appDac' ||
+            spec.key == 'appFid')) {
+      return false;
+    }
+    return true;
+  }
+
   void _rebuild() {
+    _syncAsm();
     try {
-      final base = encodeMessage(_type, _values());
+      final base = encodeMessage(
+        _type,
+        _values(),
+        dataSource: _dataSource,
+      );
       final tag = _nmea4Tags
           ? buildTagBlock(
               sourceId: _tagSourceC.text.trim().isEmpty
@@ -119,6 +246,9 @@ class _AisEditorPageState extends State<AisEditorPage> {
   @override
   Widget build(BuildContext context) {
     final specs = fieldsForType(_type);
+    final scheme = Theme.of(context).colorScheme;
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.editorTitle)),
@@ -161,37 +291,244 @@ class _AisEditorPageState extends State<AisEditorPage> {
                         _rebuild();
                       },
                     ),
+                    if (_isBinaryType) ...[
+                      const SizedBox(height: 8),
+                      SearchAnchor(
+                        key: ValueKey('asm-picker-$_type'),
+                        builder: (context, controller) {
+                          final locked = _lockedPreset;
+                          return InkWell(
+                            borderRadius: BorderRadius.circular(8),
+                            onTap: () => controller.openView(),
+                            child: InputDecorator(
+                              isEmpty: false,
+                              decoration: InputDecoration(
+                                labelText: context.l10n.editorAsmPreset,
+                                isDense: true,
+                                suffixIcon: const Icon(
+                                  Icons.arrow_drop_down,
+                                  size: 20,
+                                ),
+                              ),
+                              child: locked == null
+                                  ? Text(context.l10n.editorAsmPresetManual)
+                                  : Text(
+                                      '${_asmShortKey(locked)} · ${locked.name}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                            ),
+                          );
+                        },
+                        suggestionsBuilder: (context, controller) {
+                          final query = controller.text.trim().toLowerCase();
+                          final suggestions = <Widget>[];
+                          suggestions.add(
+                            ListTile(
+                              dense: true,
+                              leading: const Icon(Icons.edit_outlined, size: 18),
+                              title: Text(context.l10n.editorAsmPresetManual),
+                              onTap: () {
+                                setState(() => _lockedPreset = null);
+                                controller.closeView('');
+                                _rebuild();
+                              },
+                            ),
+                          );
+                          for (final asm in kAsmFormats) {
+                            if (!asm.validFor(_type)) continue;
+                            final label = '${_asmShortKey(asm)} · ${asm.name}';
+                            if (query.isNotEmpty &&
+                                !label.toLowerCase().contains(query)) {
+                              continue;
+                            }
+                            suggestions.add(
+                              ListTile(
+                                dense: true,
+                                leading: const Icon(Icons.apps, size: 18),
+                                title: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                subtitle: asm.registrant == null
+                                    ? null
+                                    : Text(
+                                        asm.registrant!,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(fontSize: 11),
+                                      ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _stateBadge(asm),
+                                    if (asm.notToBeUsedAfter != null)
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 4),
+                                        child: Text(
+                                          asm.notToBeUsedAfter!,
+                                          style: const TextStyle(fontSize: 10),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  _selectAsm(asm);
+                                  controller.closeView(_asmKey(asm));
+                                },
+                              ),
+                            );
+                          }
+                          return suggestions;
+                        },
+                      ),
+                    ],
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
                         for (final spec in specs)
-                          SizedBox(
-                            width: 170,
-                            child: TextField(
-                              controller: _controllers[spec.key],
-                              onChanged: (_) => _rebuild(),
-                              keyboardType: spec.kind == FieldKind.decimal
-                                  ? const TextInputType.numberWithOptions(
-                                      decimal: true,
-                                    )
-                                  : TextInputType.text,
-                              decoration: InputDecoration(
-                                labelText: editorFieldLabel(
-                                  context.l10n,
-                                  spec.label,
+                          if (_showSpecField(spec))
+                            SizedBox(
+                              width: 170,
+                              child: TextField(
+                                controller: _controllers[spec.key],
+                                onChanged: (_) => _rebuild(),
+                                keyboardType: spec.kind == FieldKind.decimal
+                                    ? const TextInputType.numberWithOptions(
+                                        decimal: true,
+                                      )
+                                    : TextInputType.text,
+                                decoration: InputDecoration(
+                                  labelText: editorFieldLabel(
+                                    context.l10n,
+                                    spec.label,
+                                  ),
+                                  isDense: true,
                                 ),
-                                isDense: true,
                               ),
                             ),
-                          ),
                       ],
                     ),
+                    if (_asm != null && _asm!.hasLayout) ...[
+                      const SizedBox(height: 8),
+                      SegmentedButton<EditorDataSource>(
+                        segments: [
+                          ButtonSegment(
+                            value: EditorDataSource.raw,
+                            label: Text(context.l10n.editorDataSourceRaw),
+                            icon: const Icon(Icons.data_object, size: 16),
+                          ),
+                          ButtonSegment(
+                            value: EditorDataSource.asm,
+                            label: Text(context.l10n.editorDataSourceAsm),
+                            icon: const Icon(Icons.apps, size: 16),
+                          ),
+                        ],
+                        selected: {_dataSource},
+                        showSelectedIcon: false,
+                        onSelectionChanged: (s) {
+                          setState(() => _dataSource = s.first);
+                          _rebuild();
+                        },
+                      ),
+                    ],
                   ],
                 ),
               ),
             ),
+            if (_asm != null && !_asm!.hasLayout)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, size: 18, color: scheme.primary),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          context.l10n.asmLayoutUnknown(_asm!.name),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            if (_asm != null && _asm!.hasLayout &&
+                _dataSource == EditorDataSource.asm)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.apps, size: 18, color: scheme.primary),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              context.l10n.editorAsmDetected(_asm!.name),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          _stateBadge(_asm!),
+                        ],
+                      ),
+                      if (_asm!.registrant != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          _asm!.registrant!,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                      if (_asm!.deprecatedSince != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          context.l10n.asmDeprecatedSince(
+                            _asm!.deprecatedSince!,
+                          ),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: appColors.danger,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final spec in asmFieldsFor(_asm!))
+                            SizedBox(
+                              width: 170,
+                              child: TextField(
+                                controller: _controllers[spec.key],
+                                onChanged: (_) => _rebuild(),
+                                keyboardType: spec.kind == FieldKind.decimal
+                                    ? const TextInputType.numberWithOptions(
+                                        decimal: true,
+                                      )
+                                    : TextInputType.text,
+                                decoration: InputDecoration(
+                                  labelText: editorFieldLabel(
+                                    context.l10n,
+                                    spec.label,
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             const SizedBox(height: 12),
             SectionHeader(
               icon: Icons.settings_input_antenna,

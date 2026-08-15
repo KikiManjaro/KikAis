@@ -63,7 +63,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tabEditor => 'エディタ';
 
   @override
-  String get tabDecoder => 'デコーダ';
+  String get tabTools => 'ツール';
 
   @override
   String get tabStats => '統計';
@@ -744,7 +744,332 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get toolDecoder => 'NMEAデコーダー';
+
+  @override
+  String get toolDecoderSub => 'AIS文をデコード';
+
+  @override
+  String get toolChecksum => 'チェックサム';
+
+  @override
+  String get toolChecksumSub => 'NMEA XOR を計算';
+
+  @override
+  String get toolMmsi => 'MMSI 検索';
+
+  @override
+  String get toolMmsiSub => 'MMSI を検証・識別';
+
+  @override
+  String get toolSpeed => '速度変換';
+
+  @override
+  String get toolSpeedSub => 'ノット · km/h · m/s · mph';
+
+  @override
+  String get toolBinary => 'バイナリ検査';
+
+  @override
+  String get toolBinarySub => 'ペイロードをビット単位で';
+
+  @override
+  String get toolEta => 'ETA 計算';
+
+  @override
+  String get toolEtaSub => 'タイプ5形式の ETA';
+
+  @override
+  String get toolRadio => '無線到達距離';
+
+  @override
+  String get toolRadioSub => 'VHF-AIS 無線地平線';
+
+  @override
+  String get toolTextToBinary => 'テキスト→バイナリ';
+
+  @override
+  String get toolTextToBinarySub => '6ビットASCII → 16進/ビット';
+
+  @override
+  String get checksumInputLabel => '1 つ以上の NMEA 文を貼り付け';
+
+  @override
+  String get checksumComputed => '計算値';
+
+  @override
+  String get checksumDeclared => '宣言値';
+
+  @override
+  String get checksumValid => 'チェックサムは有効';
+
+  @override
+  String get checksumInvalid => 'チェックサムが不一致';
+
+  @override
+  String get checksumFix => 'チェックサムを修正';
+
+  @override
+  String get mmsiInputLabel => 'MMSI（9桁）';
+
+  @override
+  String get mmsiValid => '有効な MMSI';
+
+  @override
+  String get mmsiInvalid => '有効な9桁の MMSI ではありません';
+
+  @override
+  String get mmsiMid => 'MID';
+
+  @override
+  String get mmsiCountry => '国';
+
+  @override
+  String get mmsiCountryUnknown => '不明な MID';
+
+  @override
+  String get mmsiType => '局種';
+
+  @override
+  String get mmsiGroupCall => 'グループ呼び出し';
+
+  @override
+  String get mmsiSarAircraft => 'SAR 航空機';
+
+  @override
+  String get mmsiCoastStation => '沿岸局';
+
+  @override
+  String get mmsiShipStation => '船舶局';
+
+  @override
+  String get mmsiHandheldVhf => '携帯型 VHF';
+
+  @override
+  String get mmsiAton => '航路標識（AtoN）';
+
+  @override
+  String get mmsiSar => 'SAR ユニット';
+
+  @override
+  String get mmsiOther => 'その他';
+
+  @override
+  String get speedValue => '値';
+
+  @override
+  String get speedUnit => '単位';
+
+  @override
+  String get binaryInputLabel => 'NMEA 文または生の6ビットペイロード';
+
+  @override
+  String get binaryPayload => 'ペイロード';
+
+  @override
+  String get binaryBits => 'ビット数';
+
+  @override
+  String get binaryBinary => '2進数';
+
+  @override
+  String get binaryHex => '16進数';
+
+  @override
+  String get binaryHexBytes => '16進バイト';
+
+  @override
+  String get binarySixBit => '6ビット文字';
+
+  @override
+  String get etaDistance => '距離';
+
+  @override
+  String get etaUnitNm => '海里';
+
+  @override
+  String get etaUnitKm => 'キロメートル';
+
+  @override
+  String get etaSpeed => '速度';
+
+  @override
+  String get etaDuration => '所要時間';
+
+  @override
+  String get etaEtaLocal => 'ETA（現地時間）';
+
+  @override
+  String get etaEtaUtc => 'ETA（UTC）';
+
+  @override
+  String get etaAisFields => 'タイプ5 の ETA フィールド';
+
+  @override
+  String get etaMonth => '月';
+
+  @override
+  String get etaDay => '日';
+
+  @override
+  String get etaHour => '時';
+
+  @override
+  String get etaMinute => '分';
+
+  @override
+  String get etaCombined => '月/日 時:分';
+
+  @override
+  String get radioHeight1 => 'アンテナ高 1';
+
+  @override
+  String get radioHeight2 => 'アンテナ高 2';
+
+  @override
+  String get radioHorizon => '無線地平線';
+
+  @override
+  String get radioHorizonKm => '無線地平線（km）';
+
+  @override
+  String get radioFrequencies => 'AIS チャンネル';
+
+  @override
+  String get radioAis1 => 'AIS 1';
+
+  @override
+  String get radioAis2 => 'AIS 2';
+
+  @override
+  String get t2bInputLabel => 'テキストを入力（AIS 6ビット文字表）';
+
+  @override
+  String get t2bCharTable => '文字 · 値 · 6ビット';
+
+  @override
+  String get t2bBinary => '2進数';
+
+  @override
+  String get t2bHex => '16進数';
+
+  @override
+  String get t2bBytes => 'バイト（エディタ形式）';
+
+  @override
+  String get t2bPayload => 'アーマードペイロード';
+
+  @override
+  String get t2bNote =>
+      'バイトリストはエディタの6/8/25/26 メッセージの「Data bytes」欄に貼り付け可能です。アーマードペイロードは NMEA の正確なペイロード欄です。';
+
+  @override
+  String editorAsmDetected(Object name) {
+    return 'アプリケーション固有メッセージ — $name';
+  }
+
+  @override
+  String get editorAsmRawHint =>
+      '一致した ASM のフィールド。生の「Data bytes」欄に入力がある場合はそちらが優先されます。';
+
+  @override
   String get fMessageType => 'メッセージタイプ';
+
+  @override
+  String get editorAsmPreset => 'ASM プリセット';
+
+  @override
+  String get editorAsmPresetManual => 'カスタム — DAC/FID を手入力';
+
+  @override
+  String get editorDataSourceRaw => 'Data bytes';
+
+  @override
+  String get editorDataSourceAsm => 'ASM フィールド';
+
+  @override
+  String get asmStateInForce => '有効';
+
+  @override
+  String get asmStateDeprecated => '非推奨';
+
+  @override
+  String get asmStateReplaced => '置換済み';
+
+  @override
+  String get asmStateDiscontinued => '廃止';
+
+  @override
+  String get asmStateDraft => 'ドラフト';
+
+  @override
+  String get asmStateProposal => '提案';
+
+  @override
+  String get asmStateTesting => '試験中';
+
+  @override
+  String asmDeprecatedSince(Object note) {
+    return '$note から非推奨';
+  }
+
+  @override
+  String asmLayoutUnknown(Object name) {
+    return '$name のビットレイアウトは未文書 — 生の Data bytes を編集してください。';
+  }
+
+  @override
+  String get docChapterAsm => 'アプリケーション固有メッセージ';
+
+  @override
+  String get docAsmIntro =>
+      'すべての AIS ペイロードが標準の位置報告とは限りません。タイプ 6、8、25、26 はアプリケーション固有のバイナリデータ（ASM）を運び、その意味は指定地域コード（DAC）と機能識別子（FID）の 2 つの数値で定義されます。';
+
+  @override
+  String get docAsmWhatTitle => 'ASM とは？';
+
+  @override
+  String get docAsmWhat =>
+      'アプリケーション固有メッセージは、特定の用途（気象・水文データ、航路標識の監視、DGPS 補正、港湾サービスなど）のために組織（IMO、IALA、各国当局、メーカー）が公開する構造化ペイロードです。タイプ 6/8 は DAC/FID ヘッダーを運び、25/26 はスロットメッセージ内で同じ DAC/FID 構成を繰り返します。';
+
+  @override
+  String get docAsmDacFidTitle => 'DAC と FID';
+
+  @override
+  String get docAsmDacFid1 =>
+      'DAC は発行組織または国を識別する 10 ビットコードです（例：001 = IMO、002 = IALA）。FID はその DAC の名前空間内の 6 ビット機能コードです（例：001/11 = IMO 気象・水文データ）。';
+
+  @override
+  String get docAsmDacFid2 =>
+      'DAC/FID ヘッダーに続くデータバイトは、対応するアプリケーション標準に従ってデコードされます。DAC/FID の組み合わせが異なれば同じバイトでも全く異なる解釈になるため、常にその組み合わせを先に知る必要があります。';
+
+  @override
+  String get docAsmWhereTitle => '定義の入手先';
+
+  @override
+  String get docAsmWhere1 =>
+      'IMO 回章および ITU-R M.1371（附属書）— IMO DAC 001 の権威ある情報源。';
+
+  @override
+  String get docAsmWhere2 => 'IALA ガイドライン（例：G1139）および各国当局 — 地域 DAC 向け。';
+
+  @override
+  String get docAsmWhere3 =>
+      'gpsd AIVDM ドキュメント — 一般的な DAC/FID 構成のオープンで機械可読なカタログ。';
+
+  @override
+  String get docAsmInKikaisTitle => 'KikAis での利用';
+
+  @override
+  String get docAsmInKikais =>
+      'エディタは厳選された既知の ASM を認識します。6/8/25/26 メッセージの DAC/FID が一致すると、データフィールドは名前付きサブフィールドとして表示され、自動的にパックされます。生の「Data bytes」欄に入力がある場合は常に優先されます。一覧は asm_formats.dart にあり、拡張が容易です。';
+
+  @override
+  String get docAsmExampleTitle => '例：IMO 気象・水文（001/11）';
+
+  @override
+  String get docAsmExample =>
+      'エディタでタイプ 8、DAC=1、FID=11 を設定すると IMO 気象メッセージを作成できます。風、気温・水温、気圧、視程、海流、波浪をバイトの塊ではなくフィールド単位で編集できます。';
 
   @override
   String get fMmsi => 'MMSI';

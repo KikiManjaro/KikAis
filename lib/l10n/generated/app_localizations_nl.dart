@@ -63,7 +63,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get tabEditor => 'Editor';
 
   @override
-  String get tabDecoder => 'Decoder';
+  String get tabTools => 'Hulpmiddelen';
 
   @override
   String get tabStats => 'Statistieken';
@@ -749,7 +749,333 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String get toolDecoder => 'NMEA-decoderen';
+
+  @override
+  String get toolDecoderSub => 'AIS-zinnen decoderen';
+
+  @override
+  String get toolChecksum => 'Checksum';
+
+  @override
+  String get toolChecksumSub => 'NMEA-XOR berekenen';
+
+  @override
+  String get toolMmsi => 'MMSI-zoeken';
+
+  @override
+  String get toolMmsiSub => 'MMSI valideren en identificeren';
+
+  @override
+  String get toolSpeed => 'Snelheidsomzetter';
+
+  @override
+  String get toolSpeedSub => 'kn · km/u · m/s · mph';
+
+  @override
+  String get toolBinary => 'Binair inspecteren';
+
+  @override
+  String get toolBinarySub => 'Payload tot op de bits';
+
+  @override
+  String get toolEta => 'ETA-calculator';
+
+  @override
+  String get toolEtaSub => 'ETA als type-5-velden';
+
+  @override
+  String get toolRadio => 'Radiobereik';
+
+  @override
+  String get toolRadioSub => 'VHF-AIS-radiohorizon';
+
+  @override
+  String get toolTextToBinary => 'Tekst naar binair';
+
+  @override
+  String get toolTextToBinarySub => '6-bit ASCII naar hex/bits';
+
+  @override
+  String get checksumInputLabel => 'Plak een of meer NMEA-zinnen';
+
+  @override
+  String get checksumComputed => 'Berekend';
+
+  @override
+  String get checksumDeclared => 'Gedeclareerd';
+
+  @override
+  String get checksumValid => 'Checksum geldig';
+
+  @override
+  String get checksumInvalid => 'Checksum onjuist';
+
+  @override
+  String get checksumFix => 'Checksum corrigeren';
+
+  @override
+  String get mmsiInputLabel => 'MMSI (9 cijfers)';
+
+  @override
+  String get mmsiValid => 'Geldige MMSI';
+
+  @override
+  String get mmsiInvalid => 'Geen geldige 9-cijferige MMSI';
+
+  @override
+  String get mmsiMid => 'MID';
+
+  @override
+  String get mmsiCountry => 'Land';
+
+  @override
+  String get mmsiCountryUnknown => 'Onbekende MID';
+
+  @override
+  String get mmsiType => 'Stationstype';
+
+  @override
+  String get mmsiGroupCall => 'Groepsoproep';
+
+  @override
+  String get mmsiSarAircraft => 'SAR-vliegtuig';
+
+  @override
+  String get mmsiCoastStation => 'Kuststation';
+
+  @override
+  String get mmsiShipStation => 'Scheepsstation';
+
+  @override
+  String get mmsiHandheldVhf => 'Draagbare VHF';
+
+  @override
+  String get mmsiAton => 'Navigatiehulp (AtoN)';
+
+  @override
+  String get mmsiSar => 'SAR-eenheid';
+
+  @override
+  String get mmsiOther => 'Overig';
+
+  @override
+  String get speedValue => 'Waarde';
+
+  @override
+  String get speedUnit => 'Eenheid';
+
+  @override
+  String get binaryInputLabel => 'NMEA-zin of ruwe 6-bit payload';
+
+  @override
+  String get binaryPayload => 'Payload';
+
+  @override
+  String get binaryBits => 'Bits';
+
+  @override
+  String get binaryBinary => 'Binair';
+
+  @override
+  String get binaryHex => 'Hex';
+
+  @override
+  String get binaryHexBytes => 'Hex-bytes';
+
+  @override
+  String get binarySixBit => '6-bit tekens';
+
+  @override
+  String get etaDistance => 'Afstand';
+
+  @override
+  String get etaUnitNm => 'zeemijlen';
+
+  @override
+  String get etaUnitKm => 'kilometers';
+
+  @override
+  String get etaSpeed => 'Snelheid';
+
+  @override
+  String get etaDuration => 'Duur';
+
+  @override
+  String get etaEtaLocal => 'ETA (lokaal)';
+
+  @override
+  String get etaEtaUtc => 'ETA (UTC)';
+
+  @override
+  String get etaAisFields => 'AIS-type-5-ETA-velden';
+
+  @override
+  String get etaMonth => 'Maand';
+
+  @override
+  String get etaDay => 'Dag';
+
+  @override
+  String get etaHour => 'Uur';
+
+  @override
+  String get etaMinute => 'Minuut';
+
+  @override
+  String get etaCombined => 'MM/DD uu:mm';
+
+  @override
+  String get radioHeight1 => 'Antennehoogte 1';
+
+  @override
+  String get radioHeight2 => 'Antennehoogte 2';
+
+  @override
+  String get radioHorizon => 'Radiohorizon';
+
+  @override
+  String get radioHorizonKm => 'Radiohorizon (km)';
+
+  @override
+  String get radioFrequencies => 'AIS-kanalen';
+
+  @override
+  String get radioAis1 => 'AIS 1';
+
+  @override
+  String get radioAis2 => 'AIS 2';
+
+  @override
+  String get t2bInputLabel => 'Voer tekst in (AIS 6-bit alfabet)';
+
+  @override
+  String get t2bCharTable => 'Teken · waarde · 6-bit';
+
+  @override
+  String get t2bBinary => 'Binair';
+
+  @override
+  String get t2bHex => 'Hex';
+
+  @override
+  String get t2bBytes => 'Bytes (editorformaat)';
+
+  @override
+  String get t2bPayload => 'Gepantserde payload';
+
+  @override
+  String get t2bNote =>
+      'De bytelijst kan worden geplakt in het veld «Data bytes» van de editor van een 6/8/25/26-bericht; de gepantserde payload is het exacte NMEA-payloadveld.';
+
+  @override
+  String editorAsmDetected(Object name) {
+    return 'Applicatiespecifiek bericht — $name';
+  }
+
+  @override
+  String get editorAsmRawHint =>
+      'Velden van de gevonden ASM. Het ruwe veld «Data bytes» blijft van toepassing wanneer het is ingevuld.';
+
+  @override
   String get fMessageType => 'Berichttype';
+
+  @override
+  String get editorAsmPreset => 'ASM-voorinstelling';
+
+  @override
+  String get editorAsmPresetManual => 'Aangepast — DAC/FID handmatig invoeren';
+
+  @override
+  String get editorDataSourceRaw => 'Data bytes';
+
+  @override
+  String get editorDataSourceAsm => 'ASM-velden';
+
+  @override
+  String get asmStateInForce => 'van kracht';
+
+  @override
+  String get asmStateDeprecated => 'verouderd';
+
+  @override
+  String get asmStateReplaced => 'vervangen';
+
+  @override
+  String get asmStateDiscontinued => 'gestaakt';
+
+  @override
+  String get asmStateDraft => 'concept';
+
+  @override
+  String get asmStateProposal => 'voorstel';
+
+  @override
+  String get asmStateTesting => 'in test';
+
+  @override
+  String asmDeprecatedSince(Object note) {
+    return 'Verouderd sinds $note';
+  }
+
+  @override
+  String asmLayoutUnknown(Object name) {
+    return 'Voor $name is geen bit-layout gedocumenteerd — bewerk de ruwe Data bytes.';
+  }
+
+  @override
+  String get docChapterAsm => 'Applicatiespecifieke berichten';
+
+  @override
+  String get docAsmIntro =>
+      'Niet elk AIS-payload is een standaard positierapport. Berichttypes 6, 8, 25 en 26 dragen applicatiespecifieke binaire gegevens (een ASM) waarvan de betekenis wordt bepaald door twee getallen: een Designated Area Code (DAC) en een Function Identifier (FID).';
+
+  @override
+  String get docAsmWhatTitle => 'Wat is een ASM?';
+
+  @override
+  String get docAsmWhat =>
+      'Een applicatiespecifiek bericht is een gestructureerd payload dat door een organisatie (IMO, IALA, nationale overheden, fabrikanten) is gepubliceerd voor een specifiek doel: weers- en hydrografische gegevens, bewaking van navigatiehulpmiddelen, DGPS-correcties, havenvoorzieningen en meer. Type 6/8 draagt de DAC/FID-kop; 25/26 herhaalt hetzelfde DAC/FID-schema in de slotberichten.';
+
+  @override
+  String get docAsmDacFidTitle => 'DAC en FID';
+
+  @override
+  String get docAsmDacFid1 =>
+      'De DAC is een 10-bits code die de uitgevende organisatie of het land identificeert (bijv. 001 = IMO, 002 = IALA). De FID is een 6-bits functiecode binnen de naamruimte van die DAC (bijv. 001/11 = IMO weers- en hydrografische gegevens).';
+
+  @override
+  String get docAsmDacFid2 =>
+      'De databytes die op de DAC/FID-kop volgen, worden gedecodeerd volgens de bijbehorende applicatiestandaard. Verschillende DAC/FID-paren kunnen dezelfde bytes volledig anders interpreteren: het paar moet dus altijd eerst bekend zijn.';
+
+  @override
+  String get docAsmWhereTitle => 'Waar de definities te vinden';
+
+  @override
+  String get docAsmWhere1 =>
+      'IMO-circulaires en ITU-R M.1371 (bijlagen) — de gezaghebbende bron voor IMO-DAC 001.';
+
+  @override
+  String get docAsmWhere2 =>
+      'IALA-richtlijnen (bijv. G1139) en nationale overheden — voor regionale DAC\'s.';
+
+  @override
+  String get docAsmWhere3 =>
+      'De gpsd-AIVDM-documentatie — een open, machinaal leesbare catalogus van de meest voorkomende DAC/FID-schema\'s.';
+
+  @override
+  String get docAsmInKikaisTitle => 'In KikAis';
+
+  @override
+  String get docAsmInKikais =>
+      'De editor kent een samengestelde set bekende ASM\'s: wanneer de DAC/FID van een 6/8/25/26-bericht overeenkomt, wordt het dataveld getoond als benoemde subvelden die automatisch worden ingepakt. Het ruwe veld «Data bytes» prevaleert altijd als het is ingevuld. De lijst staat in asm_formats.dart en is eenvoudig uit te breiden.';
+
+  @override
+  String get docAsmExampleTitle => 'Voorbeeld: IMO weers- & hydro (001/11)';
+
+  @override
+  String get docAsmExample =>
+      'Stel in de editor type 8, DAC=1 en FID=11 in om een IMO-weerbericht te bouwen: wind, lucht- en watertemperatuur, druk, zicht, stromingen en golven worden dan veld voor veld bewerkt in plaats van als een byteblob.';
 
   @override
   String get fMmsi => 'MMSI';

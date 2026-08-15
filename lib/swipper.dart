@@ -344,7 +344,7 @@ class _SwipperUiState extends State<SwipperUi> {
                     NavigationDestination(
                       icon: const Icon(Icons.manage_search_outlined),
                       selectedIcon: const Icon(Icons.manage_search),
-                      label: context.l10n.tabDecoder,
+                      label: context.l10n.tabTools,
                     ),
                     NavigationDestination(
                       icon: const Icon(Icons.bar_chart_outlined),

@@ -63,7 +63,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tabEditor => 'Редактор';
 
   @override
-  String get tabDecoder => 'Декодер';
+  String get tabTools => 'Инструменты';
 
   @override
   String get tabStats => 'Статистика';
@@ -754,7 +754,334 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get toolDecoder => 'Декодер NMEA';
+
+  @override
+  String get toolDecoderSub => 'Декодировать AIS';
+
+  @override
+  String get toolChecksum => 'Контрольная сумма';
+
+  @override
+  String get toolChecksumSub => 'Расчёт XOR NMEA';
+
+  @override
+  String get toolMmsi => 'Поиск MMSI';
+
+  @override
+  String get toolMmsiSub => 'Проверка и идентификация MMSI';
+
+  @override
+  String get toolSpeed => 'Конвертер скорости';
+
+  @override
+  String get toolSpeedSub => 'уз · км/ч · м/с · миль/ч';
+
+  @override
+  String get toolBinary => 'Бинарный инспектор';
+
+  @override
+  String get toolBinarySub => 'Полезная нагрузка до битов';
+
+  @override
+  String get toolEta => 'Расчёт ETA';
+
+  @override
+  String get toolEtaSub => 'ETA в полях типа 5';
+
+  @override
+  String get toolRadio => 'Радиодальность';
+
+  @override
+  String get toolRadioSub => 'Радиогоризонт VHF-AIS';
+
+  @override
+  String get toolTextToBinary => 'Текст в бинарное';
+
+  @override
+  String get toolTextToBinarySub => '6-бит ASCII в hex/биты';
+
+  @override
+  String get checksumInputLabel =>
+      'Вставьте одно или несколько предложений NMEA';
+
+  @override
+  String get checksumComputed => 'Вычислено';
+
+  @override
+  String get checksumDeclared => 'Указано';
+
+  @override
+  String get checksumValid => 'Контрольная сумма верна';
+
+  @override
+  String get checksumInvalid => 'Контрольная сумма не совпадает';
+
+  @override
+  String get checksumFix => 'Исправить сумму';
+
+  @override
+  String get mmsiInputLabel => 'MMSI (9 цифр)';
+
+  @override
+  String get mmsiValid => 'Действительный MMSI';
+
+  @override
+  String get mmsiInvalid => 'Не является 9-значным MMSI';
+
+  @override
+  String get mmsiMid => 'MID';
+
+  @override
+  String get mmsiCountry => 'Страна';
+
+  @override
+  String get mmsiCountryUnknown => 'Неизвестный MID';
+
+  @override
+  String get mmsiType => 'Тип станции';
+
+  @override
+  String get mmsiGroupCall => 'Групповой вызов';
+
+  @override
+  String get mmsiSarAircraft => 'Спасательное ВС';
+
+  @override
+  String get mmsiCoastStation => 'Береговая станция';
+
+  @override
+  String get mmsiShipStation => 'Судовая станция';
+
+  @override
+  String get mmsiHandheldVhf => 'Портативная УКВ';
+
+  @override
+  String get mmsiAton => 'Средство навигации (AtoN)';
+
+  @override
+  String get mmsiSar => 'Спасательная единица';
+
+  @override
+  String get mmsiOther => 'Другое';
+
+  @override
+  String get speedValue => 'Значение';
+
+  @override
+  String get speedUnit => 'Единица';
+
+  @override
+  String get binaryInputLabel => 'Предложение NMEA или сырой 6-бит payload';
+
+  @override
+  String get binaryPayload => 'Полезная нагрузка';
+
+  @override
+  String get binaryBits => 'Биты';
+
+  @override
+  String get binaryBinary => 'Двоичный';
+
+  @override
+  String get binaryHex => 'Hex';
+
+  @override
+  String get binaryHexBytes => 'Hex-байты';
+
+  @override
+  String get binarySixBit => '6-битные символы';
+
+  @override
+  String get etaDistance => 'Дистанция';
+
+  @override
+  String get etaUnitNm => 'морские мили';
+
+  @override
+  String get etaUnitKm => 'километры';
+
+  @override
+  String get etaSpeed => 'Скорость';
+
+  @override
+  String get etaDuration => 'Продолжительность';
+
+  @override
+  String get etaEtaLocal => 'ETA (местное)';
+
+  @override
+  String get etaEtaUtc => 'ETA (UTC)';
+
+  @override
+  String get etaAisFields => 'Поля ETA типа 5';
+
+  @override
+  String get etaMonth => 'Месяц';
+
+  @override
+  String get etaDay => 'День';
+
+  @override
+  String get etaHour => 'Час';
+
+  @override
+  String get etaMinute => 'Минута';
+
+  @override
+  String get etaCombined => 'ММ/ДД ЧЧ:ММ';
+
+  @override
+  String get radioHeight1 => 'Высота антенны 1';
+
+  @override
+  String get radioHeight2 => 'Высота антенны 2';
+
+  @override
+  String get radioHorizon => 'Радиогоризонт';
+
+  @override
+  String get radioHorizonKm => 'Радиогоризонт (км)';
+
+  @override
+  String get radioFrequencies => 'Каналы AIS';
+
+  @override
+  String get radioAis1 => 'AIS 1';
+
+  @override
+  String get radioAis2 => 'AIS 2';
+
+  @override
+  String get t2bInputLabel => 'Введите текст (алфавит AIS 6-бит)';
+
+  @override
+  String get t2bCharTable => 'Символ · значение · 6 бит';
+
+  @override
+  String get t2bBinary => 'Двоичный';
+
+  @override
+  String get t2bHex => 'Hex';
+
+  @override
+  String get t2bBytes => 'Байты (формат редактора)';
+
+  @override
+  String get t2bPayload => 'Защищённый payload';
+
+  @override
+  String get t2bNote =>
+      'Список байтов можно вставить в поле «Data bytes» редактора для сообщений 6/8/25/26; защищённый payload — это точное поле payload предложения NMEA.';
+
+  @override
+  String editorAsmDetected(Object name) {
+    return 'Специальное прикладное сообщение — $name';
+  }
+
+  @override
+  String get editorAsmRawHint =>
+      'Поля распознанного ASM. Поле «Data bytes» по-прежнему имеет приоритет при заполнении.';
+
+  @override
   String get fMessageType => 'Тип сообщения';
+
+  @override
+  String get editorAsmPreset => 'Предустановка ASM';
+
+  @override
+  String get editorAsmPresetManual => 'Вручную — ввести DAC/FID';
+
+  @override
+  String get editorDataSourceRaw => 'Data bytes';
+
+  @override
+  String get editorDataSourceAsm => 'Поля ASM';
+
+  @override
+  String get asmStateInForce => 'действует';
+
+  @override
+  String get asmStateDeprecated => 'устарел';
+
+  @override
+  String get asmStateReplaced => 'заменён';
+
+  @override
+  String get asmStateDiscontinued => 'прекращён';
+
+  @override
+  String get asmStateDraft => 'черновик';
+
+  @override
+  String get asmStateProposal => 'предложение';
+
+  @override
+  String get asmStateTesting => 'тестируется';
+
+  @override
+  String asmDeprecatedSince(Object note) {
+    return 'Устарел с $note';
+  }
+
+  @override
+  String asmLayoutUnknown(Object name) {
+    return 'Для $name макет битов не задокументирован — редактируйте необработанные Data bytes.';
+  }
+
+  @override
+  String get docChapterAsm => 'Специальные прикладные сообщения';
+
+  @override
+  String get docAsmIntro =>
+      'Не каждый полезный AIS-нагрузки является стандартным отчётом о позиции. Типы 6, 8, 25 и 26 несут прикладные двоичные данные (ASM), смысл которых задаётся двумя числами: кодом района (DAC) и идентификатором функции (FID).';
+
+  @override
+  String get docAsmWhatTitle => 'Что такое ASM?';
+
+  @override
+  String get docAsmWhat =>
+      'Специальное прикладное сообщение — это структурированная нагрузка, опубликованная организацией (ИМО, МАМС, национальные администрации, производители) для конкретного применения: метео- и гидрографические данные, мониторинг средств навигации, поправки DGPS, портовые службы и другое. Типы 6/8 несут заголовок DAC/FID; 25/26 повторяют ту же схему в слотовых сообщениях.';
+
+  @override
+  String get docAsmDacFidTitle => 'DAC и FID';
+
+  @override
+  String get docAsmDacFid1 =>
+      'DAC — 10-битный код, идентифицирующий организацию или страну (например, 001 = ИМО, 002 = МАМС). FID — 6-битный код функции внутри пространства этого DAC (например, 001/11 = метео- и гидроданные ИМО).';
+
+  @override
+  String get docAsmDacFid2 =>
+      'Байты данных после заголовка DAC/FID декодируются по соответствующему прикладному стандарту. Разные пары DAC/FID могут интерпретировать одни и те же байты совершенно по-разному — пару нужно знать заранее.';
+
+  @override
+  String get docAsmWhereTitle => 'Где найти определения';
+
+  @override
+  String get docAsmWhere1 =>
+      'Циркуляры ИМО и ITU-R M.1371 (приложения) — авторитетный источник для DAC 001.';
+
+  @override
+  String get docAsmWhere2 =>
+      'Руководства МАМС (например, G1139) и национальных администраций — для региональных DAC.';
+
+  @override
+  String get docAsmWhere3 =>
+      'Документация AIVDM от gpsd — открытый, машиночитаемый каталог наиболее распространённых схем DAC/FID.';
+
+  @override
+  String get docAsmInKikaisTitle => 'В KikAis';
+
+  @override
+  String get docAsmInKikais =>
+      'Редактор знает курируемый набор известных ASM: когда DAC/FID сообщения 6/8/25/26 совпадает, поле данных показывается как именованные подполя, которые упаковываются автоматически. Сырое поле «Data bytes» всегда имеет приоритет при заполнении. Список находится в asm_formats.dart и легко расширяется.';
+
+  @override
+  String get docAsmExampleTitle => 'Пример: метео-гидро ИМО (001/11)';
+
+  @override
+  String get docAsmExample =>
+      'В редакторе выберите тип 8, DAC=1 и FID=11, чтобы собрать метеосообщение ИМО: ветер, температуры воздуха и воды, давление, видимость, течения и волны редактируются по полям, а не как блок байтов.';
 
   @override
   String get fMmsi => 'MMSI';

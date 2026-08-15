@@ -1,7 +1,17 @@
 import 'ais/src/encoder/ais_message_encoder.dart';
+import 'asm_registry.dart';
 import 'l10n/generated/app_localizations.dart';
 
 enum FieldKind { number, decimal, text, bytes, intList }
+
+/// How the data field of a binary message (types 6/8/25/26) is built.
+enum EditorDataSource {
+  /// Pack the raw "Data bytes" field as typed.
+  raw,
+
+  /// Pack the matched ASM sub-fields.
+  asm,
+}
 
 class FieldSpec {
   final String key;
@@ -365,6 +375,49 @@ List<int> _parseBytes(String raw) {
   return s.split('').map((e) => int.tryParse(e) ?? 0).toList();
 }
 
+/// DAC that selects an ASM for binary message [type], or null when absent.
+int? asmDacFor(int type, Map<String, dynamic> values) {
+  if (type == 25 || type == 26) return _v(values, 'appDac', null);
+  if (type == 6 || type == 8) return _v(values, 'dac', null);
+  return null;
+}
+
+/// FID that selects an ASM for binary message [type], or null when absent.
+int? asmFidFor(int type, Map<String, dynamic> values) {
+  if (type == 25 || type == 26) return _v(values, 'appFid', null);
+  if (type == 6 || type == 8) return _v(values, 'fid', null);
+  return null;
+}
+
+/// The ASM matched by the current DAC/FID of a binary message, or null.
+AsmFormat? asmFormatFor(int type, Map<String, dynamic> values) {
+  final dac = asmDacFor(type, values);
+  final fid = asmFidFor(type, values);
+  if (dac == null || fid == null) return null;
+  return asmForMessage(type, dac, fid);
+}
+
+/// The editor fields for the sub-fields of [format], keyed `asm.<fieldKey>`.
+List<FieldSpec> asmFieldsFor(AsmFormat format) {
+  return [
+    for (final f in format.fields)
+      FieldSpec(
+        'asm.${f.key}',
+        f.unit == null ? f.name : '${f.name} (${f.unit})',
+        switch (f.kind) {
+          AsmFieldKind.text6 || AsmFieldKind.freeText => FieldKind.text,
+          AsmFieldKind.data => FieldKind.bytes,
+          _ => FieldKind.number,
+        },
+        '',
+      ),
+  ];
+}
+
+/// Packs the ASM sub-fields in [values] into the message data bytes.
+List<int> asmBytesFor(AsmFormat format, Map<String, dynamic> values) =>
+    packAsmData(format, values);
+
 List<int> _parseIntList(String raw) {
   final s = raw.trim();
   if (s.isEmpty) return const [];
@@ -415,8 +468,27 @@ List<int> _lv(Map<String, dynamic> values, String key) {
   return v is List<int> ? v : const [];
 }
 
+/// Data bytes for a binary message. When [dataSource] is [EditorDataSource.asm]
+/// and an ASM with a documented layout is matched by the DAC/FID, the ASM
+/// sub-fields are packed; otherwise the raw "Data bytes" field is used.
+List<int> _binaryData(
+  Map<String, dynamic> values,
+  int type,
+  EditorDataSource dataSource,
+) {
+  final asm = asmFormatFor(type, values);
+  if (dataSource == EditorDataSource.asm && asm != null && asm.hasLayout) {
+    return asmBytesFor(asm, values);
+  }
+  return _bv(values, 'data');
+}
+
 /// Dispatches to the correct encoder for the given message type.
-String encodeMessage(int type, Map<String, dynamic> values) {
+String encodeMessage(
+  int type,
+  Map<String, dynamic> values, {
+  EditorDataSource dataSource = EditorDataSource.asm,
+}) {
   final mmsi = _iv(values, 'mmsi', 226545000);
   switch (type) {
     case 1 || 2 || 3:
@@ -467,7 +539,7 @@ String encodeMessage(int type, Map<String, dynamic> values) {
         sequenceNumber: _iv(values, 'sequenceNumber', 0),
         dac: _iv(values, 'dac', 0),
         fid: _iv(values, 'fid', 0),
-        data: _bv(values, 'data'),
+        data: _binaryData(values, type, dataSource),
       );
     case 7:
       return encodeBinaryAcknowledge(
@@ -480,7 +552,7 @@ String encodeMessage(int type, Map<String, dynamic> values) {
         mmsi: mmsi,
         dac: _iv(values, 'dac', 0),
         fid: _iv(values, 'fid', 0),
-        data: _bv(values, 'data'),
+        data: _binaryData(values, type, dataSource),
       );
     case 9:
       return encodeSarAircraftPosition(
@@ -545,7 +617,7 @@ String encodeMessage(int type, Map<String, dynamic> values) {
         mmsi: mmsi,
         latitude: _dv(values, 'latitude', 0),
         longitude: _dv(values, 'longitude', 0),
-        data: _bv(values, 'data'),
+        data: _binaryData(values, type, dataSource),
       );
     case 18:
       return encodeClassBPosition(
@@ -619,7 +691,7 @@ String encodeMessage(int type, Map<String, dynamic> values) {
     case 25:
       return encodeSingleSlotBinary(
         mmsi: mmsi,
-        data: _bv(values, 'data'),
+        data: _binaryData(values, type, dataSource),
         destinationMmsi: _v(values, 'destinationMmsi', null),
         applicationId: _v(values, 'appDac', null) != null
             ? (_iv(values, 'appDac', 0), _iv(values, 'appFid', 0))
@@ -628,7 +700,7 @@ String encodeMessage(int type, Map<String, dynamic> values) {
     case 26:
       return encodeMultipleSlotBinary(
         mmsi: mmsi,
-        data: _bv(values, 'data'),
+        data: _binaryData(values, type, dataSource),
         destinationMmsi: _v(values, 'destinationMmsi', null),
         applicationId: _v(values, 'appDac', null) != null
             ? (_iv(values, 'appDac', 0), _iv(values, 'appFid', 0))

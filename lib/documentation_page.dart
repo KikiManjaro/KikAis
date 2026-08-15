@@ -184,6 +184,15 @@ List<_Chapter> _chapters(AppLocalizations l10n) {
       'IALA',
       'IEC',
     ]),
+    _Chapter(l10n.docChapterAsm, Icons.apps, [
+      'ASM',
+      'application specific',
+      'binary data',
+      'DAC',
+      'FID',
+      'meteo',
+      'hydrographic',
+    ]),
   ];
 }
 
@@ -406,9 +415,35 @@ class _DocumentationPageState extends State<DocumentationPage> {
         return _glossary();
       case 14:
         return _cheatSheet();
-      default:
+      case 15:
         return _sources();
+      default:
+        return _asm();
     }
+  }
+
+  List<Widget> _asm() {
+    final l10n = context.l10n;
+    return [
+      _h1(l10n.docChapterAsm),
+      _p(l10n.docAsmIntro),
+      const SizedBox(height: 12),
+      _h2(l10n.docAsmWhatTitle),
+      _p(l10n.docAsmWhat),
+      _h2(l10n.docAsmDacFidTitle),
+      _p(l10n.docAsmDacFid1),
+      _p(l10n.docAsmDacFid2),
+      _h2(l10n.docAsmWhereTitle),
+      _bullets([
+        l10n.docAsmWhere1,
+        l10n.docAsmWhere2,
+        l10n.docAsmWhere3,
+      ]),
+      _h2(l10n.docAsmInKikaisTitle),
+      _p(l10n.docAsmInKikais),
+      _h2(l10n.docAsmExampleTitle),
+      _p(l10n.docAsmExample),
+    ];
   }
 
   List<Widget> _overview() {
@@ -723,7 +758,7 @@ class _DocumentationPageState extends State<DocumentationPage> {
       _TabCard(
         accent: appColors.info,
         icon: Icons.manage_search,
-        title: l10n.tabDecoder,
+        title: l10n.tabTools,
         text: l10n.docTabDecoderText,
         tabIndex: 4,
         onOpen: widget.onOpenTab,

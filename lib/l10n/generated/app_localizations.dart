@@ -222,11 +222,11 @@ abstract class AppLocalizations {
   /// **'Editor'**
   String get tabEditor;
 
-  /// No description provided for @tabDecoder.
+  /// No description provided for @tabTools.
   ///
   /// In en, this message translates to:
-  /// **'Decoder'**
-  String get tabDecoder;
+  /// **'Tools'**
+  String get tabTools;
 
   /// No description provided for @tabStats.
   ///
@@ -1506,11 +1506,629 @@ abstract class AppLocalizations {
   /// **'Tag block · {content}'**
   String decoderTagBlock(Object content);
 
+  /// No description provided for @toolDecoder.
+  ///
+  /// In en, this message translates to:
+  /// **'NMEA Decoder'**
+  String get toolDecoder;
+
+  /// No description provided for @toolDecoderSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Decode AIS sentences'**
+  String get toolDecoderSub;
+
+  /// No description provided for @toolChecksum.
+  ///
+  /// In en, this message translates to:
+  /// **'Checksum'**
+  String get toolChecksum;
+
+  /// No description provided for @toolChecksumSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Compute NMEA XOR checksums'**
+  String get toolChecksumSub;
+
+  /// No description provided for @toolMmsi.
+  ///
+  /// In en, this message translates to:
+  /// **'MMSI lookup'**
+  String get toolMmsi;
+
+  /// No description provided for @toolMmsiSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Validate and identify an MMSI'**
+  String get toolMmsiSub;
+
+  /// No description provided for @toolSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed converter'**
+  String get toolSpeed;
+
+  /// No description provided for @toolSpeedSub.
+  ///
+  /// In en, this message translates to:
+  /// **'kn · km/h · m/s · mph'**
+  String get toolSpeedSub;
+
+  /// No description provided for @toolBinary.
+  ///
+  /// In en, this message translates to:
+  /// **'Binary inspector'**
+  String get toolBinary;
+
+  /// No description provided for @toolBinarySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Payload down to the bits'**
+  String get toolBinarySub;
+
+  /// No description provided for @toolEta.
+  ///
+  /// In en, this message translates to:
+  /// **'ETA calculator'**
+  String get toolEta;
+
+  /// No description provided for @toolEtaSub.
+  ///
+  /// In en, this message translates to:
+  /// **'ETA as AIS type-5 fields'**
+  String get toolEtaSub;
+
+  /// No description provided for @toolRadio.
+  ///
+  /// In en, this message translates to:
+  /// **'Radio range'**
+  String get toolRadio;
+
+  /// No description provided for @toolRadioSub.
+  ///
+  /// In en, this message translates to:
+  /// **'VHF-AIS radio horizon'**
+  String get toolRadioSub;
+
+  /// No description provided for @toolTextToBinary.
+  ///
+  /// In en, this message translates to:
+  /// **'Text to binary'**
+  String get toolTextToBinary;
+
+  /// No description provided for @toolTextToBinarySub.
+  ///
+  /// In en, this message translates to:
+  /// **'6-bit ASCII to hex/bits'**
+  String get toolTextToBinarySub;
+
+  /// No description provided for @checksumInputLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste one or more NMEA sentences'**
+  String get checksumInputLabel;
+
+  /// No description provided for @checksumComputed.
+  ///
+  /// In en, this message translates to:
+  /// **'Computed'**
+  String get checksumComputed;
+
+  /// No description provided for @checksumDeclared.
+  ///
+  /// In en, this message translates to:
+  /// **'Declared'**
+  String get checksumDeclared;
+
+  /// No description provided for @checksumValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Checksum valid'**
+  String get checksumValid;
+
+  /// No description provided for @checksumInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Checksum mismatch'**
+  String get checksumInvalid;
+
+  /// No description provided for @checksumFix.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix checksum'**
+  String get checksumFix;
+
+  /// No description provided for @mmsiInputLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'MMSI (9 digits)'**
+  String get mmsiInputLabel;
+
+  /// No description provided for @mmsiValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid MMSI'**
+  String get mmsiValid;
+
+  /// No description provided for @mmsiInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Not a valid 9-digit MMSI'**
+  String get mmsiInvalid;
+
+  /// No description provided for @mmsiMid.
+  ///
+  /// In en, this message translates to:
+  /// **'MID'**
+  String get mmsiMid;
+
+  /// No description provided for @mmsiCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get mmsiCountry;
+
+  /// No description provided for @mmsiCountryUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown MID'**
+  String get mmsiCountryUnknown;
+
+  /// No description provided for @mmsiType.
+  ///
+  /// In en, this message translates to:
+  /// **'Station type'**
+  String get mmsiType;
+
+  /// No description provided for @mmsiGroupCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Group call'**
+  String get mmsiGroupCall;
+
+  /// No description provided for @mmsiSarAircraft.
+  ///
+  /// In en, this message translates to:
+  /// **'SAR aircraft'**
+  String get mmsiSarAircraft;
+
+  /// No description provided for @mmsiCoastStation.
+  ///
+  /// In en, this message translates to:
+  /// **'Coast station'**
+  String get mmsiCoastStation;
+
+  /// No description provided for @mmsiShipStation.
+  ///
+  /// In en, this message translates to:
+  /// **'Ship station'**
+  String get mmsiShipStation;
+
+  /// No description provided for @mmsiHandheldVhf.
+  ///
+  /// In en, this message translates to:
+  /// **'Handheld VHF'**
+  String get mmsiHandheldVhf;
+
+  /// No description provided for @mmsiAton.
+  ///
+  /// In en, this message translates to:
+  /// **'Aid to navigation (AtoN)'**
+  String get mmsiAton;
+
+  /// No description provided for @mmsiSar.
+  ///
+  /// In en, this message translates to:
+  /// **'SAR unit'**
+  String get mmsiSar;
+
+  /// No description provided for @mmsiOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get mmsiOther;
+
+  /// No description provided for @speedValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get speedValue;
+
+  /// No description provided for @speedUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get speedUnit;
+
+  /// No description provided for @binaryInputLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NMEA sentence or raw 6-bit payload'**
+  String get binaryInputLabel;
+
+  /// No description provided for @binaryPayload.
+  ///
+  /// In en, this message translates to:
+  /// **'Payload'**
+  String get binaryPayload;
+
+  /// No description provided for @binaryBits.
+  ///
+  /// In en, this message translates to:
+  /// **'Bits'**
+  String get binaryBits;
+
+  /// No description provided for @binaryBinary.
+  ///
+  /// In en, this message translates to:
+  /// **'Binary'**
+  String get binaryBinary;
+
+  /// No description provided for @binaryHex.
+  ///
+  /// In en, this message translates to:
+  /// **'Hex'**
+  String get binaryHex;
+
+  /// No description provided for @binaryHexBytes.
+  ///
+  /// In en, this message translates to:
+  /// **'Hex bytes'**
+  String get binaryHexBytes;
+
+  /// No description provided for @binarySixBit.
+  ///
+  /// In en, this message translates to:
+  /// **'6-bit characters'**
+  String get binarySixBit;
+
+  /// No description provided for @etaDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get etaDistance;
+
+  /// No description provided for @etaUnitNm.
+  ///
+  /// In en, this message translates to:
+  /// **'nautical miles'**
+  String get etaUnitNm;
+
+  /// No description provided for @etaUnitKm.
+  ///
+  /// In en, this message translates to:
+  /// **'kilometres'**
+  String get etaUnitKm;
+
+  /// No description provided for @etaSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get etaSpeed;
+
+  /// No description provided for @etaDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get etaDuration;
+
+  /// No description provided for @etaEtaLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'ETA (local)'**
+  String get etaEtaLocal;
+
+  /// No description provided for @etaEtaUtc.
+  ///
+  /// In en, this message translates to:
+  /// **'ETA (UTC)'**
+  String get etaEtaUtc;
+
+  /// No description provided for @etaAisFields.
+  ///
+  /// In en, this message translates to:
+  /// **'AIS type-5 ETA fields'**
+  String get etaAisFields;
+
+  /// No description provided for @etaMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get etaMonth;
+
+  /// No description provided for @etaDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get etaDay;
+
+  /// No description provided for @etaHour.
+  ///
+  /// In en, this message translates to:
+  /// **'Hour'**
+  String get etaHour;
+
+  /// No description provided for @etaMinute.
+  ///
+  /// In en, this message translates to:
+  /// **'Minute'**
+  String get etaMinute;
+
+  /// No description provided for @etaCombined.
+  ///
+  /// In en, this message translates to:
+  /// **'MM/DD HH:MM'**
+  String get etaCombined;
+
+  /// No description provided for @radioHeight1.
+  ///
+  /// In en, this message translates to:
+  /// **'Antenna height 1'**
+  String get radioHeight1;
+
+  /// No description provided for @radioHeight2.
+  ///
+  /// In en, this message translates to:
+  /// **'Antenna height 2'**
+  String get radioHeight2;
+
+  /// No description provided for @radioHorizon.
+  ///
+  /// In en, this message translates to:
+  /// **'Radio horizon'**
+  String get radioHorizon;
+
+  /// No description provided for @radioHorizonKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Radio horizon (km)'**
+  String get radioHorizonKm;
+
+  /// No description provided for @radioFrequencies.
+  ///
+  /// In en, this message translates to:
+  /// **'AIS channels'**
+  String get radioFrequencies;
+
+  /// No description provided for @radioAis1.
+  ///
+  /// In en, this message translates to:
+  /// **'AIS 1'**
+  String get radioAis1;
+
+  /// No description provided for @radioAis2.
+  ///
+  /// In en, this message translates to:
+  /// **'AIS 2'**
+  String get radioAis2;
+
+  /// No description provided for @t2bInputLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type some text (AIS 6-bit alphabet)'**
+  String get t2bInputLabel;
+
+  /// No description provided for @t2bCharTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Character · value · 6-bit'**
+  String get t2bCharTable;
+
+  /// No description provided for @t2bBinary.
+  ///
+  /// In en, this message translates to:
+  /// **'Binary'**
+  String get t2bBinary;
+
+  /// No description provided for @t2bHex.
+  ///
+  /// In en, this message translates to:
+  /// **'Hex'**
+  String get t2bHex;
+
+  /// No description provided for @t2bBytes.
+  ///
+  /// In en, this message translates to:
+  /// **'Bytes (editor format)'**
+  String get t2bBytes;
+
+  /// No description provided for @t2bPayload.
+  ///
+  /// In en, this message translates to:
+  /// **'Armored payload'**
+  String get t2bPayload;
+
+  /// No description provided for @t2bNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The byte list can be pasted into the Editor\'s “Data bytes” field of a type 6/8/25/26 message; the armored payload is the exact NMEA payload field.'**
+  String get t2bNote;
+
+  /// No description provided for @editorAsmDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Application Specific Message — {name}'**
+  String editorAsmDetected(Object name);
+
+  /// No description provided for @editorAsmRawHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Fields of the matched ASM. The raw “Data bytes” field still overrides them when filled.'**
+  String get editorAsmRawHint;
+
   /// No description provided for @fMessageType.
   ///
   /// In en, this message translates to:
   /// **'Message type'**
   String get fMessageType;
+
+  /// No description provided for @editorAsmPreset.
+  ///
+  /// In en, this message translates to:
+  /// **'ASM preset'**
+  String get editorAsmPreset;
+
+  /// No description provided for @editorAsmPresetManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom — enter DAC/FID manually'**
+  String get editorAsmPresetManual;
+
+  /// No description provided for @editorDataSourceRaw.
+  ///
+  /// In en, this message translates to:
+  /// **'Data bytes'**
+  String get editorDataSourceRaw;
+
+  /// No description provided for @editorDataSourceAsm.
+  ///
+  /// In en, this message translates to:
+  /// **'ASM fields'**
+  String get editorDataSourceAsm;
+
+  /// No description provided for @asmStateInForce.
+  ///
+  /// In en, this message translates to:
+  /// **'in force'**
+  String get asmStateInForce;
+
+  /// No description provided for @asmStateDeprecated.
+  ///
+  /// In en, this message translates to:
+  /// **'deprecated'**
+  String get asmStateDeprecated;
+
+  /// No description provided for @asmStateReplaced.
+  ///
+  /// In en, this message translates to:
+  /// **'replaced'**
+  String get asmStateReplaced;
+
+  /// No description provided for @asmStateDiscontinued.
+  ///
+  /// In en, this message translates to:
+  /// **'discontinued'**
+  String get asmStateDiscontinued;
+
+  /// No description provided for @asmStateDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'draft'**
+  String get asmStateDraft;
+
+  /// No description provided for @asmStateProposal.
+  ///
+  /// In en, this message translates to:
+  /// **'proposal'**
+  String get asmStateProposal;
+
+  /// No description provided for @asmStateTesting.
+  ///
+  /// In en, this message translates to:
+  /// **'testing'**
+  String get asmStateTesting;
+
+  /// No description provided for @asmDeprecatedSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Deprecated since {note}'**
+  String asmDeprecatedSince(Object note);
+
+  /// No description provided for @asmLayoutUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'No bit layout is documented for {name} — edit the raw Data bytes.'**
+  String asmLayoutUnknown(Object name);
+
+  /// No description provided for @docChapterAsm.
+  ///
+  /// In en, this message translates to:
+  /// **'Application Specific Messages'**
+  String get docChapterAsm;
+
+  /// No description provided for @docAsmIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Not every AIS payload is a standard position report. Message types 6, 8, 25 and 26 carry application-specific binary data (an ASM) whose meaning is defined by two numbers: a Designated Area Code (DAC) and a Function Identifier (FID).'**
+  String get docAsmIntro;
+
+  /// No description provided for @docAsmWhatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What is an ASM?'**
+  String get docAsmWhatTitle;
+
+  /// No description provided for @docAsmWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'An Application Specific Message is a structured payload published by an organisation (IMO, IALA, national administrations, manufacturers) for a specific use: meteo and hydrographic data, aid-to-navigation monitoring, DGPS corrections, port services and more. Types 6/8 carry the DAC/FID header; 25/26 repeat the same DAC/FID layout inside the slot messages.'**
+  String get docAsmWhat;
+
+  /// No description provided for @docAsmDacFidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'DAC and FID'**
+  String get docAsmDacFidTitle;
+
+  /// No description provided for @docAsmDacFid1.
+  ///
+  /// In en, this message translates to:
+  /// **'The DAC is a 10-bit code identifying the issuing organisation or country (e.g. 001 = IMO, 002 = IALA). The FID is a 6-bit function code inside that DAC\'s namespace (e.g. 001/11 = IMO meteo & hydrographic data).'**
+  String get docAsmDacFid1;
+
+  /// No description provided for @docAsmDacFid2.
+  ///
+  /// In en, this message translates to:
+  /// **'The data bytes that follow the DAC/FID header are decoded according to the matching application standard. Different DAC/FID pairs can lay out the same bytes completely differently, so the pair must always be known first.'**
+  String get docAsmDacFid2;
+
+  /// No description provided for @docAsmWhereTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where to find the definitions'**
+  String get docAsmWhereTitle;
+
+  /// No description provided for @docAsmWhere1.
+  ///
+  /// In en, this message translates to:
+  /// **'IMO circulars and ITU-R M.1371 (Annexes) — the authoritative source for IMO DAC 001.'**
+  String get docAsmWhere1;
+
+  /// No description provided for @docAsmWhere2.
+  ///
+  /// In en, this message translates to:
+  /// **'IALA guidelines (e.g. G1139) and national administrations — for regional DACs.'**
+  String get docAsmWhere2;
+
+  /// No description provided for @docAsmWhere3.
+  ///
+  /// In en, this message translates to:
+  /// **'The gpsd AIVDM documentation — an open, machine-readable catalogue of the most common DAC/FID layouts.'**
+  String get docAsmWhere3;
+
+  /// No description provided for @docAsmInKikaisTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'In KikAis'**
+  String get docAsmInKikaisTitle;
+
+  /// No description provided for @docAsmInKikais.
+  ///
+  /// In en, this message translates to:
+  /// **'The Editor understands a curated set of well-known ASMs: when the DAC/FID of a 6/8/25/26 message matches one of them, the data field is shown as named sub-fields that are packed automatically. The raw “Data bytes” field always overrides the ASM when it is filled in. The list lives in asm_formats.dart and is easy to extend.'**
+  String get docAsmInKikais;
+
+  /// No description provided for @docAsmExampleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: IMO Meteo & Hydrographic (001/11)'**
+  String get docAsmExampleTitle;
+
+  /// No description provided for @docAsmExample.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the Editor to type 8, DAC=1 and FID=11 to build an IMO meteo message: wind, air and water temperature, pressure, visibility, currents and waves are then edited field by field instead of as a byte blob.'**
+  String get docAsmExample;
 
   /// No description provided for @fMmsi.
   ///
