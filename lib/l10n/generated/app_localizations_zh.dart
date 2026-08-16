@@ -213,6 +213,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get receptionBaudRate => '波特率';
 
   @override
+  String get receptionRtlSdr => 'RTL-SDR';
+
+  @override
+  String get receptionRtlSdrDevice => 'RTL-SDR 设备';
+
+  @override
+  String get tooltipReceptionRtlSdrDevices => '刷新 RTL-SDR 设备列表';
+
+  @override
+  String get receptionRtlSdrNoDevice =>
+      '未找到 RTL-SDR 设备。请安装 RTL-SDR 驱动（Windows 上使用 Zadig / WinUSB）并插入设备。';
+
+  @override
+  String get receptionRtlSdrAutoGain => '自动增益（推荐）';
+
+  @override
+  String get receptionRtlSdrGainDb => '调谐器增益（dB）';
+
+  @override
+  String get receptionRtlSdrSampleRate => '采样率';
+
+  @override
+  String get receptionRtlSdrChannels => '频道';
+
+  @override
   String get msgType1 => 'A 类位置报告';
 
   @override
@@ -1641,6 +1666,37 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String logSendError(Object error, Object name) {
     return '目标 $name 发送错误：$error';
+  }
+
+  @override
+  String logRtlSdrOpening(Object device) {
+    return '正在打开 RTL-SDR 加密狗 $device...';
+  }
+
+  @override
+  String logRtlSdrConnected(
+    Object channels,
+    Object device,
+    Object freq,
+    Object gain,
+    Object rate,
+  ) {
+    return 'RTL-SDR $device 已连接（$freq、采样率 $rate、增益 $gain、通道 $channels）。';
+  }
+
+  @override
+  String logRtlSdrError(Object device, Object error) {
+    return 'RTL-SDR $device：错误 $error';
+  }
+
+  @override
+  String logRtlSdrStreamClosed(Object device) {
+    return 'RTL-SDR $device 流已关闭。';
+  }
+
+  @override
+  String logRtlSdrDisconnected(Object device) {
+    return 'RTL-SDR $device 已断开。';
   }
 
   @override
@@ -3175,6 +3231,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tooltipMapSendToMap => '切换是否将解码后的船舶发送到地图。启用后，每艘解码的船舶都会显示为标记。';
 
   @override
+  String get tooltipMapClear => '清除地图上当前所有的船舶。';
+
+  @override
   String get tooltipMapBasemap => '选择地图底图。「自动」跟随当前主题。';
 
   @override
@@ -3358,4 +3417,47 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tooltipBrowse => '浏览选择文件。';
+
+  @override
+  String get tooltipFeedName => '在源列表中标识此来源的标签。';
+
+  @override
+  String get tooltipFeedHost => '传输 AIS 语句的服务器地址。';
+
+  @override
+  String get tooltipFeedPort => '用于连接服务器的 TCP 或 UDP 端口。';
+
+  @override
+  String get tooltipFeedHeader => '连接后、读取前发送的可选字节（例如 gpsd 请求）。';
+
+  @override
+  String get tooltipFeedFile => '包含已记录 NMEA 语句的文本文件路径。';
+
+  @override
+  String get tooltipFeedInterval => '播放文件时两个帧之间的延迟。';
+
+  @override
+  String get tooltipFeedLoop => '到达末尾时从头重新播放文件。';
+
+  @override
+  String get tooltipFeedSpeed => '播放速度倍率（1x = 实时）。';
+
+  @override
+  String get tooltipFeedSerialPort => 'AIS 接收器的串行端口（例如 COM3 或 /dev/ttyUSB0）。';
+
+  @override
+  String get tooltipFeedBaudRate => '与串行 AIS 接收器通信的波特率。';
+
+  @override
+  String get tooltipFeedRtlDevice => '用于在 VHF 接收 AIS 的 RTL-SDR 加密狗。';
+
+  @override
+  String get tooltipFeedRtlAutoGain => '让调谐器自动调节增益。建议大多数设置使用。';
+
+  @override
+  String get tooltipFeedRtlGain => '关闭自动增益时使用的固定调谐器增益（分贝）。';
+
+  @override
+  String get tooltipFeedRtlChannels =>
+      '要解码的 VHF AIS 信道：A（161.975 MHz）、B（162.025 MHz）或两者。';
 }

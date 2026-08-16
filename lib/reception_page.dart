@@ -19,6 +19,8 @@ import 'l10n_ext.dart';
 import 'labels.dart';
 import 'message_stats.dart';
 import 'port_input_formatter.dart';
+import 'sdr/rtlsdr_device.dart';
+import 'sdr/rtlsdr_feed_player.dart';
 import 'serial_feed_player.dart';
 import 'simulator_service.dart';
 import 'widgets.dart';
@@ -93,6 +95,9 @@ class ReceptionPageState extends State<ReceptionPage> {
   /// feed is enabled, kept alive so re-enabling reconnects instantly.
   final Map<String, SerialFeedPlayer> _serialPlayers = {};
 
+  /// Active RTL-SDR players, keyed by feed.key.
+  final Map<String, RtlSdrFeedPlayer> _rtlSdrPlayers = {};
+
   bool isRunning = false;
   bool _validateChecksum = true;
   late NmeaFormat _importFormat;
@@ -135,16 +140,7 @@ class ReceptionPageState extends State<ReceptionPage> {
           boatManager.processMessage(sentence, feed: name);
         }
       },
-      onStatus: (status) {
-        _pendingLogs.add(
-          LogEntry(
-            message: status.fallback,
-            status: status,
-            time: DateTime.now(),
-          ),
-        );
-        _logFlushTimer ??= Timer(_logFlushDelay, _flushLogs);
-      },
+      onStatus: _queueLog,
     );
     forwarderService.setTargets(settings.targets);
     forwarderService.importFormat = settings.nmeaImportFormat;
@@ -198,6 +194,19 @@ class ReceptionPageState extends State<ReceptionPage> {
     settings.save();
   }
 
+  /// Queues a structured status message for the next log flush (used by the
+  /// forwarder and the RTL-SDR feed player).
+  void _queueLog(LogMessage status) {
+    _pendingLogs.add(
+      LogEntry(
+        message: status.fallback,
+        status: status,
+        time: DateTime.now(),
+      ),
+    );
+    _logFlushTimer ??= Timer(_logFlushDelay, _flushLogs);
+  }
+
   void _flushLogs() {
     _logFlushTimer = null;
     if (_pendingLogs.isEmpty) return;
@@ -232,8 +241,10 @@ class ReceptionPageState extends State<ReceptionPage> {
           );
         } else if (feed.type == FeedType.file) {
           await _startFileFeed(feed);
-        } else {
+        } else if (feed.type == FeedType.serial) {
           await _startSerialFeed(feed);
+        } else {
+          await _startRtlSdrFeed(feed);
         }
       }
     }
@@ -252,6 +263,8 @@ class ReceptionPageState extends State<ReceptionPage> {
         _stopFileFeed(feed);
       } else if (feed.type == FeedType.serial) {
         _stopSerialFeed(feed);
+      } else if (feed.type == FeedType.rtlsdr) {
+        _stopRtlSdrFeed(feed);
       }
     }
     await forwarderService.stop();
@@ -352,6 +365,44 @@ class ReceptionPageState extends State<ReceptionPage> {
     forwarderService.removeFeedStatus(feed.displayName);
   }
 
+  /// Returns the existing player for an RTL-SDR feed or creates and wires one.
+  RtlSdrFeedPlayer _playerForRtlSdr(FeedDef feed) {
+    final existing = _rtlSdrPlayers[feed.key];
+    if (existing != null) return existing;
+
+    final player = RtlSdrFeedPlayer(
+      config: RtlSdrFeedConfig(
+        deviceIndex: feed.deviceIndex,
+        gainDb: feed.gainDb,
+        autoGain: feed.gainDb == null,
+        sampleRate: feed.sampleRate,
+        useChannel1: feed.useChannel1,
+        useChannel2: feed.useChannel2,
+      ),
+    );
+    player.onSentence = (nmea) =>
+        forwarderService.ingest(feed.displayName, feed.key, nmea);
+    player.onStatus = _queueLog;
+    player.addListener(() {
+      forwarderService.setFeedStatus(feed.displayName, player.status);
+    });
+    _rtlSdrPlayers[feed.key] = player;
+    return player;
+  }
+
+  /// Opens the dongle and starts streaming. On connect failure the feed is
+  /// left stopped with an error status.
+  Future<void> _startRtlSdrFeed(FeedDef feed) async {
+    final player = _playerForRtlSdr(feed);
+    await player.connect();
+    forwarderService.setFeedStatus(feed.displayName, player.status);
+  }
+
+  Future<void> _stopRtlSdrFeed(FeedDef feed) async {
+    await _rtlSdrPlayers[feed.key]?.disconnect();
+    forwarderService.removeFeedStatus(feed.displayName);
+  }
+
   void toggleFeed(FeedDef feed, bool value) async {
     setState(() => feedEnabled[feed.key] = value);
     settings.feedEnabled[feed.key] = value;
@@ -377,11 +428,17 @@ class ReceptionPageState extends State<ReceptionPage> {
       } else {
         _stopFileFeed(feed);
       }
-    } else {
+    } else if (feed.type == FeedType.serial) {
       if (value) {
         await _startSerialFeed(feed);
       } else {
         await _stopSerialFeed(feed);
+      }
+    } else {
+      if (value) {
+        await _startRtlSdrFeed(feed);
+      } else {
+        await _stopRtlSdrFeed(feed);
       }
     }
   }
@@ -411,8 +468,10 @@ class ReceptionPageState extends State<ReceptionPage> {
         );
       } else if (feed.type == FeedType.file) {
         await _startFileFeed(feed);
-      } else {
+      } else if (feed.type == FeedType.serial) {
         await _startSerialFeed(feed);
+      } else {
+        await _startRtlSdrFeed(feed);
       }
     }
   }
@@ -422,6 +481,8 @@ class ReceptionPageState extends State<ReceptionPage> {
       _stopFileFeed(feed);
     } else if (feed.type == FeedType.serial) {
       await _stopSerialFeed(feed);
+    } else if (feed.type == FeedType.rtlsdr) {
+      await _stopRtlSdrFeed(feed);
     } else if (isRunning) {
       await forwarderService.removeFeed(feed.displayName);
     }
@@ -433,6 +494,7 @@ class ReceptionPageState extends State<ReceptionPage> {
     _tilesEnabledCache.remove(feed.key);
     _filePlayers.remove(feed.key)?.dispose();
     _serialPlayers.remove(feed.key)?.dispose();
+    _rtlSdrPlayers.remove(feed.key)?.dispose();
     _syncFeedSettings();
   }
 
@@ -463,6 +525,9 @@ class ReceptionPageState extends State<ReceptionPage> {
   Widget feedIcon(FeedDef feed) {
     if (feed.type == FeedType.serial) {
       return const Icon(Icons.settings_ethernet, size: 30);
+    }
+    if (feed.type == FeedType.rtlsdr) {
+      return const Icon(Icons.settings_input_antenna, size: 30);
     }
     if (feed.type == FeedType.file) {
       return const Icon(Icons.description, size: 30);
@@ -579,6 +644,9 @@ class ReceptionPageState extends State<ReceptionPage> {
     for (final player in _serialPlayers.values) {
       player.dispose();
     }
+    for (final player in _rtlSdrPlayers.values) {
+      player.dispose();
+    }
     super.dispose();
   }
 
@@ -632,6 +700,9 @@ class ReceptionPageState extends State<ReceptionPage> {
     if (_serialFeedKeys.contains(entry.starter)) {
       return const Icon(Icons.settings_ethernet, size: 16);
     }
+    if (_rtlSdrFeedKeys.contains(entry.starter)) {
+      return const Icon(Icons.settings_input_antenna, size: 16);
+    }
     if (_fileFeedKeys.contains(entry.starter)) {
       return const Icon(Icons.description, size: 16);
     }
@@ -658,6 +729,12 @@ class ReceptionPageState extends State<ReceptionPage> {
   Set<String> get _serialFeedKeys => {
     for (final f in _allFeeds)
       if (f.type == FeedType.serial) f.key,
+  };
+
+  /// Keys of the RTL-SDR-type custom feeds, used to pick a log starter icon.
+  Set<String> get _rtlSdrFeedKeys => {
+    for (final f in _allFeeds)
+      if (f.type == FeedType.rtlsdr) f.key,
   };
 
   @override
@@ -1008,6 +1085,13 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
   final _serialPort = TextEditingController();
   int _baudRate = 38400;
   List<String> _serialPorts = [];
+  int _deviceIndex = 0;
+  List<RtlSdrDeviceInfo> _rtlSdrDevices = [];
+  int? _gainDb;
+  bool _autoGain = true;
+  final int _sampleRate = 1024000;
+  bool _useChannel1 = true;
+  bool _useChannel2 = true;
   bool _loop = true;
   bool _useTimestamps = false;
   int _speed = 1;
@@ -1029,6 +1113,17 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
   /// leaves the manual-entry field visible.
   void _refreshSerialPorts() {
     setState(() => _serialPorts = availableSerialPorts());
+  }
+
+  /// Refreshes the list of RTL-SDR dongles detected on the system. Empty when
+  /// the drivers are not installed.
+  void _refreshRtlSdrDevices() {
+    setState(() {
+      _rtlSdrDevices = listRtlSdrDevices();
+      if (_deviceIndex >= _rtlSdrDevices.length && _rtlSdrDevices.isNotEmpty) {
+        _deviceIndex = 0;
+      }
+    });
   }
 
   Future<void> _browse() async {
@@ -1069,6 +1164,19 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
         baudRate: _baudRate,
       );
     }
+    if (_type == FeedType.rtlsdr) {
+      if (_rtlSdrDevices.isEmpty) return null;
+      return FeedDef(
+        key: name,
+        displayName: name,
+        type: FeedType.rtlsdr,
+        deviceIndex: _deviceIndex,
+        gainDb: _autoGain ? null : _gainDb,
+        sampleRate: _sampleRate,
+        useChannel1: _useChannel1,
+        useChannel2: _useChannel2,
+      );
+    }
     final path = _path.text.trim();
     if (path.isEmpty) return null;
     final interval = (int.tryParse(_interval.text) ?? 1000)
@@ -1091,28 +1199,33 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
     return AlertDialog(
       title: Text(context.l10n.receptionAddSource),
       content: SizedBox(
-        width: 380,
+        width: 600,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SegmentedButton<FeedType>(
+                showSelectedIcon: false,
+                style: const ButtonStyle(
+                  visualDensity: VisualDensity.compact,
+                ),
                 segments: [
                   ButtonSegment(
                     value: FeedType.network,
                     label: Text(context.l10n.receptionNetwork),
-                    icon: const Icon(Icons.dns_outlined),
                   ),
                   ButtonSegment(
                     value: FeedType.file,
                     label: Text(context.l10n.receptionFile),
-                    icon: const Icon(Icons.description_outlined),
                   ),
                   ButtonSegment(
                     value: FeedType.serial,
                     label: Text(context.l10n.receptionSerial),
-                    icon: const Icon(Icons.settings_ethernet_outlined),
+                  ),
+                  ButtonSegment(
+                    value: FeedType.rtlsdr,
+                    label: Text(context.l10n.receptionRtlSdr),
                   ),
                 ],
                 selected: {_type},
@@ -1121,50 +1234,69 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                   if (s.first == FeedType.serial) {
                     _refreshSerialPorts();
                   }
+                  if (s.first == FeedType.rtlsdr) {
+                    _refreshRtlSdrDevices();
+                  }
                 },
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: _name,
-                decoration: InputDecoration(labelText: context.l10n.fieldName),
+              HoverTooltip(
+                message: context.l10n.tooltipFeedName,
+                child: TextField(
+                  controller: _name,
+                  decoration:
+                      InputDecoration(labelText: context.l10n.fieldName),
+                ),
               ),
               const SizedBox(height: 12),
               if (_type == FeedType.network) ...[
-                TextField(
-                  controller: _host,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.fieldHost,
+                HoverTooltip(
+                  message: context.l10n.tooltipFeedHost,
+                  child: TextField(
+                    controller: _host,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.fieldHost,
+                    ),
+                    inputFormatters: [HostInputFormatter()],
                   ),
-                  inputFormatters: [HostInputFormatter()],
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: _port,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.fieldPort,
+                HoverTooltip(
+                  message: context.l10n.tooltipFeedPort,
+                  child: TextField(
+                    controller: _port,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.fieldPort,
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      PortInputFormatter(),
+                    ],
                   ),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    PortInputFormatter(),
-                  ],
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: _header,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.receptionHeaderOptional,
+                HoverTooltip(
+                  message: context.l10n.tooltipFeedHeader,
+                  child: TextField(
+                    controller: _header,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.receptionHeaderOptional,
+                    ),
                   ),
                 ),
               ] else if (_type == FeedType.file) ...[
                 Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: _path,
-                        decoration: InputDecoration(
-                          labelText: context.l10n.fieldFile,
-                          hintText: context.l10n.receptionPathOrBrowse,
+                      child: HoverTooltip(
+                        message: context.l10n.tooltipFeedFile,
+                        child: TextField(
+                          controller: _path,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.fieldFile,
+                            hintText: context.l10n.receptionPathOrBrowse,
+                          ),
                         ),
                       ),
                     ),
@@ -1179,13 +1311,16 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: _interval,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.receptionIntervalMs,
+                HoverTooltip(
+                  message: context.l10n.tooltipFeedInterval,
+                  child: TextField(
+                    controller: _interval,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.receptionIntervalMs,
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
                 SwitchListTile(
                   dense: true,
@@ -1210,7 +1345,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                       ),
                       const Spacer(),
                       HoverTooltip(
-                        message: context.l10n.tooltipReceptionSpeed,
+                        message: context.l10n.tooltipFeedSpeed,
                         child: DropdownButton<int>(
                           value: _speed,
                           mouseCursor: WidgetStateMouseCursor.clickable,
@@ -1229,25 +1364,31 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                       ),
                     ],
                   ),
-                SwitchListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    context.l10n.receptionReplayLoop,
-                    style: const TextStyle(fontSize: 13),
+                HoverTooltip(
+                  message: context.l10n.tooltipFeedLoop,
+                  child: SwitchListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      context.l10n.receptionReplayLoop,
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                    value: _loop,
+                    onChanged: (v) => setState(() => _loop = v),
                   ),
-                  value: _loop,
-                  onChanged: (v) => setState(() => _loop = v),
                 ),
-              ] else ...[
+              ] else if (_type == FeedType.serial) ...[
                 Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: _serialPort,
-                        decoration: InputDecoration(
-                          labelText: context.l10n.receptionSerialPort,
-                          hintText: context.l10n.receptionSerialPortHint,
+                      child: HoverTooltip(
+                        message: context.l10n.tooltipFeedSerialPort,
+                        child: TextField(
+                          controller: _serialPort,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.receptionSerialPort,
+                            hintText: context.l10n.receptionSerialPortHint,
+                          ),
                         ),
                       ),
                     ),
@@ -1278,19 +1419,142 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                   ),
                 ],
                 const SizedBox(height: 12),
-                DropdownButtonFormField<int>(
-                  initialValue: _baudRate,
-                  mouseCursor: WidgetStateMouseCursor.clickable,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.receptionBaudRate,
+                HoverTooltip(
+                  message: context.l10n.tooltipFeedBaudRate,
+                  child: DropdownButtonFormField<int>(
+                    initialValue: _baudRate,
+                    mouseCursor: WidgetStateMouseCursor.clickable,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.receptionBaudRate,
+                    ),
+                    items: [
+                      for (final rate in kBaudRates)
+                        DropdownMenuItem(value: rate, child: Text('$rate')),
+                    ],
+                    onChanged: (v) {
+                      if (v != null) setState(() => _baudRate = v);
+                    },
                   ),
-                  items: [
-                    for (final rate in kBaudRates)
-                      DropdownMenuItem(value: rate, child: Text('$rate')),
+                ),
+              ] else ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: HoverTooltip(
+                        message: context.l10n.tooltipFeedRtlDevice,
+                        child: DropdownButtonFormField<int>(
+                          initialValue: _deviceIndex,
+                          mouseCursor: WidgetStateMouseCursor.clickable,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.receptionRtlSdrDevice,
+                          ),
+                          items: [
+                            for (final d in _rtlSdrDevices)
+                              DropdownMenuItem(
+                                value: d.index,
+                                child: Text(
+                                  d.label,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) setState(() => _deviceIndex = v);
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    HoverTooltip(
+                      message: context.l10n.tooltipReceptionRtlSdrDevices,
+                      child: IconButton(
+                        icon: const Icon(Icons.refresh),
+                        onPressed: _refreshRtlSdrDevices,
+                      ),
+                    ),
                   ],
-                  onChanged: (v) {
-                    if (v != null) setState(() => _baudRate = v);
-                  },
+                ),
+                if (_rtlSdrDevices.isEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    context.l10n.receptionRtlSdrNoDevice,
+                    style: const TextStyle(fontSize: 11, color: Colors.orange),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                HoverTooltip(
+                  message: context.l10n.tooltipFeedRtlAutoGain,
+                  child: SwitchListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      context.l10n.receptionRtlSdrAutoGain,
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                    value: _autoGain,
+                    onChanged: (v) => setState(() => _autoGain = v),
+                  ),
+                ),
+                if (!_autoGain)
+                  Row(
+                    children: [
+                      Text(
+                        context.l10n.receptionRtlSdrGainDb,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                      const Spacer(),
+                      HoverTooltip(
+                        message: context.l10n.tooltipFeedRtlGain,
+                        child: DropdownButton<int>(
+                          value: _gainDb ?? 30,
+                          mouseCursor: WidgetStateMouseCursor.clickable,
+                          isDense: true,
+                          underline: const SizedBox.shrink(),
+                          items: [
+                            for (var g = 0; g <= 49; g += 3)
+                              DropdownMenuItem(value: g, child: Text('$g dB')),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) setState(() => _gainDb = v);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Text(
+                      context.l10n.receptionRtlSdrChannels,
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                    const Spacer(),
+                    HoverTooltip(
+                      message: context.l10n.tooltipFeedRtlChannels,
+                      child: DropdownButton<String>(
+                        value: _useChannel1 && _useChannel2
+                            ? 'both'
+                            : (_useChannel1 ? 'A' : 'B'),
+                        mouseCursor: WidgetStateMouseCursor.clickable,
+                        isDense: true,
+                        underline: const SizedBox.shrink(),
+                        items: const [
+                          DropdownMenuItem(
+                              value: 'both', child: Text('A + B')),
+                          DropdownMenuItem(
+                              value: 'A', child: Text('A (161.975)')),
+                          DropdownMenuItem(
+                              value: 'B', child: Text('B (162.025)')),
+                        ],
+                        onChanged: (v) {
+                          setState(() {
+                            _useChannel1 = v != 'B';
+                            _useChannel2 = v != 'A';
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ],
@@ -1315,3 +1579,5 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
     );
   }
 }
+
+

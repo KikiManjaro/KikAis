@@ -217,6 +217,32 @@ class AppLocalizationsIt extends AppLocalizations {
   String get receptionBaudRate => 'Baud rate';
 
   @override
+  String get receptionRtlSdr => 'RTL-SDR';
+
+  @override
+  String get receptionRtlSdrDevice => 'Dispositivo RTL-SDR';
+
+  @override
+  String get tooltipReceptionRtlSdrDevices =>
+      'Aggiorna l\'elenco dei dongle RTL-SDR';
+
+  @override
+  String get receptionRtlSdrNoDevice =>
+      'Nessun dispositivo RTL-SDR trovato. Installa i driver RTL-SDR (Zadig / WinUSB su Windows) e collega il dongle.';
+
+  @override
+  String get receptionRtlSdrAutoGain => 'Guadagno automatico (consigliato)';
+
+  @override
+  String get receptionRtlSdrGainDb => 'Guadagno del tuner (dB)';
+
+  @override
+  String get receptionRtlSdrSampleRate => 'Frequenza di campionamento';
+
+  @override
+  String get receptionRtlSdrChannels => 'Canali';
+
+  @override
   String get msgType1 => 'Rapporto di posizione Classe A';
 
   @override
@@ -1654,6 +1680,37 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String logSendError(Object error, Object name) {
     return 'Target $name: errore di invio $error';
+  }
+
+  @override
+  String logRtlSdrOpening(Object device) {
+    return 'Apertura dongle RTL-SDR $device...';
+  }
+
+  @override
+  String logRtlSdrConnected(
+    Object channels,
+    Object device,
+    Object freq,
+    Object gain,
+    Object rate,
+  ) {
+    return 'RTL-SDR $device connesso ($freq, frequenza di campionamento $rate, guadagno $gain, canali $channels).';
+  }
+
+  @override
+  String logRtlSdrError(Object device, Object error) {
+    return 'RTL-SDR $device: errore $error';
+  }
+
+  @override
+  String logRtlSdrStreamClosed(Object device) {
+    return 'Flusso RTL-SDR $device chiuso.';
+  }
+
+  @override
+  String logRtlSdrDisconnected(Object device) {
+    return 'RTL-SDR $device disconnesso.';
   }
 
   @override
@@ -3284,6 +3341,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Attiva/disattiva l\'invio delle imbarcazioni decodificate alla mappa. Quando è attivo, ogni imbarcazione decodificata appare come marker.';
 
   @override
+  String get tooltipMapClear =>
+      'Rimuove tutte le imbarcazioni attualmente sulla mappa.';
+
+  @override
   String get tooltipMapBasemap =>
       'Scegliere lo sfondo della mappa. \"Auto\" segue il tema corrente.';
 
@@ -3519,4 +3580,60 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get tooltipBrowse => 'Sfoglia per scegliere un file.';
+
+  @override
+  String get tooltipFeedName =>
+      'Un\'etichetta che identifica questa sorgente nell\'elenco dei feed.';
+
+  @override
+  String get tooltipFeedHost =>
+      'Indirizzo del server che trasmette le frasi AIS.';
+
+  @override
+  String get tooltipFeedPort =>
+      'Porta TCP o UDP usata per raggiungere il server.';
+
+  @override
+  String get tooltipFeedHeader =>
+      'Byte opzionali inviati alla connessione, prima della lettura (es. una richiesta gpsd).';
+
+  @override
+  String get tooltipFeedFile =>
+      'Percorso di un file di testo con frasi NMEA registrate.';
+
+  @override
+  String get tooltipFeedInterval =>
+      'Ritardo tra due frame durante la riproduzione del file.';
+
+  @override
+  String get tooltipFeedLoop =>
+      'Riavvia la riproduzione del file dall\'inizio quando si raggiunge la fine.';
+
+  @override
+  String get tooltipFeedSpeed =>
+      'Moltiplicatore di velocità di riproduzione (1x = tempo reale).';
+
+  @override
+  String get tooltipFeedSerialPort =>
+      'Porta seriale del ricevitore AIS (es. COM3 o /dev/ttyUSB0).';
+
+  @override
+  String get tooltipFeedBaudRate =>
+      'Baud rate usato per comunicare con il ricevitore AIS seriale.';
+
+  @override
+  String get tooltipFeedRtlDevice =>
+      'Il dongle RTL-SDR usato per ricevere AIS in VHF.';
+
+  @override
+  String get tooltipFeedRtlAutoGain =>
+      'Lascia che il sintonizzatore regoli il guadagno automaticamente. Consigliato per la maggior parte.';
+
+  @override
+  String get tooltipFeedRtlGain =>
+      'Guadagno fisso del sintonizzatore in decibel, usato quando il guadagno automatico è disattivato.';
+
+  @override
+  String get tooltipFeedRtlChannels =>
+      'Quali canali VHF AIS decodificare: A (161,975 MHz), B (162,025 MHz) o entrambi.';
 }

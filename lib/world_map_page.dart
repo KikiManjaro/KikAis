@@ -115,6 +115,14 @@ class _WorldMapPageState extends State<WorldMapPage> {
     _settings.saveSendToMap(_boatManager.sendToMap);
   }
 
+  void _handleClearBoats() {
+    _boatManager.clearBoats();
+    setState(() {
+      _followingMmsi = null;
+      _selected = null;
+    });
+  }
+
   bool _matchesFilters(Boat boat) {
     final f = _filters;
     if (f.onlyNamed && (boat.name == null || boat.name!.isEmpty)) return false;
@@ -486,6 +494,13 @@ class _WorldMapPageState extends State<WorldMapPage> {
                     : Icons.hide_source_rounded,
               ),
               onPressed: toggleCompute,
+            ),
+          ),
+          HoverTooltip(
+            message: context.l10n.tooltipMapClear,
+            child: IconButton(
+              icon: const Icon(Icons.delete_sweep),
+              onPressed: _handleClearBoats,
             ),
           ),
           HoverTooltip(

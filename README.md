@@ -34,6 +34,7 @@ This architecture keeps data handling performant while maintaining a responsive,
 
 ### 📡 Reception
 - Built-in and user-defined **network feeds**, plus **file feeds** that replay a saved NMEA log as a live stream
+- **RTL-SDR** dongle reception (V3, V4 / V4L RTL-SDR Blog and generic RTL2832U clones): plug in a dongle, add an RTL-SDR source and receive live AIS on both VHF channels — demodulated in-app, no external program needed
 - Live **log console** with per-frame copy, save-to-file and clear
 - **Checksum validation** toggle with a live dropped-sentence counter
 - Per-feed **status dots** (grey / red / orange / green) with message counts
@@ -119,12 +120,26 @@ Grab the latest release from the [Releases page](https://github.com/KikiManjaro/
 3. Open the **Map** tab and toggle "Show decoded vessels" (top-right) to see the live fleet.
 4. Head to the **Send** tab to configure where the stream is forwarded.
 
+## 📻 Receiving with an RTL-SDR dongle
+
+KikAis can receive AIS directly from an RTL-SDR dongle (V3, V4 / V4L RTL-SDR Blog and generic RTL2832U clones) — the GMSK demodulation and AIS frame decoding run entirely inside the app, on the two VHF channels (AIS1 161.975 MHz / AIS2 162.025 MHz).
+
+1. **Install the Windows USB driver** (once). Plug in the dongle and install a WinUSB driver with [Zadig](https://zadig.akeo.ie/) — select **"Bulk-In, Interface (Interface 0)"** and check the USB ID shows `0BDA 2838`. On Linux, install the system `librtlsdr` package and its udev rules (`apt install librtlsdr-dev`), and blacklist the DVB-T driver (`dvb_usb_rtl28xxu`).
+2. The RTL-SDR Blog driver DLLs (`rtlsdr.dll` V4-compatible + companions) are bundled with the app, so V4 dongles work out of the box.
+3. In the **Reception** tab, click **+**, choose **RTL-SDR**, pick your dongle (auto gain is recommended) and the channels, then **Add**.
+4. Tick the source, press **Start**, and decoded vessels appear on the map / in the log. The Reception console also logs the dongle's lifecycle (opening, connected with frequency / sample rate / gain / channels, errors, stream closed, disconnected).
+
+An antenna tuned for the marine VHF band (with a proper ground) is required for usable range; the stock mini-whip works only for very close vessels.
+
+For developers, two helpers live under `tool/`: `sdr_probe.dart` (enumerate, stream and save raw IQ from a connected dongle) and `ais_replay.dart` (replay a saved `.cu8` capture or a real post-FM AIS audio recording through the production demodulator to validate the DSP chain without live traffic).
+
 ## 🏗️ Architecture
 
 AIS messages arrive continuously and need rapid updates to both the UI logs and the map markers. To keep the interface responsive:
 
 - The **BoatManager** holds the central vessel collection (`Map<int, Boat>`) and updates the relevant boat on every incoming message.
 - Message decoding is offloaded to a **dedicated isolate**, so the UI never blocks — even under heavy data load.
+- The **RTL-SDR** receive chain runs the GMSK/AIS demodulation in its own DSP isolate (`lib/sdr/`): a decimating channelizer, FM discriminator, burst detector, Viterbi decoder, HDLC framer and NMEA builder all in pure Dart, fed by librtlsdr over FFI.
 - The main window is a single view built around an **IndexedStack** inside `SwipperUi`, switched through a NavigationBar with **seven tabs** (Reception, Send, Map, Editor, Decoder, Stats, Simulation).
 - The map renders vessels through a custom canvas layer for smooth drawing of thousands of markers.
 
@@ -135,7 +150,7 @@ AIS messages arrive continuously and need rapid updates to both the UI logs and 
 - The app will sometimes not boot on Linux (tested on Raspberry Pi); retrying to boot a few times solves the issue
 - The map page could be laggy when receiving too much data
 - **Windows: micro-freezes / stalls on clicks and tab switches** (Skia renderer). Skia compiles shaders at runtime on first use, which stalls the GPU on interactions (button presses, feed checkboxes, tab switches). Measured via the VM timeline: ~27-70 ms frames on clicks and ~1.3 s stalls when a page mounts; `SkSL::Compiler::convertProgram` / `driver_link_program` / `cache_miss` events fire on every interaction. **Impeller** (precompiled shaders) removes them completely, but in Flutter 3.44 Impeller is opt-in on Windows and cannot be baked into a release build (no engine-switch API in the runner; the `FLUTTER_ENGINE_SWITCHES` env vars are ignored by release builds). For development, run with `flutter run --enable-impeller` (the IntelliJ run configuration already includes it). Release builds keep a first-use stall until Impeller becomes the Windows default.
-- **Windows: Tooltip widgets removed** to avoid a Flutter engine crash. `ListView` + `Tooltip` combinations desynchronize the Windows accessibility (`ui::AXTree`) bridge (flutter/flutter#182444), eventually crashing the process with an access violation in `flutter_windows.dll`. The app's tooltips were removed as a workaround; the fix is tracked upstream (flutter/flutter PR #190344). This is why "make tooltips work" is in the roadmap below.
+- **Windows: stock `Tooltip` widgets avoided due to a Flutter engine crash.** `ListView` + `Tooltip` combinations desynchronize the Windows accessibility (`ui::AXTree`) bridge (flutter/flutter#182444), eventually crashing the process with an access violation in `flutter_windows.dll`. As a workaround the app uses its own `HoverTooltip` widget (`lib/widgets.dart`) — an `OverlayEntry` driven by a `MouseRegion` that never touches the broken engine code path — so hover tooltips work everywhere (including the "add source" popup). The upstream fix is tracked at flutter/flutter PR #190344.
 - **Windows: `auto_updater` logs a "non-platform thread" warning** (`dev.leanflutter.plugins/auto_updater_event`). A known limitation of the `auto_updater` plugin (1.0.0, leanflutter/auto_updater#68): WinSparkle callbacks fire on a background thread. Confirmed by A/B testing that this is **not** the cause of the previous self-close crashes; it is a benign log warning for now.
 
 #### Debugging notes (what was investigated and tried)
@@ -145,19 +160,23 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - **Self-close crashes** (Windows): root cause was the accessibility/Tooltip engine bug above. `auto_updater` was ruled out (reproduced the crash with it disabled), as were the per-frame feed-status rebuilds.
 - **Click / tab-switch micro-freezes**: root cause is Skia shader compilation (see above). Impeller fixes it in dev builds.
 - The following performance experiments were tried and later **reverted** because they did not resolve the perceived micro-freezes: throttling feed-status notifications, debouncing `AppSettings.save()`, gating the reception status timer on the forwarder state, gating `MessageStats` notifications on counter changes, lazy-mounting the `IndexedStack` pages + `TickerMode`, narrowing the simulation page's `ListenableBuilder`, and scoping the feed-card rebuilds to per-tile status dots.
-- Kept fixes: Tooltip removal + `InkRipple.splashFactory` (avoid the `ink_sparkle` shader that also failed in tests) to prevent the crashes, and deferring `BoatManager` settings sync to the first post-frame (avoids the "setState() during build" assertion at startup).
+- Kept fixes: replacing the stock `Tooltip` with the custom `HoverTooltip` + `InkRipple.splashFactory` (avoid the `ink_sparkle` shader that also failed in tests) to prevent the crashes, and deferring `BoatManager` settings sync to the first post-frame (avoids the "setState() during build" assertion at startup).
 
 ### Improvements
 
+#### Done
+- **In-app RTL-SDR reception** (replaces the "research other AIS input ways" item): a pure-Dart GMSK/AIS demodulator (`lib/sdr/dsp/`) plus librtlsdr FFI run the whole receive chain inside the app — no external program needed. Validated end-to-end on **real-world AIS recordings** (Helsinki, Long Beach; decoded dozens of valid AIVDM sentences) and on a **physical dongle** (Generic RTL2832U): enumeration, 1.024 MHz IQ streaming, spectrum analysis (DC spike rejection), and zero false positives on noise.
+- **Add-source popup tooltips** (see the HoverTooltip workaround above).
+- **RTL-SDR lifecycle logs** in the Reception console (opening / connected with frequency, sample rate, gain and channels / errors / stream closed / disconnected), matching the network feeds.
+- **"Clear the map" button** (remove all vessels) — available on the map page toolbar.
+
+#### Backlog
 - Logs processing for NMEA sentences and connection state are in the same pipeline causing some issues between them since there is only one processor — this should be reworked
 - Add the ability to filter what is forwarded (by message type, geographic zone, vessel, etc.)
-- Support for NMEA 4.0
 - Improve compatibility with other platforms (macOS, iOS and Android)
 - Make verification for memory leaks and performances
-- Find a way to make tooltips works
-- Add support for rtl-sdr antenna (including rtlsdrblog and others cf. https://github.com/rtlsdrblog/rtl-sdr-blog/releases)
-- Make some research on other way to provide ais input
-- faire une boucle de test avec aidecoder ou autre (pyais etc)
+- Continuous replay validation of real AIS recordings (extend `tool/ais_replay.dart`) as a regression harness for the DSP chain
+- Test created ais sentences with external tool such as ais-decoder
 
 ## 🤝 Contributing
 
@@ -166,6 +185,7 @@ Contributions are welcome! Feel free to open an [issue](https://github.com/KikiM
 ## ☕ Support
 
 If you like KikAis and want to support its development, you can buy me a coffee:
+
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black&style=for-the-badge)](https://www.buymeacoffee.com/kikimanjaro)
 

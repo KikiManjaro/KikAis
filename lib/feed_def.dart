@@ -1,4 +1,4 @@
-enum FeedType { network, file, serial }
+enum FeedType { network, file, serial, rtlsdr }
 
 class FeedDef {
   final String key;
@@ -27,6 +27,13 @@ class FeedDef {
   final String? serialPort;
   final int baudRate;
 
+  /// RTL-SDR source details.
+  final int deviceIndex;
+  final int? gainDb;
+  final int sampleRate;
+  final bool useChannel1;
+  final bool useChannel2;
+
   final String? tooltip;
   final bool builtIn;
 
@@ -44,6 +51,11 @@ class FeedDef {
     this.speed = 1,
     this.serialPort,
     this.baudRate = 38400,
+    this.deviceIndex = 0,
+    this.gainDb,
+    this.sampleRate = 1024000,
+    this.useChannel1 = true,
+    this.useChannel2 = true,
     this.tooltip,
     this.builtIn = false,
   });
@@ -62,6 +74,11 @@ class FeedDef {
         'speed': speed,
         'serialPort': serialPort,
         'baudRate': baudRate,
+        'deviceIndex': deviceIndex,
+        'gainDb': gainDb,
+        'sampleRate': sampleRate,
+        'useChannel1': useChannel1,
+        'useChannel2': useChannel2,
         'tooltip': tooltip,
       };
 
@@ -84,6 +101,11 @@ class FeedDef {
         speed: json['speed'] as int? ?? 1,
         serialPort: json['serialPort'] as String?,
         baudRate: json['baudRate'] as int? ?? 38400,
+        deviceIndex: json['deviceIndex'] as int? ?? 0,
+        gainDb: json['gainDb'] as int?,
+        sampleRate: json['sampleRate'] as int? ?? 1024000,
+        useChannel1: json['useChannel1'] as bool? ?? true,
+        useChannel2: json['useChannel2'] as bool? ?? true,
         tooltip: json['tooltip'] as String?,
       );
 }

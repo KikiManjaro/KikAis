@@ -216,6 +216,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get receptionBaudRate => 'Baud rate';
 
   @override
+  String get receptionRtlSdr => 'RTL-SDR';
+
+  @override
+  String get receptionRtlSdrDevice => 'RTL-SDR device';
+
+  @override
+  String get tooltipReceptionRtlSdrDevices =>
+      'Refresh the list of RTL-SDR dongles';
+
+  @override
+  String get receptionRtlSdrNoDevice =>
+      'No RTL-SDR device found. Install the RTL-SDR drivers (Zadig / WinUSB on Windows) and plug in the dongle.';
+
+  @override
+  String get receptionRtlSdrAutoGain => 'Automatic gain (recommended)';
+
+  @override
+  String get receptionRtlSdrGainDb => 'Tuner gain (dB)';
+
+  @override
+  String get receptionRtlSdrSampleRate => 'Sample rate';
+
+  @override
+  String get receptionRtlSdrChannels => 'Channels';
+
+  @override
   String get msgType1 => 'Position Report Class A';
 
   @override
@@ -1652,6 +1678,37 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String logSendError(Object error, Object name) {
     return 'Target $name send error: $error';
+  }
+
+  @override
+  String logRtlSdrOpening(Object device) {
+    return 'Opening RTL-SDR dongle $device...';
+  }
+
+  @override
+  String logRtlSdrConnected(
+    Object channels,
+    Object device,
+    Object freq,
+    Object gain,
+    Object rate,
+  ) {
+    return 'RTL-SDR $device connected ($freq, $rate sample rate, $gain gain, channels $channels).';
+  }
+
+  @override
+  String logRtlSdrError(Object device, Object error) {
+    return 'RTL-SDR $device error: $error';
+  }
+
+  @override
+  String logRtlSdrStreamClosed(Object device) {
+    return 'RTL-SDR $device stream closed.';
+  }
+
+  @override
+  String logRtlSdrDisconnected(Object device) {
+    return 'RTL-SDR $device disconnected.';
   }
 
   @override
@@ -3272,6 +3329,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enables or disables sending decoded vessels to the map. When enabled, every decoded vessel appears as a marker.';
 
   @override
+  String get tooltipMapClear => 'Clears all vessels currently on the map.';
+
+  @override
   String get tooltipMapBasemap =>
       'Defines the map background. \"Auto\" follows the current theme.';
 
@@ -3500,4 +3560,59 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tooltipBrowse => 'Opens a file browser to choose a file.';
+
+  @override
+  String get tooltipFeedName =>
+      'A label identifying this source in the feeds list.';
+
+  @override
+  String get tooltipFeedHost =>
+      'The server address that streams AIS sentences.';
+
+  @override
+  String get tooltipFeedPort => 'The TCP or UDP port used to reach the server.';
+
+  @override
+  String get tooltipFeedHeader =>
+      'Optional bytes sent on connect, before reading (e.g. a gpsd request).';
+
+  @override
+  String get tooltipFeedFile =>
+      'Path to a text file of recorded NMEA sentences.';
+
+  @override
+  String get tooltipFeedInterval =>
+      'Delay between two frames when replaying the file.';
+
+  @override
+  String get tooltipFeedLoop =>
+      'Restarts the file replay from the beginning when the end is reached.';
+
+  @override
+  String get tooltipFeedSpeed =>
+      'Defines the replay speed multiplier (1x = real time).';
+
+  @override
+  String get tooltipFeedSerialPort =>
+      'The serial port of the AIS receiver (e.g. COM3 or /dev/ttyUSB0).';
+
+  @override
+  String get tooltipFeedBaudRate =>
+      'Baud rate used to talk to the serial AIS receiver.';
+
+  @override
+  String get tooltipFeedRtlDevice =>
+      'The RTL-SDR dongle used to receive AIS on VHF.';
+
+  @override
+  String get tooltipFeedRtlAutoGain =>
+      'Lets the tuner adjust its gain automatically. Recommended for most setups.';
+
+  @override
+  String get tooltipFeedRtlGain =>
+      'Fixed tuner gain in decibels, used when automatic gain is off.';
+
+  @override
+  String get tooltipFeedRtlChannels =>
+      'Which VHF AIS channels to decode: A (161.975 MHz), B (162.025 MHz) or both.';
 }

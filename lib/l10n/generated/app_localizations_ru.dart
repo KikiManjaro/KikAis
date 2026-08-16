@@ -219,6 +219,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String get receptionBaudRate => 'Скорость передачи (бод)';
 
   @override
+  String get receptionRtlSdr => 'RTL-SDR';
+
+  @override
+  String get receptionRtlSdrDevice => 'Устройство RTL-SDR';
+
+  @override
+  String get tooltipReceptionRtlSdrDevices => 'Обновить список тюнеров RTL-SDR';
+
+  @override
+  String get receptionRtlSdrNoDevice =>
+      'Устройство RTL-SDR не найдено. Установите драйверы RTL-SDR (Zadig / WinUSB на Windows) и подключите тюнер.';
+
+  @override
+  String get receptionRtlSdrAutoGain =>
+      'Автоматическое усиление (рекомендуется)';
+
+  @override
+  String get receptionRtlSdrGainDb => 'Усиление тюнера (дБ)';
+
+  @override
+  String get receptionRtlSdrSampleRate => 'Частота дискретизации';
+
+  @override
+  String get receptionRtlSdrChannels => 'Каналы';
+
+  @override
   String get msgType1 => 'Сообщение о местоположении, класс A';
 
   @override
@@ -1659,6 +1685,37 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String logSendError(Object error, Object name) {
     return 'Назначение $name: ошибка отправки $error';
+  }
+
+  @override
+  String logRtlSdrOpening(Object device) {
+    return 'Открытие RTL-SDR-приёмника $device...';
+  }
+
+  @override
+  String logRtlSdrConnected(
+    Object channels,
+    Object device,
+    Object freq,
+    Object gain,
+    Object rate,
+  ) {
+    return 'RTL-SDR $device подключён ($freq, частота дискретизации $rate, усиление $gain, каналы $channels).';
+  }
+
+  @override
+  String logRtlSdrError(Object device, Object error) {
+    return 'RTL-SDR $device: ошибка $error';
+  }
+
+  @override
+  String logRtlSdrStreamClosed(Object device) {
+    return 'Поток RTL-SDR $device закрыт.';
+  }
+
+  @override
+  String logRtlSdrDisconnected(Object device) {
+    return 'RTL-SDR $device отключён.';
   }
 
   @override
@@ -3287,6 +3344,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Переключить отправку декодированных судов на карту. Когда включено, каждое декодированное судно отображается маркером.';
 
   @override
+  String get tooltipMapClear =>
+      'Удаляет все суда, находящиеся в данный момент на карте.';
+
+  @override
   String get tooltipMapBasemap =>
       'Выбрать подложку карты. «Авто» следует текущей теме.';
 
@@ -3512,4 +3573,58 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get tooltipBrowse => 'Выбрать файл.';
+
+  @override
+  String get tooltipFeedName =>
+      'Метка, идентифицирующая этот источник в списке каналов.';
+
+  @override
+  String get tooltipFeedHost => 'Адрес сервера, передающего AIS-предложения.';
+
+  @override
+  String get tooltipFeedPort => 'Порт TCP или UDP для подключения к серверу.';
+
+  @override
+  String get tooltipFeedHeader =>
+      'Необязательные байты, отправляемые при подключении перед чтением (например, запрос gpsd).';
+
+  @override
+  String get tooltipFeedFile =>
+      'Путь к текстовому файлу с записанными NMEA-предложениями.';
+
+  @override
+  String get tooltipFeedInterval =>
+      'Задержка между двумя кадрами при воспроизведении файла.';
+
+  @override
+  String get tooltipFeedLoop =>
+      'Начинает воспроизведение файла заново при достижении конца.';
+
+  @override
+  String get tooltipFeedSpeed =>
+      'Множитель скорости воспроизведения (1x = реальное время).';
+
+  @override
+  String get tooltipFeedSerialPort =>
+      'Последовательный порт AIS-приёмника (например, COM3 или /dev/ttyUSB0).';
+
+  @override
+  String get tooltipFeedBaudRate =>
+      'Скорость в бодах для связи с последовательным AIS-приёмником.';
+
+  @override
+  String get tooltipFeedRtlDevice =>
+      'RTL-SDR-приёмник, используемый для приёма AIS на УКВ.';
+
+  @override
+  String get tooltipFeedRtlAutoGain =>
+      'Позволяет тюнеру автоматически регулировать усиление. Рекомендуется для большинства настроек.';
+
+  @override
+  String get tooltipFeedRtlGain =>
+      'Фиксированное усиление тюнера в децибелах, используемое при выключенном автоматическом усилении.';
+
+  @override
+  String get tooltipFeedRtlChannels =>
+      'Какие УКВ AIS-каналы декодировать: A (161,975 МГц), B (162,025 МГц) или оба.';
 }

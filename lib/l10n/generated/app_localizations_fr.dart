@@ -218,6 +218,32 @@ class AppLocalizationsFr extends AppLocalizations {
   String get receptionBaudRate => 'Débit en bauds';
 
   @override
+  String get receptionRtlSdr => 'RTL-SDR';
+
+  @override
+  String get receptionRtlSdrDevice => 'Périphérique RTL-SDR';
+
+  @override
+  String get tooltipReceptionRtlSdrDevices =>
+      'Actualiser la liste des dongles RTL-SDR';
+
+  @override
+  String get receptionRtlSdrNoDevice =>
+      'Aucun périphérique RTL-SDR trouvé. Installez les pilotes RTL-SDR (Zadig / WinUSB sur Windows) et branchez le dongle.';
+
+  @override
+  String get receptionRtlSdrAutoGain => 'Gain automatique (recommandé)';
+
+  @override
+  String get receptionRtlSdrGainDb => 'Gain du tuner (dB)';
+
+  @override
+  String get receptionRtlSdrSampleRate => 'Fréquence d\'échantillonnage';
+
+  @override
+  String get receptionRtlSdrChannels => 'Canaux';
+
+  @override
   String get msgType1 => 'Compte-rendu de position Classe A';
 
   @override
@@ -1655,6 +1681,37 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String logSendError(Object error, Object name) {
     return 'Erreur d\'envoi à la cible $name : $error';
+  }
+
+  @override
+  String logRtlSdrOpening(Object device) {
+    return 'Ouverture du dongle RTL-SDR $device...';
+  }
+
+  @override
+  String logRtlSdrConnected(
+    Object channels,
+    Object device,
+    Object freq,
+    Object gain,
+    Object rate,
+  ) {
+    return 'RTL-SDR $device connecté ($freq, débit $rate, gain $gain, canaux $channels).';
+  }
+
+  @override
+  String logRtlSdrError(Object device, Object error) {
+    return 'RTL-SDR $device : erreur $error';
+  }
+
+  @override
+  String logRtlSdrStreamClosed(Object device) {
+    return 'Flux RTL-SDR $device fermé.';
+  }
+
+  @override
+  String logRtlSdrDisconnected(Object device) {
+    return 'RTL-SDR $device déconnecté.';
   }
 
   @override
@@ -3290,6 +3347,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Active ou désactive l\'envoi des navires décodés sur la carte. Lorsqu\'il est activé, chaque navire décodé apparaît comme un marqueur.';
 
   @override
+  String get tooltipMapClear =>
+      'Supprime tous les navires actuellement sur la carte.';
+
+  @override
   String get tooltipMapBasemap =>
       'Définit le fond de carte. « Auto » suit le thème actuel.';
 
@@ -3521,4 +3582,60 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get tooltipBrowse =>
       'Ouvre l\'explorateur de fichiers pour choisir un fichier.';
+
+  @override
+  String get tooltipFeedName =>
+      'Une étiquette identifiant cette source dans la liste des flux.';
+
+  @override
+  String get tooltipFeedHost =>
+      'Adresse du serveur qui diffuse les trames AIS.';
+
+  @override
+  String get tooltipFeedPort =>
+      'Port TCP ou UDP utilisé pour joindre le serveur.';
+
+  @override
+  String get tooltipFeedHeader =>
+      'Octets facultatifs envoyés à la connexion, avant la lecture (p. ex. une requête gpsd).';
+
+  @override
+  String get tooltipFeedFile =>
+      'Chemin vers un fichier texte de trames NMEA enregistrées.';
+
+  @override
+  String get tooltipFeedInterval =>
+      'Délai entre deux trames lors de la lecture du fichier.';
+
+  @override
+  String get tooltipFeedLoop =>
+      'Reprend la lecture du fichier depuis le début quand la fin est atteinte.';
+
+  @override
+  String get tooltipFeedSpeed =>
+      'Multiplicateur de vitesse de lecture (1x = temps réel).';
+
+  @override
+  String get tooltipFeedSerialPort =>
+      'Port série du récepteur AIS (p. ex. COM3 ou /dev/ttyUSB0).';
+
+  @override
+  String get tooltipFeedBaudRate =>
+      'Débit en bauds utilisé pour parler au récepteur AIS série.';
+
+  @override
+  String get tooltipFeedRtlDevice =>
+      'Le dongle RTL-SDR utilisé pour recevoir l\'AIS en VHF.';
+
+  @override
+  String get tooltipFeedRtlAutoGain =>
+      'Laisse le tuner ajuster son gain automatiquement. Recommandé pour la plupart des installations.';
+
+  @override
+  String get tooltipFeedRtlGain =>
+      'Gain fixe du tuner en décibels, utilisé lorsque le gain automatique est désactivé.';
+
+  @override
+  String get tooltipFeedRtlChannels =>
+      'Quels canaux VHF AIS décoder : A (161,975 MHz), B (162,025 MHz) ou les deux.';
 }

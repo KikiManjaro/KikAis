@@ -38,3 +38,21 @@ target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)
+
+# Bundle the RTL-SDR Blog drivers (the V4-compatible rtlsdr.dll + the DLLs it
+# depends on) next to the executable, so the app can talk to the dongle out of
+# the box. The files are fetched by scripts/fetch_rtlsdr_drivers.ps1 from the
+# official rtlsdr-blog release; when they are absent (e.g. a bare CI checkout)
+# the build still succeeds and the app simply reports that no RTL-SDR is
+# available.
+set(RTLSDR_BLOG_DIR "${CMAKE_SOURCE_DIR}/../resources/rtlsdr/windows")
+foreach(rtlsdr_dll IN ITEMS rtlsdr.dll pthreadVC2.dll msvcr100.dll)
+  if(EXISTS "${RTLSDR_BLOG_DIR}/${rtlsdr_dll}")
+    add_custom_command(TARGET ${BINARY_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${RTLSDR_BLOG_DIR}/${rtlsdr_dll}"
+        "$<TARGET_FILE_DIR:${BINARY_NAME}>/${rtlsdr_dll}"
+      COMMENT "Bundling ${rtlsdr_dll}"
+    )
+  endif()
+endforeach()

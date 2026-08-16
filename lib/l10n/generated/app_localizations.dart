@@ -504,6 +504,54 @@ abstract class AppLocalizations {
   /// **'Baud rate'**
   String get receptionBaudRate;
 
+  /// No description provided for @receptionRtlSdr.
+  ///
+  /// In en, this message translates to:
+  /// **'RTL-SDR'**
+  String get receptionRtlSdr;
+
+  /// No description provided for @receptionRtlSdrDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'RTL-SDR device'**
+  String get receptionRtlSdrDevice;
+
+  /// No description provided for @tooltipReceptionRtlSdrDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh the list of RTL-SDR dongles'**
+  String get tooltipReceptionRtlSdrDevices;
+
+  /// No description provided for @receptionRtlSdrNoDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'No RTL-SDR device found. Install the RTL-SDR drivers (Zadig / WinUSB on Windows) and plug in the dongle.'**
+  String get receptionRtlSdrNoDevice;
+
+  /// No description provided for @receptionRtlSdrAutoGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic gain (recommended)'**
+  String get receptionRtlSdrAutoGain;
+
+  /// No description provided for @receptionRtlSdrGainDb.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuner gain (dB)'**
+  String get receptionRtlSdrGainDb;
+
+  /// No description provided for @receptionRtlSdrSampleRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample rate'**
+  String get receptionRtlSdrSampleRate;
+
+  /// No description provided for @receptionRtlSdrChannels.
+  ///
+  /// In en, this message translates to:
+  /// **'Channels'**
+  String get receptionRtlSdrChannels;
+
   /// No description provided for @msgType1.
   ///
   /// In en, this message translates to:
@@ -3201,6 +3249,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Target {name} send error: {error}'**
   String logSendError(Object error, Object name);
+
+  /// No description provided for @logRtlSdrOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening RTL-SDR dongle {device}...'**
+  String logRtlSdrOpening(Object device);
+
+  /// No description provided for @logRtlSdrConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'RTL-SDR {device} connected ({freq}, {rate} sample rate, {gain} gain, channels {channels}).'**
+  String logRtlSdrConnected(
+    Object channels,
+    Object device,
+    Object freq,
+    Object gain,
+    Object rate,
+  );
+
+  /// No description provided for @logRtlSdrError.
+  ///
+  /// In en, this message translates to:
+  /// **'RTL-SDR {device} error: {error}'**
+  String logRtlSdrError(Object device, Object error);
+
+  /// No description provided for @logRtlSdrStreamClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'RTL-SDR {device} stream closed.'**
+  String logRtlSdrStreamClosed(Object device);
+
+  /// No description provided for @logRtlSdrDisconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'RTL-SDR {device} disconnected.'**
+  String logRtlSdrDisconnected(Object device);
 
   /// No description provided for @docNavStatus0.
   ///
@@ -6082,6 +6166,12 @@ abstract class AppLocalizations {
   /// **'Enables or disables sending decoded vessels to the map. When enabled, every decoded vessel appears as a marker.'**
   String get tooltipMapSendToMap;
 
+  /// No description provided for @tooltipMapClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clears all vessels currently on the map.'**
+  String get tooltipMapClear;
+
   /// No description provided for @tooltipMapBasemap.
   ///
   /// In en, this message translates to:
@@ -6447,6 +6537,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Opens a file browser to choose a file.'**
   String get tooltipBrowse;
+
+  /// No description provided for @tooltipFeedName.
+  ///
+  /// In en, this message translates to:
+  /// **'A label identifying this source in the feeds list.'**
+  String get tooltipFeedName;
+
+  /// No description provided for @tooltipFeedHost.
+  ///
+  /// In en, this message translates to:
+  /// **'The server address that streams AIS sentences.'**
+  String get tooltipFeedHost;
+
+  /// No description provided for @tooltipFeedPort.
+  ///
+  /// In en, this message translates to:
+  /// **'The TCP or UDP port used to reach the server.'**
+  String get tooltipFeedPort;
+
+  /// No description provided for @tooltipFeedHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional bytes sent on connect, before reading (e.g. a gpsd request).'**
+  String get tooltipFeedHeader;
+
+  /// No description provided for @tooltipFeedFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Path to a text file of recorded NMEA sentences.'**
+  String get tooltipFeedFile;
+
+  /// No description provided for @tooltipFeedInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay between two frames when replaying the file.'**
+  String get tooltipFeedInterval;
+
+  /// No description provided for @tooltipFeedLoop.
+  ///
+  /// In en, this message translates to:
+  /// **'Restarts the file replay from the beginning when the end is reached.'**
+  String get tooltipFeedLoop;
+
+  /// No description provided for @tooltipFeedSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Defines the replay speed multiplier (1x = real time).'**
+  String get tooltipFeedSpeed;
+
+  /// No description provided for @tooltipFeedSerialPort.
+  ///
+  /// In en, this message translates to:
+  /// **'The serial port of the AIS receiver (e.g. COM3 or /dev/ttyUSB0).'**
+  String get tooltipFeedSerialPort;
+
+  /// No description provided for @tooltipFeedBaudRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Baud rate used to talk to the serial AIS receiver.'**
+  String get tooltipFeedBaudRate;
+
+  /// No description provided for @tooltipFeedRtlDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'The RTL-SDR dongle used to receive AIS on VHF.'**
+  String get tooltipFeedRtlDevice;
+
+  /// No description provided for @tooltipFeedRtlAutoGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Lets the tuner adjust its gain automatically. Recommended for most setups.'**
+  String get tooltipFeedRtlAutoGain;
+
+  /// No description provided for @tooltipFeedRtlGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed tuner gain in decibels, used when automatic gain is off.'**
+  String get tooltipFeedRtlGain;
+
+  /// No description provided for @tooltipFeedRtlChannels.
+  ///
+  /// In en, this message translates to:
+  /// **'Which VHF AIS channels to decode: A (161.975 MHz), B (162.025 MHz) or both.'**
+  String get tooltipFeedRtlChannels;
 }
 
 class _AppLocalizationsDelegate

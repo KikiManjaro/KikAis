@@ -67,6 +67,14 @@ class BoatManager extends ChangeNotifier {
     super.dispose();
   }
 
+  /// Removes every tracked vessel. New AIS messages will repopulate the map.
+  void clearBoats() {
+    if (_boats.isEmpty) return;
+    _boats.clear();
+    boatsVersion++;
+    notifyListeners();
+  }
+
   void setSendToMap(bool value) {
     if (sendToMap == value) return;
     sendToMap = value;

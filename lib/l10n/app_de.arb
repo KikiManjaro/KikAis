@@ -73,6 +73,14 @@
   "receptionSerialPort": "Serielle Schnittstelle",
   "receptionSerialPortHint": "z. B. COM3 oder /dev/ttyUSB0",
   "receptionBaudRate": "Baudrate",
+  "receptionRtlSdrChannels": "Kanäle",
+  "receptionRtlSdrSampleRate": "Abtastrate",
+  "receptionRtlSdrGainDb": "Tuner-Verstärkung (dB)",
+  "receptionRtlSdrAutoGain": "Automatische Verstärkung (empfohlen)",
+  "receptionRtlSdrNoDevice": "Kein RTL-SDR-Gerät gefunden. Installieren Sie die RTL-SDR-Treiber (Zadig / WinUSB unter Windows) und schließen Sie den Dongle an.",
+  "tooltipReceptionRtlSdrDevices": "Liste der RTL-SDR-Dongles aktualisieren",
+  "receptionRtlSdrDevice": "RTL-SDR-Gerät",
+  "receptionRtlSdr": "RTL-SDR",
 
   "msgType1": "Positionsmeldung Klasse A",
   "msgType2": "Positionsmeldung Klasse A (zugewiesen)",
@@ -537,6 +545,11 @@
   "logTcpClientDisconnected": "Ziel {name}: Client getrennt",
   "logTcpClientError": "Ziel {name}: Client-Fehler {error}",
   "logSendError": "Sendefehler bei Ziel {name}: {error}",
+  "logRtlSdrOpening": "RTL-SDR-Dongle {device} wird geöffnet...",
+  "logRtlSdrConnected": "RTL-SDR {device} verbunden ({freq}, Abtastrate {rate}, Verstärkung {gain}, Kanäle {channels}).",
+  "logRtlSdrError": "RTL-SDR {device}: Fehler {error}",
+  "logRtlSdrStreamClosed": "RTL-SDR-Stream {device} geschlossen.",
+  "logRtlSdrDisconnected": "RTL-SDR {device} getrennt.",
 
   "docNavStatus0": "Mit Maschinenkraft in Fahrt",
   "docNavStatus1": "Vor Anker",
@@ -1056,6 +1069,7 @@
   "tooltipMapTrails": "Spuren umschalten. Wenn aktiviert, zeichnet jedes Schiff seinen letzten Weg auf der Karte.",
   "tooltipMapVectors": "Kursvektoren umschalten. Wenn aktiviert, zeigt jedes Schiff einen Pfeil in Fahrtrichtung.",
   "tooltipMapSendToMap": "Übertragung dekodierter Schiffe auf die Karte umschalten. Wenn aktiviert, erscheint jedes dekodierte Schiff als Marker.",
+  "tooltipMapClear": "Entfernt alle derzeit auf der Karte befindlichen Schiffe.",
   "tooltipMapBasemap": "Kartenhintergrund wählen. „Auto“ folgt dem aktuellen Thema.",
 
   "tooltipSendAdd": "Ein neues Sendeziel hinzufügen (UDP oder TCP, Client oder Server). Eingehende AIS-Frames werden an jedes aktivierte Ziel weitergeleitet.",
@@ -1120,5 +1134,20 @@
   "tooltipEditorSend": "Die zusammengesetzte Nachricht an jedes aktivierte Sendeziel senden.",
   "tooltipCopy": "In die Zwischenablage kopieren.",
   "tooltipClose": "Dieses Panel schließen.",
-  "tooltipBrowse": "Datei auswählen."
+  "tooltipBrowse": "Datei auswählen.",
+  "tooltipFeedName": "Eine Bezeichnung, die diese Quelle in der Feed-Liste identifiziert.",
+  "tooltipFeedHost": "Adresse des Servers, der AIS-Sätze überträgt.",
+  "tooltipFeedPort": "TCP- oder UDP-Port zur Verbindung mit dem Server.",
+  "tooltipFeedHeader": "Optionale Bytes, die beim Verbinden vor dem Lesen gesendet werden (z. B. eine gpsd-Anfrage).",
+  "tooltipFeedFile": "Pfad zu einer Textdatei mit aufgezeichneten NMEA-Sätzen.",
+  "tooltipFeedInterval": "Verzögerung zwischen zwei Frames beim Abspielen der Datei.",
+  "tooltipFeedLoop": "Startet die Dateiwiedergabe am Anfang neu, wenn das Ende erreicht ist.",
+  "tooltipFeedSpeed": "Geschwindigkeitsmultiplikator der Wiedergabe (1x = Echtzeit).",
+  "tooltipFeedSerialPort": "Serielle Schnittstelle des AIS-Empfängers (z. B. COM3 oder /dev/ttyUSB0).",
+  "tooltipFeedBaudRate": "Baudrate für die Kommunikation mit dem seriellen AIS-Empfänger.",
+  "tooltipFeedRtlDevice": "Der RTL-SDR-Dongle zum Empfang von AIS auf UKW.",
+  "tooltipFeedRtlAutoGain": "Lässt den Tuner die Verstärkung automatisch einstellen. Für die meisten Setups empfohlen.",
+  "tooltipFeedRtlGain": "Feste Tuner-Verstärkung in Dezibel, wenn die automatische Verstärkung deaktiviert ist.",
+  "tooltipFeedRtlChannels": "Welche UKW-AIS-Kanäle dekodiert werden: A (161,975 MHz), B (162,025 MHz) oder beide."
 }
+

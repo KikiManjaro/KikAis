@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "it",
 
   "languageSystem": "Auto (sistema)",
@@ -73,6 +73,14 @@
   "receptionSerialPort": "Porta seriale",
   "receptionSerialPortHint": "es. COM3 o /dev/ttyUSB0",
   "receptionBaudRate": "Baud rate",
+  "receptionRtlSdrChannels": "Canali",
+  "receptionRtlSdrSampleRate": "Frequenza di campionamento",
+  "receptionRtlSdrGainDb": "Guadagno del tuner (dB)",
+  "receptionRtlSdrAutoGain": "Guadagno automatico (consigliato)",
+  "receptionRtlSdrNoDevice": "Nessun dispositivo RTL-SDR trovato. Installa i driver RTL-SDR (Zadig / WinUSB su Windows) e collega il dongle.",
+  "tooltipReceptionRtlSdrDevices": "Aggiorna l'elenco dei dongle RTL-SDR",
+  "receptionRtlSdrDevice": "Dispositivo RTL-SDR",
+  "receptionRtlSdr": "RTL-SDR",
 
   "msgType1": "Rapporto di posizione Classe A",
   "msgType2": "Rapporto di posizione Classe A (assegnato)",
@@ -536,6 +544,11 @@
   "logTcpClientDisconnected": "Target {name}: client disconnesso",
   "logTcpClientError": "Target {name}: errore client {error}",
   "logSendError": "Target {name}: errore di invio {error}",
+  "logRtlSdrOpening": "Apertura dongle RTL-SDR {device}...",
+  "logRtlSdrConnected": "RTL-SDR {device} connesso ({freq}, frequenza di campionamento {rate}, guadagno {gain}, canali {channels}).",
+  "logRtlSdrError": "RTL-SDR {device}: errore {error}",
+  "logRtlSdrStreamClosed": "Flusso RTL-SDR {device} chiuso.",
+  "logRtlSdrDisconnected": "RTL-SDR {device} disconnesso.",
 
   "docNavStatus0": "In navigazione con motore",
   "docNavStatus1": "All'ancora",
@@ -1055,6 +1068,7 @@
   "tooltipMapTrails": "Attiva/disattiva le tracce. Quando sono attive, ogni imbarcazione disegna il proprio percorso recente sulla mappa.",
   "tooltipMapVectors": "Attiva/disattiva i vettori di rotta. Quando sono attivi, ogni imbarcazione mostra una freccia lungo la propria rotta.",
   "tooltipMapSendToMap": "Attiva/disattiva l'invio delle imbarcazioni decodificate alla mappa. Quando è attivo, ogni imbarcazione decodificata appare come marker.",
+  "tooltipMapClear": "Rimuove tutte le imbarcazioni attualmente sulla mappa.",
   "tooltipMapBasemap": "Scegliere lo sfondo della mappa. \"Auto\" segue il tema corrente.",
 
   "tooltipSendAdd": "Aggiungere una nuova destinazione di invio (UDP o TCP, client o server). I frame AIS ricevuti vengono inoltrati a ogni destinazione attivata.",
@@ -1119,6 +1133,21 @@
   "tooltipEditorSend": "Inviare il messaggio composto a ogni destinazione di invio attivata.",
   "tooltipCopy": "Copia negli appunti.",
   "tooltipClose": "Chiudi questo pannello.",
-  "tooltipBrowse": "Sfoglia per scegliere un file."
+  "tooltipBrowse": "Sfoglia per scegliere un file.",
+  "tooltipFeedName": "Un'etichetta che identifica questa sorgente nell'elenco dei feed.",
+  "tooltipFeedHost": "Indirizzo del server che trasmette le frasi AIS.",
+  "tooltipFeedPort": "Porta TCP o UDP usata per raggiungere il server.",
+  "tooltipFeedHeader": "Byte opzionali inviati alla connessione, prima della lettura (es. una richiesta gpsd).",
+  "tooltipFeedFile": "Percorso di un file di testo con frasi NMEA registrate.",
+  "tooltipFeedInterval": "Ritardo tra due frame durante la riproduzione del file.",
+  "tooltipFeedLoop": "Riavvia la riproduzione del file dall'inizio quando si raggiunge la fine.",
+  "tooltipFeedSpeed": "Moltiplicatore di velocità di riproduzione (1x = tempo reale).",
+  "tooltipFeedSerialPort": "Porta seriale del ricevitore AIS (es. COM3 o /dev/ttyUSB0).",
+  "tooltipFeedBaudRate": "Baud rate usato per comunicare con il ricevitore AIS seriale.",
+  "tooltipFeedRtlDevice": "Il dongle RTL-SDR usato per ricevere AIS in VHF.",
+  "tooltipFeedRtlAutoGain": "Lascia che il sintonizzatore regoli il guadagno automaticamente. Consigliato per la maggior parte.",
+  "tooltipFeedRtlGain": "Guadagno fisso del sintonizzatore in decibel, usato quando il guadagno automatico è disattivato.",
+  "tooltipFeedRtlChannels": "Quali canali VHF AIS decodificare: A (161,975 MHz), B (162,025 MHz) o entrambi."
 }
+
 

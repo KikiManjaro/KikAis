@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "ja",
 
   "languageSystem": "自動（システム）",
@@ -73,6 +73,14 @@
   "receptionSerialPort": "シリアルポート",
   "receptionSerialPortHint": "例: COM3 または /dev/ttyUSB0",
   "receptionBaudRate": "ボーレート",
+  "receptionRtlSdrChannels": "チャンネル",
+  "receptionRtlSdrSampleRate": "サンプルレート",
+  "receptionRtlSdrGainDb": "チューナーゲイン（dB）",
+  "receptionRtlSdrAutoGain": "自動ゲイン（推奨）",
+  "receptionRtlSdrNoDevice": "RTL-SDR デバイスが見つかりません。RTL-SDR ドライバー（Windows では Zadig / WinUSB）をインストールしてドングルを接続してください。",
+  "tooltipReceptionRtlSdrDevices": "RTL-SDR ドングルの一覧を更新",
+  "receptionRtlSdrDevice": "RTL-SDR デバイス",
+  "receptionRtlSdr": "RTL-SDR",
 
   "msgType1": "位置情報レポート クラス A",
   "msgType2": "位置情報レポート クラス A（割当）",
@@ -536,6 +544,11 @@
   "logTcpClientDisconnected": "ターゲット {name}: クライアントが切断されました",
   "logTcpClientError": "ターゲット {name}: クライアントエラー {error}",
   "logSendError": "ターゲット {name} の送信エラー: {error}",
+  "logRtlSdrOpening": "RTL-SDR ドングル {device} を開いています...",
+  "logRtlSdrConnected": "RTL-SDR {device} 接続済み ({freq}、サンプルレート {rate}、ゲイン {gain}、チャンネル {channels})。",
+  "logRtlSdrError": "RTL-SDR {device}: エラー {error}",
+  "logRtlSdrStreamClosed": "RTL-SDR {device} のストリームが閉じられました。",
+  "logRtlSdrDisconnected": "RTL-SDR {device} が切断されました。",
 
   "docNavStatus0": "機関使用航行中",
   "docNavStatus1": "停泊中",
@@ -1055,6 +1068,7 @@
   "tooltipMapTrails": "航跡を切り替えます。有効にすると各船舶が最近の経路を地図上に描きます。",
   "tooltipMapVectors": "針路ベクトルを切り替えます。有効にすると各船舶が進行方向に矢印を表示します。",
   "tooltipMapSendToMap": "デコードした船舶を地図に送るかどうかを切り替えます。有効にするとデコードした船舶がすべてマーカーとして表示されます。",
+  "tooltipMapClear": "現在地図に表示されているすべての船舶を削除します。",
   "tooltipMapBasemap": "地図の背景を選択します。「自動」は現在のテーマに従います。",
 
   "tooltipSendAdd": "送信先を追加します（UDPまたはTCP、クライアントまたはサーバー）。受信したAISフレームは有効な各送信先へ転送されます。",
@@ -1119,5 +1133,20 @@
   "tooltipEditorSend": "作成したメッセージを有効な各送信先へ送信します。",
   "tooltipCopy": "クリップボードにコピーします。",
   "tooltipClose": "このパネルを閉じます。",
-  "tooltipBrowse": "ファイルを参照して選択します。"
+  "tooltipBrowse": "ファイルを参照して選択します。",
+  "tooltipFeedName": "フィード一覧でこのソースを識別するラベル。",
+  "tooltipFeedHost": "AIS 文をストリーミングするサーバーのアドレス。",
+  "tooltipFeedPort": "サーバーに接続するための TCP または UDP ポート。",
+  "tooltipFeedHeader": "接続時に読み取り前に送信する任意のバイト（例: gpsd リクエスト）。",
+  "tooltipFeedFile": "記録された NMEA 文のテキストファイルへのパス。",
+  "tooltipFeedInterval": "ファイル再生時のフレーム間の遅延。",
+  "tooltipFeedLoop": "終端に達したとき、ファイル再生を最初からやり直します。",
+  "tooltipFeedSpeed": "再生速度の倍率（1x = 実時間）。",
+  "tooltipFeedSerialPort": "AIS 受信機のシリアルポート（例: COM3 または /dev/ttyUSB0）。",
+  "tooltipFeedBaudRate": "シリアル AIS 受信機と通信するボーレート。",
+  "tooltipFeedRtlDevice": "VHF で AIS を受信する RTL-SDR ドングル。",
+  "tooltipFeedRtlAutoGain": "チューナーがゲインを自動調整できるようにします。ほとんどの環境で推奨。",
+  "tooltipFeedRtlGain": "自動ゲインがオフの場合に使用する固定チューナーゲイン（デシベル）。",
+  "tooltipFeedRtlChannels": "デコードする VHF AIS チャンネル: A（161.975 MHz）、B（162.025 MHz）、または両方。"
 }
+

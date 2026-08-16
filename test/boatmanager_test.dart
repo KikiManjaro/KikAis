@@ -259,4 +259,53 @@ void main() {
 
     manager.dispose();
   });
+
+  test('clearBoats removes every tracked vessel', () async {
+    final manager = BoatManager();
+    final message = PositionMessage(
+      messageType: 1,
+      mmsi: 123456,
+      repeatIndicator: 0,
+      navigationStatus: 'Under way using engine',
+      latitude: 10.0,
+      longitude: 20.0,
+      speedOverGround: 5.0,
+      courseOverGround: 90.0,
+      maneuverIndicator: '',
+      rateOfTurn: 0,
+      heading: 90,
+      timestamp: 30,
+      raimEnabled: 0,
+    );
+    manager.updateFromMessage(message);
+    manager.updateFromMessage(
+      PositionMessage(
+        messageType: 1,
+        mmsi: 654321,
+        repeatIndicator: 0,
+        navigationStatus: 'Under way using engine',
+        latitude: 11.0,
+        longitude: 21.0,
+        speedOverGround: 4.0,
+        courseOverGround: 180.0,
+        maneuverIndicator: '',
+        rateOfTurn: 0,
+        heading: 180,
+        timestamp: 30,
+        raimEnabled: 0,
+      ),
+    );
+    expect(manager.boats, hasLength(2));
+
+    final versionBefore = manager.boatsVersion;
+    manager.clearBoats();
+    expect(manager.boats, isEmpty);
+    expect(manager.boatsVersion, greaterThan(versionBefore));
+
+    // New messages repopulate the map after a clear.
+    manager.updateFromMessage(message);
+    expect(manager.boats, hasLength(1));
+
+    manager.dispose();
+  });
 }

@@ -27,4 +27,37 @@ void main() {
     expect(restored.useTimestamps, isFalse);
     expect(restored.speed, 1);
   });
+
+  test('FeedDef round-trips an RTL-SDR feed', () {
+    const def = FeedDef(
+      key: 'sdr',
+      displayName: 'My dongle',
+      type: FeedType.rtlsdr,
+      deviceIndex: 1,
+      gainDb: 36,
+      sampleRate: 2048000,
+      useChannel1: true,
+      useChannel2: false,
+    );
+    final restored = FeedDef.fromJson(def.toJson());
+    expect(restored.type, FeedType.rtlsdr);
+    expect(restored.deviceIndex, 1);
+    expect(restored.gainDb, 36);
+    expect(restored.sampleRate, 2048000);
+    expect(restored.useChannel1, isTrue);
+    expect(restored.useChannel2, isFalse);
+  });
+
+  test('FeedDef RTL-SDR defaults when fields are missing', () {
+    final restored = FeedDef.fromJson({
+      'key': 'sdr',
+      'displayName': 'S',
+      'type': 'rtlsdr',
+    });
+    expect(restored.deviceIndex, 0);
+    expect(restored.gainDb, isNull);
+    expect(restored.sampleRate, 1024000);
+    expect(restored.useChannel1, isTrue);
+    expect(restored.useChannel2, isTrue);
+  });
 }

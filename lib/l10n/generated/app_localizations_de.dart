@@ -215,6 +215,32 @@ class AppLocalizationsDe extends AppLocalizations {
   String get receptionBaudRate => 'Baudrate';
 
   @override
+  String get receptionRtlSdr => 'RTL-SDR';
+
+  @override
+  String get receptionRtlSdrDevice => 'RTL-SDR-Gerät';
+
+  @override
+  String get tooltipReceptionRtlSdrDevices =>
+      'Liste der RTL-SDR-Dongles aktualisieren';
+
+  @override
+  String get receptionRtlSdrNoDevice =>
+      'Kein RTL-SDR-Gerät gefunden. Installieren Sie die RTL-SDR-Treiber (Zadig / WinUSB unter Windows) und schließen Sie den Dongle an.';
+
+  @override
+  String get receptionRtlSdrAutoGain => 'Automatische Verstärkung (empfohlen)';
+
+  @override
+  String get receptionRtlSdrGainDb => 'Tuner-Verstärkung (dB)';
+
+  @override
+  String get receptionRtlSdrSampleRate => 'Abtastrate';
+
+  @override
+  String get receptionRtlSdrChannels => 'Kanäle';
+
+  @override
   String get msgType1 => 'Positionsmeldung Klasse A';
 
   @override
@@ -1652,6 +1678,37 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String logSendError(Object error, Object name) {
     return 'Sendefehler bei Ziel $name: $error';
+  }
+
+  @override
+  String logRtlSdrOpening(Object device) {
+    return 'RTL-SDR-Dongle $device wird geöffnet...';
+  }
+
+  @override
+  String logRtlSdrConnected(
+    Object channels,
+    Object device,
+    Object freq,
+    Object gain,
+    Object rate,
+  ) {
+    return 'RTL-SDR $device verbunden ($freq, Abtastrate $rate, Verstärkung $gain, Kanäle $channels).';
+  }
+
+  @override
+  String logRtlSdrError(Object device, Object error) {
+    return 'RTL-SDR $device: Fehler $error';
+  }
+
+  @override
+  String logRtlSdrStreamClosed(Object device) {
+    return 'RTL-SDR-Stream $device geschlossen.';
+  }
+
+  @override
+  String logRtlSdrDisconnected(Object device) {
+    return 'RTL-SDR $device getrennt.';
   }
 
   @override
@@ -3279,6 +3336,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Übertragung dekodierter Schiffe auf die Karte umschalten. Wenn aktiviert, erscheint jedes dekodierte Schiff als Marker.';
 
   @override
+  String get tooltipMapClear =>
+      'Entfernt alle derzeit auf der Karte befindlichen Schiffe.';
+
+  @override
   String get tooltipMapBasemap =>
       'Kartenhintergrund wählen. „Auto“ folgt dem aktuellen Thema.';
 
@@ -3512,4 +3573,59 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tooltipBrowse => 'Datei auswählen.';
+
+  @override
+  String get tooltipFeedName =>
+      'Eine Bezeichnung, die diese Quelle in der Feed-Liste identifiziert.';
+
+  @override
+  String get tooltipFeedHost => 'Adresse des Servers, der AIS-Sätze überträgt.';
+
+  @override
+  String get tooltipFeedPort =>
+      'TCP- oder UDP-Port zur Verbindung mit dem Server.';
+
+  @override
+  String get tooltipFeedHeader =>
+      'Optionale Bytes, die beim Verbinden vor dem Lesen gesendet werden (z. B. eine gpsd-Anfrage).';
+
+  @override
+  String get tooltipFeedFile =>
+      'Pfad zu einer Textdatei mit aufgezeichneten NMEA-Sätzen.';
+
+  @override
+  String get tooltipFeedInterval =>
+      'Verzögerung zwischen zwei Frames beim Abspielen der Datei.';
+
+  @override
+  String get tooltipFeedLoop =>
+      'Startet die Dateiwiedergabe am Anfang neu, wenn das Ende erreicht ist.';
+
+  @override
+  String get tooltipFeedSpeed =>
+      'Geschwindigkeitsmultiplikator der Wiedergabe (1x = Echtzeit).';
+
+  @override
+  String get tooltipFeedSerialPort =>
+      'Serielle Schnittstelle des AIS-Empfängers (z. B. COM3 oder /dev/ttyUSB0).';
+
+  @override
+  String get tooltipFeedBaudRate =>
+      'Baudrate für die Kommunikation mit dem seriellen AIS-Empfänger.';
+
+  @override
+  String get tooltipFeedRtlDevice =>
+      'Der RTL-SDR-Dongle zum Empfang von AIS auf UKW.';
+
+  @override
+  String get tooltipFeedRtlAutoGain =>
+      'Lässt den Tuner die Verstärkung automatisch einstellen. Für die meisten Setups empfohlen.';
+
+  @override
+  String get tooltipFeedRtlGain =>
+      'Feste Tuner-Verstärkung in Dezibel, wenn die automatische Verstärkung deaktiviert ist.';
+
+  @override
+  String get tooltipFeedRtlChannels =>
+      'Welche UKW-AIS-Kanäle dekodiert werden: A (161,975 MHz), B (162,025 MHz) oder beide.';
 }

@@ -75,4 +75,40 @@ void main() {
     boatManager.dispose();
     stats.dispose();
   });
+
+  testWidgets('clear button removes all vessels from the map',
+      (tester) async {
+    final stats = MessageStats();
+    final boatManager = BoatManager(stats: stats);
+    final settings = AppSettings();
+    settings.sendToMap = true;
+    boatManager.setSendToMap(true);
+
+    boatManager.updateFromMessage(_boat('226545000', 48.85, 1.05, 45));
+    boatManager.updateFromMessage(_boat('227000000', 48.90, 1.10, 200));
+    expect(boatManager.boats, hasLength(2));
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: boatManager),
+          ChangeNotifierProvider.value(value: settings),
+          ChangeNotifierProvider.value(value: stats),
+        ],
+        child:
+            withLocalizations(WorldMapPage(tileProvider: _FakeTileProvider())),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 600));
+
+    await tester.tap(find.byIcon(Icons.delete_sweep));
+    await tester.pump();
+
+    expect(boatManager.boats, isEmpty);
+    expect(tester.takeException(), isNull);
+
+    boatManager.dispose();
+    stats.dispose();
+  });
 }

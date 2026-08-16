@@ -269,4 +269,38 @@ void main() {
       running: ctx.running,
     );
   });
+
+  testWidgets('add source dialog offers RTL-SDR fields after switching type',
+      (tester) async {
+    final ctx = await pumpReception(tester);
+
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+
+    // Default type is network: host/port/header fields are visible.
+    expect(find.widgetWithText(TextField, 'Host'), findsOneWidget);
+
+    // Switch to RTL-SDR: device, gain, sample rate and channel settings appear
+    // instead. Without a dongle the "no device" hint is shown.
+    await tester.tap(find.text('RTL-SDR'));
+    await tester.pumpAndSettle();
+    expect(find.text('RTL-SDR device'), findsOneWidget);
+    expect(find.textContaining('No RTL-SDR device found'), findsOneWidget);
+    expect(find.text('Automatic gain (recommended)'), findsOneWidget);
+    expect(find.text('Channels'), findsOneWidget);
+    expect(find.widgetWithText(TextField, 'Host'), findsNothing);
+
+    // Without a detected dongle the source cannot be added.
+    await tester.enterText(find.widgetWithText(TextField, 'Name'), 'My dongle');
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(CheckboxListTile, 'My dongle'), findsNothing);
+    expect(tester.takeException(), isNull);
+    disposeTest(
+      boatManager: ctx.boatManager,
+      stats: ctx.stats,
+      boat: ctx.boat,
+      running: ctx.running,
+    );
+  });
 }

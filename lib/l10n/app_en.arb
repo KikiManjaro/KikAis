@@ -73,6 +73,14 @@
   "receptionSerialPort": "Serial port",
   "receptionSerialPortHint": "e.g. COM3 or /dev/ttyUSB0",
   "receptionBaudRate": "Baud rate",
+  "receptionRtlSdr": "RTL-SDR",
+  "receptionRtlSdrDevice": "RTL-SDR device",
+  "tooltipReceptionRtlSdrDevices": "Refresh the list of RTL-SDR dongles",
+  "receptionRtlSdrNoDevice": "No RTL-SDR device found. Install the RTL-SDR drivers (Zadig / WinUSB on Windows) and plug in the dongle.",
+  "receptionRtlSdrAutoGain": "Automatic gain (recommended)",
+  "receptionRtlSdrGainDb": "Tuner gain (dB)",
+  "receptionRtlSdrSampleRate": "Sample rate",
+  "receptionRtlSdrChannels": "Channels",
 
   "msgType1": "Position Report Class A",
   "msgType2": "Position Report Class A (assigned)",
@@ -536,6 +544,11 @@
   "logTcpClientDisconnected": "Target {name}: client disconnected",
   "logTcpClientError": "Target {name}: client error {error}",
   "logSendError": "Target {name} send error: {error}",
+  "logRtlSdrOpening": "Opening RTL-SDR dongle {device}...",
+  "logRtlSdrConnected": "RTL-SDR {device} connected ({freq}, {rate} sample rate, {gain} gain, channels {channels}).",
+  "logRtlSdrError": "RTL-SDR {device} error: {error}",
+  "logRtlSdrStreamClosed": "RTL-SDR {device} stream closed.",
+  "logRtlSdrDisconnected": "RTL-SDR {device} disconnected.",
 
   "docNavStatus0": "Under way using engine",
   "docNavStatus1": "At anchor",
@@ -1056,6 +1069,7 @@
   "tooltipMapTrails": "Enables or disables the trails. When enabled, each vessel draws its recent path on the map.",
   "tooltipMapVectors": "Enables or disables the heading vectors. When enabled, each vessel shows an arrow along its course.",
   "tooltipMapSendToMap": "Enables or disables sending decoded vessels to the map. When enabled, every decoded vessel appears as a marker.",
+  "tooltipMapClear": "Clears all vessels currently on the map.",
   "tooltipMapBasemap": "Defines the map background. \"Auto\" follows the current theme.",
 
   "tooltipSendAdd": "Adds a new send destination (UDP or TCP, client or server). Incoming AIS frames are forwarded to every enabled destination.",
@@ -1120,5 +1134,20 @@
   "tooltipEditorSend": "Sends the composed message to every enabled send destination.",
   "tooltipCopy": "Copies the selection to the clipboard.",
   "tooltipClose": "Closes this panel.",
-  "tooltipBrowse": "Opens a file browser to choose a file."
+  "tooltipBrowse": "Opens a file browser to choose a file.",
+
+  "tooltipFeedName": "A label identifying this source in the feeds list.",
+  "tooltipFeedHost": "The server address that streams AIS sentences.",
+  "tooltipFeedPort": "The TCP or UDP port used to reach the server.",
+  "tooltipFeedHeader": "Optional bytes sent on connect, before reading (e.g. a gpsd request).",
+  "tooltipFeedFile": "Path to a text file of recorded NMEA sentences.",
+  "tooltipFeedInterval": "Delay between two frames when replaying the file.",
+  "tooltipFeedLoop": "Restarts the file replay from the beginning when the end is reached.",
+  "tooltipFeedSpeed": "Defines the replay speed multiplier (1x = real time).",
+  "tooltipFeedSerialPort": "The serial port of the AIS receiver (e.g. COM3 or /dev/ttyUSB0).",
+  "tooltipFeedBaudRate": "Baud rate used to talk to the serial AIS receiver.",
+  "tooltipFeedRtlDevice": "The RTL-SDR dongle used to receive AIS on VHF.",
+  "tooltipFeedRtlAutoGain": "Lets the tuner adjust its gain automatically. Recommended for most setups.",
+  "tooltipFeedRtlGain": "Fixed tuner gain in decibels, used when automatic gain is off.",
+  "tooltipFeedRtlChannels": "Which VHF AIS channels to decode: A (161.975 MHz), B (162.025 MHz) or both."
 }

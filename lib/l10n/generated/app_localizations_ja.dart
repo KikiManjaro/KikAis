@@ -214,6 +214,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String get receptionBaudRate => 'ボーレート';
 
   @override
+  String get receptionRtlSdr => 'RTL-SDR';
+
+  @override
+  String get receptionRtlSdrDevice => 'RTL-SDR デバイス';
+
+  @override
+  String get tooltipReceptionRtlSdrDevices => 'RTL-SDR ドングルの一覧を更新';
+
+  @override
+  String get receptionRtlSdrNoDevice =>
+      'RTL-SDR デバイスが見つかりません。RTL-SDR ドライバー（Windows では Zadig / WinUSB）をインストールしてドングルを接続してください。';
+
+  @override
+  String get receptionRtlSdrAutoGain => '自動ゲイン（推奨）';
+
+  @override
+  String get receptionRtlSdrGainDb => 'チューナーゲイン（dB）';
+
+  @override
+  String get receptionRtlSdrSampleRate => 'サンプルレート';
+
+  @override
+  String get receptionRtlSdrChannels => 'チャンネル';
+
+  @override
   String get msgType1 => '位置情報レポート クラス A';
 
   @override
@@ -1646,6 +1671,37 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String logSendError(Object error, Object name) {
     return 'ターゲット $name の送信エラー: $error';
+  }
+
+  @override
+  String logRtlSdrOpening(Object device) {
+    return 'RTL-SDR ドングル $device を開いています...';
+  }
+
+  @override
+  String logRtlSdrConnected(
+    Object channels,
+    Object device,
+    Object freq,
+    Object gain,
+    Object rate,
+  ) {
+    return 'RTL-SDR $device 接続済み ($freq、サンプルレート $rate、ゲイン $gain、チャンネル $channels)。';
+  }
+
+  @override
+  String logRtlSdrError(Object device, Object error) {
+    return 'RTL-SDR $device: エラー $error';
+  }
+
+  @override
+  String logRtlSdrStreamClosed(Object device) {
+    return 'RTL-SDR $device のストリームが閉じられました。';
+  }
+
+  @override
+  String logRtlSdrDisconnected(Object device) {
+    return 'RTL-SDR $device が切断されました。';
   }
 
   @override
@@ -3220,6 +3276,9 @@ class AppLocalizationsJa extends AppLocalizations {
       'デコードした船舶を地図に送るかどうかを切り替えます。有効にするとデコードした船舶がすべてマーカーとして表示されます。';
 
   @override
+  String get tooltipMapClear => '現在地図に表示されているすべての船舶を削除します。';
+
+  @override
   String get tooltipMapBasemap => '地図の背景を選択します。「自動」は現在のテーマに従います。';
 
   @override
@@ -3405,4 +3464,48 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get tooltipBrowse => 'ファイルを参照して選択します。';
+
+  @override
+  String get tooltipFeedName => 'フィード一覧でこのソースを識別するラベル。';
+
+  @override
+  String get tooltipFeedHost => 'AIS 文をストリーミングするサーバーのアドレス。';
+
+  @override
+  String get tooltipFeedPort => 'サーバーに接続するための TCP または UDP ポート。';
+
+  @override
+  String get tooltipFeedHeader => '接続時に読み取り前に送信する任意のバイト（例: gpsd リクエスト）。';
+
+  @override
+  String get tooltipFeedFile => '記録された NMEA 文のテキストファイルへのパス。';
+
+  @override
+  String get tooltipFeedInterval => 'ファイル再生時のフレーム間の遅延。';
+
+  @override
+  String get tooltipFeedLoop => '終端に達したとき、ファイル再生を最初からやり直します。';
+
+  @override
+  String get tooltipFeedSpeed => '再生速度の倍率（1x = 実時間）。';
+
+  @override
+  String get tooltipFeedSerialPort =>
+      'AIS 受信機のシリアルポート（例: COM3 または /dev/ttyUSB0）。';
+
+  @override
+  String get tooltipFeedBaudRate => 'シリアル AIS 受信機と通信するボーレート。';
+
+  @override
+  String get tooltipFeedRtlDevice => 'VHF で AIS を受信する RTL-SDR ドングル。';
+
+  @override
+  String get tooltipFeedRtlAutoGain => 'チューナーがゲインを自動調整できるようにします。ほとんどの環境で推奨。';
+
+  @override
+  String get tooltipFeedRtlGain => '自動ゲインがオフの場合に使用する固定チューナーゲイン（デシベル）。';
+
+  @override
+  String get tooltipFeedRtlChannels =>
+      'デコードする VHF AIS チャンネル: A（161.975 MHz）、B（162.025 MHz）、または両方。';
 }

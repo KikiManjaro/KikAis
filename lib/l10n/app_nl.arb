@@ -73,6 +73,14 @@
   "receptionSerialPort": "Seriële poort",
   "receptionSerialPortHint": "bijv. COM3 of /dev/ttyUSB0",
   "receptionBaudRate": "Baudrate",
+  "receptionRtlSdrChannels": "Kanalen",
+  "receptionRtlSdrSampleRate": "Samplingsfrequentie",
+  "receptionRtlSdrGainDb": "Tuner-versterking (dB)",
+  "receptionRtlSdrAutoGain": "Automatische versterking (aanbevolen)",
+  "receptionRtlSdrNoDevice": "Geen RTL-SDR-apparaat gevonden. Installeer de RTL-SDR-stuurprogramma's (Zadig / WinUSB op Windows) en sluit de dongle aan.",
+  "tooltipReceptionRtlSdrDevices": "Lijst van RTL-SDR-dongles vernieuwen",
+  "receptionRtlSdrDevice": "RTL-SDR-apparaat",
+  "receptionRtlSdr": "RTL-SDR",
 
   "msgType1": "Positierapport klasse A",
   "msgType2": "Positierapport klasse A (toegewezen)",
@@ -536,6 +544,11 @@
   "logTcpClientDisconnected": "Doel {name}: client verbroken",
   "logTcpClientError": "Doel {name}: clientfout {error}",
   "logSendError": "Doel {name}: verzendfout {error}",
+  "logRtlSdrOpening": "RTL-SDR-dongle {device} openen...",
+  "logRtlSdrConnected": "RTL-SDR {device} verbonden ({freq}, samplerate {rate}, versterking {gain}, kanalen {channels}).",
+  "logRtlSdrError": "RTL-SDR {device}: fout {error}",
+  "logRtlSdrStreamClosed": "RTL-SDR-stream {device} gesloten.",
+  "logRtlSdrDisconnected": "RTL-SDR {device} verbroken.",
 
   "docNavStatus0": "Onderweg met motor",
   "docNavStatus1": "Voor anker",
@@ -1055,6 +1068,7 @@
   "tooltipMapTrails": "Sporen in- of uitschakelen. Als dit aanstaat, tekent elk vaartuig zijn recente route op de kaart.",
   "tooltipMapVectors": "Koersvectoren in- of uitschakelen. Als dit aanstaat, toont elk vaartuig een pijl in zijn richting.",
   "tooltipMapSendToMap": "Het versturen van gedecodeerde vaartuigen naar de kaart in- of uitschakelen. Als dit aanstaat, verschijnt elk gedecodeerd vaartuig als marker.",
+  "tooltipMapClear": "Verwijdert alle vaartuigen die zich momenteel op de kaart bevinden.",
   "tooltipMapBasemap": "De kaartachtergrond kiezen. \"Auto\" volgt het huidige thema.",
 
   "tooltipSendAdd": "Een nieuw verzenddoel toevoegen (UDP of TCP, client of server). Binnenkomende AIS-frames worden doorgestuurd naar elk ingeschakeld doel.",
@@ -1119,5 +1133,20 @@
   "tooltipEditorSend": "Het samengestelde bericht naar elk ingeschakeld verzenddoel sturen.",
   "tooltipCopy": "Naar het klembord kopiëren.",
   "tooltipClose": "Dit paneel sluiten.",
-  "tooltipBrowse": "Bladeren om een bestand te kiezen."
+  "tooltipBrowse": "Bladeren om een bestand te kiezen.",
+  "tooltipFeedName": "Een label dat deze bron in de feedlijst identificeert.",
+  "tooltipFeedHost": "Adres van de server die AIS-zinnen streamt.",
+  "tooltipFeedPort": "TCP- of UDP-poort om de server te bereiken.",
+  "tooltipFeedHeader": "Optionele bytes verzonden bij verbinding, vóór het lezen (bv. een gpsd-verzoek).",
+  "tooltipFeedFile": "Pad naar een tekstbestand met opgenomen NMEA-zinnen.",
+  "tooltipFeedInterval": "Vertraging tussen twee frames bij het afspelen van het bestand.",
+  "tooltipFeedLoop": "Hervat het afspelen van het bestand vanaf het begin wanneer het einde is bereikt.",
+  "tooltipFeedSpeed": "Snelheidsvermenigvuldiger van het afspelen (1x = realtime).",
+  "tooltipFeedSerialPort": "Seriële poort van de AIS-ontvanger (bv. COM3 of /dev/ttyUSB0).",
+  "tooltipFeedBaudRate": "Baudrate voor communicatie met de seriële AIS-ontvanger.",
+  "tooltipFeedRtlDevice": "De RTL-SDR-dongle die wordt gebruikt om AIS op VHF te ontvangen.",
+  "tooltipFeedRtlAutoGain": "Laat de tuner de versterking automatisch instellen. Aanbevolen voor de meeste setups.",
+  "tooltipFeedRtlGain": "Vaste tunerversterking in decibel, gebruikt wanneer automatische versterking uit is.",
+  "tooltipFeedRtlChannels": "Welke VHF-AIS-kanalen decoderen: A (161,975 MHz), B (162,025 MHz) of beide."
 }
+

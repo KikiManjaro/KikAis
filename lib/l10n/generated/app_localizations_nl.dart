@@ -216,6 +216,32 @@ class AppLocalizationsNl extends AppLocalizations {
   String get receptionBaudRate => 'Baudrate';
 
   @override
+  String get receptionRtlSdr => 'RTL-SDR';
+
+  @override
+  String get receptionRtlSdrDevice => 'RTL-SDR-apparaat';
+
+  @override
+  String get tooltipReceptionRtlSdrDevices =>
+      'Lijst van RTL-SDR-dongles vernieuwen';
+
+  @override
+  String get receptionRtlSdrNoDevice =>
+      'Geen RTL-SDR-apparaat gevonden. Installeer de RTL-SDR-stuurprogramma\'s (Zadig / WinUSB op Windows) en sluit de dongle aan.';
+
+  @override
+  String get receptionRtlSdrAutoGain => 'Automatische versterking (aanbevolen)';
+
+  @override
+  String get receptionRtlSdrGainDb => 'Tuner-versterking (dB)';
+
+  @override
+  String get receptionRtlSdrSampleRate => 'Samplingsfrequentie';
+
+  @override
+  String get receptionRtlSdrChannels => 'Kanalen';
+
+  @override
   String get msgType1 => 'Positierapport klasse A';
 
   @override
@@ -1652,6 +1678,37 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String logSendError(Object error, Object name) {
     return 'Doel $name: verzendfout $error';
+  }
+
+  @override
+  String logRtlSdrOpening(Object device) {
+    return 'RTL-SDR-dongle $device openen...';
+  }
+
+  @override
+  String logRtlSdrConnected(
+    Object channels,
+    Object device,
+    Object freq,
+    Object gain,
+    Object rate,
+  ) {
+    return 'RTL-SDR $device verbonden ($freq, samplerate $rate, versterking $gain, kanalen $channels).';
+  }
+
+  @override
+  String logRtlSdrError(Object device, Object error) {
+    return 'RTL-SDR $device: fout $error';
+  }
+
+  @override
+  String logRtlSdrStreamClosed(Object device) {
+    return 'RTL-SDR-stream $device gesloten.';
+  }
+
+  @override
+  String logRtlSdrDisconnected(Object device) {
+    return 'RTL-SDR $device verbroken.';
   }
 
   @override
@@ -3277,6 +3334,10 @@ class AppLocalizationsNl extends AppLocalizations {
       'Het versturen van gedecodeerde vaartuigen naar de kaart in- of uitschakelen. Als dit aanstaat, verschijnt elk gedecodeerd vaartuig als marker.';
 
   @override
+  String get tooltipMapClear =>
+      'Verwijdert alle vaartuigen die zich momenteel op de kaart bevinden.';
+
+  @override
   String get tooltipMapBasemap =>
       'De kaartachtergrond kiezen. \"Auto\" volgt het huidige thema.';
 
@@ -3508,4 +3569,58 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get tooltipBrowse => 'Bladeren om een bestand te kiezen.';
+
+  @override
+  String get tooltipFeedName =>
+      'Een label dat deze bron in de feedlijst identificeert.';
+
+  @override
+  String get tooltipFeedHost => 'Adres van de server die AIS-zinnen streamt.';
+
+  @override
+  String get tooltipFeedPort => 'TCP- of UDP-poort om de server te bereiken.';
+
+  @override
+  String get tooltipFeedHeader =>
+      'Optionele bytes verzonden bij verbinding, vóór het lezen (bv. een gpsd-verzoek).';
+
+  @override
+  String get tooltipFeedFile =>
+      'Pad naar een tekstbestand met opgenomen NMEA-zinnen.';
+
+  @override
+  String get tooltipFeedInterval =>
+      'Vertraging tussen twee frames bij het afspelen van het bestand.';
+
+  @override
+  String get tooltipFeedLoop =>
+      'Hervat het afspelen van het bestand vanaf het begin wanneer het einde is bereikt.';
+
+  @override
+  String get tooltipFeedSpeed =>
+      'Snelheidsvermenigvuldiger van het afspelen (1x = realtime).';
+
+  @override
+  String get tooltipFeedSerialPort =>
+      'Seriële poort van de AIS-ontvanger (bv. COM3 of /dev/ttyUSB0).';
+
+  @override
+  String get tooltipFeedBaudRate =>
+      'Baudrate voor communicatie met de seriële AIS-ontvanger.';
+
+  @override
+  String get tooltipFeedRtlDevice =>
+      'De RTL-SDR-dongle die wordt gebruikt om AIS op VHF te ontvangen.';
+
+  @override
+  String get tooltipFeedRtlAutoGain =>
+      'Laat de tuner de versterking automatisch instellen. Aanbevolen voor de meeste setups.';
+
+  @override
+  String get tooltipFeedRtlGain =>
+      'Vaste tunerversterking in decibel, gebruikt wanneer automatische versterking uit is.';
+
+  @override
+  String get tooltipFeedRtlChannels =>
+      'Welke VHF-AIS-kanalen decoderen: A (161,975 MHz), B (162,025 MHz) of beide.';
 }
