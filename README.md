@@ -86,17 +86,21 @@ This architecture keeps data handling performant while maintaining a responsive,
 
 ## 📸 Screenshots
 
-| Main page | Console / Logs |
+| Reception | Editor |
 |---|---|
-| ![Main page](readme_images/img.png) | ![Console/Logs](readme_images/img_1.png) |
+| ![Reception](readme_images/reception.png) | ![Editor](readme_images/editor.png) |
 
-| Map page | Map with clustering |
+| Map | Map with selected ship |
 |---|---|
-| ![Map](readme_images/img_2.png) | ![Clustered](readme_images/img_3.png) |
+| ![Map](readme_images/map_with_ship.png) | ![Selected ship](readme_images/map_with_selected_ship.png) |
 
-| Map without clustering | Vessel data |
+| Tools | Stats |
 |---|---|
-| ![Unclustered](readme_images/img_4.png) | ![Ship data](readme_images/img_5.png) |
+| ![Tools](readme_images/tools.png) | ![Stats](readme_images/stats.png) |
+
+| Simulation | Send |
+|---|---|
+| ![Simulation](readme_images/simulation.png) | ![Send](readme_images/send.png) |
 
 ## 🌍 Internationalization
 
