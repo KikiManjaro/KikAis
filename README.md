@@ -193,8 +193,6 @@ If you like KikAis and want to support its development, you can buy me a coffee:
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black&style=for-the-badge)](https://www.buymeacoffee.com/kikimanjaro)
 
-You can also sponsor me on [GitHub Sponsors](https://github.com/sponsors/KikiManjaro).
-
 ## 📄 License
 
 KikAis is distributed under a **custom source-available license**: you may freely use the software, but you may **not** copy, redistribute, or resell it — in whole or in part, free or for profit. See [LICENSE](LICENSE) for the full terms.
