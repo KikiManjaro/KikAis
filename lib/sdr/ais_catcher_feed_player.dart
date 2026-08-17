@@ -102,7 +102,7 @@ class AisCatcherFeedPlayer extends ChangeNotifier {
       // Listen for UDP packets — each line is a complete NMEA sentence.
       _udpSocket!.listen(
         (event) {
-          final datagram = _udpSocket!.receive();
+          final datagram = _udpSocket?.receive();
           if (datagram == null) return;
           final data = datagram.data;
           if (data.isEmpty) return;
