@@ -6621,6 +6621,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Which VHF AIS channels to decode: A (161.975 MHz), B (162.025 MHz) or both.'**
   String get tooltipFeedRtlChannels;
+
+  /// No description provided for @aisCatcherNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'AIS-catcher is required for RTL-SDR reception but was not found. You can download it automatically, or point to your existing installation.'**
+  String get aisCatcherNotFound;
+
+  /// No description provided for @aisCatcherDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download automatically'**
+  String get aisCatcherDownload;
+
+  /// No description provided for @aisCatcherChoosePath.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose path...'**
+  String get aisCatcherChoosePath;
+
+  /// No description provided for @aisCatcherCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get aisCatcherCancel;
+
+  /// No description provided for @aisCatcherManualDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download manually'**
+  String get aisCatcherManualDownload;
+
+  /// No description provided for @aisCatcherDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading AIS-catcher...'**
+  String get aisCatcherDownloading;
+
+  /// No description provided for @aisCatcherInvalidPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid AIS-catcher executable. Please select ais-catcher.exe.'**
+  String get aisCatcherInvalidPath;
 }
 
 class _AppLocalizationsDelegate

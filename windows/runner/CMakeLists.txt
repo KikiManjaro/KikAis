@@ -56,3 +56,29 @@ foreach(rtlsdr_dll IN ITEMS rtlsdr.dll pthreadVC2.dll msvcr100.dll)
     )
   endif()
 endforeach()
+
+# Bundle ais-catcher.exe (the external AIS decoder) and the RTL-SDR drivers
+# it needs for Blog V4 compatibility. The binary is fetched by
+# scripts/fetch_ais_catcher.ps1; when absent the build succeeds and the app
+# simply reports that RTL-SDR is unavailable.
+set(AIS_CATCHER_DIR "${CMAKE_SOURCE_DIR}/../tools/ais-catcher")
+if(EXISTS "${AIS_CATCHER_DIR}/ais-catcher.exe")
+  add_custom_command(TARGET ${BINARY_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${AIS_CATCHER_DIR}/ais-catcher.exe"
+      "$<TARGET_FILE_DIR:${BINARY_NAME}>/ais-catcher.exe"
+    COMMENT "Bundling ais-catcher.exe"
+  )
+  # Copy the RTL-SDR drivers next to ais-catcher (same directory as the exe)
+  # so it can find rtlsdr.dll at runtime.
+  foreach(rtlsdr_dll IN ITEMS rtlsdr.dll pthreadVC2.dll msvcr100.dll)
+    if(EXISTS "${RTLSDR_BLOG_DIR}/${rtlsdr_dll}")
+      add_custom_command(TARGET ${BINARY_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          "${RTLSDR_BLOG_DIR}/${rtlsdr_dll}"
+          "$<TARGET_FILE_DIR:${BINARY_NAME}>/${rtlsdr_dll}"
+        COMMENT "Bundling ${rtlsdr_dll} for ais-catcher"
+      )
+    endif()
+  endforeach()
+endif()

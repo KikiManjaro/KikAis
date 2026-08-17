@@ -1,4 +1,4 @@
-{
+﻿{
   "@@locale": "ru",
 
   "languageSystem": "Авто (система)",
@@ -1145,6 +1145,12 @@
   "tooltipFeedRtlDevice": "RTL-SDR-приёмник, используемый для приёма AIS на УКВ.",
   "tooltipFeedRtlAutoGain": "Позволяет тюнеру автоматически регулировать усиление. Рекомендуется для большинства настроек.",
   "tooltipFeedRtlGain": "Фиксированное усиление тюнера в децибелах, используемое при выключенном автоматическом усилении.",
-  "tooltipFeedRtlChannels": "Какие УКВ AIS-каналы декодировать: A (161,975 МГц), B (162,025 МГц) или оба."
+  "tooltipFeedRtlChannels": "Какие УКВ AIS-каналы декодировать: A (161,975 МГц), B (162,025 МГц) или оба.",
+  "aisCatcherNotFound": "AIS-catcher is required for RTL-SDR reception but was not found. You can download it automatically, or point to your existing installation.",
+  "aisCatcherDownload": "Download automatically",
+  "aisCatcherChoosePath": "Choose path...",
+  "aisCatcherCancel": "Cancel",
+  "aisCatcherManualDownload": "Download manually",
+  "aisCatcherDownloading": "Downloading AIS-catcher...",
+  "aisCatcherInvalidPath": "Invalid AIS-catcher executable. Please select ais-catcher.exe."
 }
-

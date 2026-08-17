@@ -49,3 +49,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Downloaded third-party tools (AIS-catcher etc.)
+/tools/

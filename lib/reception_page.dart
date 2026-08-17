@@ -19,8 +19,11 @@ import 'l10n_ext.dart';
 import 'labels.dart';
 import 'message_stats.dart';
 import 'port_input_formatter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'sdr/ais_catcher_feed_player.dart';
+import 'sdr/ais_catcher_process.dart';
 import 'sdr/rtlsdr_device.dart';
-import 'sdr/rtlsdr_feed_player.dart';
 import 'serial_feed_player.dart';
 import 'simulator_service.dart';
 import 'widgets.dart';
@@ -96,7 +99,7 @@ class ReceptionPageState extends State<ReceptionPage> {
   final Map<String, SerialFeedPlayer> _serialPlayers = {};
 
   /// Active RTL-SDR players, keyed by feed.key.
-  final Map<String, RtlSdrFeedPlayer> _rtlSdrPlayers = {};
+  final Map<String, AisCatcherFeedPlayer> _rtlSdrPlayers = {};
 
   bool isRunning = false;
   bool _validateChecksum = true;
@@ -366,12 +369,12 @@ class ReceptionPageState extends State<ReceptionPage> {
   }
 
   /// Returns the existing player for an RTL-SDR feed or creates and wires one.
-  RtlSdrFeedPlayer _playerForRtlSdr(FeedDef feed) {
+  AisCatcherFeedPlayer _playerForRtlSdr(FeedDef feed) {
     final existing = _rtlSdrPlayers[feed.key];
     if (existing != null) return existing;
 
-    final player = RtlSdrFeedPlayer(
-      config: RtlSdrFeedConfig(
+    final player = AisCatcherFeedPlayer(
+      config: AisCatcherFeedConfig(
         deviceIndex: feed.deviceIndex,
         gainDb: feed.gainDb,
         autoGain: feed.gainDb == null,
@@ -393,9 +396,149 @@ class ReceptionPageState extends State<ReceptionPage> {
   /// Opens the dongle and starts streaming. On connect failure the feed is
   /// left stopped with an error status.
   Future<void> _startRtlSdrFeed(FeedDef feed) async {
+    // Check if ais-catcher is available; if not, show the setup dialog.
+    if (AisCatcherProcess.findExecutable() == null) {
+      final setupOk = await _showAisCatcherSetupDialog();
+      if (!setupOk) return;
+    }
     final player = _playerForRtlSdr(feed);
     await player.connect();
     forwarderService.setFeedStatus(feed.displayName, player.status);
+  }
+
+  /// Shows a dialog asking the user to set up AIS-catcher. Returns true when
+  /// a valid executable path is resolved (auto-download, custom path, or cached).
+  Future<bool> _showAisCatcherSetupDialog() async {
+    double? progress;
+    String progressText = '';
+    bool downloading = false;
+
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text('AIS-catcher'),
+          content: SizedBox(
+            width: 460,
+            child: downloading
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(progressText),
+                      const SizedBox(height: 12),
+                      LinearProgressIndicator(value: progress),
+                      const SizedBox(height: 8),
+                      Text(
+                        progress != null
+                            ? '${(progress! * 100).toStringAsFixed(0)}%'
+                            : '',
+                        style: Theme.of(ctx).textTheme.bodySmall,
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(context.l10n.aisCatcherNotFound),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton.icon(
+                              onPressed: () async {
+                                setDialogState(() {
+                                  downloading = true;
+                                  progressText = context
+                                      .l10n.aisCatcherDownloading;
+                                });
+                                try {
+                                  await AisCatcherProcess.ensureAvailable(
+                                    onProgress: (p, speed) {
+                                      setDialogState(() {
+                                        progress = p;
+                                        progressText =
+                                            '${context.l10n.aisCatcherDownloading} ($speed)';
+                                      });
+                                    },
+                                  );
+                                  if (ctx.mounted) Navigator.of(ctx).pop(true);
+                                } catch (e) {
+                                  if (ctx.mounted) {
+                                    setDialogState(() {
+                                      downloading = false;
+                                    });
+                                    ScaffoldMessenger.of(ctx).showSnackBar(
+                                      SnackBar(content: Text('$e')),
+                                    );
+                                  }
+                                }
+                              },
+                              icon: const Icon(Icons.download),
+                              label:
+                                  Text(context.l10n.aisCatcherDownload),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () async {
+                                final file = await openFile(
+                                  acceptedTypeGroups: [
+                                    XTypeGroup(
+                                      label: 'ais-catcher',
+                                      extensions: ['exe'],
+                                    ),
+                                  ],
+                                );
+                                if (file == null) return;
+                                final ok = await AisCatcherProcess
+                                    .setCustomPath(file.path);
+                                if (!ok) {
+                                  if (ctx.mounted) {
+                                    ScaffoldMessenger.of(ctx).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          ctx
+                                              .l10n.aisCatcherInvalidPath,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return;
+                                }
+                                if (ctx.mounted) Navigator.of(ctx).pop(true);
+                              },
+                              icon: const Icon(Icons.folder_open),
+                              label: Text(context.l10n.aisCatcherChoosePath),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(context.l10n.aisCatcherCancel),
+            ),
+            TextButton(
+              onPressed: () => launchUrl(
+                Uri.parse(
+                  'https://github.com/jvde-github/AIS-catcher/releases',
+                ),
+              ),
+              child: Text(context.l10n.aisCatcherManualDownload),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return result ?? false;
   }
 
   Future<void> _stopRtlSdrFeed(FeedDef feed) async {

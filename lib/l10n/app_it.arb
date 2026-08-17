@@ -1147,7 +1147,14 @@
   "tooltipFeedRtlDevice": "Il dongle RTL-SDR usato per ricevere AIS in VHF.",
   "tooltipFeedRtlAutoGain": "Lascia che il sintonizzatore regoli il guadagno automaticamente. Consigliato per la maggior parte.",
   "tooltipFeedRtlGain": "Guadagno fisso del sintonizzatore in decibel, usato quando il guadagno automatico è disattivato.",
-  "tooltipFeedRtlChannels": "Quali canali VHF AIS decodificare: A (161,975 MHz), B (162,025 MHz) o entrambi."
+  "tooltipFeedRtlChannels": "Quali canali VHF AIS decodificare: A (161,975 MHz), B (162,025 MHz) o entrambi.",
+  "aisCatcherNotFound": "AIS-catcher is required for RTL-SDR reception but was not found. You can download it automatically, or point to your existing installation.",
+  "aisCatcherDownload": "Download automatically",
+  "aisCatcherChoosePath": "Choose path...",
+  "aisCatcherCancel": "Cancel",
+  "aisCatcherManualDownload": "Download manually",
+  "aisCatcherDownloading": "Downloading AIS-catcher...",
+  "aisCatcherInvalidPath": "Invalid AIS-catcher executable. Please select ais-catcher.exe."
 }
 
 

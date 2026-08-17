@@ -1,4 +1,4 @@
-{
+﻿{
   "@@locale": "de",
 
   "languageSystem": "Auto (System)",
@@ -1148,6 +1148,12 @@
   "tooltipFeedRtlDevice": "Der RTL-SDR-Dongle zum Empfang von AIS auf UKW.",
   "tooltipFeedRtlAutoGain": "Lässt den Tuner die Verstärkung automatisch einstellen. Für die meisten Setups empfohlen.",
   "tooltipFeedRtlGain": "Feste Tuner-Verstärkung in Dezibel, wenn die automatische Verstärkung deaktiviert ist.",
-  "tooltipFeedRtlChannels": "Welche UKW-AIS-Kanäle dekodiert werden: A (161,975 MHz), B (162,025 MHz) oder beide."
+  "tooltipFeedRtlChannels": "Welche UKW-AIS-Kanäle dekodiert werden: A (161,975 MHz), B (162,025 MHz) oder beide.",
+  "aisCatcherNotFound": "AIS-catcher is required for RTL-SDR reception but was not found. You can download it automatically, or point to your existing installation.",
+  "aisCatcherDownload": "Download automatically",
+  "aisCatcherChoosePath": "Choose path...",
+  "aisCatcherCancel": "Cancel",
+  "aisCatcherManualDownload": "Download manually",
+  "aisCatcherDownloading": "Downloading AIS-catcher...",
+  "aisCatcherInvalidPath": "Invalid AIS-catcher executable. Please select ais-catcher.exe."
 }
-

@@ -3636,4 +3636,27 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get tooltipFeedRtlChannels =>
       'Quali canali VHF AIS decodificare: A (161,975 MHz), B (162,025 MHz) o entrambi.';
+
+  @override
+  String get aisCatcherNotFound =>
+      'AIS-catcher is required for RTL-SDR reception but was not found. You can download it automatically, or point to your existing installation.';
+
+  @override
+  String get aisCatcherDownload => 'Download automatically';
+
+  @override
+  String get aisCatcherChoosePath => 'Choose path...';
+
+  @override
+  String get aisCatcherCancel => 'Cancel';
+
+  @override
+  String get aisCatcherManualDownload => 'Download manually';
+
+  @override
+  String get aisCatcherDownloading => 'Downloading AIS-catcher...';
+
+  @override
+  String get aisCatcherInvalidPath =>
+      'Invalid AIS-catcher executable. Please select ais-catcher.exe.';
 }

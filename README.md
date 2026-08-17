@@ -34,7 +34,7 @@ This architecture keeps data handling performant while maintaining a responsive,
 
 ### 📡 Reception
 - Built-in and user-defined **network feeds**, plus **file feeds** that replay a saved NMEA log as a live stream
-- **RTL-SDR** dongle reception (V3, V4 / V4L RTL-SDR Blog and generic RTL2832U clones): plug in a dongle, add an RTL-SDR source and receive live AIS on both VHF channels — demodulated in-app, no external program needed
+- **RTL-SDR** dongle reception (V3, V4 / V4L RTL-SDR Blog and generic RTL2832U clones): powered by [AIS-catcher](https://github.com/jvde-github/AIS-catcher) — plug in a dongle, add an RTL-SDR source and receive live AIS on both VHF channels
 - Live **log console** with per-frame copy, save-to-file and clear
 - **Checksum validation** toggle with a live dropped-sentence counter
 - Per-feed **status dots** (grey / red / orange / green) with message counts
@@ -126,16 +126,16 @@ Grab the latest release from the [Releases page](https://github.com/KikiManjaro/
 
 ## 📻 Receiving with an RTL-SDR dongle
 
-KikAis can receive AIS directly from an RTL-SDR dongle (V3, V4 / V4L RTL-SDR Blog and generic RTL2832U clones) — the GMSK demodulation and AIS frame decoding run entirely inside the app, on the two VHF channels (AIS1 161.975 MHz / AIS2 162.025 MHz).
+KikAis receives AIS from an RTL-SDR dongle (V3, V4 / V4L RTL-SDR Blog and generic RTL2832U clones) via [AIS-catcher](https://github.com/jvde-github/AIS-catcher), a battle-tested open-source AIS receiver (GPLv3). AIS-catcher handles GMSK demodulation and AIS frame decoding on the two VHF channels (AIS1 161.975 MHz / AIS2 162.025 MHz).
 
 1. **Install the Windows USB driver** (once). Plug in the dongle and install a WinUSB driver with [Zadig](https://zadig.akeo.ie/) — select **"Bulk-In, Interface (Interface 0)"** and check the USB ID shows `0BDA 2838`. On Linux, install the system `librtlsdr` package and its udev rules (`apt install librtlsdr-dev`), and blacklist the DVB-T driver (`dvb_usb_rtl28xxu`).
-2. The RTL-SDR Blog driver DLLs (`rtlsdr.dll` V4-compatible + companions) are bundled with the app, so V4 dongles work out of the box.
-3. In the **Reception** tab, click **+**, choose **RTL-SDR**, pick your dongle (auto gain is recommended) and the channels, then **Add**.
+2. In the **Reception** tab, click **+**, choose **RTL-SDR**, pick your dongle (auto gain is recommended) and the channels, then **Add**.
+3. On first use, the app will **automatically download AIS-catcher** (~2 MB) from GitHub. You can also point to an existing installation if you prefer. The RTL-SDR Blog V4 driver DLLs are copied automatically for full compatibility.
 4. Tick the source, press **Start**, and decoded vessels appear on the map / in the log. The Reception console also logs the dongle's lifecycle (opening, connected with frequency / sample rate / gain / channels, errors, stream closed, disconnected).
 
 An antenna tuned for the marine VHF band (with a proper ground) is required for usable range; the stock mini-whip works only for very close vessels.
 
-For developers, two helpers live under `tool/`: `sdr_probe.dart` (enumerate, stream and save raw IQ from a connected dongle) and `ais_replay.dart` (replay a saved `.cu8` capture or a real post-FM AIS audio recording through the production demodulator to validate the DSP chain without live traffic).
+For developers, two helpers live under `tool/`: `sdr_probe.dart` (enumerate, stream and save raw IQ from a connected dongle) and `ais_replay.dart` (replay a saved `.cu8` capture or a real post-FM AIS audio recording through AIS-catcher to validate reception without live traffic).
 
 ## 🏗️ Architecture
 
@@ -143,7 +143,7 @@ AIS messages arrive continuously and need rapid updates to both the UI logs and 
 
 - The **BoatManager** holds the central vessel collection (`Map<int, Boat>`) and updates the relevant boat on every incoming message.
 - Message decoding is offloaded to a **dedicated isolate**, so the UI never blocks — even under heavy data load.
-- The **RTL-SDR** receive chain runs the GMSK/AIS demodulation in its own DSP isolate (`lib/sdr/`): a decimating channelizer, FM discriminator, burst detector, Viterbi decoder, HDLC framer and NMEA builder all in pure Dart, fed by librtlsdr over FFI.
+- The **RTL-SDR** receive chain runs via [AIS-catcher](https://github.com/jvde-github/AIS-catcher) as an external process, feeding NMEA sentences back into the app over local UDP.
 - The main window is a single view built around an **IndexedStack** inside `SwipperUi`, switched through a NavigationBar with **seven tabs** (Reception, Send, Map, Editor, Decoder, Stats, Simulation).
 - The map renders vessels through a custom canvas layer for smooth drawing of thousands of markers.
 
@@ -169,7 +169,7 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 ### Improvements
 
 #### Done
-- **In-app RTL-SDR reception** (replaces the "research other AIS input ways" item): a pure-Dart GMSK/AIS demodulator (`lib/sdr/dsp/`) plus librtlsdr FFI run the whole receive chain inside the app — no external program needed. Validated end-to-end on **real-world AIS recordings** (Helsinki, Long Beach; decoded dozens of valid AIVDM sentences) and on a **physical dongle** (Generic RTL2832U): enumeration, 1.024 MHz IQ streaming, spectrum analysis (DC spike rejection), and zero false positives on noise.
+- **In-app RTL-SDR reception** (replaces the "research other AIS input ways" item): integrates [AIS-catcher](https://github.com/jvde-github/AIS-catcher) as an external process — auto-downloaded on first use, with auto-gain and both VHF channels by default. Validated end-to-end on a **physical RTL-SDR Blog V4 dongle**.
 - **Add-source popup tooltips** (see the HoverTooltip workaround above).
 - **RTL-SDR lifecycle logs** in the Reception console (opening / connected with frequency, sample rate, gain and channels / errors / stream closed / disconnected), matching the network feeds.
 - **"Clear the map" button** (remove all vessels) — available on the map page toolbar.
@@ -179,7 +179,7 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - Add the ability to filter what is forwarded (by message type, geographic zone, vessel, etc.)
 - Improve compatibility with other platforms (macOS, iOS and Android)
 - Make verification for memory leaks and performances
-- Continuous replay validation of real AIS recordings (extend `tool/ais_replay.dart`) as a regression harness for the DSP chain
+- Continuous replay validation of real AIS recordings (extend `tool/ais_replay.dart`) as a regression harness
 - Test created ais sentences with external tool such as ais-decoder
 
 ## 🤝 Contributing
