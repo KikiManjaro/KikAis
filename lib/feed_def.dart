@@ -168,35 +168,5 @@ const List<FeedDef> kFeedDefs = [
     port: 4000,
     builtIn: true,
   ),
-  // --- SSE sources (AIS-catcher public dashboards) ---
-  FeedDef(
-    key: "SSE:Saint-Malo",
-    displayName: "Saint-Malo (FR) — AIS-catcher",
-    type: FeedType.sse,
-    sseUrl: "https://aiscatcher.saint-malo.example.com/api/sse",
-    builtIn: true,
-    tooltip:
-        "AIS-catcher community dashboard — NMEA AIVDM via Server-Sent Events.\n"
-        "Free, no token required. Feed: Saint-Malo, France.",
-  ),
-  FeedDef(
-    key: "SSE:Athens",
-    displayName: "Athens (GR) — AIS-catcher",
-    type: FeedType.sse,
-    sseUrl: "https://aiscatcher.athens.example.com/api/sse",
-    builtIn: true,
-    tooltip:
-        "AIS-catcher community dashboard — NMEA AIVDM via Server-Sent Events.\n"
-        "Free, no token required. Feed: Athens, Greece.",
-  ),
-  FeedDef(
-    key: "SSE:Aalesund",
-    displayName: "Ålesund (NO) — AIS-catcher",
-    type: FeedType.sse,
-    sseUrl: "https://aiscatcher.aalesund.example.com/api/sse",
-    builtIn: true,
-    tooltip:
-        "AIS-catcher community dashboard — NMEA AIVDM via Server-Sent Events.\n"
-        "Free, no token required. Feed: Ålesund, Norway.",
-  ),
+
 ];

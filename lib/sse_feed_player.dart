@@ -85,7 +85,7 @@ class SseFeedPlayer {
             // Retry interval hint — we handle reconnection ourselves
             return;
           }
-          if (line.startsWith('data:')) {
+          if (line.startsWith('data:') && (eventType == null || eventType == 'nmea')) {
             final payload = line.substring(5).trim();
             if (payload.isNotEmpty) {
               onData(name, flag, payload);
