@@ -1,4 +1,4 @@
-enum FeedType { network, file, serial, rtlsdr }
+enum FeedType { network, file, serial, rtlsdr, sse }
 
 class FeedDef {
   final String key;
@@ -34,6 +34,10 @@ class FeedDef {
   final bool useChannel1;
   final bool useChannel2;
 
+  /// SSE (Server-Sent Events) source details.
+  final String? sseUrl;
+  final String? sseToken;
+
   final String? tooltip;
   final bool builtIn;
 
@@ -56,6 +60,8 @@ class FeedDef {
     this.sampleRate = 1024000,
     this.useChannel1 = true,
     this.useChannel2 = true,
+    this.sseUrl,
+    this.sseToken,
     this.tooltip,
     this.builtIn = false,
   });
@@ -79,6 +85,8 @@ class FeedDef {
         'sampleRate': sampleRate,
         'useChannel1': useChannel1,
         'useChannel2': useChannel2,
+        'sseUrl': sseUrl,
+        'sseToken': sseToken,
         'tooltip': tooltip,
       };
 
@@ -106,6 +114,8 @@ class FeedDef {
         sampleRate: json['sampleRate'] as int? ?? 1024000,
         useChannel1: json['useChannel1'] as bool? ?? true,
         useChannel2: json['useChannel2'] as bool? ?? true,
+        sseUrl: json['sseUrl'] as String?,
+        sseToken: json['sseToken'] as String?,
         tooltip: json['tooltip'] as String?,
       );
 }
@@ -157,5 +167,36 @@ const List<FeedDef> kFeedDefs = [
     host: "ssia-ais.erau.edu",
     port: 4000,
     builtIn: true,
+  ),
+  // --- SSE sources (AIS-catcher public dashboards) ---
+  FeedDef(
+    key: "SSE:Saint-Malo",
+    displayName: "Saint-Malo (FR) — AIS-catcher",
+    type: FeedType.sse,
+    sseUrl: "https://aiscatcher.saint-malo.example.com/api/sse",
+    builtIn: true,
+    tooltip:
+        "AIS-catcher community dashboard — NMEA AIVDM via Server-Sent Events.\n"
+        "Free, no token required. Feed: Saint-Malo, France.",
+  ),
+  FeedDef(
+    key: "SSE:Athens",
+    displayName: "Athens (GR) — AIS-catcher",
+    type: FeedType.sse,
+    sseUrl: "https://aiscatcher.athens.example.com/api/sse",
+    builtIn: true,
+    tooltip:
+        "AIS-catcher community dashboard — NMEA AIVDM via Server-Sent Events.\n"
+        "Free, no token required. Feed: Athens, Greece.",
+  ),
+  FeedDef(
+    key: "SSE:Aalesund",
+    displayName: "Ålesund (NO) — AIS-catcher",
+    type: FeedType.sse,
+    sseUrl: "https://aiscatcher.aalesund.example.com/api/sse",
+    builtIn: true,
+    tooltip:
+        "AIS-catcher community dashboard — NMEA AIVDM via Server-Sent Events.\n"
+        "Free, no token required. Feed: Ålesund, Norway.",
   ),
 ];

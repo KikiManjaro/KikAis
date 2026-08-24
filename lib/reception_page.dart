@@ -246,8 +246,15 @@ class ReceptionPageState extends State<ReceptionPage> {
           await _startFileFeed(feed);
         } else if (feed.type == FeedType.serial) {
           await _startSerialFeed(feed);
-        } else {
+        } else if (feed.type == FeedType.rtlsdr) {
           await _startRtlSdrFeed(feed);
+        } else if (feed.type == FeedType.sse) {
+          await forwarderService.addSseFeed(
+            feed.displayName,
+            feed.key,
+            feed.sseUrl!,
+            token: feed.sseToken,
+          );
         }
       }
     }
@@ -268,6 +275,8 @@ class ReceptionPageState extends State<ReceptionPage> {
         _stopSerialFeed(feed);
       } else if (feed.type == FeedType.rtlsdr) {
         _stopRtlSdrFeed(feed);
+      } else if (feed.type == FeedType.sse) {
+        // SSE feeds are stopped by forwarderService.stop()
       }
     }
     await forwarderService.stop();
@@ -577,11 +586,22 @@ class ReceptionPageState extends State<ReceptionPage> {
       } else {
         await _stopSerialFeed(feed);
       }
-    } else {
+    } else if (feed.type == FeedType.rtlsdr) {
       if (value) {
         await _startRtlSdrFeed(feed);
       } else {
         await _stopRtlSdrFeed(feed);
+      }
+    } else if (feed.type == FeedType.sse) {
+      if (value) {
+        await forwarderService.addSseFeed(
+          feed.displayName,
+          feed.key,
+          feed.sseUrl!,
+          token: feed.sseToken,
+        );
+      } else {
+        await forwarderService.removeSseFeed(feed.displayName);
       }
     }
   }
@@ -613,8 +633,15 @@ class ReceptionPageState extends State<ReceptionPage> {
         await _startFileFeed(feed);
       } else if (feed.type == FeedType.serial) {
         await _startSerialFeed(feed);
-      } else {
+      } else if (feed.type == FeedType.rtlsdr) {
         await _startRtlSdrFeed(feed);
+      } else if (feed.type == FeedType.sse) {
+        await forwarderService.addSseFeed(
+          feed.displayName,
+          feed.key,
+          feed.sseUrl!,
+          token: feed.sseToken,
+        );
       }
     }
   }
@@ -626,6 +653,8 @@ class ReceptionPageState extends State<ReceptionPage> {
       await _stopSerialFeed(feed);
     } else if (feed.type == FeedType.rtlsdr) {
       await _stopRtlSdrFeed(feed);
+    } else if (feed.type == FeedType.sse) {
+      await forwarderService.removeSseFeed(feed.displayName);
     } else if (isRunning) {
       await forwarderService.removeFeed(feed.displayName);
     }
@@ -1238,6 +1267,8 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
   bool _loop = true;
   bool _useTimestamps = false;
   int _speed = 1;
+  final _sseUrl = TextEditingController();
+  final _sseToken = TextEditingController();
 
   @override
   void dispose() {
@@ -1320,6 +1351,18 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
         useChannel2: _useChannel2,
       );
     }
+    if (_type == FeedType.sse) {
+      final url = _sseUrl.text.trim();
+      if (url.isEmpty) return null;
+      final token = _sseToken.text.trim();
+      return FeedDef(
+        key: 'SSE:$name',
+        displayName: name,
+        type: FeedType.sse,
+        sseUrl: url,
+        sseToken: token.isEmpty ? null : token,
+      );
+    }
     final path = _path.text.trim();
     if (path.isEmpty) return null;
     final interval = (int.tryParse(_interval.text) ?? 1000)
@@ -1369,6 +1412,10 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                   ButtonSegment(
                     value: FeedType.rtlsdr,
                     label: Text(context.l10n.receptionRtlSdr),
+                  ),
+                  ButtonSegment(
+                    value: FeedType.sse,
+                    label: const Text('SSE'),
                   ),
                 ],
                 selected: {_type},
@@ -1700,6 +1747,28 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                   ],
                 ),
               ],
+              ] else if (_type == FeedType.sse) ...[
+                HoverTooltip(
+                  message: 'URL of the AIS-catcher SSE endpoint',
+                  child: TextField(
+                    controller: _sseUrl,
+                    decoration: const InputDecoration(
+                      labelText: 'SSE URL',
+                      hintText: 'https://ais-catcher.example.com/api/sse',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                HoverTooltip(
+                  message: 'Optional: Bearer token for authenticated SSE endpoints',
+                  child: TextField(
+                    controller: _sseToken,
+                    decoration: const InputDecoration(
+                      labelText: 'Token (optional)',
+                      hintText: 'Leave empty for public endpoints',
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

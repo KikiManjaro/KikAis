@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import 'ais/ais_decoder.dart' show NmeaFormat, applyNmeaFormat;
+import 'sse_feed_player.dart';
 import 'target_config.dart';
 
 enum ForwardProtocol { udpServer, tcpClient, udpClient, tcpServer }
@@ -74,6 +75,7 @@ class ForwarderService {
   }
 
   final Map<String, _FeedConnection> _feeds = {};
+  final Map<String, SseFeedPlayer> _sseFeeds = {};
   final ValueNotifier<Map<String, FeedStatus>> feedStatuses = ValueNotifier({});
   final Map<String, _TargetConnection> _targets = {};
 
@@ -140,6 +142,9 @@ class ForwarderService {
     for (var feed in _feeds.values) {
       unawaited(_connectFeed(feed));
     }
+    for (var feed in _sseFeeds.values) {
+      unawaited(_connectSseFeed(feed));
+    }
   }
 
   Future<void> stop() async {
@@ -150,6 +155,10 @@ class ForwarderService {
       await feed.disconnect();
     }
     _feeds.clear();
+    for (var feed in _sseFeeds.values) {
+      await feed.disconnect();
+    }
+    _sseFeeds.clear();
     for (final t in _targets.values) {
       await t.disconnect();
     }
@@ -234,6 +243,84 @@ class ForwarderService {
 
   void removeFeedStatus(String name) {
     feedStatuses.value = Map.of(feedStatuses.value)..remove(name);
+  }
+
+  /// Adds an SSE (Server-Sent Events) feed that streams NMEA sentences
+  /// from an AIS-catcher dashboard or similar HTTP SSE endpoint.
+  Future<void> addSseFeed(
+    String name,
+    String flag,
+    String url, {
+    String? token,
+  }) async {
+    if (_sseFeeds.containsKey(name)) return;
+
+    var feed = SseFeedPlayer(name, flag, url, token: token);
+    _sseFeeds[name] = feed;
+    feedStatuses.value = {...feedStatuses.value, name: feed.status};
+    feed.statusNotifier.addListener(() {
+      feedStatuses.value = {...feedStatuses.value, name: feed.status};
+    });
+
+    if (_running && !_stopping) {
+      unawaited(_connectSseFeed(feed));
+    }
+
+    _status(
+      LogMessage(
+        'sseFeedAdded',
+        {'name': name, 'url': url},
+        'SSE feed added: $name ($url)',
+      ),
+    );
+  }
+
+  Future<void> removeSseFeed(String name) async {
+    var feed = _sseFeeds.remove(name);
+    if (feed != null) {
+      await feed.disconnect();
+      feed.statusNotifier.dispose();
+      feedStatuses.value = Map.of(feedStatuses.value)..remove(name);
+      _status(
+        LogMessage(
+          'sseFeedRemoved',
+          {'name': name},
+          'SSE feed removed: $name',
+        ),
+      );
+    }
+  }
+
+  Future<void> _connectSseFeed(SseFeedPlayer feed) async {
+    while (!_stopping) {
+      try {
+        await feed.connect(_handleData);
+        _status(
+          LogMessage('sseFeedConnected', {'name': feed.name},
+              'SSE feed ${feed.name} connected.'),
+        );
+        await feed.closed;
+        if (_stopping || feed.isDisposed) break;
+        _status(
+          LogMessage(
+            'sseFeedDisconnected',
+            {'name': feed.name},
+            'SSE feed ${feed.name} disconnected. Reconnecting in 5s...',
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 5));
+      } catch (e) {
+        if (_stopping || feed.isDisposed) break;
+        _status(
+          LogMessage(
+            'sseFeedConnectFailed',
+            {'name': feed.name, 'error': '$e'},
+            'Failed to connect SSE feed ${feed.name}: $e. Retrying in 5s...',
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 5));
+      }
+    }
   }
 
   Future<void> _connectFeed(_FeedConnection feed) async {
