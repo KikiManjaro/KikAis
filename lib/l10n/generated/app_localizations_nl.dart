@@ -3646,4 +3646,25 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get aisCatcherInvalidPath =>
       'Invalid AIS-catcher executable. Please select ais-catcher.exe.';
+
+  @override
+  String get statsChannelOccupancy => 'Kanaalbezetting';
+
+  @override
+  String get statsChannelA => 'Ch A · 161,975 MHz';
+
+  @override
+  String get statsChannelB => 'Ch B · 162,025 MHz';
+
+  @override
+  String get statsChannelOther => 'Overig';
+
+  @override
+  String get statsChannelNoData => 'Nog geen kanaalgegevens';
+
+  @override
+  String statsChannelPercent(Object percent) => '${percent} %';
+
+  @override
+  String statsChannelRate(Object rate) => '${rate}/s';
 }

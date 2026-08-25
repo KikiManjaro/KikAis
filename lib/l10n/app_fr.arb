@@ -1154,6 +1154,13 @@
   "aisCatcherCancel": "Annuler",
   "aisCatcherManualDownload": "Télécharger manuellement",
   "aisCatcherDownloading": "Téléchargement d'AIS-catcher…",
-  "aisCatcherInvalidPath": "Exécutable AIS-catcher invalide. Veuillez sélectionner ais-catcher.exe."
+  "aisCatcherInvalidPath": "Exécutable AIS-catcher invalide. Veuillez sélectionner ais-catcher.exe.",
+  "statsChannelOccupancy": "Occupation des canaux",
+  "statsChannelA": "Ch A · 161,975 MHz",
+  "statsChannelB": "Ch B · 162,025 MHz",
+  "statsChannelOther": "Autre",
+  "statsChannelNoData": "Aucune donnée de canal pour l'instant",
+  "statsChannelPercent": "{percent} %",
+  "statsChannelRate": "{rate}/s"
 }
 

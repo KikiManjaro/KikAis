@@ -3483,4 +3483,25 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get aisCatcherInvalidPath =>
       'Invalid AIS-catcher executable. Please select ais-catcher.exe.';
+
+  @override
+  String get statsChannelOccupancy => '信道占用';
+
+  @override
+  String get statsChannelA => '信道 A · 161.975 MHz';
+
+  @override
+  String get statsChannelB => '信道 B · 162.025 MHz';
+
+  @override
+  String get statsChannelOther => '其他';
+
+  @override
+  String get statsChannelNoData => '暂无信道数据';
+
+  @override
+  String statsChannelPercent(Object percent) => '${percent}%';
+
+  @override
+  String statsChannelRate(Object rate) => '${rate}/s';
 }

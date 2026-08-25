@@ -256,6 +256,13 @@ class _StatsPageState extends State<StatsPage> {
             ),
             const SizedBox(height: 16),
             Text(
+              context.l10n.statsChannelOccupancy,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            _ChannelOccupancyCard(stats: stats),
+            const SizedBox(height: 16),
+            Text(
               context.l10n.statsReceivedVsDecoded,
               style: Theme.of(context).textTheme.titleMedium,
             ),
@@ -1031,4 +1038,183 @@ class _MiniLinePainter extends CustomPainter {
   bool shouldRepaint(_MiniLinePainter oldDelegate) =>
       oldDelegate.data.length != data.length ||
       (data.isNotEmpty && oldDelegate.data.last != data.last);
+}
+
+/// Displays AIS channel A / B occupancy as a visual breakdown.
+class _ChannelOccupancyCard extends StatelessWidget {
+  final MessageStats stats;
+
+  const _ChannelOccupancyCard({required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+    final scheme = Theme.of(context).colorScheme;
+
+    final chA = stats.byChannel['A'] ?? 0;
+    final chB = stats.byChannel['B'] ?? 0;
+    final other = stats.byChannel.entries
+        .where((e) => e.key != 'A' && e.key != 'B')
+        .fold<int>(0, (sum, e) => sum + e.value);
+    final total = chA + chB + other;
+
+    if (total == 0) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Text(
+              context.l10n.statsChannelNoData,
+              style: TextStyle(
+                color: scheme.onSurfaceVariant,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final rateA = stats.rateByChannel['A'] ?? 0;
+    final rateB = stats.rateByChannel['B'] ?? 0;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Stacked bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: SizedBox(
+                height: 14,
+                child: Row(
+                  children: [
+                    if (chA > 0)
+                      Expanded(
+                        flex: chA,
+                        child: Container(color: appColors.info),
+                      ),
+                    if (chB > 0)
+                      Expanded(
+                        flex: chB,
+                        child: Container(color: appColors.success),
+                      ),
+                    if (other > 0)
+                      Expanded(
+                        flex: other,
+                        child: Container(
+                          color: scheme.surfaceContainerHighest,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Channel A row
+            _ChannelRow(
+              color: appColors.info,
+              label: context.l10n.statsChannelA,
+              count: chA,
+              rate: rateA,
+              total: total,
+            ),
+            const SizedBox(height: 6),
+            // Channel B row
+            _ChannelRow(
+              color: appColors.success,
+              label: context.l10n.statsChannelB,
+              count: chB,
+              rate: rateB,
+              total: total,
+            ),
+            // Other channels (if any)
+            if (other > 0) ...[
+              const SizedBox(height: 6),
+              _ChannelRow(
+                color: scheme.surfaceContainerHighest,
+                label: context.l10n.statsChannelOther,
+                count: other,
+                rate: 0,
+                total: total,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ChannelRow extends StatelessWidget {
+  final Color color;
+  final String label;
+  final int count;
+  final double rate;
+  final int total;
+
+  const _ChannelRow({
+    required this.color,
+    required this.label,
+    required this.count,
+    required this.rate,
+    required this.total,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final pct = total > 0 ? (count / total * 100) : 0.0;
+
+    return Row(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 12),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Text(
+          _KpiCard._group(count),
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(width: 6),
+        SizedBox(
+          width: 52,
+          child: Text(
+            context.l10n.statsChannelPercent(pct.toStringAsFixed(1)),
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: 11,
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        if (rate > 0) ...[
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 48,
+            child: Text(
+              context.l10n.statsChannelRate(rate.toStringAsFixed(1)),
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 11,
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
 }
