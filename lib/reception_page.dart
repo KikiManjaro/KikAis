@@ -53,6 +53,24 @@ FeedDotColor feedDotColor(FeedStatus? status, DateTime now) {
   return fresh ? FeedDotColor.green : FeedDotColor.orange;
 }
 
+/// Extracts the AIS channel (A, B, or null) from a raw NMEA sentence.
+///
+/// The channel is the fourth comma-separated field after the `!` prefix
+/// in `!AIVDM,1,1,,A,<payload>,0*<checksum>`.
+String? _extractChannel(String sentence) {
+  final bang = sentence.indexOf('!');
+  if (bang < 0) return null;
+  var idx = bang;
+  for (var i = 0; i < 4; i++) {
+    idx = sentence.indexOf(',', idx + 1);
+    if (idx < 0) return null;
+  }
+  final end = sentence.indexOf(',', idx + 1);
+  if (end < 0) return null;
+  final ch = sentence.substring(idx + 1, end);
+  return ch.isEmpty ? null : ch;
+}
+
 /// Reception page: AIS sources (feeds), the connection log and the global
 /// start/stop. Sending is handled by the separate Send page.
 class ReceptionPage extends StatefulWidget {
@@ -126,7 +144,7 @@ class ReceptionPageState extends State<ReceptionPage> {
         final (_, sentence) = NmeaTagBlock.split(message);
         final isAis = sentence.startsWith('!');
         if (isAis) {
-          stats.recordReceived(name);
+          stats.recordReceived(name, channel: _extractChannel(sentence));
         }
         // Batched: a single setState per flush instead of one per frame, so
         // high-volume feeds (e.g. a large simulated fleet) don't stall the UI.

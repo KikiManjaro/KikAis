@@ -6663,6 +6663,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid AIS-catcher executable. Please select ais-catcher.exe.'**
   String get aisCatcherInvalidPath;
+
+  /// No description provided for @statsChannelOccupancy.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel occupancy'**
+  String get statsChannelOccupancy;
+
+  /// No description provided for @statsChannelA.
+  ///
+  /// In en, this message translates to:
+  /// **'Ch A · 161.975 MHz'**
+  String get statsChannelA;
+
+  /// No description provided for @statsChannelB.
+  ///
+  /// In en, this message translates to:
+  /// **'Ch B · 162.025 MHz'**
+  String get statsChannelB;
+
+  /// No description provided for @statsChannelOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get statsChannelOther;
+
+  /// No description provided for @statsChannelNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No channel data yet'**
+  String get statsChannelNoData;
+
+  /// No description provided for @statsChannelPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%'**
+  String statsChannelPercent(Object percent);
+
+  /// No description provided for @statsChannelRate.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate}/s'**
+  String statsChannelRate(Object rate);
 }
 
 class _AppLocalizationsDelegate

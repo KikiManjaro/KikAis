@@ -12,10 +12,12 @@ class MessageStats extends ChangeNotifier {
   final Map<String, int> byFeed = {};
   final Map<String, int> byFeedDecoded = {};
   final Map<String, Map<int, int>> byTypePerFeed = {};
+  final Map<String, int> byChannel = {};
   int totalReceived = 0;
   int totalDecoded = 0;
   double messagesPerSecond = 0;
   Map<String, double> rateByFeed = {};
+  Map<String, double> rateByChannel = {};
 
   /// Last samples of the global rate (for charts), oldest first.
   final List<double> rateHistory = [];
@@ -26,6 +28,7 @@ class MessageStats extends ChangeNotifier {
   int _lastCount = 0;
   int _lastDecodedCount = 0;
   Map<String, int> _lastByFeedCount = {};
+  Map<String, int> _lastByChannelCount = {};
   Timer? _sampler;
 
   MessageStats() {
@@ -50,13 +53,24 @@ class MessageStats extends ChangeNotifier {
     rateByFeed = next;
     _lastByFeedCount = Map.of(byFeed);
 
+    final nextChannel = <String, double>{};
+    for (final entry in byChannel.entries) {
+      final previous = _lastByChannelCount[entry.key] ?? 0;
+      nextChannel[entry.key] = (entry.value - previous).toDouble();
+    }
+    rateByChannel = nextChannel;
+    _lastByChannelCount = Map.of(byChannel);
+
     notifyListeners();
   }
 
-  void recordReceived(String? feed) {
+  void recordReceived(String? feed, {String? channel}) {
     totalReceived++;
     if (feed != null) {
       byFeed[feed] = (byFeed[feed] ?? 0) + 1;
+    }
+    if (channel != null) {
+      byChannel[channel] = (byChannel[channel] ?? 0) + 1;
     }
   }
 
@@ -75,7 +89,9 @@ class MessageStats extends ChangeNotifier {
     byFeed.clear();
     byFeedDecoded.clear();
     byTypePerFeed.clear();
+    byChannel.clear();
     rateByFeed = {};
+    rateByChannel = {};
     rateHistory.clear();
     decodedHistory.clear();
     totalReceived = 0;
@@ -84,6 +100,7 @@ class MessageStats extends ChangeNotifier {
     _lastCount = 0;
     _lastDecodedCount = 0;
     _lastByFeedCount = {};
+    _lastByChannelCount = {};
     notifyListeners();
   }
 

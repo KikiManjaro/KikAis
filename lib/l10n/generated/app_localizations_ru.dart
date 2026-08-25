@@ -3650,4 +3650,25 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get aisCatcherInvalidPath =>
       'Invalid AIS-catcher executable. Please select ais-catcher.exe.';
+
+  @override
+  String get statsChannelOccupancy => 'Загрузка каналов';
+
+  @override
+  String get statsChannelA => 'Канал A · 161,975 МГц';
+
+  @override
+  String get statsChannelB => 'Канал B · 162,025 МГц';
+
+  @override
+  String get statsChannelOther => 'Другое';
+
+  @override
+  String get statsChannelNoData => 'Данные по каналам отсутствуют';
+
+  @override
+  String statsChannelPercent(Object percent) => '${percent} %';
+
+  @override
+  String statsChannelRate(Object rate) => '${rate}/s';
 }

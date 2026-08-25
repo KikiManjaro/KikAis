@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "es",
 
   "languageSystem": "Automático (sistema)",
@@ -1154,5 +1154,12 @@
   "aisCatcherCancel": "Cancel",
   "aisCatcherManualDownload": "Download manually",
   "aisCatcherDownloading": "Downloading AIS-catcher...",
-  "aisCatcherInvalidPath": "Invalid AIS-catcher executable. Please select ais-catcher.exe."
+  "aisCatcherInvalidPath": "Invalid AIS-catcher executable. Please select ais-catcher.exe.",
+  "statsChannelOccupancy": "Ocupación del canal",
+  "statsChannelA": "Ch A · 161,975 MHz",
+  "statsChannelB": "Ch B · 162,025 MHz",
+  "statsChannelOther": "Otro",
+  "statsChannelNoData": "Sin datos de canal aún",
+  "statsChannelPercent": "{percent} %",
+  "statsChannelRate": "{rate}/s"
 }

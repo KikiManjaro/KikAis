@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "ru",
 
   "languageSystem": "Авто (система)",
@@ -1152,5 +1152,12 @@
   "aisCatcherCancel": "Cancel",
   "aisCatcherManualDownload": "Download manually",
   "aisCatcherDownloading": "Downloading AIS-catcher...",
-  "aisCatcherInvalidPath": "Invalid AIS-catcher executable. Please select ais-catcher.exe."
+  "aisCatcherInvalidPath": "Invalid AIS-catcher executable. Please select ais-catcher.exe.",
+  "statsChannelOccupancy": "Загрузка каналов",
+  "statsChannelA": "Канал A · 161,975 МГц",
+  "statsChannelB": "Канал B · 162,025 МГц",
+  "statsChannelOther": "Другое",
+  "statsChannelNoData": "Данные по каналам отсутствуют",
+  "statsChannelPercent": "{percent} %",
+  "statsChannelRate": "{rate}/s"
 }
