@@ -250,6 +250,12 @@ class AisCatcherProcess {
   /// [gainDb] — manual gain in dB (ignored when [autoGain] is true).
   /// [sampleRate] — sample rate in Hz (default 1024000).
   /// [useChannel1], [useChannel2] — which AIS channels to decode.
+  ///
+  /// When [source] is non-null (e.g. `rtltcp://host:port` for a KiwiSDR or
+  /// `txt://host:port` for a classic WebSDR) the RTL-SDR flags above are
+  /// skipped and ais-catcher reads from that remote source instead, still
+  /// emitting NMEA sentences over UDP. This reuses the same process discovery,
+  /// download and lifecycle handling for every input type.
   Future<void> start({
     int deviceIndex = 0,
     bool autoGain = true,
@@ -257,6 +263,7 @@ class AisCatcherProcess {
     int sampleRate = 1024000,
     bool useChannel1 = true,
     bool useChannel2 = true,
+    String? source,
   }) async {
     if (_process != null) return;
 
@@ -268,22 +275,58 @@ class AisCatcherProcess {
       );
     }
 
-    final channel = useChannel1 && useChannel2
-        ? 'AB'
-        : (useChannel1 ? 'A' : 'B');
-    final gainArg = autoGain
-        ? const ['-gr', 'tuner', 'AUTO', 'rtlagc', 'ON']
-        : ['-gr', 'tuner', '${gainDb ?? 30}', 'rtlagc', 'ON'];
+    final List<String> args;
+    if (source != null) {
+      // Remote input requested. Real ais-catcher 0.70 only supports RTL-TCP
+      // via `-t rtltcp HOST PORT`, SpyServer `-y HOST PORT` and NMEA UDP
+      // `-x HOST PORT`. KiwiSDR / WebSDR HTTP/WebSocket/audio streams are
+      // NOT a raw RTL-TCP source and therefore cannot be fed to ais-catcher.
+      // We keep the RTL-TCP path for true RTL-TCP servers and surface an
+      // honest error for anything else instead of pretending to connect.
+      if (source.startsWith('rtltcp://')) {
+        final hostPort = source.substring('rtltcp://'.length);
+        final parts = hostPort.split(':');
+        final host = parts.first.trim();
+        final port = parts.length > 1 ? parts[1].trim() : '7373';
+        if (host.isEmpty) throw StateError('Invalid RTL-TCP source: $source');
+        args = [
+          '-t', 'rtltcp', host, port,
+          '-u', '127.0.0.1', '$_udpPort',
+          '-q',
+        ];
+      } else if (source.startsWith('txt://')) {
+        throw StateError(
+          'WebSDR/KiwiSDR streams (txt://) are not supported by '
+          'ais-catcher $_kGitHubReleases — no raw RTL-TCP stream. '
+          'Connect a local RTL-SDR dongle or a true RTL-TCP server instead.',
+        );
+      } else if (source.contains('://')) {
+        throw StateError('Unsupported remote source protocol: $source');
+      } else {
+        // Fallback: treat source as plain "HOST:PORT" RTL-TCP.
+        final parts = source.split(':');
+        final host = parts.first.trim();
+        final port = parts.length > 1 ? parts[1].trim() : '7373';
+        args = ['-t', 'rtltcp', host, port, '-u', '127.0.0.1', '$_udpPort', '-q'];
+      }
+    } else {
+      final channel = useChannel1 && useChannel2
+          ? 'AB'
+          : (useChannel1 ? 'A' : 'B');
+      final gainArg = autoGain
+          ? const ['-gr', 'tuner', 'AUTO', 'rtlagc', 'ON']
+          : ['-gr', 'tuner', '${gainDb ?? 30}', 'rtlagc', 'ON'];
 
-    final args = [
-      '-d:$deviceIndex',
-      '-s', '$sampleRate',
-      ...gainArg,
-      '-c', channel,
-      '-X', 'off',             // disable community data sharing
-      '-u', '127.0.0.1', '$_udpPort', // NMEA sentences to UDP
-      '-q',                           // quiet output
-    ];
+      args = [
+        '-d:$deviceIndex',
+        '-s', '$sampleRate',
+        ...gainArg,
+        '-c', channel,
+        '-X', 'off',             // disable community data sharing
+        '-u', '127.0.0.1', '$_udpPort', // NMEA sentences to UDP
+        '-q',                           // quiet output
+      ];
+    }
 
     _process = await Process.start(exe, args);
 

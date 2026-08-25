@@ -29,6 +29,7 @@ class AppSettings extends ChangeNotifier {
   static const _kImportFormat = 'nmeaImportFormat';
   static const _kImportTagSource = 'nmeaImportTagSource';
   static const _kLocale = 'locale';
+  static const _kClassicWebSdr = 'classicWebSdrAudio';
 
   bool mapClusterEnabled = true;
   bool sendToMap = false;
@@ -44,6 +45,7 @@ class AppSettings extends ChangeNotifier {
   String basemapId = '';
   bool showTrails = true;
   bool showVectors = true;
+  bool enableClassicWebSdrAudio = true;
 
   List<TargetConfig> targets = [];
   final Map<String, bool> feedEnabled = {};
@@ -103,6 +105,13 @@ class AppSettings extends ChangeNotifier {
     saveShowVectors(value);
   }
 
+  void setClassicWebSdrAudio(bool value) {
+    if (enableClassicWebSdrAudio == value) return;
+    enableClassicWebSdrAudio = value;
+    notifyListeners();
+    saveClassicWebSdrAudio(value);
+  }
+
   void setTargets(List<TargetConfig> value) {
     if (identical(targets, value)) return;
     targets = value;
@@ -126,6 +135,7 @@ class AppSettings extends ChangeNotifier {
     basemapId = prefs.getString(_kBasemap) ?? '';
     showTrails = prefs.getBool(_kShowTrails) ?? true;
     showVectors = prefs.getBool(_kShowVectors) ?? true;
+    enableClassicWebSdrAudio = prefs.getBool(_kClassicWebSdr) ?? true;
 
     final rawTargets = prefs.getString(_kTargets);
     if (rawTargets != null && rawTargets.isNotEmpty) {
@@ -232,6 +242,11 @@ class AppSettings extends ChangeNotifier {
     await prefs.setBool(_kShowVectors, value);
   }
 
+  Future<void> saveClassicWebSdrAudio(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kClassicWebSdr, value);
+  }
+
   Future<void> saveMapClusterEnabled(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kCluster, value);
@@ -265,6 +280,7 @@ class AppSettings extends ChangeNotifier {
     await prefs.setString(_kBasemap, basemapId);
     await prefs.setBool(_kShowTrails, showTrails);
     await prefs.setBool(_kShowVectors, showVectors);
+    await prefs.setBool(_kClassicWebSdr, enableClassicWebSdrAudio);
     await prefs.setString(
       _kTargets,
       jsonEncode(targets.map((t) => t.toJson()).toList()),

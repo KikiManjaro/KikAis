@@ -75,6 +75,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabDocs => 'Docs';
 
   @override
+  String get tabWebSdr => 'WebSDR';
+
+  @override
   String get protocolUdpServer => 'UDP Server';
 
   @override
@@ -240,6 +243,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get receptionRtlSdrChannels => 'Channels';
+
+  @override
+  String get receptionWebSdr => 'WebSDR';
+
+  @override
+  String get receptionBrowseWebSdr => 'Browse WebSDR servers…';
+
+  @override
+  String get receptionWebSdrPickerTitle => 'Choose a WebSDR server';
+
+  @override
+  String get receptionWebSdrSearchHint => 'Search a server…';
+
+  @override
+  String get receptionWebSdrSelect => 'Select';
+
+  @override
+  String get websdrFilterAis => 'AIS';
 
   @override
   String get msgType1 => 'Position Report Class A';

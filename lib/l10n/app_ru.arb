@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "ru",
 
   "languageSystem": "Авто (система)",
@@ -25,6 +25,7 @@
   "tabStats": "Статистика",
   "tabSimulation": "Симуляция",
   "tabDocs": "Справка",
+  "tabWebSdr": "WebSDR",
 
   "protocolUdpServer": "UDP-сервер",
   "protocolUdpClient": "UDP-клиент",
@@ -74,6 +75,12 @@
   "receptionSerialPortHint": "например, COM3 или /dev/ttyUSB0",
   "receptionBaudRate": "Скорость передачи (бод)",
   "receptionRtlSdrChannels": "Каналы",
+  "receptionWebSdr": "WebSDR",
+  "receptionBrowseWebSdr": "Обзор серверов WebSDR…",
+  "receptionWebSdrPickerTitle": "Выберите сервер WebSDR",
+  "receptionWebSdrSearchHint": "Поиск сервера…",
+  "receptionWebSdrSelect": "Выбрать",
+  "websdrFilterAis": "AIS",
   "receptionRtlSdrSampleRate": "Частота дискретизации",
   "receptionRtlSdrGainDb": "Усиление тюнера (дБ)",
   "receptionRtlSdrAutoGain": "Автоматическое усиление (рекомендуется)",

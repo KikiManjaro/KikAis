@@ -75,6 +75,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tabDocs => '文档';
 
   @override
+  String get tabWebSdr => 'WebSDR';
+
+  @override
   String get protocolUdpServer => 'UDP 服务器';
 
   @override
@@ -236,6 +239,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get receptionRtlSdrChannels => '频道';
+
+  @override
+  String get receptionWebSdr => 'WebSDR';
+
+  @override
+  String get receptionBrowseWebSdr => '浏览 WebSDR 服务器…';
+
+  @override
+  String get receptionWebSdrPickerTitle => '选择 WebSDR 服务器';
+
+  @override
+  String get receptionWebSdrSearchHint => '搜索服务器…';
+
+  @override
+  String get receptionWebSdrSelect => '选择';
+
+  @override
+  String get websdrFilterAis => 'AIS';
 
   @override
   String get msgType1 => 'A 类位置报告';

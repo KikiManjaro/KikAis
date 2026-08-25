@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "ja",
 
   "languageSystem": "自動（システム）",
@@ -25,6 +25,7 @@
   "tabStats": "統計",
   "tabSimulation": "シミュレーション",
   "tabDocs": "ドキュメント",
+  "tabWebSdr": "WebSDR",
 
   "protocolUdpServer": "UDP サーバー",
   "protocolUdpClient": "UDP クライアント",
@@ -74,6 +75,12 @@
   "receptionSerialPortHint": "例: COM3 または /dev/ttyUSB0",
   "receptionBaudRate": "ボーレート",
   "receptionRtlSdrChannels": "チャンネル",
+  "receptionWebSdr": "WebSDR",
+  "receptionBrowseWebSdr": "WebSDR サーバーを参照…",
+  "receptionWebSdrPickerTitle": "WebSDR サーバーを選択",
+  "receptionWebSdrSearchHint": "サーバーを検索…",
+  "receptionWebSdrSelect": "選択",
+  "websdrFilterAis": "AIS",
   "receptionRtlSdrSampleRate": "サンプルレート",
   "receptionRtlSdrGainDb": "チューナーゲイン（dB）",
   "receptionRtlSdrAutoGain": "自動ゲイン（推奨）",

@@ -26,6 +26,8 @@ import 'sdr/ais_catcher_process.dart';
 import 'sdr/rtlsdr_device.dart';
 import 'serial_feed_player.dart';
 import 'simulator_service.dart';
+import 'websdr/websdr_feed_player.dart';
+import 'websdr/websdr_server.dart';
 import 'widgets.dart';
 
 /// A feed is considered "receiving" while a frame arrived within this window.
@@ -59,7 +61,16 @@ class ReceptionPage extends StatefulWidget {
   final BoatAnimationController boat;
   final ValueNotifier<bool> running;
 
-  const ReceptionPage(this.boat, {required this.running, super.key});
+  /// Switches the app to the WebSDR browser tab (wired by swipper.dart).
+  /// Used by the "add source" dialog so picking a server happens on the map.
+  final VoidCallback? onOpenWebSdrTab;
+
+  const ReceptionPage(
+    this.boat, {
+    required this.running,
+    this.onOpenWebSdrTab,
+    super.key,
+  });
 
   @override
   State<ReceptionPage> createState() => ReceptionPageState();
@@ -100,6 +111,9 @@ class ReceptionPageState extends State<ReceptionPage> {
 
   /// Active RTL-SDR players, keyed by feed.key.
   final Map<String, AisCatcherFeedPlayer> _rtlSdrPlayers = {};
+
+  /// Active WebSDR players, keyed by feed.key.
+  final Map<String, WebsdrFeedPlayer> _websdrPlayers = {};
 
   bool isRunning = false;
   bool _validateChecksum = true;
@@ -246,8 +260,10 @@ class ReceptionPageState extends State<ReceptionPage> {
           await _startFileFeed(feed);
         } else if (feed.type == FeedType.serial) {
           await _startSerialFeed(feed);
-        } else {
+        } else if (feed.type == FeedType.rtlsdr) {
           await _startRtlSdrFeed(feed);
+        } else {
+          await _startWebsdrFeed(feed);
         }
       }
     }
@@ -268,6 +284,8 @@ class ReceptionPageState extends State<ReceptionPage> {
         _stopSerialFeed(feed);
       } else if (feed.type == FeedType.rtlsdr) {
         _stopRtlSdrFeed(feed);
+      } else if (feed.type == FeedType.websdr) {
+        _stopWebsdrFeed(feed);
       }
     }
     await forwarderService.stop();
@@ -546,6 +564,45 @@ class ReceptionPageState extends State<ReceptionPage> {
     forwarderService.removeFeedStatus(feed.displayName);
   }
 
+  /// Returns the existing player for a WebSDR feed or creates and wires one.
+  WebsdrFeedPlayer _playerForWebsdr(FeedDef feed) {
+    final existing = _websdrPlayers[feed.key];
+    if (existing != null) return existing;
+
+    final player = WebsdrFeedPlayer(
+      host: feed.host,
+      port: feed.port,
+      type: feed.websdrType ?? WebSdrType.webSdr,
+      displayName: feed.displayName,
+    );
+    player.onSentence = (nmea) =>
+        forwarderService.ingest(feed.displayName, feed.key, nmea);
+    player.onStatus = _queueLog;
+    player.addListener(() {
+      forwarderService.setFeedStatus(feed.displayName, player.status);
+    });
+    _websdrPlayers[feed.key] = player;
+    return player;
+  }
+
+  /// Opens the WebSDR server stream. On connect failure the feed is left
+  /// stopped with an error status.
+  Future<void> _startWebsdrFeed(FeedDef feed) async {
+    // Check if ais-catcher is available; if not, show the setup dialog.
+    if (AisCatcherProcess.findExecutable() == null) {
+      final setupOk = await _showAisCatcherSetupDialog();
+      if (!setupOk) return;
+    }
+    final player = _playerForWebsdr(feed);
+    await player.connect();
+    forwarderService.setFeedStatus(feed.displayName, player.status);
+  }
+
+  Future<void> _stopWebsdrFeed(FeedDef feed) async {
+    await _websdrPlayers[feed.key]?.disconnect();
+    forwarderService.removeFeedStatus(feed.displayName);
+  }
+
   void toggleFeed(FeedDef feed, bool value) async {
     setState(() => feedEnabled[feed.key] = value);
     settings.feedEnabled[feed.key] = value;
@@ -577,11 +634,17 @@ class ReceptionPageState extends State<ReceptionPage> {
       } else {
         await _stopSerialFeed(feed);
       }
-    } else {
+    } else if (feed.type == FeedType.rtlsdr) {
       if (value) {
         await _startRtlSdrFeed(feed);
       } else {
         await _stopRtlSdrFeed(feed);
+      }
+    } else if (feed.type == FeedType.websdr) {
+      if (value) {
+        await _startWebsdrFeed(feed);
+      } else {
+        await _stopWebsdrFeed(feed);
       }
     }
   }
@@ -589,7 +652,7 @@ class ReceptionPageState extends State<ReceptionPage> {
   Future<void> _showAddFeedDialog() async {
     final feed = await showDialog<FeedDef>(
       context: context,
-      builder: (_) => const _AddFeedDialog(),
+      builder: (_) => _AddFeedDialog(onOpenWebSdrTab: widget.onOpenWebSdrTab),
     );
 
     if (feed == null || !mounted) return;
@@ -613,8 +676,10 @@ class ReceptionPageState extends State<ReceptionPage> {
         await _startFileFeed(feed);
       } else if (feed.type == FeedType.serial) {
         await _startSerialFeed(feed);
-      } else {
+      } else if (feed.type == FeedType.rtlsdr) {
         await _startRtlSdrFeed(feed);
+      } else {
+        await _startWebsdrFeed(feed);
       }
     }
   }
@@ -626,6 +691,8 @@ class ReceptionPageState extends State<ReceptionPage> {
       await _stopSerialFeed(feed);
     } else if (feed.type == FeedType.rtlsdr) {
       await _stopRtlSdrFeed(feed);
+    } else if (feed.type == FeedType.websdr) {
+      await _stopWebsdrFeed(feed);
     } else if (isRunning) {
       await forwarderService.removeFeed(feed.displayName);
     }
@@ -638,8 +705,50 @@ class ReceptionPageState extends State<ReceptionPage> {
     _filePlayers.remove(feed.key)?.dispose();
     _serialPlayers.remove(feed.key)?.dispose();
     _rtlSdrPlayers.remove(feed.key)?.dispose();
+    _websdrPlayers.remove(feed.key)?.dispose();
     _syncFeedSettings();
   }
+
+  /// Adds a WebSDR server picked from the browser tab as a regular reception
+  /// feed. Returns false when the feed already existed (it is then simply
+  /// re-enabled instead of duplicated).
+  bool addWebSdrFeed(WebSdrServer server) {
+    final feed = FeedDef.fromWebSdrServer(server);
+    final exists = _customFeeds.any((f) => f.key == feed.key);
+    if (exists) {
+      if (!(feedEnabled[feed.key] ?? false)) {
+        toggleFeed(feed, true);
+      } else {
+        return false;
+      }
+      return true;
+    }
+    setState(() {
+      _customFeeds.add(feed);
+      feedEnabled[feed.key] = true;
+    });
+    _syncFeedSettings();
+    settings.saveFeedEnabled(feed.key, true);
+    if (isRunning) {
+      unawaited(_startWebsdrFeed(feed));
+    }
+    return true;
+  }
+
+  /// Removes a WebSDR feed by its stable key (used by the WebSDR tab).
+  Future<void> removeWebSdrFeed(String feedKey) async {
+    for (final feed in List<FeedDef>.of(_customFeeds)) {
+      if (feed.key == feedKey) {
+        await _removeCustomFeed(feed);
+        return;
+      }
+    }
+  }
+
+  /// Whether the WebSDR feed matching [feedKey] exists and is enabled.
+  bool isWebSdrFeedActive(String feedKey) =>
+      (feedEnabled[feedKey] ?? false) &&
+      _customFeeds.any((f) => f.key == feedKey);
 
   /// Sends a raw NMEA sentence to all enabled targets (used by the AIS
   /// message editor page) and logs it with the "KikAis" source.
@@ -671,6 +780,9 @@ class ReceptionPageState extends State<ReceptionPage> {
     }
     if (feed.type == FeedType.rtlsdr) {
       return const Icon(Icons.settings_input_antenna, size: 30);
+    }
+    if (feed.type == FeedType.websdr) {
+      return const Icon(Icons.cloud, size: 30);
     }
     if (feed.type == FeedType.file) {
       return const Icon(Icons.description, size: 30);
@@ -790,6 +902,9 @@ class ReceptionPageState extends State<ReceptionPage> {
     for (final player in _rtlSdrPlayers.values) {
       player.dispose();
     }
+    for (final player in _websdrPlayers.values) {
+      player.dispose();
+    }
     super.dispose();
   }
 
@@ -846,6 +961,9 @@ class ReceptionPageState extends State<ReceptionPage> {
     if (_rtlSdrFeedKeys.contains(entry.starter)) {
       return const Icon(Icons.settings_input_antenna, size: 16);
     }
+    if (_websdrFeedKeys.contains(entry.starter)) {
+      return const Icon(Icons.cloud, size: 16);
+    }
     if (_fileFeedKeys.contains(entry.starter)) {
       return const Icon(Icons.description, size: 16);
     }
@@ -878,6 +996,12 @@ class ReceptionPageState extends State<ReceptionPage> {
   Set<String> get _rtlSdrFeedKeys => {
     for (final f in _allFeeds)
       if (f.type == FeedType.rtlsdr) f.key,
+  };
+
+  /// Keys of the WebSDR-type custom feeds, used to pick a log starter icon.
+  Set<String> get _websdrFeedKeys => {
+    for (final f in _allFeeds)
+      if (f.type == FeedType.websdr) f.key,
   };
 
   @override
@@ -1209,7 +1333,9 @@ class LogEntry {
 /// State so they are disposed together with the dialog route (after its exit
 /// animation completes).
 class _AddFeedDialog extends StatefulWidget {
-  const _AddFeedDialog();
+  final VoidCallback? onOpenWebSdrTab;
+
+  const _AddFeedDialog({this.onOpenWebSdrTab});
 
   @override
   State<_AddFeedDialog> createState() => _AddFeedDialogState();
@@ -1280,6 +1406,13 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
     }
   }
 
+  /// Closes the dialog and opens the WebSDR browser tab, where the full
+  /// server map lives. Adding from the map creates the feed directly.
+  void _browseWebSdr() {
+    Navigator.of(context).pop();
+    widget.onOpenWebSdrTab?.call();
+  }
+
   FeedDef? _buildResult() {
     final name = _name.text.trim();
     if (name.isEmpty) return null;
@@ -1320,6 +1453,17 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
         useChannel2: _useChannel2,
       );
     }
+    if (_type == FeedType.websdr) {
+      final host = _host.text.trim();
+      if (host.isEmpty) return null;
+      return FeedDef(
+        key: name,
+        displayName: name,
+        type: FeedType.websdr,
+        host: host,
+        port: int.tryParse(_port.text) ?? 8073,
+      );
+    }
     final path = _path.text.trim();
     if (path.isEmpty) return null;
     final interval = (int.tryParse(_interval.text) ?? 1000)
@@ -1342,7 +1486,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
     return AlertDialog(
       title: Text(context.l10n.receptionAddSource),
       content: SizedBox(
-        width: 600,
+        width: 700,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1369,6 +1513,10 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                   ButtonSegment(
                     value: FeedType.rtlsdr,
                     label: Text(context.l10n.receptionRtlSdr),
+                  ),
+                  ButtonSegment(
+                    value: FeedType.websdr,
+                    label: Text(context.l10n.receptionWebSdr),
                   ),
                 ],
                 selected: {_type},
@@ -1579,7 +1727,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                     },
                   ),
                 ),
-              ] else ...[
+              ] else if (_type == FeedType.rtlsdr) ...[
                 Row(
                   children: [
                     Expanded(
@@ -1699,6 +1847,46 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                     ),
                   ],
                 ),
+              ] else if (_type == FeedType.websdr) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: HoverTooltip(
+                        message: context.l10n.tooltipFeedHost,
+                        child: TextField(
+                          controller: _host,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.fieldHost,
+                          ),
+                          inputFormatters: [HostInputFormatter()],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: HoverTooltip(
+                        message: context.l10n.tooltipFeedPort,
+                        child: TextField(
+                          controller: _port,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.fieldPort,
+                          ),
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            PortInputFormatter(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  icon: const Icon(Icons.map, size: 18),
+                  label: Text(context.l10n.receptionBrowseWebSdr),
+                  onPressed: _browseWebSdr,
+                ),
               ],
             ],
           ),
@@ -1722,5 +1910,3 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
     );
   }
 }
-
-

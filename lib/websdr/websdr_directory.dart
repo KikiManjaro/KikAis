@@ -5,7 +5,14 @@ import 'websdr_server.dart';
 
 /// Fetches and caches the list of available WebSDR servers.
 class WebSdrDirectory {
-  static const _kiwiSdrApiUrl = 'http://kiwisdr.com/compiled/kiwisdr.all.json';
+  /// Live KiwiSDR receiver list (auto-generated from kiwisdr.com/public/ by
+  /// the rx.skywavelinux.com Dyatlov map, refreshed continuously).
+  static const _kiwisdrComUrl = 'https://rx.skywavelinux.com/kiwisdr_com.js';
+
+  /// Manually curated multi-brand receiver list (WebSDR / OpenWebRX /
+  /// KiwiSDR / UberSDR...), GPLv3+, from the same Dyatlov map maker.
+  static const _staticRxUrl = 'https://rx.skywavelinux.com/static_rx.js';
+
   static const _refreshInterval = Duration(minutes: 30);
 
   List<WebSdrServer> _servers = [];
@@ -26,19 +33,32 @@ class WebSdrDirectory {
     _error = null;
 
     try {
-      final results = await Future.wait([_fetchKiwiSdr()]);
+      final results = await Future.wait([_fetchKiwisdrCom(), _fetchStaticRx()]);
       final remote = results.expand((list) => list).toList();
       final curated = _fetchCuratedList();
-      // Merge curated first (so they appear even when offline API fails) and
-      // deduplicate by id — curated wins.
-      final byId = <String, WebSdrServer>{};
+      // Merge curated first (so they win on conflicts) and deduplicate by
+      // host:port — the same receiver can appear in both remote lists.
+      final merged = <WebSdrServer>[];
+      final seen = <String>{};
+      void add(WebSdrServer s) {
+        if (!seen.add('${s.host}:${s.port}')) return;
+        merged.add(s);
+      }
+
       for (final s in curated) {
-        byId[s.id] = s;
+        add(s);
       }
       for (final s in remote) {
-        byId.putIfAbsent(s.id, () => s);
+        add(s);
       }
-      _servers = byId.values.toList();
+      // AIS-capable receivers first, then alphabetical.
+      merged.sort((a, b) {
+        final ai = a.coversAis ? 0 : 1;
+        final bi = b.coversAis ? 0 : 1;
+        if (ai != bi) return ai - bi;
+        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      });
+      _servers = merged;
       _lastFetch = DateTime.now();
     } catch (e) {
       _error = '$e';
@@ -48,226 +68,180 @@ class WebSdrDirectory {
     return _servers;
   }
 
-  Future<List<WebSdrServer>> _fetchKiwiSdr() async {
+  Future<List<WebSdrServer>> _fetchKiwisdrCom() => _fetchRemote(
+        _kiwisdrComUrl,
+        (_) => WebSdrType.kiwiSdr,
+      );
+
+  Future<List<WebSdrServer>> _fetchStaticRx() =>
+      _fetchRemote(_staticRxUrl, _staticRxType);
+
+  /// Maps a static_rx.js entry to a [WebSdrType] based on its software /
+  /// hardware description. Unknown brands fall back to [WebSdrType.custom].
+  static WebSdrType _staticRxType(Map<String, dynamic> e) {
+    final sw = '${e['sw_version'] ?? ''} ${e['sdr_hw'] ?? ''}';
+    if (sw.contains('Kiwi')) return WebSdrType.kiwiSdr;
+    if (sw.contains('WebSDR') || sw.contains('Web SDR')) {
+      return WebSdrType.webSdr;
+    }
+    return WebSdrType.custom;
+  }
+
+  Future<List<WebSdrServer>> _fetchRemote(
+    String url,
+    WebSdrType Function(Map<String, dynamic>) typeOf,
+  ) async {
     try {
-      final response = await http.get(Uri.parse(_kiwiSdrApiUrl)).timeout(const Duration(seconds: 15));
+      final response =
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 15));
       if (response.statusCode != 200) return [];
-      final data = json.decode(response.body);
-      if (data is! List) return [];
-      return data.map((e) {
-        try { return WebSdrServer.fromKiwiSdrJson(e as Map<String, dynamic>); }
-        catch (_) { return null; }
-      }).whereType<WebSdrServer>().toList();
+      return parseJsReceiverList(response.body)
+          .map((e) => serverFromJsEntry(e, typeOf(e)))
+          .whereType<WebSdrServer>()
+          .toList();
     } catch (_) {
       return [];
     }
   }
 
-  /// Curated list of verified classic WebSDR servers (no JSON API).
-  /// These are well-known public WebSDRs, kept in code with coordinates.
+  /// Lenient parser for the JS receiver lists published by
+  /// rx.skywavelinux.com (`var name = [ {...}, ... ];`). Entries carry
+  /// trailing commas which strict JSON rejects, so they are stripped before
+  /// decoding. Returns raw entry maps; invalid content is skipped.
+  static List<Map<String, dynamic>> parseJsReceiverList(String body) {
+    final start = body.indexOf('[');
+    final end = body.lastIndexOf(']');
+    if (start < 0 || end <= start) return const [];
+    final slice = body.substring(start, end + 1);
+    final cleaned = slice.replaceAllMapped(
+      RegExp(r',\s*([}\]])'),
+      (m) => m.group(1)!,
+    );
+    try {
+      final decoded = json.decode(cleaned);
+      if (decoded is! List) return const [];
+      return decoded.whereType<Map>().cast<Map<String, dynamic>>().toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// Builds a [WebSdrServer] from one remote list entry. Returns null when
+  /// the entry has no usable URL.
+  static WebSdrServer? serverFromJsEntry(
+    Map<String, dynamic> e,
+    WebSdrType type,
+  ) {
+    final urlText = '${e['url'] ?? ''}'.trim();
+    final uri = Uri.tryParse(urlText);
+    if (uri == null || uri.host.isEmpty) return null;
+    // Uri.port falls back to the scheme default (e.g. 80 for http) when the
+    // URL carries no explicit port, so detect its presence instead.
+    final port = uri.hasPort ? uri.port : 8073;
+
+    double? lat;
+    double? lon;
+    final gm = RegExp(r'\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)')
+        .firstMatch('${e['gps'] ?? ''}');
+    if (gm != null) {
+      lat = double.tryParse(gm.group(1)!);
+      lon = double.tryParse(gm.group(2)!);
+    }
+
+    final id = '${e['id'] ?? ''}'.trim();
+    final hostPort = '${uri.host}:$port';
+    final maxUsersRaw = int.tryParse('${e['users_max'] ?? ''}'.trim());
+    return WebSdrServer(
+      id: id.isNotEmpty ? id : hostPort,
+      name: ('${e['name'] ?? ''}'.trim().isNotEmpty)
+          ? '${e['name']}'.trim()
+          : uri.host,
+      host: uri.host,
+      port: port,
+      type: type,
+      lat: lat,
+      lon: lon,
+      country: '${e['loc'] ?? ''}'.trim().isNotEmpty
+          ? '${e['loc']}'.trim()
+          : null,
+      bands: ['${e['bands'] ?? ''}'.trim()],
+      users: int.tryParse('${e['users'] ?? ''}'.trim()) ?? 0,
+      maxUsers: maxUsersRaw ?? 0,
+      online: '${e['status'] ?? ''}'.trim() != 'inactive' &&
+          '${e['offline'] ?? ''}'.trim() != 'yes',
+      url: urlText,
+      notes: '${e['sw_version'] ?? ''}'.trim().isNotEmpty
+          ? '${e['sw_version']}'.trim()
+          : null,
+      hardware: '${e['sdr_hw'] ?? ''}'.trim().isNotEmpty
+          ? '${e['sdr_hw']}'.trim()
+          : null,
+    );
+  }
+
+  /// Verified classic WebSDR servers (real DNS). Kept tiny — remote lists
+  /// (rx.skywavelinux) provide the 500+ live Kiwi, the curated just guarantees
+  /// a fallback when offline. Previous fake hostnames (f5len/dj8fd…) NXDOMAIN.
   List<WebSdrServer> _fetchCuratedList() {
     return const [
-      // France — coastal & central SDRs good for AIS (162 MHz)
       WebSdrServer(
-        id: 'websdr-f5len',
-        name: 'F5LEN WebSDR — Paris / Île-de-France',
-        host: 'f5len-websdr.fr',
-        port: 8073,
+        id: 'websdr-twente',
+        name: 'University of Twente WebSDR',
+        host: 'websdr.ewi.utwente.nl',
+        port: 8901,
         type: WebSdrType.webSdr,
-        lat: 48.8566,
-        lon: 2.3522,
-        country: 'France',
-        countryCode: 'FR',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 10,
-        url: 'http://f5len-websdr.fr:8073',
-        notes: 'Curated WebSDR France',
-      ),
-      WebSdrServer(
-        id: 'websdr-f6abj',
-        name: 'F6ABJ WebSDR — Lyon',
-        host: 'f6abj-websdr.fr',
-        port: 8073,
-        type: WebSdrType.webSdr,
-        lat: 45.7640,
-        lon: 4.8357,
-        country: 'France',
-        countryCode: 'FR',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 8,
-        url: 'http://f6abj-websdr.fr:8073',
-        notes: 'Curated WebSDR France',
-      ),
-      WebSdrServer(
-        id: 'websdr-f4iqp',
-        name: 'F4IQP WebSDR — Toulouse',
-        host: 'f4iqp-websdr.fr',
-        port: 8073,
-        type: WebSdrType.webSdr,
-        lat: 43.6047,
-        lon: 1.4442,
-        country: 'France',
-        countryCode: 'FR',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 8,
-        url: 'http://f4iqp-websdr.fr:8073',
-        notes: 'Curated WebSDR France',
-      ),
-      WebSdrServer(
-        id: 'websdr-f1afj',
-        name: 'F1AFJ WebSDR — Brest (Brittany)',
-        host: 'f1afj-websdr.fr',
-        port: 8073,
-        type: WebSdrType.webSdr,
-        lat: 48.3904,
-        lon: -4.4861,
-        country: 'France',
-        countryCode: 'FR',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 10,
-        url: 'http://f1afj-websdr.fr:8073',
-        notes: 'Curated WebSDR France — coastal',
-      ),
-      WebSdrServer(
-        id: 'websdr-f5ii',
-        name: 'F5II WebSDR — Bordeaux',
-        host: 'f5ii-websdr.fr',
-        port: 8073,
-        type: WebSdrType.webSdr,
-        lat: 44.8378,
-        lon: -0.5792,
-        country: 'France',
-        countryCode: 'FR',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 6,
-        url: 'http://f5ii-websdr.fr:8073',
-        notes: 'Curated WebSDR France',
-      ),
-      // Europe — verified public WebSDRs
-      WebSdrServer(
-        id: 'websdr-dj8fd',
-        name: 'DJ8FD WebSDR — Berlin',
-        host: 'dj8fd-websdr.de',
-        port: 8073,
-        type: WebSdrType.webSdr,
-        lat: 52.5200,
-        lon: 13.4050,
-        country: 'Germany',
-        countryCode: 'DE',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 12,
-        url: 'http://dj8fd-websdr.de:8073',
-        notes: 'Curated WebSDR Germany',
-      ),
-      WebSdrServer(
-        id: 'websdr-on5hb',
-        name: 'ON5HB WebSDR — Brussels',
-        host: 'on5hb-websdr.be',
-        port: 8073,
-        type: WebSdrType.webSdr,
-        lat: 50.8503,
-        lon: 4.3517,
-        country: 'Belgium',
-        countryCode: 'BE',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 10,
-        url: 'http://on5hb-websdr.be:8073',
-        notes: 'Curated WebSDR Belgium',
-      ),
-      WebSdrServer(
-        id: 'websdr-hb9bl',
-        name: 'HB9BL WebSDR — Bern',
-        host: 'hb9bl-websdr.ch',
-        port: 8073,
-        type: WebSdrType.webSdr,
-        lat: 46.9480,
-        lon: 7.4474,
-        country: 'Switzerland',
-        countryCode: 'CH',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 10,
-        url: 'http://hb9bl-websdr.ch:8073',
-        notes: 'Curated WebSDR Switzerland',
-      ),
-      WebSdrServer(
-        id: 'websdr-g4wjs',
-        name: 'G4WJS WebSDR — South England',
-        host: 'g4wjs-websdr.uk',
-        port: 8073,
-        type: WebSdrType.webSdr,
-        lat: 51.5074,
-        lon: -0.1278,
-        country: 'United Kingdom',
-        countryCode: 'GB',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 12,
-        url: 'http://g4wjs-websdr.uk:8073',
-        notes: 'Curated WebSDR UK',
-      ),
-      WebSdrServer(
-        id: 'websdr-pa3gjk',
-        name: 'PA3GJK WebSDR — Amsterdam',
-        host: 'pa3gjk-websdr.nl',
-        port: 8073,
-        type: WebSdrType.webSdr,
-        lat: 52.3676,
-        lon: 4.9041,
+        lat: 52.2390,
+        lon: 6.8530,
         country: 'Netherlands',
         countryCode: 'NL',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 15,
-        url: 'http://pa3gjk-websdr.nl:8073',
-        notes: 'Curated WebSDR Netherlands',
+        bands: ['VHF'],
+        maxUsers: 16,
+        url: 'http://websdr.ewi.utwente.nl:8901',
+        notes: 'Verified classic WebSDR Twente',
+        hardware: 'Wideband',
       ),
       WebSdrServer(
-        id: 'websdr-ea2f',
-        name: 'EA2F WebSDR — Bilbao',
-        host: 'ea2f-websdr.es',
-        port: 8073,
+        id: 'websdr-suws',
+        name: 'SUWS WebSDR — Southampton UK',
+        host: 'suws.southampton.ac.uk',
+        port: 54321,
         type: WebSdrType.webSdr,
-        lat: 43.2630,
-        lon: -2.9350,
-        country: 'Spain',
-        countryCode: 'ES',
-        bands: ['AIS', 'VHF'],
+        lat: 50.9350,
+        lon: -1.3960,
+        country: 'United Kingdom',
+        countryCode: 'GB',
+        bands: ['VHF'],
         maxUsers: 8,
-        url: 'http://ea2f-websdr.es:8073',
-        notes: 'Curated WebSDR Spain',
+        url: 'http://suws.southampton.ac.uk:54321',
+        notes: 'Verified classic WebSDR SUWS',
+        hardware: 'RTL-SDR',
       ),
       WebSdrServer(
-        id: 'websdr-iz8yrr',
-        name: 'IZ8YRR WebSDR — Naples',
-        host: 'iz8yrr-websdr.it',
-        port: 8073,
+        id: 'websdr-oe9xvi',
+        name: 'OE9XVI WebSDR — Austria',
+        host: 'websdr.oe9xvi.at',
+        port: 8901,
         type: WebSdrType.webSdr,
-        lat: 40.8518,
-        lon: 14.2681,
-        country: 'Italy',
-        countryCode: 'IT',
-        bands: ['AIS', 'VHF'],
+        lat: 47.3000,
+        lon: 9.7000,
+        country: 'Austria',
+        countryCode: 'AT',
+        bands: ['VHF'],
         maxUsers: 8,
-        url: 'http://iz8yrr-websdr.it:8073',
-        notes: 'Curated WebSDR Italy',
-      ),
-      WebSdrServer(
-        id: 'websdr-sm6w',
-        name: 'SM6W WebSDR — Gothenburg',
-        host: 'sm6w-websdr.se',
-        port: 8073,
-        type: WebSdrType.webSdr,
-        lat: 57.7089,
-        lon: 11.9746,
-        country: 'Sweden',
-        countryCode: 'SE',
-        bands: ['AIS', 'VHF'],
-        maxUsers: 10,
-        url: 'http://sm6w-websdr.se:8073',
-        notes: 'Curated WebSDR Sweden',
+        url: 'http://websdr.oe9xvi.at:8901',
+        notes: 'Verified classic WebSDR OE9XVI',
+        hardware: 'RTL-SDR',
       ),
     ];
   }
 
-  List<WebSdrServer> filter({String? query, String? countryCode, bool? onlineOnly, bool? availableOnly}) {
+  List<WebSdrServer> filter({
+    String? query,
+    String? countryCode,
+    bool? onlineOnly,
+    bool? availableOnly,
+    bool? aisOnly,
+  }) {
     return _servers.where((s) {
       if (query != null && query.isNotEmpty) {
         final q = query.toLowerCase();
@@ -276,6 +250,7 @@ class WebSdrDirectory {
       if (countryCode != null && s.countryCode != countryCode) return false;
       if (onlineOnly == true && !s.online) return false;
       if (availableOnly == true && !s.available) return false;
+      if (aisOnly == true && !s.coversAis) return false;
       return true;
     }).toList();
   }

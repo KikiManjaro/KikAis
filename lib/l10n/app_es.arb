@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "es",
 
   "languageSystem": "Automático (sistema)",
@@ -25,6 +25,7 @@
   "tabStats": "Estadísticas",
   "tabSimulation": "Simulación",
   "tabDocs": "Documentación",
+  "tabWebSdr": "WebSDR",
 
   "protocolUdpServer": "Servidor UDP",
   "protocolUdpClient": "Cliente UDP",
@@ -74,6 +75,12 @@
   "receptionSerialPortHint": "p. ej. COM3 o /dev/ttyUSB0",
   "receptionBaudRate": "Velocidad en baudios",
   "receptionRtlSdrChannels": "Canales",
+  "receptionWebSdr": "WebSDR",
+  "receptionBrowseWebSdr": "Explorar servidores WebSDR…",
+  "receptionWebSdrPickerTitle": "Elegir un servidor WebSDR",
+  "receptionWebSdrSearchHint": "Buscar un servidor…",
+  "receptionWebSdrSelect": "Seleccionar",
+  "websdrFilterAis": "AIS",
   "receptionRtlSdrSampleRate": "Frecuencia de muestreo",
   "receptionRtlSdrGainDb": "Ganancia del sintonizador (dB)",
   "receptionRtlSdrAutoGain": "Ganancia automática (recomendado)",

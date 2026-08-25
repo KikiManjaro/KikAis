@@ -1,4 +1,6 @@
-enum FeedType { network, file, serial, rtlsdr }
+import 'websdr/websdr_server.dart';
+
+enum FeedType { network, file, serial, rtlsdr, websdr }
 
 class FeedDef {
   final String key;
@@ -34,6 +36,13 @@ class FeedDef {
   final bool useChannel1;
   final bool useChannel2;
 
+  /// WebSDR source details (see [FeedType.websdr]).
+  final String? websdrId;
+  final WebSdrType? websdrType;
+  final double? websdrLat;
+  final double? websdrLon;
+  final String? websdrCountry;
+
   final String? tooltip;
   final bool builtIn;
 
@@ -56,6 +65,11 @@ class FeedDef {
     this.sampleRate = 1024000,
     this.useChannel1 = true,
     this.useChannel2 = true,
+    this.websdrId,
+    this.websdrType,
+    this.websdrLat,
+    this.websdrLon,
+    this.websdrCountry,
     this.tooltip,
     this.builtIn = false,
   });
@@ -79,8 +93,28 @@ class FeedDef {
         'sampleRate': sampleRate,
         'useChannel1': useChannel1,
         'useChannel2': useChannel2,
+        'websdrId': websdrId,
+        'websdrType': websdrType?.name,
+        'websdrLat': websdrLat,
+        'websdrLon': websdrLon,
+        'websdrCountry': websdrCountry,
         'tooltip': tooltip,
       };
+
+  /// Builds a reception feed from a directory server. The feed key is the
+  /// stable `websdr:<id>` so adding the same server twice reuses one entry.
+  factory FeedDef.fromWebSdrServer(WebSdrServer server) => FeedDef(
+        key: server.feedKey,
+        displayName: server.name,
+        type: FeedType.websdr,
+        host: server.host,
+        port: server.port,
+        websdrId: server.id,
+        websdrType: server.type,
+        websdrLat: server.lat,
+        websdrLon: server.lon,
+        websdrCountry: server.countryCode,
+      );
 
   /// Legacy JSON without a "type" field is treated as a network feed so
   /// previously saved custom feeds keep working.
@@ -106,6 +140,16 @@ class FeedDef {
         sampleRate: json['sampleRate'] as int? ?? 1024000,
         useChannel1: json['useChannel1'] as bool? ?? true,
         useChannel2: json['useChannel2'] as bool? ?? true,
+        websdrId: json['websdrId'] as String?,
+        websdrType: json['websdrType'] is String
+            ? WebSdrType.values.firstWhere(
+                (t) => t.name == json['websdrType'],
+                orElse: () => WebSdrType.webSdr,
+              )
+            : null,
+        websdrLat: (json['websdrLat'] as num?)?.toDouble(),
+        websdrLon: (json['websdrLon'] as num?)?.toDouble(),
+        websdrCountry: json['websdrCountry'] as String?,
         tooltip: json['tooltip'] as String?,
       );
 }
