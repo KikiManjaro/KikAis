@@ -246,6 +246,12 @@ abstract class AppLocalizations {
   /// **'Docs'**
   String get tabDocs;
 
+  /// No description provided for @tabWebSdr.
+  ///
+  /// In en, this message translates to:
+  /// **'WebSDR'**
+  String get tabWebSdr;
+
   /// No description provided for @protocolUdpServer.
   ///
   /// In en, this message translates to:
@@ -551,6 +557,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Channels'**
   String get receptionRtlSdrChannels;
+
+  /// No description provided for @receptionWebSdr.
+  ///
+  /// In en, this message translates to:
+  /// **'WebSDR'**
+  String get receptionWebSdr;
+
+  /// No description provided for @receptionBrowseWebSdr.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse WebSDR servers…'**
+  String get receptionBrowseWebSdr;
+
+  /// No description provided for @receptionWebSdrPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a WebSDR server'**
+  String get receptionWebSdrPickerTitle;
+
+  /// No description provided for @receptionWebSdrSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search a server…'**
+  String get receptionWebSdrSearchHint;
+
+  /// No description provided for @receptionWebSdrSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get receptionWebSdrSelect;
+
+  /// No description provided for @websdrFilterAis.
+  ///
+  /// In en, this message translates to:
+  /// **'AIS'**
+  String get websdrFilterAis;
 
   /// No description provided for @msgType1.
   ///

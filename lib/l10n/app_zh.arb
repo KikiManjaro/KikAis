@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "zh",
 
   "languageSystem": "自动（系统）",
@@ -25,6 +25,7 @@
   "tabStats": "统计",
   "tabSimulation": "仿真",
   "tabDocs": "文档",
+  "tabWebSdr": "WebSDR",
 
   "protocolUdpServer": "UDP 服务器",
   "protocolUdpClient": "UDP 客户端",
@@ -74,6 +75,12 @@
   "receptionSerialPortHint": "例如 COM3 或 /dev/ttyUSB0",
   "receptionBaudRate": "波特率",
   "receptionRtlSdrChannels": "频道",
+  "receptionWebSdr": "WebSDR",
+  "receptionBrowseWebSdr": "浏览 WebSDR 服务器…",
+  "receptionWebSdrPickerTitle": "选择 WebSDR 服务器",
+  "receptionWebSdrSearchHint": "搜索服务器…",
+  "receptionWebSdrSelect": "选择",
+  "websdrFilterAis": "AIS",
   "receptionRtlSdrSampleRate": "采样率",
   "receptionRtlSdrGainDb": "调谐器增益（dB）",
   "receptionRtlSdrAutoGain": "自动增益（推荐）",

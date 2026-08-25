@@ -25,6 +25,7 @@
   "tabStats": "Stats",
   "tabSimulation": "Simulation",
   "tabDocs": "Docs",
+  "tabWebSdr": "WebSDR",
 
   "protocolUdpServer": "UDP Server",
   "protocolUdpClient": "UDP Client",
@@ -81,6 +82,12 @@
   "receptionRtlSdrGainDb": "Tuner gain (dB)",
   "receptionRtlSdrSampleRate": "Sample rate",
   "receptionRtlSdrChannels": "Channels",
+  "receptionWebSdr": "WebSDR",
+  "receptionBrowseWebSdr": "Browse WebSDR servers…",
+  "receptionWebSdrPickerTitle": "Choose a WebSDR server",
+  "receptionWebSdrSearchHint": "Search a server…",
+  "receptionWebSdrSelect": "Select",
+  "websdrFilterAis": "AIS",
 
   "msgType1": "Position Report Class A",
   "msgType2": "Position Report Class A (assigned)",

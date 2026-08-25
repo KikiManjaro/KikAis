@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "de",
 
   "languageSystem": "Auto (System)",
@@ -25,6 +25,7 @@
   "tabStats": "Statistik",
   "tabSimulation": "Simulation",
   "tabDocs": "Doku",
+  "tabWebSdr": "WebSDR",
 
   "protocolUdpServer": "UDP-Server",
   "protocolUdpClient": "UDP-Client",
@@ -74,6 +75,12 @@
   "receptionSerialPortHint": "z. B. COM3 oder /dev/ttyUSB0",
   "receptionBaudRate": "Baudrate",
   "receptionRtlSdrChannels": "Kanäle",
+  "receptionWebSdr": "WebSDR",
+  "receptionBrowseWebSdr": "WebSDR-Server durchsuchen…",
+  "receptionWebSdrPickerTitle": "WebSDR-Server auswählen",
+  "receptionWebSdrSearchHint": "Server suchen…",
+  "receptionWebSdrSelect": "Auswählen",
+  "websdrFilterAis": "AIS",
   "receptionRtlSdrSampleRate": "Abtastrate",
   "receptionRtlSdrGainDb": "Tuner-Verstärkung (dB)",
   "receptionRtlSdrAutoGain": "Automatische Verstärkung (empfohlen)",

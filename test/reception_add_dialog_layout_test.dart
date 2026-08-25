@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'l10n_test_utils.dart';
 
-/// Guards the "add source" dialog layout: the four source-type segments must
+/// Guards the "add source" dialog layout: the five source-type segments must
 /// fit their labels on a single line for the widest Latin labels (ru/es use
 /// longer words and are allowed to wrap gracefully).
 void main() {
@@ -54,6 +54,7 @@ void main() {
         loc.receptionFile,
         loc.receptionSerial,
         loc.receptionRtlSdr,
+        loc.receptionWebSdr,
       ]) {
         final render = tester.renderObject<RenderParagraph>(find.text(label));
         final singleLine = render.getMaxIntrinsicHeight(10000);

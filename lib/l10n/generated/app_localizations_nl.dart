@@ -75,6 +75,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get tabDocs => 'Documentatie';
 
   @override
+  String get tabWebSdr => 'WebSDR';
+
+  @override
   String get protocolUdpServer => 'UDP-server';
 
   @override
@@ -240,6 +243,24 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get receptionRtlSdrChannels => 'Kanalen';
+
+  @override
+  String get receptionWebSdr => 'WebSDR';
+
+  @override
+  String get receptionBrowseWebSdr => 'WebSDR-servers verkennen…';
+
+  @override
+  String get receptionWebSdrPickerTitle => 'Kies een WebSDR-server';
+
+  @override
+  String get receptionWebSdrSearchHint => 'Zoek een server…';
+
+  @override
+  String get receptionWebSdrSelect => 'Selecteren';
+
+  @override
+  String get websdrFilterAis => 'AIS';
 
   @override
   String get msgType1 => 'Positierapport klasse A';

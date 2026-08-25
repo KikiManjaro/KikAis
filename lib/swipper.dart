@@ -15,6 +15,8 @@ import 'simulation_page.dart';
 import 'stats_page.dart';
 import 'themes.dart';
 import 'update_notifier.dart';
+import 'websdr/websdr_browser_page.dart';
+import 'websdr/websdr_directory.dart';
 import 'widgets.dart';
 import 'world_map_page.dart';
 
@@ -43,6 +45,7 @@ class _SwipperUiState extends State<SwipperUi> {
   late final StatsPage statsPage;
   late final SimulationPage simulationPage;
   late final DocumentationPage documentationPage;
+  late final WebSdrBrowserPage webSdrPage;
 
   int _currentIndex = 0;
 
@@ -54,6 +57,7 @@ class _SwipperUiState extends State<SwipperUi> {
       boatController,
       key: _receptionKey,
       running: forwarderRunning,
+      onOpenWebSdrTab: () => setState(() => _currentIndex = 7),
     );
     sendPage = SendPage(
       serviceGetter: () => _receptionKey.currentState?.forwarderService,
@@ -77,6 +81,16 @@ class _SwipperUiState extends State<SwipperUi> {
       onOpenInDecoder: (sentence) {
         setState(() => _currentIndex = 4);
         _decoderKey.currentState?.loadSentences(sentence);
+      },
+    );
+    webSdrPage = WebSdrBrowserPage(
+      directory: WebSdrDirectory(),
+      isFeedActive: (feedKey) =>
+          _receptionKey.currentState?.isWebSdrFeedActive(feedKey) ?? false,
+      addToFeeds: (server) =>
+          _receptionKey.currentState?.addWebSdrFeed(server) ?? false,
+      removeFromFeeds: (feedKey) async {
+        await _receptionKey.currentState?.removeWebSdrFeed(feedKey);
       },
     );
   }
@@ -293,11 +307,11 @@ class _SwipperUiState extends State<SwipperUi> {
                     if (pointerSignal is PointerScrollEvent) {
                       if (pointerSignal.scrollDelta.dx > 0) {
                         setState(() {
-                          _currentIndex = (_currentIndex + 1).clamp(0, 7);
+                          _currentIndex = (_currentIndex + 1).clamp(0, 8);
                         });
                       } else if (pointerSignal.scrollDelta.dx < 0) {
                         setState(() {
-                          _currentIndex = (_currentIndex - 1).clamp(0, 7);
+                          _currentIndex = (_currentIndex - 1).clamp(0, 8);
                         });
                       }
                     }
@@ -312,6 +326,7 @@ class _SwipperUiState extends State<SwipperUi> {
                       decoderPage,
                       statsPage,
                       simulationPage,
+                      webSdrPage,
                       documentationPage,
                     ],
                   ),
@@ -355,6 +370,11 @@ class _SwipperUiState extends State<SwipperUi> {
                       icon: const Icon(Icons.bubble_chart_outlined),
                       selectedIcon: const Icon(Icons.bubble_chart),
                       label: context.l10n.tabSimulation,
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(Icons.cloud_outlined),
+                      selectedIcon: const Icon(Icons.cloud),
+                      label: context.l10n.tabWebSdr,
                     ),
                     NavigationDestination(
                       icon: const Icon(Icons.menu_book_outlined),
