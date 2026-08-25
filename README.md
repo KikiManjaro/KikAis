@@ -181,6 +181,10 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - Make verification for memory leaks and performances
 - Continuous replay validation of real AIS recordings (extend `tool/ais_replay.dart`) as a regression harness
 - Test created ais sentences with external tool such as ais-decoder
+- Compact/minified mode always-on-top pin (top bar, FFI Win32 `SetWindowPos` / `window_manager`)
+- Look at why generated frame have a bunch of 0 at the end
+- Add colors to log (to visually split provider, nmea 4.0 tags, sentance, payload etc)
+- Minified mode
 
 ## 🤝 Contributing
 
