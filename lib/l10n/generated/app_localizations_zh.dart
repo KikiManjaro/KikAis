@@ -3500,8 +3500,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statsChannelNoData => '暂无信道数据';
 
   @override
-  String statsChannelPercent(Object percent) => '${percent}%';
+  String statsChannelPercent(Object percent) {
+    return '$percent%';
+  }
 
   @override
-  String statsChannelRate(Object rate) => '${rate}/s';
+  String statsChannelRate(Object rate) {
+    return '$rate/s';
+  }
 }

@@ -18,6 +18,7 @@ import 'host_input_formatter.dart';
 import 'l10n_ext.dart';
 import 'labels.dart';
 import 'message_stats.dart';
+import 'nmea_log_text.dart';
 import 'port_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -92,10 +93,16 @@ class ReceptionPageState extends State<ReceptionPage> {
 
   /// Log lines waiting to be flushed to [logEntries] in a single rebuild.
   final List<LogEntry> _pendingLogs = [];
-  static const Duration _logFlushDelay = Duration(milliseconds: 50);
+  static const Duration _logFlushDelay = Duration(milliseconds: 120);
+  static const int _logFlushMaxBatch = 120;
   Timer? _logFlushTimer;
 
   final List<LogEntry> logEntries = [];
+  List<LogEntry> get _visibleLogEntries {
+    if (!settings.logHideStatus) return logEntries;
+    return logEntries.where((e) => e.status == null).toList();
+  }
+
   final Map<String, bool> feedEnabled = {};
   final ValueNotifier<int> _statusTick = ValueNotifier(0);
   Timer? _statusTimer;
@@ -231,13 +238,28 @@ class ReceptionPageState extends State<ReceptionPage> {
   void _flushLogs() {
     _logFlushTimer = null;
     if (_pendingLogs.isEmpty) return;
-    setState(() {
-      logEntries.addAll(_pendingLogs);
+    // Cap batch size to avoid a single huge setState when a burst arrives
+    // (e.g. large simulated fleet at high rate).
+    final bool hasMore = _pendingLogs.length > _logFlushMaxBatch;
+    final batch = hasMore
+        ? _pendingLogs.sublist(0, _logFlushMaxBatch)
+        : List<LogEntry>.from(_pendingLogs);
+    if (hasMore) {
+      _pendingLogs.removeRange(0, _logFlushMaxBatch);
+      _logFlushTimer ??= Timer(_logFlushDelay, _flushLogs);
+    } else {
       _pendingLogs.clear();
+    }
+    final shouldAutoScroll = !_scrollController.hasClients ||
+        _scrollController.position.pixels + 80 >=
+            _scrollController.position.maxScrollExtent;
+    setState(() {
+      logEntries.addAll(batch);
       if (logEntries.length > maxLogEntries) {
         logEntries.removeRange(0, logEntries.length - maxLogEntries);
       }
     });
+    if (!shouldAutoScroll) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -1091,7 +1113,80 @@ class ReceptionPageState extends State<ReceptionPage> {
                     child: Row(
                       children: [
                         Text(context.l10n.receptionLogs),
+                        if (settings.logHideStatus && logEntries.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 6),
+                            child: Text(
+                              '(${_visibleLogEntries.length}/${logEntries.length})',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
                         const Spacer(),
+                        // Filters
+                        MenuAnchor(
+                          builder: (ctx, controller, child) => HoverTooltip(
+                            message: 'Filtres logs',
+                            child: IconButton(
+                              icon: const Icon(Icons.filter_list),
+                              iconSize: 18,
+                              visualDensity: VisualDensity.compact,
+                              color: (settings.logHideStatus ||
+                                      !settings.logShowFeedNames ||
+                                      !settings.logShowTimestamp ||
+                                      !settings.logShowIcons)
+                                  ? Theme.of(context).colorScheme.primary
+                                  : null,
+                              onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+                            ),
+                          ),
+                          menuChildren: [
+                            CheckboxListTile(
+                              dense: true,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              title: const Text('Afficher icônes', style: TextStyle(fontSize: 12)),
+                              subtitle: const Text('drapeaux, simulation…', style: TextStyle(fontSize: 10)),
+                              value: settings.logShowIcons,
+                              onChanged: (v) {
+                                if (v == null) return;
+                                setState(() => settings.setLogShowIcons(v));
+                              },
+                            ),
+                            CheckboxListTile(
+                              dense: true,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              title: const Text('Afficher timestamps', style: TextStyle(fontSize: 12)),
+                              value: settings.logShowTimestamp,
+                              onChanged: (v) {
+                                if (v == null) return;
+                                setState(() => settings.setLogShowTimestamp(v));
+                              },
+                            ),
+                            CheckboxListTile(
+                              dense: true,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              title: const Text('Afficher noms feeds', style: TextStyle(fontSize: 12)),
+                              value: settings.logShowFeedNames,
+                              onChanged: (v) {
+                                if (v == null) return;
+                                setState(() => settings.setLogShowFeedNames(v));
+                              },
+                            ),
+                            CheckboxListTile(
+                              dense: true,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              title: const Text('Masquer états connexion', style: TextStyle(fontSize: 12)),
+                              subtitle: const Text('n\'affiche que les trames', style: TextStyle(fontSize: 10)),
+                              value: settings.logHideStatus,
+                              onChanged: (v) {
+                                if (v == null) return;
+                                setState(() => settings.setLogHideStatus(v));
+                              },
+                            ),
+                          ],
+                        ),
                         HoverTooltip(
                           message: context.l10n.tooltipReceptionSaveLogs,
                           child: IconButton(
@@ -1122,32 +1217,40 @@ class ReceptionPageState extends State<ReceptionPage> {
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.only(right: 14),
-                          itemCount: logEntries.length,
-                          itemBuilder: (context, index) {
-                            final entry = logEntries[index];
-
-                            final text = entry.status != null
-                                ? logMessageText(context.l10n, entry.status!)
-                                : (entry.name != null
-                                      ? "[${entry.name}] ${entry.message}"
-                                      : entry.message);
-
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                _buildStarterWidget(entry),
-                                const SizedBox(width: 5),
-                                Expanded(child: Text(text)),
-                                if (entry.message.startsWith('!'))
-                                  CopyIconButton(
-                                    text: entry.message,
-                                    message: context.l10n.receptionFrameCopied,
-                                    padding: EdgeInsets.zero,
-                                  ),
-                              ],
+                        child: Builder(
+                          builder: (context) {
+                            final visible = _visibleLogEntries;
+                            return ListView.builder(
+                              controller: _scrollController,
+                              padding: const EdgeInsets.only(right: 14),
+                              addAutomaticKeepAlives: false,
+                              addRepaintBoundaries: true,
+                              cacheExtent: 400,
+                              itemCount: visible.length,
+                              itemBuilder: (context, index) {
+                                final entry = visible[index];
+                                return Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (settings.logShowIcons) _buildStarterWidget(entry),
+                                    if (settings.logShowIcons) const SizedBox(width: 5),
+                                    Expanded(
+                                      child: NmeaLogText(
+                                        entry: entry,
+                                        showProvider: settings.logShowFeedNames,
+                                        showTimestamp: settings.logShowTimestamp,
+                                      ),
+                                    ),
+                                    if (entry.message.startsWith('!') ||
+                                        entry.message.contains('!'))
+                                      CopyIconButton(
+                                        text: entry.message,
+                                        message: context.l10n.receptionFrameCopied,
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                  ],
+                                );
+                              },
                             );
                           },
                         ),

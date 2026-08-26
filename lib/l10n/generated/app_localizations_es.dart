@@ -3672,8 +3672,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get statsChannelNoData => 'Sin datos de canal aún';
 
   @override
-  String statsChannelPercent(Object percent) => '${percent} %';
+  String statsChannelPercent(Object percent) {
+    return '$percent %';
+  }
 
   @override
-  String statsChannelRate(Object rate) => '${rate}/s';
+  String statsChannelRate(Object rate) {
+    return '$rate/s';
+  }
 }

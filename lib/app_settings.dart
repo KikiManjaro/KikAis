@@ -29,6 +29,10 @@ class AppSettings extends ChangeNotifier {
   static const _kImportFormat = 'nmeaImportFormat';
   static const _kImportTagSource = 'nmeaImportTagSource';
   static const _kLocale = 'locale';
+  static const _kLogShowFeedNames = 'logShowFeedNames';
+  static const _kLogHideStatus = 'logHideStatus';
+  static const _kLogShowTimestamp = 'logShowTimestamp';
+  static const _kLogShowIcons = 'logShowIcons';
 
   bool mapClusterEnabled = true;
   bool sendToMap = false;
@@ -56,6 +60,11 @@ class AppSettings extends ChangeNotifier {
 
   /// Source id used when [nmeaImportFormat] is [NmeaFormat.tag].
   String nmeaImportTagSource = 'KIKAIS';
+
+  bool logShowFeedNames = true;
+  bool logHideStatus = false;
+  bool logShowTimestamp = true;
+  bool logShowIcons = true;
 
   void setImportFormat(NmeaFormat format, String tagSource) {
     if (nmeaImportFormat == format && nmeaImportTagSource == tagSource) {
@@ -182,6 +191,10 @@ class AppSettings extends ChangeNotifier {
     );
     nmeaImportTagSource = prefs.getString(_kImportTagSource) ?? 'KIKAIS';
     localeCode = prefs.getString(_kLocale);
+    logShowFeedNames = prefs.getBool(_kLogShowFeedNames) ?? true;
+    logHideStatus = prefs.getBool(_kLogHideStatus) ?? false;
+    logShowTimestamp = prefs.getBool(_kLogShowTimestamp) ?? true;
+    logShowIcons = prefs.getBool(_kLogShowIcons) ?? true;
 
     notifyListeners();
   }
@@ -255,6 +268,42 @@ class AppSettings extends ChangeNotifier {
     await prefs.setString(_kSimulation, jsonEncode(value.toJson()));
   }
 
+  void setLogShowFeedNames(bool value) {
+    if (logShowFeedNames == value) return;
+    logShowFeedNames = value;
+    notifyListeners();
+    _saveLogFilters();
+  }
+
+  void setLogHideStatus(bool value) {
+    if (logHideStatus == value) return;
+    logHideStatus = value;
+    notifyListeners();
+    _saveLogFilters();
+  }
+
+  void setLogShowTimestamp(bool value) {
+    if (logShowTimestamp == value) return;
+    logShowTimestamp = value;
+    notifyListeners();
+    _saveLogFilters();
+  }
+
+  void setLogShowIcons(bool value) {
+    if (logShowIcons == value) return;
+    logShowIcons = value;
+    notifyListeners();
+    _saveLogFilters();
+  }
+
+  Future<void> _saveLogFilters() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kLogShowFeedNames, logShowFeedNames);
+    await prefs.setBool(_kLogHideStatus, logHideStatus);
+    await prefs.setBool(_kLogShowTimestamp, logShowTimestamp);
+    await prefs.setBool(_kLogShowIcons, logShowIcons);
+  }
+
   Future<void> save() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kCluster, mapClusterEnabled);
@@ -279,6 +328,10 @@ class AppSettings extends ChangeNotifier {
     await prefs.setString(_kSimulation, jsonEncode(simConfig.toJson()));
     await prefs.setString(_kImportFormat, nmeaImportFormat.name);
     await prefs.setString(_kImportTagSource, nmeaImportTagSource);
+    await prefs.setBool(_kLogShowFeedNames, logShowFeedNames);
+    await prefs.setBool(_kLogHideStatus, logHideStatus);
+    await prefs.setBool(_kLogShowTimestamp, logShowTimestamp);
+    await prefs.setBool(_kLogShowIcons, logShowIcons);
     if (localeCode == null) {
       await prefs.remove(_kLocale);
     } else {
