@@ -5,11 +5,11 @@
     <description>Most recent updates to KikAis</description>
     <language>en</language>
     <item>
-      <title>Version 2.6.3</title>
-      <sparkle:version>2.6.3</sparkle:version>
-      <sparkle:shortVersionString>2.6.3</sparkle:shortVersionString>
-      <pubDate>Tue, 25 Aug 2026 11:43:06 GMT</pubDate>
-      <enclosure url="https://github.com/KikiManjaro/KikAis/releases/download/2.6.3/kikais-setup-2.6.3.exe" length="14120159" type="application/octet-stream" />
+      <title>Version 2.6.4</title>
+      <sparkle:version>2.6.4</sparkle:version>
+      <sparkle:shortVersionString>2.6.4</sparkle:shortVersionString>
+      <pubDate>Wed, 26 Aug 2026 08:48:01 GMT</pubDate>
+      <enclosure url="https://github.com/KikiManjaro/KikAis/releases/download/2.6.4/kikais-setup-2.6.4.exe" length="14143464" type="application/octet-stream" />
     </item>
   </channel>
 </rss>
