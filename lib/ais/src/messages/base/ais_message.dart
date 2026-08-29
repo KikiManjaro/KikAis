@@ -43,8 +43,11 @@ abstract class AISMessage {
   ///
   /// Throws [UnsupportedMessageTypeExceptionLegacy] if [input] specifies a
   /// message type the legacy version of this package does not support (try setting legacy to false in this case).
-  factory AISMessage.fromString(String input, {bool enableDebugging = false, bool legacy = false}) =>
-      MessageFactory.create(input, enableDebugging, legacy, false);
+  factory AISMessage.fromString(
+    String input, {
+    bool enableDebugging = false,
+    bool legacy = false,
+  }) => MessageFactory.create(input, enableDebugging, legacy, false);
 
   /// Decodes a raw AIS payload (the six-bit-armored data field of an
   /// `!AIVDM`/`!AIVDO` sentence, without the surrounding NMEA wrapper)
@@ -52,6 +55,9 @@ abstract class AISMessage {
   ///
   /// See [AISMessage.fromString] for the meaning of [enableDebugging]
   /// and [legacy].
-  factory AISMessage.fromPayload(String input, {bool enableDebugging = false, bool legacy = false}) =>
-      MessageFactory.create(input, enableDebugging, legacy, true);
+  factory AISMessage.fromPayload(
+    String input, {
+    bool enableDebugging = false,
+    bool legacy = false,
+  }) => MessageFactory.create(input, enableDebugging, legacy, true);
 }

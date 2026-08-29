@@ -54,73 +54,66 @@ class _MmsiLookupToolState extends State<MmsiLookupTool> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-        SectionHeader(
-          icon: Icons.badge,
-          title: context.l10n.toolMmsi,
-        ),
-        TextField(
-          controller: _controller,
-          maxLength: 9,
-          keyboardType: TextInputType.number,
-          inputFormatters: [_DigitsFormatter()],
-          decoration: InputDecoration(
-            labelText: context.l10n.mmsiInputLabel,
-            border: const OutlineInputBorder(),
-            counterText: '',
+          SectionHeader(icon: Icons.badge, title: context.l10n.toolMmsi),
+          TextField(
+            controller: _controller,
+            maxLength: 9,
+            keyboardType: TextInputType.number,
+            inputFormatters: [_DigitsFormatter()],
+            decoration: InputDecoration(
+              labelText: context.l10n.mmsiInputLabel,
+              border: const OutlineInputBorder(),
+              counterText: '',
+            ),
+            onChanged: (_) => _run(),
           ),
-          onChanged: (_) => _run(),
-        ),
-        const SizedBox(height: 16),
-        if (info != null) ...[
-          Card(
-            margin: const EdgeInsets.only(bottom: 10),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        info.valid
-                            ? Icons.check_circle_outline
-                            : Icons.warning_amber_rounded,
-                        size: 18,
-                        color: info.valid
-                            ? appColors.success
-                            : appColors.warning,
+          const SizedBox(height: 16),
+          if (info != null) ...[
+            Card(
+              margin: const EdgeInsets.only(bottom: 10),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          info.valid
+                              ? Icons.check_circle_outline
+                              : Icons.warning_amber_rounded,
+                          size: 18,
+                          color: info.valid
+                              ? appColors.success
+                              : appColors.warning,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          info.valid
+                              ? context.l10n.mmsiValid
+                              : context.l10n.mmsiInvalid,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                    if (info.valid) ...[
+                      const SizedBox(height: 10),
+                      _row(context, context.l10n.mmsiMid, info.mid!),
+                      _row(
+                        context,
+                        context.l10n.mmsiCountry,
+                        info.country ?? context.l10n.mmsiCountryUnknown,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        info.valid
-                            ? context.l10n.mmsiValid
-                            : context.l10n.mmsiInvalid,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
+                      _row(context, context.l10n.mmsiType, _typeLabel(context)),
                     ],
-                  ),
-                  if (info.valid) ...[
-                    const SizedBox(height: 10),
-                    _row(
-                      context,
-                      context.l10n.mmsiMid,
-                      info.mid!,
-                    ),
-                    _row(
-                      context,
-                      context.l10n.mmsiCountry,
-                      info.country ?? context.l10n.mmsiCountryUnknown,
-                    ),
-                    _row(context, context.l10n.mmsiType, _typeLabel(context)),
                   ],
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ],
-      ],
-    ),
-  );
+      ),
+    );
   }
 
   String _typeLabel(BuildContext context) {

@@ -1,5 +1,4 @@
 class CoordinateUtils {
-
   //region deprecated
   double? calculateLongitude(String binaryLongitude) {
     int rawLongitude = _parseSignedBinary(binaryLongitude);
@@ -43,8 +42,7 @@ class CoordinateUtils {
     }
   }
 
-
-// Properly parse two's complement binary
+  // Properly parse two's complement binary
   int _parseSignedBinary(String binary) {
     int value = int.parse(binary, radix: 2);
     int bitLength = binary.length;
@@ -59,7 +57,7 @@ class CoordinateUtils {
 
   //endregion
 
-// Unified coordinate calculation
+  // Unified coordinate calculation
   double? _calculateCoordinate(int rawValue, int factor, int invalidValue) {
     if (rawValue == invalidValue) {
       return null; // Invalid/unavailable
@@ -77,10 +75,18 @@ class CoordinateUtils {
       return result;
     } else if (nrBits == 25) {
       // Standard for types 1 - 3
-      double? result = _calculateCoordinate(binaryLongitude, 60000, 181 * 60000);
+      double? result = _calculateCoordinate(
+        binaryLongitude,
+        60000,
+        181 * 60000,
+      );
       return result;
     } else if (nrBits == 28) {
-      double? result = _calculateCoordinate(binaryLongitude, 600000, 181 * 600000);
+      double? result = _calculateCoordinate(
+        binaryLongitude,
+        600000,
+        181 * 600000,
+      );
       return result;
     } else {
       return null;
@@ -97,12 +103,16 @@ class CoordinateUtils {
       double? result = _calculateCoordinate(binaryLatitude, 60000, 91 * 60000);
       return result;
     } else if (nrBits == 27) {
-      double? result = _calculateCoordinate(binaryLatitude, 600000, 91 * 600000);
+      double? result = _calculateCoordinate(
+        binaryLatitude,
+        600000,
+        91 * 600000,
+      );
       return result;
     } else {
       return null;
     }
   }
-//endregion
 
+  //endregion
 }

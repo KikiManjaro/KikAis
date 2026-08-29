@@ -45,16 +45,12 @@ class SafetyRelatedBroadcastMessage extends AISMessage {
   }
 
   @override
-  int get hashCode => Object.hashAll([
-    messageType,
-    mmsi,
-    repeatIndicator,
-    spare,
-    text,
-  ]);
+  int get hashCode =>
+      Object.hashAll([messageType, mmsi, repeatIndicator, spare, text]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Text: $text)';
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Text: $text)';
   //endregion
 
   /// Decodes a six-bit-armored AIS payload string into a
@@ -64,7 +60,10 @@ class SafetyRelatedBroadcastMessage extends AISMessage {
   /// string is zero-padded to 1008 bits before parsing to accommodate the
   /// maximum allowed text length.
   factory SafetyRelatedBroadcastMessage.fromEncoded(String encoded) {
-    String binary = encoded.padRight(1008, '0'); // ToDo: This is kind of inefficient - might have to change to an dynamic approach
+    String binary = encoded.padRight(
+      1008,
+      '0',
+    ); // ToDo: This is kind of inefficient - might have to change to an dynamic approach
 
     // common
     int messageType = getUintDirect(binary, 0, 6);
@@ -73,14 +72,18 @@ class SafetyRelatedBroadcastMessage extends AISMessage {
 
     // type 8 specific
     int spare = getUintDirect(binary, 38, 40);
-    String text = BinaryConverter().getTextFromSixBitCharacters(binary, 40, binary.length + 1);
+    String text = BinaryConverter().getTextFromSixBitCharacters(
+      binary,
+      40,
+      binary.length + 1,
+    );
 
     return SafetyRelatedBroadcastMessage(
       messageType: messageType,
       mmsi: mmsi,
       repeatIndicator: repeatIndicator,
       spare: spare,
-      text: text
+      text: text,
     );
   }
 }

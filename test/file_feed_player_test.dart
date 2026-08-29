@@ -105,11 +105,7 @@ void main() {
   });
 
   test('replays following tag-block timestamps', () async {
-    final lines = [
-      r'\s:SIM,t:0\!A',
-      r'\s:SIM,t:50\!B',
-      r'\s:SIM,t:150\!C',
-    ];
+    final lines = [r'\s:SIM,t:0\!A', r'\s:SIM,t:50\!B', r'\s:SIM,t:150\!C'];
     final path = await writeLines(lines);
     final player = FileFeedPlayer(
       path: path,
@@ -157,11 +153,7 @@ void main() {
   });
 
   test('speed factor divides the recorded deltas', () async {
-    final lines = [
-      r'\s:SIM,t:0\!A',
-      r'\s:SIM,t:200\!B',
-      r'\s:SIM,t:400\!C',
-    ];
+    final lines = [r'\s:SIM,t:0\!A', r'\s:SIM,t:200\!B', r'\s:SIM,t:400\!C'];
     final path = await writeLines(lines);
     final player = FileFeedPlayer(
       path: path,

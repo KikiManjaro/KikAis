@@ -464,7 +464,8 @@ const kType3Ex1 = '!AIVDM,1,1,,A,38Id705000rRVJhE7cl9n;160000,0*40';
 const kType4Ex1 = '!AIVDM,1,1,,A,403OviQuMGCqWrRO9>E6fE700@GO,0*4D';
 
 // Type 5 — Static and Voyage Related Data (first part only; all key fields fit in first payload)
-const kType5Ex1 = '!AIVDM,2,1,1,A,55?MbV02;H;s<HtKR20EHE:0@T4@Dn2222222216L961O5Gf0NSQEp6ClRp8,0*1C';
+const kType5Ex1 =
+    '!AIVDM,2,1,1,A,55?MbV02;H;s<HtKR20EHE:0@T4@Dn2222222216L961O5Gf0NSQEp6ClRp8,0*1C';
 
 // Type 6 — Binary Addressed Message
 const kType6Ex1 = '!AIVDM,1,1,,B,6B?n;be:cbapalgc;i6?Ow4,2*4A';
@@ -473,7 +474,8 @@ const kType6Ex1 = '!AIVDM,1,1,,B,6B?n;be:cbapalgc;i6?Ow4,2*4A';
 const kType7Ex1 = '!AIVDM,1,1,,A,702R5`hwCjq8,0*6B';
 
 // Type 8 — Binary Broadcast Message
-const kType8Ex1 = '!AIVDM,1,1,,A,85Mwp`1Kf3aCnsNvBWLi=wQuNhA5t43N`5nCuI=p<IBfVqnMgPGs,0*47';
+const kType8Ex1 =
+    '!AIVDM,1,1,,A,85Mwp`1Kf3aCnsNvBWLi=wQuNhA5t43N`5nCuI=p<IBfVqnMgPGs,0*47';
 
 // Type 9 — SAR Aircraft Position Report
 const kType9Ex1 = '!AIVDM,1,1,,B,91b55wi;hbOS@OdQAC062Ch2089h,0*30';
@@ -502,20 +504,23 @@ const kType15Ex2 = '!AIVDM,1,1,,B,?h3Ovn1GP<K0<P@59a0,2*04';
 const kType16Ex1 = '!AIVDM,1,1,,A,@01uEO@mMk7P<P00,0*18';
 
 // Type 17 — DGNSS Broadcast Binary Message (first part only)
-const kType17Ex1 = '!AIVDM,2,1,5,A,A02VqLPA4I6C07h5Ed1h<OrsuBTTwS?r:C?w`?la<gno1RTRwSP9:BcurA8a,0*3A';
+const kType17Ex1 =
+    '!AIVDM,2,1,5,A,A02VqLPA4I6C07h5Ed1h<OrsuBTTwS?r:C?w`?la<gno1RTRwSP9:BcurA8a,0*3A';
 
 // Type 18 — Standard Class B CS Position Report
 const kType18Ex1 = '!AIVDM,1,1,,A,B52K>;h00Fc>jpUlNV@ikwpUoP06,0*4C';
 
 // Type 19 — Extended Class B CS Position Report
-const kType19Ex1 = '!AIVDM,1,1,,B,C5N3SRgPEnJGEBT>NhWAwwo862PaLELTBJ:V00000000S0D:R220,0*0B';
+const kType19Ex1 =
+    '!AIVDM,1,1,,B,C5N3SRgPEnJGEBT>NhWAwwo862PaLELTBJ:V00000000S0D:R220,0*0B';
 
 // Type 20 — Data Link Management Message
 const kType20Ex1 = '!AIVDM,1,1,,A,Dh3OvjB8IN>4,0*1D';
 const kType20Ex2 = '!AIVDM,1,1,,B,D030p8@2tN?b<`O6DmQO6D0,2*5D';
 
 // Type 21 — Aid-to-Navigation Report (first part only)
-const kType21Ex1 = '!AIVDM,2,1,5,B,E1mg=5J1T4W0h97aRh6ba84<h2d;W:Te=eLvH50```q,0*46';
+const kType21Ex1 =
+    '!AIVDM,2,1,5,B,E1mg=5J1T4W0h97aRh6ba84<h2d;W:Te=eLvH50```q,0*46';
 
 // Type 22 — Channel Management
 const kType22Ex1 = '!AIVDM,1,1,,A,F030ot22N2P6aoQbhe4736L20000,0*1A';
@@ -531,7 +536,8 @@ const kType24ExB = '!AIVDM,1,1,,A,H42O55lti4hhhilD3nink000?050,0*40';
 const kType25Ex1 = '!AIVDM,1,1,,A,I6SWo?8P00a3PKpEKEVj0?vNP<65,0*73';
 
 // Type 26 — Multiple Slot Binary Message
-const kType26Ex1 = '!AIVDM,1,1,,A,J1@@0IK70PGgT740000000000@000?D0ih1e00006JlPC9C3,0*6B';
+const kType26Ex1 =
+    '!AIVDM,1,1,,A,J1@@0IK70PGgT740000000000@000?D0ih1e00006JlPC9C3,0*6B';
 
 // Type 27 — Long-Range AIS Broadcast Message
 const kType27Ex1 = '!AIVDM,1,1,,A,KCQ9r=hrFUnH7P00,0*41';

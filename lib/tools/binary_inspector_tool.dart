@@ -49,106 +49,103 @@ class _BinaryInspectorToolState extends State<BinaryInspectorTool> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-        SectionHeader(
-          icon: Icons.memory,
-          title: context.l10n.toolBinary,
-        ),
-        TextField(
-          controller: _controller,
-          maxLines: 4,
-          minLines: 2,
-          decoration: InputDecoration(
-            labelText: context.l10n.binaryInputLabel,
-            alignLabelWithHint: true,
-            border: const OutlineInputBorder(),
+          SectionHeader(icon: Icons.memory, title: context.l10n.toolBinary),
+          TextField(
+            controller: _controller,
+            maxLines: 4,
+            minLines: 2,
+            decoration: InputDecoration(
+              labelText: context.l10n.binaryInputLabel,
+              alignLabelWithHint: true,
+              border: const OutlineInputBorder(),
+            ),
+            onChanged: (_) => _run(),
           ),
-          onChanged: (_) => _run(),
-        ),
-        const SizedBox(height: 16),
-        for (final result in _results)
-          Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.hexagon_outlined,
-                        size: 18,
-                        color: appColors.info,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: SelectableText(
-                          result.sentence?.raw ?? result.payload,
-                          style: const TextStyle(
-                            fontFamily: 'monospace',
-                            fontSize: 12,
+          const SizedBox(height: 16),
+          for (final result in _results)
+            Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.hexagon_outlined,
+                          size: 18,
+                          color: appColors.info,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: SelectableText(
+                            result.sentence?.raw ?? result.payload,
+                            style: const TextStyle(
+                              fontFamily: 'monospace',
+                              fontSize: 12,
+                            ),
                           ),
                         ),
-                      ),
-                      CopyIconButton(
-                        text: result.sentence?.raw ?? result.payload,
-                        message: context.l10n.receptionFrameCopied,
-                        padding: EdgeInsets.zero,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  if (result.sentence != null)
-                    _row(context, context.l10n.binaryPayload, result.payload),
-                  _row(
-                    context,
-                    context.l10n.binaryBits,
-                    '${result.binary.length}',
-                  ),
-                  _row(context, context.l10n.binaryBinary, result.binary),
-                  _row(context, context.l10n.binaryHex, result.hex),
-                  _row(context, context.l10n.binaryHexBytes, result.hexBytes),
-                  const SizedBox(height: 8),
-                  Text(
-                    context.l10n.binarySixBit,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: scheme.onSurfaceVariant,
+                        CopyIconButton(
+                          text: result.sentence?.raw ?? result.payload,
+                          message: context.l10n.receptionFrameCopied,
+                          padding: EdgeInsets.zero,
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Wrap(
-                    spacing: 4,
-                    runSpacing: 4,
-                    children: [
-                      for (var i = 0; i < result.payload.length; i++)
-                        Tooltip(
-                          message:
-                              "'${result.payload[i]}' → ${result.sixBitValues[i]}",
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: scheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              result.payload[i],
-                              style: const TextStyle(
-                                fontFamily: 'monospace',
-                                fontSize: 11,
+                    const SizedBox(height: 8),
+                    if (result.sentence != null)
+                      _row(context, context.l10n.binaryPayload, result.payload),
+                    _row(
+                      context,
+                      context.l10n.binaryBits,
+                      '${result.binary.length}',
+                    ),
+                    _row(context, context.l10n.binaryBinary, result.binary),
+                    _row(context, context.l10n.binaryHex, result.hex),
+                    _row(context, context.l10n.binaryHexBytes, result.hexBytes),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.l10n.binarySixBit,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
+                      children: [
+                        for (var i = 0; i < result.payload.length; i++)
+                          Tooltip(
+                            message:
+                                "'${result.payload[i]}' → ${result.sixBitValues[i]}",
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: scheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                result.payload[i],
+                                style: const TextStyle(
+                                  fontFamily: 'monospace',
+                                  fontSize: 11,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -171,10 +168,7 @@ class _BinaryInspectorToolState extends State<BinaryInspectorTool> {
           Expanded(
             child: SelectableText(
               value,
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 12,
-              ),
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
             ),
           ),
           CopyIconButton(text: value, padding: EdgeInsets.zero),

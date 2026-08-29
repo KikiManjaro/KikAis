@@ -7,11 +7,11 @@ enum SpeedUnit {
 
   /// Factor that converts one [this] to knots.
   double get toKnots => switch (this) {
-        SpeedUnit.knots => 1,
-        SpeedUnit.kmh => 1 / 1.852,
-        SpeedUnit.ms => 1 / 0.514444,
-        SpeedUnit.mph => 1 / 1.15077945,
-      };
+    SpeedUnit.knots => 1,
+    SpeedUnit.kmh => 1 / 1.852,
+    SpeedUnit.ms => 1 / 0.514444,
+    SpeedUnit.mph => 1 / 1.15077945,
+  };
 }
 
 /// Converts [value] expressed in [from] into every supported unit.

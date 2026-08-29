@@ -96,7 +96,7 @@ class GroupAssignmentCommand extends AISMessage {
     required this.intervalInfo,
   });
 
-  //region Overrides  
+  //region Overrides
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -142,8 +142,9 @@ class GroupAssignmentCommand extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, NE Longitude: $neLongitude, NE Latitude: $neLatitude, SW Longitude: $swLongitude, SW Latitude: $swLatitude, Station Type Int: $stationTypeInt, Ship Type Int: $shipTypeInt, TX/RX Mode Int: $txrxModeInt, Interval: $interval, Quiet Time: $quietTime, Station Type: $stationType, Ship Type: $shipType, TX/RX Mode: $txrxMode, Interval Info: $intervalInfo)';
-  //endregion  
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, NE Longitude: $neLongitude, NE Latitude: $neLatitude, SW Longitude: $swLongitude, SW Latitude: $swLatitude, Station Type Int: $stationTypeInt, Ship Type Int: $shipTypeInt, TX/RX Mode Int: $txrxModeInt, Interval: $interval, Quiet Time: $quietTime, Station Type: $stationType, Ship Type: $shipType, TX/RX Mode: $txrxMode, Interval Info: $intervalInfo)';
+  //endregion
 
   /// Decodes a six-bit-armored AIS payload string into a
   /// [GroupAssignmentCommand].
@@ -156,12 +157,12 @@ class GroupAssignmentCommand extends AISMessage {
   factory GroupAssignmentCommand.fromEncoded(String encoded) {
     String binary = encoded.padRight(160, '0');
 
-    // common  
+    // common
     int messageType = getUintDirect(binary, 0, 6);
     int repeatIndicator = getUintDirect(binary, 6, 8);
     int mmsi = getUintDirect(binary, 8, 38);
 
-    // type GroupAssignmentCommand specific  
+    // type GroupAssignmentCommand specific
     int spare = getUintDirect(binary, 38, 40);
     int neLongitudeBin = getSignedIntDirect(binary, 40, 58);
     int neLatitudeBin = getSignedIntDirect(binary, 58, 75);
@@ -178,9 +179,15 @@ class GroupAssignmentCommand extends AISMessage {
       mmsi: mmsi,
       repeatIndicator: repeatIndicator,
       spare: spare,
-      neLongitude: CoordinateUtils().calculateLongitudeDirect(neLongitudeBin, 18),
+      neLongitude: CoordinateUtils().calculateLongitudeDirect(
+        neLongitudeBin,
+        18,
+      ),
       neLatitude: CoordinateUtils().calculateLatitudeDirect(neLatitudeBin, 17),
-      swLongitude: CoordinateUtils().calculateLongitudeDirect(swLongitudeBin, 18),
+      swLongitude: CoordinateUtils().calculateLongitudeDirect(
+        swLongitudeBin,
+        18,
+      ),
       swLatitude: CoordinateUtils().calculateLatitudeDirect(swLatitudeBin, 17),
       stationTypeInt: stationType,
       shipTypeInt: shipType,

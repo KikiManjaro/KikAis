@@ -32,11 +32,13 @@ Future<void> main(List<String> args) async {
     if (devices.isEmpty) {
       stdout.writeln('No RTL-SDR device found.');
       stdout.writeln(
-          'Check the USB driver (Zadig / WinUSB) and that rtlsdr.dll is on PATH.');
+        'Check the USB driver (Zadig / WinUSB) and that rtlsdr.dll is on PATH.',
+      );
     } else {
       for (final d in devices) {
         stdout.writeln(
-            '#${d.index}: ${d.label} (${d.manufacturer} / ${d.product} / ${d.serial})');
+          '#${d.index}: ${d.label} (${d.manufacturer} / ${d.product} / ${d.serial})',
+        );
       }
     }
     return;
@@ -69,8 +71,10 @@ Future<void> replay(String path) async {
     return;
   }
   final bytes = await file.readAsBytes();
-  stdout.writeln('Replaying ${bytes.length} bytes (${bytes.length ~/ 204800} s '
-      'at 1.024 MHz) through the demodulator...');
+  stdout.writeln(
+    'Replaying ${bytes.length} bytes (${bytes.length ~/ 204800} s '
+    'at 1.024 MHz) through the demodulator...',
+  );
   final demod = AisDemodulator();
   var count = 0;
   final chunk = 65536;
@@ -136,8 +140,10 @@ Future<void> probe({
   }
 
   await device.close();
-  stdout.writeln('Streamed $bytesRead bytes '
-      '(${(bytesRead / 2048000).toStringAsFixed(2)} s of IQ).');
+  stdout.writeln(
+    'Streamed $bytesRead bytes '
+    '(${(bytesRead / 2048000).toStringAsFixed(2)} s of IQ).',
+  );
   stdout.writeln('Decoded $sentences AIS sentence(s).');
   if (out != null) {
     File(savePath!).writeAsBytesSync(out.takeBytes());

@@ -38,7 +38,8 @@ class UnsupportedMessageTypeExceptionLegacy implements Exception {
   UnsupportedMessageTypeExceptionLegacy(this.messageType);
 
   @override
-  String toString() => 'Unsupported AIS Message Type in legacy mode: $messageType, check if supported without legacy';
+  String toString() =>
+      'Unsupported AIS Message Type in legacy mode: $messageType, check if supported without legacy';
 }
 
 /// Thrown when the raw AIS input is empty, too short, or otherwise malformed

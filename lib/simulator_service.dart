@@ -31,7 +31,8 @@ class SimulatorService extends ChangeNotifier {
   /// only add latency. Larger fleets are generated off the UI thread.
   static const int _syncGenerationThreshold = 1000;
 
-  SimulatorService({SimFleetConfig? config}) : config = config ?? SimFleetConfig() {
+  SimulatorService({SimFleetConfig? config})
+    : config = config ?? SimFleetConfig() {
     fleet.generate(this.config);
   }
 

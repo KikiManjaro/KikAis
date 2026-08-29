@@ -21,24 +21,24 @@ enum DecoderTool {
   final IconData icon;
 
   String title(AppLocalizations l10n) => switch (this) {
-        DecoderTool.decoder => l10n.toolDecoder,
-        DecoderTool.checksum => l10n.toolChecksum,
-        DecoderTool.mmsi => l10n.toolMmsi,
-        DecoderTool.speed => l10n.toolSpeed,
-        DecoderTool.binary => l10n.toolBinary,
-        DecoderTool.eta => l10n.toolEta,
-        DecoderTool.radio => l10n.toolRadio,
-        DecoderTool.textToBinary => l10n.toolTextToBinary,
-      };
+    DecoderTool.decoder => l10n.toolDecoder,
+    DecoderTool.checksum => l10n.toolChecksum,
+    DecoderTool.mmsi => l10n.toolMmsi,
+    DecoderTool.speed => l10n.toolSpeed,
+    DecoderTool.binary => l10n.toolBinary,
+    DecoderTool.eta => l10n.toolEta,
+    DecoderTool.radio => l10n.toolRadio,
+    DecoderTool.textToBinary => l10n.toolTextToBinary,
+  };
 
   String subtitle(AppLocalizations l10n) => switch (this) {
-        DecoderTool.decoder => l10n.toolDecoderSub,
-        DecoderTool.checksum => l10n.toolChecksumSub,
-        DecoderTool.mmsi => l10n.toolMmsiSub,
-        DecoderTool.speed => l10n.toolSpeedSub,
-        DecoderTool.binary => l10n.toolBinarySub,
-        DecoderTool.eta => l10n.toolEtaSub,
-        DecoderTool.radio => l10n.toolRadioSub,
-        DecoderTool.textToBinary => l10n.toolTextToBinarySub,
-      };
+    DecoderTool.decoder => l10n.toolDecoderSub,
+    DecoderTool.checksum => l10n.toolChecksumSub,
+    DecoderTool.mmsi => l10n.toolMmsiSub,
+    DecoderTool.speed => l10n.toolSpeedSub,
+    DecoderTool.binary => l10n.toolBinarySub,
+    DecoderTool.eta => l10n.toolEtaSub,
+    DecoderTool.radio => l10n.toolRadioSub,
+    DecoderTool.textToBinary => l10n.toolTextToBinarySub,
+  };
 }

@@ -15,13 +15,11 @@ class DecimatingFir {
   final Float64List _history;
   final int _numTaps;
 
-  DecimatingFir({
-    required List<double> taps,
-    required this.decimation,
-  })  : assert(taps.isNotEmpty),
-        _taps = Float64List.fromList(taps),
-        _numTaps = taps.length,
-        _history = Float64List(taps.length - 1);
+  DecimatingFir({required List<double> taps, required this.decimation})
+    : assert(taps.isNotEmpty),
+      _taps = Float64List.fromList(taps),
+      _numTaps = taps.length,
+      _history = Float64List(taps.length - 1);
 
   /// Builds a Hamming-windowed sinc low-pass.
   factory DecimatingFir.lowPass({
@@ -34,10 +32,8 @@ class DecimatingFir {
       final i = n - (numTaps - 1) / 2.0;
       final sinc = i == 0
           ? 2 * cutoffHz / inputRate
-          : math.sin(2 * math.pi * cutoffHz * i / inputRate) /
-              (math.pi * i);
-      final window =
-          0.54 - 0.46 * math.cos(2 * math.pi * n / (numTaps - 1));
+          : math.sin(2 * math.pi * cutoffHz * i / inputRate) / (math.pi * i);
+      final window = 0.54 - 0.46 * math.cos(2 * math.pi * n / (numTaps - 1));
       return sinc * window;
     });
     // Normalize so the DC gain is 1.
@@ -80,10 +76,12 @@ class DecimatingFir {
     if (keep == input.length) {
       _history.setRange(0, keep, input);
     } else {
+      _history.setRange(0, _history.length - keep, _history.sublist(keep));
       _history.setRange(
-          0, _history.length - keep, _history.sublist(keep));
-      _history.setRange(
-          _history.length - keep, _history.length, input.sublist(input.length - keep));
+        _history.length - keep,
+        _history.length,
+        input.sublist(input.length - keep),
+      );
     }
     return out;
   }

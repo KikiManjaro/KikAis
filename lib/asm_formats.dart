@@ -52,7 +52,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('off_position_status', 'Off Position Status', 1),
       AsmField('spare_1', 'Spare', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 0,
     name: "Text telegram using 6-bit ASCII",
@@ -64,7 +65,8 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "01/01/1998",
     notToBeUsedAfter: "15/06/2007",
     deprecatedSince: "not to be used after 15/06/2007",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 0,
     name: "Text using 6-bit ASCII",
@@ -74,7 +76,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "ITU-R.M.1371-3",
     permittedAsFrom: "16/06/2007",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 1,
     name: "Application acknowledgement",
@@ -85,7 +88,8 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "01/01/1998",
     notToBeUsedAfter: "01/04/2010",
     deprecatedSince: "not to be used after 01/04/2010",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 2,
     name: "Interrogation for specified FMs within the IAI branch",
@@ -108,7 +112,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('requested_fi_code', 'Requested FI code', 6),
       AsmField('spare_bits', 'Spare bits', 64),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 3,
     name: "Capability interrogation",
@@ -132,7 +137,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('requested_dac_code', 'Requested DAC code', 10),
       AsmField('spare_bits', 'Spare bits', 70),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 3,
     name: "Capability interrogation",
@@ -154,7 +160,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('requested_dac_code', 'Requested DAC code', 10),
       AsmField('spare_bits', 'Spare bits', 70),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 4,
     name: "Capability reply",
@@ -177,7 +184,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('fi', 'FI', 6),
       AsmField('dac_code', 'DAC code', 10),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 4,
     name: "Capability reply",
@@ -198,7 +206,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('fi', 'FI', 6),
       AsmField('dac_code', 'DAC code', 10),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 5,
     name: "Application acknowledgement to an addressed binary message",
@@ -219,12 +228,18 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('fi', 'FI', 6),
       AsmField('dac_code_of_received_fm', 'DAC code of received FM', 10),
       AsmField('fi_code_of_received_fm', 'FI code of received FM', 6),
-      AsmField('text_sequence_number', 'Text sequence number', 11, kind: AsmFieldKind.text6),
+      AsmField(
+        'text_sequence_number',
+        'Text sequence number',
+        11,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('ai_available', 'AI available', 1),
       AsmField('ai_response', 'AI response', 3),
       AsmField('spare_bits', 'Spare bits', 49),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 12,
     name: "Dangerous cargo indication",
@@ -255,14 +270,20 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('nday', 'ETA day (UTC)', 5),
       AsmField('nhour', 'ETA hour (UTC)', 5),
       AsmField('nminute', 'ETA minute (UTC)', 6),
-      AsmField('dangerous', 'Main Dangerous Good', 120, kind: AsmFieldKind.text6),
+      AsmField(
+        'dangerous',
+        'Main Dangerous Good',
+        120,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('imdcat', 'IMD Category', 24, kind: AsmFieldKind.text6),
       AsmField('unid', 'UN Number', 13),
       AsmField('amount', 'Amount of Cargo', 10),
       AsmField('unit', 'Unit of Quantity', 2),
       AsmField('spare', 'Spare', 3),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 14,
     name: "Tidal window",
@@ -295,7 +316,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('cdir', 'Current Dir. Predicted', 9),
       AsmField('cspeed', 'Current Speed Predicted', 7),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 16,
     name: "Number of persons on board",
@@ -316,7 +338,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('persons', '# persons on board', 14),
       AsmField('spare', 'Spare', 3),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 16,
     name: "Number of persons on board",
@@ -335,7 +358,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('persons', '# persons on board', 14),
       AsmField('spare', 'Spare', 3),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 17,
     name: "Ship waypoints (WP) and/or route plan report",
@@ -344,7 +368,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.deprecated,
     registrant: "ITU-R.M.1371-1",
     permittedAsFrom: "01/01/1998",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 18,
     name: "Advice of waypoints (AWP) and/or route plan of VTS",
@@ -364,19 +389,35 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('retransmit_flag', 'Retransmit Flag', 1),
       AsmField('spare', 'Spare', 1),
       AsmField('iai', 'IAI', 16),
-      AsmField('message_linkage_id', 'Message Linkage ID', 10, kind: AsmFieldKind.text6),
-      AsmField('clearance_date_time_to_enter_port', 'Clearance date/time to enter port', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'message_linkage_id',
+        'Message Linkage ID',
+        10,
+        kind: AsmFieldKind.text6,
+      ),
+      AsmField(
+        'clearance_date_time_to_enter_port',
+        'Clearance date/time to enter port',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('utc_month', 'UTC Month', 4),
       AsmField('utc_day', 'UTC Day', 5),
       AsmField('utc_hour', 'UTC Hour', 5),
       AsmField('utc_minute', 'UTC Minute', 6),
-      AsmField('name_of_port_and_berth', 'Name of port and berth', 120, kind: AsmFieldKind.text6),
+      AsmField(
+        'name_of_port_and_berth',
+        'Name of port and berth',
+        120,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('destination', 'Destination', 30, kind: AsmFieldKind.text6),
       AsmField('longitude', 'Longitude', 25),
       AsmField('latitude', 'Latitude', 24),
       AsmField('spare_1', 'Spare', 43),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 18,
     name: "Clearance time to enter port",
@@ -400,13 +441,19 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('day', 'Day (UTC)', 5),
       AsmField('hour', 'Hour (UTC)', 5),
       AsmField('minute', 'Minute (UTC)', 6),
-      AsmField('portname', 'Name of Port & Berth', 120, kind: AsmFieldKind.text6),
+      AsmField(
+        'portname',
+        'Name of Port & Berth',
+        120,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('destination', 'Destination', 30, kind: AsmFieldKind.text6),
       AsmField('lon', 'Longitude', 25, kind: AsmFieldKind.signed),
       AsmField('lat', 'Latitude', 24, kind: AsmFieldKind.signed),
       AsmField('spare', 'Spare', 43),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 19,
     name: "Extended ship static and voyage related data",
@@ -415,7 +462,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "ITU-R.M.1371-1",
     permittedAsFrom: "01/01/1998",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 20,
     name: "Berthing data",
@@ -430,14 +478,29 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('source_id', 'Source ID', 30),
       AsmField('sequence_number', 'Sequence Number', 2),
       AsmField('destination_id', 'Destination ID', 30),
-      AsmField('retransmit_flag', 'Retransmit Flag', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'retransmit_flag',
+        'Retransmit Flag',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('spare', 'Spare', 1),
       AsmField('iai', 'IAI', 16),
-      AsmField('message_linkage_id', 'Message Linkage ID', 10, kind: AsmFieldKind.text6),
+      AsmField(
+        'message_linkage_id',
+        'Message Linkage ID',
+        10,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('berth_length', 'Berth Length', 9),
       AsmField('water_depth_at_berth', 'Water Depth at Berth', 8),
       AsmField('mooring_position', 'Mooring Position', 3),
-      AsmField('berth_date_and_time', 'Berth Date and Time', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'berth_date_and_time',
+        'Berth Date and Time',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('utc_month', 'UTC Month', 4),
       AsmField('utc_day', 'UTC Day', 5),
       AsmField('utc_hour', 'UTC Hour', 5),
@@ -445,11 +508,20 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('services_availability', 'Services availability', 1),
       AsmField('type_of_services_available', 'Type of Services Available', 52),
       AsmField('name_of_berth', 'Name of Berth', 120, kind: AsmFieldKind.text6),
-      AsmField('centre_position_of_berth_longitude', 'Centre position of Berth, Longitude', 25),
-      AsmField('centre_position_of_berth_latitude', 'Centre position of Berth, Latitude', 24),
+      AsmField(
+        'centre_position_of_berth_longitude',
+        'Centre position of Berth, Longitude',
+        25,
+      ),
+      AsmField(
+        'centre_position_of_berth_latitude',
+        'Centre position of Berth, Latitude',
+        24,
+      ),
       AsmField('spare_1', 'Spare', 0),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 23,
     name: "Area notice",
@@ -466,7 +538,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('max_870', 'Max 870', 0, kind: AsmFieldKind.data),
       AsmField('max_1_013', 'Max 1,013', 0, kind: AsmFieldKind.data),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 25,
     name: "Dangerous cargo indication",
@@ -490,7 +563,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('code', 'Cargo code', 4),
       AsmField('subtype', 'Cargo subtype', 13),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 28,
     name: "Route information",
@@ -521,7 +595,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('lon', 'Longitude', 28, kind: AsmFieldKind.signed),
       AsmField('lat', 'Latitude', 27, kind: AsmFieldKind.signed),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 30,
     name: "Text description",
@@ -531,7 +606,8 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "IMO Circ. 289",
     permittedAsFrom: "01/06/2010",
     fields: _kTextMsgFields,
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 32,
     name: "Tidal window",
@@ -562,7 +638,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('cdir', 'Current Dir. Predicted', 9),
       AsmField('cspeed', 'Current Speed Predicted', 8),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 40,
     name: "Number of persons on board",
@@ -571,7 +648,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "ITU-R.M.1371-1",
     permittedAsFrom: "01/01/1998",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 3,
     name: "Inland Capability Interrogation",
@@ -583,9 +661,15 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "18/10/2021",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('designated_area_code', 'Designated Area Code', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'designated_area_code',
+        'Designated Area Code',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 4,
     name: "Inland Capability Interrogation reply",
@@ -597,9 +681,15 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "18/10/2021",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('designated_area_code', 'Designated Area Code', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'designated_area_code',
+        'Designated Area Code',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 21,
     name: "ETA at lock/bridge/terminal",
@@ -622,7 +712,12 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('locode', 'UN/LOCODE', 18, kind: AsmFieldKind.text6),
       AsmField('section', 'Fairway section', 30, kind: AsmFieldKind.text6),
       AsmField('terminal', 'Terminal code', 30, kind: AsmFieldKind.text6),
-      AsmField('hectometre', 'Fairway hectometre', 30, kind: AsmFieldKind.text6),
+      AsmField(
+        'hectometre',
+        'Fairway hectometre',
+        30,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('month', 'ETA month', 4),
       AsmField('day', 'ETA day', 5),
       AsmField('hour', 'ETA hour', 5),
@@ -631,7 +726,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('airdraught', 'Air Draught', 12),
       AsmField('spare', 'Spare', 5),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 22,
     name: "RTA at lock/bridge/terminal",
@@ -654,7 +750,12 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('locode', 'UN/LOCODE', 18, kind: AsmFieldKind.text6),
       AsmField('section', 'Fairway section', 30, kind: AsmFieldKind.text6),
       AsmField('terminal', 'Terminal code', 30, kind: AsmFieldKind.text6),
-      AsmField('hectometre', 'Fairway hectometre', 30, kind: AsmFieldKind.text6),
+      AsmField(
+        'hectometre',
+        'Fairway hectometre',
+        30,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('month', 'RTA month', 4),
       AsmField('day', 'RTA day', 5),
       AsmField('hour', 'RTA hour', 5),
@@ -662,7 +763,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('status', 'Status', 2),
       AsmField('spare', 'Spare', 2),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 42,
     name: "Geographic Notice",
@@ -674,10 +776,16 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "18/10/2021",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('designated_area_code', 'Designated Area Code', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'designated_area_code',
+        'Designated Area Code',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('utc_month', 'UTC month', 0, kind: AsmFieldKind.data),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 44,
     name: "ISRS Text message",
@@ -688,7 +796,8 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "EU",
     permittedAsFrom: "18/10/2021",
     fields: _kTextMsgFields,
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 55,
     name: "Number of persons on board",
@@ -712,7 +821,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('personnel', '# personnel on board', 8),
       AsmField('spare', 'Spare', 51),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 219,
     fid: 2,
     name: "Route suggestion",
@@ -730,7 +840,12 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('retransmit_flag', 'Retransmit Flag', 1),
       AsmField('spare', 'Spare', 1),
       AsmField('iai', 'IAI', 16),
-      AsmField('message_linkage_id', 'Message Linkage ID', 10, kind: AsmFieldKind.text6),
+      AsmField(
+        'message_linkage_id',
+        'Message Linkage ID',
+        10,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('route_type', 'Route Type', 5),
       AsmField('eta_first_wp', 'ETA first WP', 0, kind: AsmFieldKind.data),
       AsmField('utc_month', 'UTC Month', 4),
@@ -742,7 +857,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('waypoints', 'Waypoints', 0, kind: AsmFieldKind.data),
       AsmField('spare_1', 'Spare', 0, kind: AsmFieldKind.data),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 219,
     fid: 3,
     name: "Route suggestion reply",
@@ -760,11 +876,17 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('retransmit_flag', 'Retransmit Flag', 1),
       AsmField('spare', 'Spare', 1),
       AsmField('iai', 'IAI', 16),
-      AsmField('message_linkage_id', 'Message Linkage ID', 10, kind: AsmFieldKind.text6),
+      AsmField(
+        'message_linkage_id',
+        'Message Linkage ID',
+        10,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('referenced_message', 'Referenced message', 10),
       AsmField('response', 'Response', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 219,
     fid: 6,
     name: "Flow management suggestion",
@@ -784,9 +906,15 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('iai', 'IAI', 16),
       AsmField('wp_0_position', 'WP 0 , position', 28),
       AsmField('wp_0_eta', 'WP 0 , ETA', 5),
-      AsmField('suggested_following_waypoints_with_relative_eta', 'Suggested following waypoints with relative ETA', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'suggested_following_waypoints_with_relative_eta',
+        'Suggested following waypoints with relative ETA',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 235,
     fid: 10,
     name: "Aids to Navigation monitoring data",
@@ -815,7 +943,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('off_pos', 'Position status', 1),
       AsmField('spare', 'Spare', 4),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 250,
     fid: 10,
     name: "Aids to Navigation monitoring data",
@@ -844,7 +973,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('off_pos', 'Position status', 1),
       AsmField('spare', 'Spare', 4),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 316,
     fid: 1,
     name: "Weather Station Message",
@@ -858,7 +988,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('designated_area_code', 'Designated Area Code', 10),
       AsmField('function_identifier', 'Function Identifier', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 316,
     fid: 1,
     name: "Wind Information Message",
@@ -872,7 +1003,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('designated_area_code', 'Designated Area Code', 10),
       AsmField('function_identifier', 'Function Identifier', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 316,
     fid: 1,
     name: "Water Level Message",
@@ -886,7 +1018,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('designated_area_code', 'Designated Area Code', 10),
       AsmField('function_identifier', 'Function Identifier', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 316,
     fid: 1,
     name: "Water Flow Message (Seaway)",
@@ -900,7 +1033,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('designated_area_code', 'Designated Area Code', 10),
       AsmField('function_identifier', 'Function Identifier', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 316,
     fid: 2,
     name: "Lockage Order Message (Seaway)",
@@ -910,7 +1044,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "Saint Lawrence Seaway Development Corporation",
     permittedAsFrom: "09/03/2002",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 316,
     fid: 2,
     name: "Estimated Lock Times Message (Seaway)",
@@ -920,7 +1055,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "Saint Lawrence Seaway Development Corporation",
     permittedAsFrom: "09/03/2002",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 316,
     fid: 32,
     name: "Version Message (Seaway)",
@@ -937,7 +1073,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('minor_version', 'Minor Version', 8),
       AsmField('reserved', 'Reserved', 8),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 1,
     name: "Weather Station Message",
@@ -951,7 +1088,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('designated_area_code', 'Designated Area Code', 10),
       AsmField('function_identifier', 'Function Identifier', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 1,
     name: "Wind Information Message",
@@ -965,7 +1103,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('designated_area_code', 'Designated Area Code', 10),
       AsmField('function_identifier', 'Function Identifier', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 1,
     name: "Water Level Message",
@@ -979,7 +1118,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('designated_area_code', 'Designated Area Code', 10),
       AsmField('function_identifier', 'Function Identifier', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 1,
     name: "Water Flow Message (Seaway)",
@@ -993,7 +1133,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('designated_area_code', 'Designated Area Code', 10),
       AsmField('function_identifier', 'Function Identifier', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 2,
     name: "Lockage Order Message (Seaway)",
@@ -1013,7 +1154,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('reserved', 'Reserved', 9),
       AsmField('lock_schedule', 'Lock Schedule', 0, kind: AsmFieldKind.data),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 2,
     name: "Estimated Lock Times Message (Seaway)",
@@ -1037,7 +1179,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('delay', 'Delay', 42),
       AsmField('reserved', 'Reserved', 4),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 32,
     name: "Version Message (Seaway)",
@@ -1054,7 +1197,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('minor_version', 'Minor Version', 8),
       AsmField('reserved', 'Reserved', 8),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 55,
     name: "Text Message Payload",
@@ -1064,7 +1208,8 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "USCG",
     permittedAsFrom: "04/06/2014",
     fields: _kTextMsgFields,
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 58,
     name: "Target Of Interest",
@@ -1080,7 +1225,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('target_type', 'Target Type', 4),
       AsmField('target_id', 'Target ID', 30),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 367,
     fid: 16,
     name: "Passenger and Crew Count",
@@ -1094,7 +1240,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('message_version', 'Message Version', 6),
       AsmField('utc_day', 'UTC day', 5),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 421,
     fid: 16,
     name: "Collision alarm",
@@ -1119,7 +1266,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('arrival_time', 'Arrival Time', 8),
       AsmField('spare_1', 'Spare', 4),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 0,
     name: "Text telegram using 6-bit ASCII",
@@ -1131,7 +1279,8 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "01/01/1998",
     notToBeUsedAfter: "15/06/2007",
     deprecatedSince: "not to be used after 15/06/2007",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 0,
     name: "Text using 6-bit ASCII",
@@ -1141,7 +1290,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "ITU-R.M.1371-3",
     permittedAsFrom: "16/06/2007",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 11,
     name: "Metreorological and hydrological data",
@@ -1197,7 +1347,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('ice', 'Ice', 2),
       AsmField('spare', 'Spare', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 13,
     name: "Fairway closed",
@@ -1216,8 +1367,18 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('dac', 'DAC', 10),
       AsmField('fid', 'FID', 6),
       AsmField('reason', 'Reason For Closing', 120, kind: AsmFieldKind.text6),
-      AsmField('closefrom', 'Location Of Closing From', 120, kind: AsmFieldKind.text6),
-      AsmField('closeto', 'Location of Closing To', 120, kind: AsmFieldKind.text6),
+      AsmField(
+        'closefrom',
+        'Location Of Closing From',
+        120,
+        kind: AsmFieldKind.text6,
+      ),
+      AsmField(
+        'closeto',
+        'Location of Closing To',
+        120,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('radius', 'Radius extension', 10),
       AsmField('extunit', 'Unit of extension', 2),
       AsmField('fday', 'From day (UTC)', 5),
@@ -1230,7 +1391,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('tminute', 'To minute (UTC)', 6),
       AsmField('spare', 'Spare', 4),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 15,
     name: "Extended ship static and voyage related data",
@@ -1251,7 +1413,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('airdraught', 'Air Draught', 11),
       AsmField('spare', 'Spare', 5),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 16,
     name: "VTS targets (targets derived by means other than AIS)",
@@ -1260,7 +1423,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "ITU-R.M.1371-1",
     permittedAsFrom: "01/01/1998",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 17,
     name: "Pseudo-AIS targets",
@@ -1287,7 +1451,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('second', 'Time Stamp', 6),
       AsmField('speed', 'Speed Over Ground', 10),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 17,
     name: "VTS-generated/Synthetic targets",
@@ -1312,7 +1477,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('second', 'Time Stamp', 6),
       AsmField('speed', 'Speed Over Ground', 10),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 18,
     name: "Advice of waypoints (AWP) and/or route plan of VTS",
@@ -1321,7 +1487,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "ITU-R.M.1371-1",
     permittedAsFrom: "01/01/1998",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 19,
     name: "Marine traffic signal",
@@ -1338,7 +1505,12 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('dac', 'DAC', 10),
       AsmField('fid', 'FID', 6),
       AsmField('linkage', 'Message Linkage ID', 10),
-      AsmField('station', 'Name of Signal Station', 120, kind: AsmFieldKind.text6),
+      AsmField(
+        'station',
+        'Name of Signal Station',
+        120,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('lon', 'Longitude', 25, kind: AsmFieldKind.signed),
       AsmField('lat', 'Latitude', 24, kind: AsmFieldKind.signed),
       AsmField('status', 'Status of Signal', 2),
@@ -1348,7 +1520,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('nextsignal', 'Expected Next Signal', 5),
       AsmField('spare', 'Spare', 102),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 21,
     name: "Weather observation report from ship",
@@ -1389,7 +1562,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('swellperiod', 'Swell period', 6),
       AsmField('spare', 'Spare', 3),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 22,
     name: "Area notice",
@@ -1423,7 +1597,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('subarea_type', 'Subarea shape #9', 3),
       AsmField('subarea_type', 'Subarea shape #10', 3),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 24,
     name: "Extended ship static and voyage-related data",
@@ -1443,7 +1618,12 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('airdraught', 'Air Draught', 13),
       AsmField('lastport', 'Last Port Of Call', 30, kind: AsmFieldKind.text6),
       AsmField('nextport', 'Next Port Of Call', 30, kind: AsmFieldKind.text6),
-      AsmField('secondport', 'Second Port Of Call', 30, kind: AsmFieldKind.text6),
+      AsmField(
+        'secondport',
+        'Second Port Of Call',
+        30,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('ais_state', 'AIS Class A', 2),
       AsmField('ata_state', 'Automatic Tracking Aid', 2),
       AsmField('bnwas_state', 'BNWAS', 2),
@@ -1483,7 +1663,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('persons', 'Number of persons', 13),
       AsmField('spare', 'Spare', 10),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 26,
     name: "Environmental",
@@ -1506,7 +1687,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('site', 'Site ID', 7),
       AsmField('payload', 'Sensor payload', 85, kind: AsmFieldKind.data),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 27,
     name: "Route information",
@@ -1534,7 +1716,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('lon', 'Longitude', 28, kind: AsmFieldKind.signed),
       AsmField('lat', 'Latitude', 27, kind: AsmFieldKind.signed),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 29,
     name: "Text description",
@@ -1544,7 +1727,8 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "IMO Circ. 289",
     permittedAsFrom: "01/06/2010",
     fields: _kTextMsgFields,
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 31,
     name: "Meteorological and Hydrographic data",
@@ -1600,7 +1784,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('ice', 'Ice', 2),
       AsmField('spare', 'Spare', 10),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 1,
     name: "Control Message",
@@ -1612,12 +1797,23 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "01/12/2017",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('repeat_indicator', 'Repeat Indicator', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'repeat_indicator',
+        'Repeat Indicator',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('source_id', 'Source ID', 0, kind: AsmFieldKind.data),
       AsmField('spare', 'Spare', 0, kind: AsmFieldKind.data),
-      AsmField('application_identifier', 'Application Identifier', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'application_identifier',
+        'Application Identifier',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 10,
     name: "Inland ship static and voyage related data",
@@ -1645,7 +1841,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('heading_q', 'Heading inf. quality', 1),
       AsmField('spare', 'Spare', 8),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 11,
     name: "Convoy message",
@@ -1657,10 +1854,16 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "06/06/2014",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('application_identifier', 'Application Identifier', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'application_identifier',
+        'Application Identifier',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('n', 'N', 0, kind: AsmFieldKind.data),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 23,
     name: "EMMA warning",
@@ -1697,7 +1900,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('wind', 'Wind Direction', 4),
       AsmField('spare', 'Spare', 6),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 24,
     name: "Water level message",
@@ -1710,12 +1914,23 @@ const List<AsmFormat> kAsmFormats = [
     deprecatedSince: "not to be used after 18/10/2021",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('repeat_indicator', 'Repeat Indicator', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'repeat_indicator',
+        'Repeat Indicator',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('source_id', 'Source ID', 0, kind: AsmFieldKind.data),
       AsmField('spare', 'Spare', 0, kind: AsmFieldKind.data),
-      AsmField('application_identifier', 'Application Identifier', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'application_identifier',
+        'Application Identifier',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 25,
     name: "Present Bridge Clearance",
@@ -1729,12 +1944,23 @@ const List<AsmFormat> kAsmFormats = [
     deprecatedSince: "not to be used after 18/10/2022",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('repeat_indicator', 'Repeat Indicator', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'repeat_indicator',
+        'Repeat Indicator',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('source_id', 'Source ID', 0, kind: AsmFieldKind.data),
       AsmField('spare', 'Spare', 0, kind: AsmFieldKind.data),
-      AsmField('application_identifier', 'Application Identifier', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'application_identifier',
+        'Application Identifier',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 25,
     name: "Present Bridge Clearance",
@@ -1746,12 +1972,23 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "18/10/2021",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('repeat_indicator', 'Repeat Indicator', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'repeat_indicator',
+        'Repeat Indicator',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('source_id', 'Source ID', 0, kind: AsmFieldKind.data),
       AsmField('spare', 'Spare', 0, kind: AsmFieldKind.data),
-      AsmField('application_identifier', 'Application Identifier', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'application_identifier',
+        'Application Identifier',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 26,
     name: "Water level message",
@@ -1763,12 +2000,23 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "18/10/2020",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('repeat_indicator', 'Repeat Indicator', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'repeat_indicator',
+        'Repeat Indicator',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('source_id', 'Source ID', 0, kind: AsmFieldKind.data),
       AsmField('spare', 'Spare', 0, kind: AsmFieldKind.data),
-      AsmField('application_identifier', 'Application Identifier', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'application_identifier',
+        'Application Identifier',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 40,
     name: "Signal status",
@@ -1777,7 +2025,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.replaced,
     registrant: "EU",
     permittedAsFrom: "10/10/2007",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 41,
     name: "Signal Station",
@@ -1789,12 +2038,23 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "24/11/2016",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('repeat_indicator', 'Repeat Indicator', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'repeat_indicator',
+        'Repeat Indicator',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('source_id', 'Source ID', 0, kind: AsmFieldKind.data),
       AsmField('spare', 'Spare', 0, kind: AsmFieldKind.data),
-      AsmField('application_identifier', 'Application Identifier', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'application_identifier',
+        'Application Identifier',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 42,
     name: "Geographic Notice",
@@ -1806,10 +2066,16 @@ const List<AsmFormat> kAsmFormats = [
     permittedAsFrom: "25/06/2020",
     fields: [
       AsmField('message_id', 'Message ID', 0, kind: AsmFieldKind.data),
-      AsmField('designated_area_code', 'Designated Area Code', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'designated_area_code',
+        'Designated Area Code',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('utc_month', 'UTC month', 0, kind: AsmFieldKind.data),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 200,
     fid: 44,
     name: "ISRS Text message",
@@ -1820,7 +2086,8 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "EU",
     permittedAsFrom: "25/06/2020",
     fields: _kTextMsgFields,
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 218,
     fid: 1,
     name: "Forward to Vessel Position Information Server (VPI)",
@@ -1831,7 +2098,8 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "CoRISMa (EU project)",
     permittedAsFrom: "16/06/2015",
     notToBeUsedAfter: "01/01/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 219,
     fid: 1,
     name: "Intended route",
@@ -1856,7 +2124,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('waypoints', 'Waypoints', 0, kind: AsmFieldKind.data),
       AsmField('spare_1', 'Spare', 0, kind: AsmFieldKind.data),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 219,
     fid: 4,
     name: "Tactical voyageplan broadcast, extended",
@@ -1872,7 +2141,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('spare', 'Spare', 2),
       AsmField('iai', 'IAI', 16),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 224,
     fid: 50,
     name: "Envelope/volume",
@@ -1930,7 +2200,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('latitude_point_14', 'Latitude Point 14', 27),
       AsmField('altitude_point_14', 'Altitude Point 14', 17),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 246,
     fid: 12,
     name: "Route intension sharing",
@@ -1953,9 +2224,15 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('update_time', 'Update Time', 17),
       AsmField('number_of_waypoints', 'Number of Waypoints', 4),
       AsmField('waypoint_1', 'Waypoint 1', 0, kind: AsmFieldKind.data),
-      AsmField('waypoints_2_9_delta', 'Waypoints 2 – 9 delta', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'waypoints_2_9_delta',
+        'Waypoints 2 – 9 delta',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 265,
     fid: 1,
     name: "Route Message",
@@ -1974,13 +2251,23 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('first_waypoint_type', 'First waypoint type', 1),
       AsmField('first_waypoint_longitude', 'First waypoint longitude', 28),
       AsmField('first_waypoint_latitude', 'First waypoint latitude', 27),
-      AsmField('intermediate_legs', 'Intermediate legs', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'intermediate_legs',
+        'Intermediate legs',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('leg_geometry', 'Leg geometry', 1),
       AsmField('planned_speed', 'Planned speed', 10),
       AsmField('turn_radius', 'Turn radius', 9),
       AsmField('longitude_delta', 'Longitude delta', 22),
       AsmField('latitude_delta', 'Latitude delta', 22),
-      AsmField('final_reported_leg', 'Final reported leg', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'final_reported_leg',
+        'Final reported leg',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('leg_geometry_1', 'Leg geometry', 1),
       AsmField('planned_speed_1', 'Planned speed', 10),
       AsmField('last_waypoint_longitude', 'Last waypoint longitude', 28),
@@ -1988,7 +2275,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('steering_mode', 'Steering mode', 2),
       AsmField('spare_1', 'Spare', 4),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 265,
     fid: 6,
     name: "Route Message",
@@ -1997,7 +2285,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "Danish Maritime Authority",
     permittedAsFrom: "03/03/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 14,
     name: "SAR Pattern Report (Unencrypted)",
@@ -2007,7 +2296,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 16,
     name: "Trackline Report (Unencrypted)",
@@ -2017,7 +2307,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 19,
     name: "Lock Status",
@@ -2027,7 +2318,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.draft,
     registrant: "USCG RDC",
     permittedAsFrom: "01/10/2015",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 22,
     name: "Area Notice",
@@ -2039,12 +2331,18 @@ const List<AsmFormat> kAsmFormats = [
     fields: [
       AsmField('message_id', 'Message ID', 6),
       AsmField('designated_area_code', 'Designated Area Code', 10),
-      AsmField('message_linkage_id', 'Message Linkage ID', 10, kind: AsmFieldKind.text6),
+      AsmField(
+        'message_linkage_id',
+        'Message Linkage ID',
+        10,
+        kind: AsmFieldKind.text6,
+      ),
       AsmField('utc_month', 'UTC month', 4),
       AsmField('1_7', '1-7', 0, kind: AsmFieldKind.data),
       AsmField('208_1016', '208 – 1016', 0, kind: AsmFieldKind.data),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 33,
     name: "Environmental Message",
@@ -2056,13 +2354,23 @@ const List<AsmFormat> kAsmFormats = [
     notToBeUsedAfter: "01/01/2014",
     deprecatedSince: "not to be used after 01/01/2014",
     fields: [
-      AsmField('standard_message_header', 'Standard Message Header', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'standard_message_header',
+        'Standard Message Header',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('repeat_indicator', 'Repeat Indicator', 2),
       AsmField('source_mmsi', 'Source MMSI', 30),
       AsmField('spare', 'Spare', 2),
       AsmField('binary_data', 'Binary Data', 0, kind: AsmFieldKind.data),
       AsmField('function_identifier', 'Function Identifier', 6),
-      AsmField('application_data', 'Application Data', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'application_data',
+        'Application Data',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('sensor_report_2', 'Sensor Report 2', 112),
       AsmField('sensor_report_3', 'Sensor Report 3', 112),
       AsmField('sensor_report_4', 'Sensor Report 4', 112),
@@ -2071,7 +2379,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('sensor_report_7', 'Sensor Report 7', 112),
       AsmField('sensor_report_8', 'Sensor Report 8', 112),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 35,
     name: "Waterways Management",
@@ -2086,7 +2395,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('message_linkage_id', 'Message Linkage ID', 10),
       AsmField('128_520', '128 - 520', 0, kind: AsmFieldKind.data),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 55,
     name: "Text Message Payload",
@@ -2096,7 +2406,8 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "USCG",
     permittedAsFrom: "04/06/2014",
     fields: _kTextMsgFields,
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 56,
     name: "Position Report Payload",
@@ -2113,7 +2424,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('repeat_indicator', 'Repeat Indicator', 0),
       AsmField('user_id', 'User ID', 30),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 57,
     name: "Static Data Payload",
@@ -2129,9 +2441,14 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('function_id', 'Function ID', 6),
       AsmField('repeat_indicator', 'Repeat Indicator', 0),
       AsmField('user_id', 'User ID', 30),
-      AsmField('dimension_reference_for_position', 'Dimension/Reference for Position', 30),
+      AsmField(
+        'dimension_reference_for_position',
+        'Dimension/Reference for Position',
+        30,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 58,
     name: "Target Of Interest (TOI)",
@@ -2147,7 +2464,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('target_type', 'Target Type', 4),
       AsmField('target_id', 'Target ID', 30),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 367,
     fid: 22,
     name: "Geographic Notice",
@@ -2156,7 +2474,8 @@ const List<AsmFormat> kAsmFormats = [
     version: 5,
     state: AsmState.testing,
     registrant: "USCG RDC",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 367,
     fid: 23,
     name: "Satellite Ship Weather",
@@ -2167,13 +2486,23 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "USACE",
     permittedAsFrom: "01/10/2019",
     fields: [
-      AsmField('standard_message_header', 'Standard Message Header', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'standard_message_header',
+        'Standard Message Header',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('repeat_indicator', 'Repeat Indicator', 2),
       AsmField('source_mmsi', 'Source MMSI', 30),
       AsmField('spare', 'Spare', 2),
       AsmField('binary_data', 'Binary Data', 0, kind: AsmFieldKind.data),
       AsmField('function_identifier', 'Function Identifier', 6),
-      AsmField('application_data', 'Application Data', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'application_data',
+        'Application Data',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('utc_day', 'UTC day', 5),
       AsmField('utc_hour', 'UTC hour', 5),
       AsmField('utc_minute', 'UTC minute', 6),
@@ -2186,7 +2515,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('wind_direction', 'Wind Direction', 9),
       AsmField('spare_1', 'Spare', 1),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 367,
     fid: 24,
     name: "Satellite Ship Weather Small",
@@ -2197,7 +2527,12 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "USACE",
     permittedAsFrom: "01/10/2019",
     fields: [
-      AsmField('standard_message_header', 'Standard Message Header', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'standard_message_header',
+        'Standard Message Header',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('repeat_indicator', 'Repeat Indicator', 2),
       AsmField('source_mmsi', 'Source MMSI', 30),
       AsmField('spare', 'Spare', 2),
@@ -2210,7 +2545,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('air_pressure', 'Air Pressure', 9),
       AsmField('spare_1', 'Spare', 0),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 367,
     fid: 25,
     name: "Satellite Ship Weather Tiny",
@@ -2221,13 +2557,23 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "USACE",
     permittedAsFrom: "01/10/2019",
     fields: [
-      AsmField('standard_message_header', 'Standard Message Header', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'standard_message_header',
+        'Standard Message Header',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('repeat_indicator', 'Repeat Indicator', 2),
       AsmField('source_mmsi', 'Source MMSI', 30),
       AsmField('spare', 'Spare', 2),
       AsmField('binary_data', 'Binary Data', 0, kind: AsmFieldKind.data),
       AsmField('function_identifier', 'Function Identifier', 6),
-      AsmField('application_data', 'Application Data', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'application_data',
+        'Application Data',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('utc_hour', 'UTC hour', 5),
       AsmField('utc_minute', 'UTC minute', 6),
       AsmField('air_pressure', 'Air Pressure', 9),
@@ -2235,7 +2581,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('wind_direction', 'Wind Direction', 9),
       AsmField('spare_1', 'Spare', 1),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 367,
     fid: 26,
     name: "GPS Jamming and Spoofing Report",
@@ -2246,7 +2593,12 @@ const List<AsmFormat> kAsmFormats = [
     registrant: "USACE",
     permittedAsFrom: "01/10/2019",
     fields: [
-      AsmField('standard_message_header', 'Standard Message Header', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'standard_message_header',
+        'Standard Message Header',
+        0,
+        kind: AsmFieldKind.data,
+      ),
       AsmField('repeat_indicator', 'Repeat Indicator', 2),
       AsmField('source_mmsi', 'Source MMSI', 30),
       AsmField('spare', 'Spare', 2),
@@ -2260,7 +2612,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('status', 'Status', 1),
       AsmField('spare_1', 'Spare', 2),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 367,
     fid: 29,
     name: "Linked Text",
@@ -2270,7 +2623,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.testing,
     registrant: "USCG RDC",
     fields: _kTextMsgFields,
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 367,
     fid: 33,
     name: "Environmental Message",
@@ -2279,7 +2633,8 @@ const List<AsmFormat> kAsmFormats = [
     version: 5,
     state: AsmState.testing,
     registrant: "USCG RDC",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 367,
     fid: 35,
     name: "Waterways Management Message",
@@ -2288,7 +2643,8 @@ const List<AsmFormat> kAsmFormats = [
     version: 3,
     state: AsmState.testing,
     registrant: "USCG RDC",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 710,
     fid: 11,
     name: "Offshore Unit Dimensions",
@@ -2296,7 +2652,8 @@ const List<AsmFormat> kAsmFormats = [
     sub: 4,
     state: AsmState.draft,
     registrant: "PETROBRAS",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 0,
     name: "Text using 6-bit ASCII",
@@ -2306,7 +2663,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "ITU-R.M.1371-5",
     permittedAsFrom: "01/02/2014",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 0,
     name: "Position Report for Vessels",
@@ -2320,7 +2678,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('operating_mode', 'Operating Mode', 1),
       AsmField('navigational_status', 'Navigational Status', 4),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 1,
     name: "Static Data Report for Vessels and Aircraft",
@@ -2335,7 +2694,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('asset_type', 'Asset Type', 10),
       AsmField('dte', 'DTE', 1),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 2,
     name: "Addressed Message Acknowledgement",
@@ -2355,7 +2715,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('second_1', 'Second', 6),
       AsmField('unused_bits_set_to_zero', 'Unused bits set to zero', 16),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 3,
     name: "Position Report for Aircraft",
@@ -2371,9 +2732,14 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('time_stamp', 'Time stamp', 6),
       AsmField('cog', 'COG', 9),
       AsmField('sog', 'SOG', 10),
-      AsmField('communication_state_selector_flag', 'Communication state selector flag', 1),
+      AsmField(
+        'communication_state_selector_flag',
+        'Communication state selector flag',
+        1,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 9,
     name: "Encrypted Message Acknowledgement",
@@ -2383,7 +2749,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 1,
     fid: 0,
     name: "Text using 6-bit ASCII",
@@ -2393,7 +2760,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "ITU-R.M.1371-5",
     permittedAsFrom: "01/02/2014",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 0,
     name: "Text Message, Addressed or Broadcast",
@@ -2409,9 +2777,15 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('second', 'Second', 6),
       AsmField('text_length', 'Text Length', 8, kind: AsmFieldKind.text6),
       AsmField('text', 'Text', 0, kind: AsmFieldKind.freeText),
-      AsmField('unused_bits_set_to_zero', 'Unused bits set to zero', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'unused_bits_set_to_zero',
+        'Unused bits set to zero',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 1,
     name: "Target of Interest (TOI), Addressed or Broadcast",
@@ -2435,12 +2809,19 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('sog', 'SOG', 7),
       AsmField('length_of_text', 'Length of Text', 8, kind: AsmFieldKind.text6),
       AsmField('text', 'Text', 0, kind: AsmFieldKind.freeText),
-      AsmField('unused_bits_set_to_zero', 'Unused bits set to zero', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'unused_bits_set_to_zero',
+        'Unused bits set to zero',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 2,
-    name: "Expanding Square, Sector, Parallel Line & Creeping Line Search & Rescue (SAR) Pattern or Circle, Overlay Option 1",
+    name:
+        "Expanding Square, Sector, Parallel Line & Creeping Line Search & Rescue (SAR) Pattern or Circle, Overlay Option 1",
     types: [26],
     sub: 1,
     state: AsmState.deprecated,
@@ -2462,7 +2843,8 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('search_altitude', 'Search Altitude', 12),
       AsmField('unused_bits_set_to_zero', 'Unused bits set to zero', 90),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 3,
     name: "Track Line Search Pattern, Route or Polygon, Overlay Option 2",
@@ -2477,12 +2859,22 @@ const List<AsmFormat> kAsmFormats = [
       AsmField('overlay_number', 'Overlay Number', 5),
       AsmField('origin_longitude', 'Origin Longitude', 25),
       AsmField('origin_latitude', 'Origin Latitude', 24),
-      AsmField('number_of_additional_waypoints', 'Number of Additional Waypoints', 4),
+      AsmField(
+        'number_of_additional_waypoints',
+        'Number of Additional Waypoints',
+        4,
+      ),
       AsmField('search_speed', 'Search Speed', 10),
       AsmField('search_altitude', 'Search Altitude', 12),
-      AsmField('unused_bits_set_to_zero', 'Unused bits set to zero', 0, kind: AsmFieldKind.data),
+      AsmField(
+        'unused_bits_set_to_zero',
+        'Unused bits set to zero',
+        0,
+        kind: AsmFieldKind.data,
+      ),
     ],
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 13,
     name: "SAR Pattern Report (Encrypted)",
@@ -2492,7 +2884,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 15,
     name: "Trackline Report (Encrypted)",
@@ -2502,7 +2895,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 17,
     name: "Text Message (encrypted)",
@@ -2512,7 +2906,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 18,
     name: "Target of Interest (encrypted)",
@@ -2522,7 +2917,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 19,
     name: "Change RSI Command (encrypted)",
@@ -2532,7 +2928,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 20,
     name: "Change RSI Response (encrypted)",
@@ -2542,7 +2939,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 21,
     name: "Changeover Command (encrypted)",
@@ -2552,7 +2950,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 22,
     name: "Changeover Response (encrypted)",
@@ -2562,7 +2961,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 23,
     name: "Hello (encrypted)",
@@ -2572,7 +2972,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 24,
     name: "Modify Key Command (encrypted)",
@@ -2582,7 +2983,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 25,
     name: "Negative Acknowledgement (encrypted)",
@@ -2592,7 +2994,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 26,
     name: "Rekey Acknowledgement (encrypted)",
@@ -2602,7 +3005,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 27,
     name: "Rekey Command (encrypted)",
@@ -2612,7 +3016,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 28,
     name: "Warm-Start Command",
@@ -2622,7 +3027,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 29,
     name: "Zeroize Command (encrypted)",
@@ -2632,7 +3038,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 30,
     name: "Zeroize Response (encrypted)",
@@ -2642,7 +3049,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 31,
     name: "Delete Key Command (encrypted)",
@@ -2652,7 +3060,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 32,
     name: "Delete Key Response (encrypted)",
@@ -2662,7 +3071,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 33,
     name: "Registration Command (encrypted)",
@@ -2672,7 +3082,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 34,
     name: "Registration Response (encrypted)",
@@ -2682,7 +3093,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 35,
     name: "Unable to Decrypt Response (encrypted)",
@@ -2692,7 +3104,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 36,
     name: "Area Notice (encrypted)",
@@ -2702,7 +3115,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 37,
     name: "Route Information (encrypted)",
@@ -2712,7 +3126,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "12/05/2016",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 38,
     name: "Situation Report (SITREP) for Vessels and Aircraft (encrypted)",
@@ -2722,7 +3137,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "21/04/2017",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 366,
     fid: 39,
     name: "Static Data Report (encrypted)",
@@ -2732,7 +3148,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "USCG",
     permittedAsFrom: "21/04/2017",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 235,
     fid: 20,
     name: "Buoy position monitoring",
@@ -2741,7 +3158,8 @@ const List<AsmFormat> kAsmFormats = [
     state: AsmState.inForce,
     registrant: "Trinity House",
     permittedAsFrom: "01/04/2019",
-  ),  AsmFormat(
+  ),
+  AsmFormat(
     dac: 20,
     fid: 19,
     name: "Control Message",

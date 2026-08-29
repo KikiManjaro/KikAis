@@ -16,9 +16,15 @@ import 'l10n_test_utils.dart';
 /// fit their labels on a single line for the widest Latin labels (ru/es use
 /// longer words and are allowed to wrap gracefully).
 void main() {
-  for (final locale in const [Locale('en'), Locale('fr'), Locale('de'), Locale('pt')]) {
-    testWidgets('add source dialog segments fit on one line ($locale)',
-        (tester) async {
+  for (final locale in const [
+    Locale('en'),
+    Locale('fr'),
+    Locale('de'),
+    Locale('pt'),
+  ]) {
+    testWidgets('add source dialog segments fit on one line ($locale)', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1400, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
@@ -57,9 +63,13 @@ void main() {
       ]) {
         final render = tester.renderObject<RenderParagraph>(find.text(label));
         final singleLine = render.getMaxIntrinsicHeight(10000);
-        expect(render.size.height <= singleLine + 1, isTrue,
-            reason: '$label wraps onto two lines '
-                '(h=${render.size.height}, single-line=$singleLine)');
+        expect(
+          render.size.height <= singleLine + 1,
+          isTrue,
+          reason:
+              '$label wraps onto two lines '
+              '(h=${render.size.height}, single-line=$singleLine)',
+        );
       }
       expect(tester.takeException(), isNull);
 

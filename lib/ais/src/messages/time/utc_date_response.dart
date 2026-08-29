@@ -124,9 +124,9 @@ class UtcDateResponse extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Year: $year, Month: $month, Day: $day, Hour: $hour, Minute: $minute, Second: $second, Accuracy: $accuracy, Lat: $latitude, Lon: $longitude, EPFD: $epfdFixType, RAIM: $raim, SOTDMA: $sotdmaState)';
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Year: $year, Month: $month, Day: $day, Hour: $hour, Minute: $minute, Second: $second, Accuracy: $accuracy, Lat: $latitude, Lon: $longitude, EPFD: $epfdFixType, RAIM: $raim, SOTDMA: $sotdmaState)';
   //endregion
-
 
   /// Decodes a six-bit-armored AIS payload string into a [UtcDateResponse].
   ///
@@ -157,28 +157,33 @@ class UtcDateResponse extends AISMessage {
     int sotdmaState = getUintDirect(binary, 149, 168);
 
     //Conversion
-    double? longitude = CoordinateUtils().calculateLongitudeDirect(longitudeBin, 28);
-    double? latitude = CoordinateUtils().calculateLatitudeDirect(latitudeBin, 27);
+    double? longitude = CoordinateUtils().calculateLongitudeDirect(
+      longitudeBin,
+      28,
+    );
+    double? latitude = CoordinateUtils().calculateLatitudeDirect(
+      latitudeBin,
+      27,
+    );
     String positionFixType = BinaryConverter().getEPFDFixTypeDirect(epfdBin);
 
-
     return UtcDateResponse(
-        messageType: messageType,
-        mmsi: mmsi,
-        repeatIndicator: repeatIndicator,
-        year: year,
-        month: month,
-        day: day,
-        hour: hour,
-        minute: minute,
-        second: second,
-        accuracy: accuracy,
-        longitude: longitude,
-        latitude: latitude,
-        epfdFixType: positionFixType,
-        spare: spare,
-        raim: raimFlag,
-        sotdmaState: sotdmaState
+      messageType: messageType,
+      mmsi: mmsi,
+      repeatIndicator: repeatIndicator,
+      year: year,
+      month: month,
+      day: day,
+      hour: hour,
+      minute: minute,
+      second: second,
+      accuracy: accuracy,
+      longitude: longitude,
+      latitude: latitude,
+      epfdFixType: positionFixType,
+      spare: spare,
+      raim: raimFlag,
+      sotdmaState: sotdmaState,
     );
   }
 }

@@ -122,58 +122,93 @@ class NmeaLogText extends StatelessWidget {
   ) {
     final raw = entry.message.trim();
     final provider = entry.name;
-    final cacheKey = '$raw|${provider ?? ''}|$showProvider|$showTimestamp|$isDark';
+    final cacheKey =
+        '$raw|${provider ?? ''}|$showProvider|$showTimestamp|$isDark';
     final cached = _spanCache[cacheKey];
     if (cached != null) return cached;
 
-    final providerColor = isDark ? Colors.lightBlue.shade300 : Colors.lightBlue.shade700;
+    final providerColor = isDark
+        ? Colors.lightBlue.shade300
+        : Colors.lightBlue.shade700;
     final providerBg = providerColor.withValues(alpha: 0.13);
     final bracketColor = scheme.onSurfaceVariant.withValues(alpha: 0.7);
     final separatorColor = scheme.onSurfaceVariant.withValues(alpha: 0.5);
     final timestampColor = scheme.onSurfaceVariant.withValues(alpha: 0.7);
     final tagColor = isDark ? Colors.orange.shade300 : Colors.orange.shade700;
-    final tagDelimColor = isDark ? Colors.orange.shade200 : Colors.orange.shade800;
+    final tagDelimColor = isDark
+        ? Colors.orange.shade200
+        : Colors.orange.shade800;
     final framingColor = scheme.onSurfaceVariant;
     final payloadColor = isDark ? Colors.teal.shade300 : Colors.teal.shade700;
-    final checksumColor = isDark ? Colors.amber.shade300 : Colors.amber.shade800;
+    final checksumColor = isDark
+        ? Colors.amber.shade300
+        : Colors.amber.shade800;
 
     final spans = <InlineSpan>[];
 
     if (showTimestamp) {
-      spans.add(TextSpan(
-        text: '${_formatTime(entry.time)} ',
-        style: TextStyle(color: timestampColor, fontSize: 11),
-      ));
-      spans.add(TextSpan(text: '│ ', style: TextStyle(color: separatorColor)));
+      spans.add(
+        TextSpan(
+          text: '${_formatTime(entry.time)} ',
+          style: TextStyle(color: timestampColor, fontSize: 11),
+        ),
+      );
+      spans.add(
+        TextSpan(
+          text: '│ ',
+          style: TextStyle(color: separatorColor),
+        ),
+      );
     }
 
     if (showProvider && provider != null && provider.isNotEmpty) {
-      spans.add(TextSpan(
-        text: '[',
-        style: TextStyle(color: bracketColor, fontSize: 11),
-      ));
-      spans.add(TextSpan(
-        text: provider,
-        style: TextStyle(
-          color: providerColor,
-          backgroundColor: providerBg,
-          fontWeight: FontWeight.w700,
+      spans.add(
+        TextSpan(
+          text: '[',
+          style: TextStyle(color: bracketColor, fontSize: 11),
         ),
-      ));
-      spans.add(TextSpan(text: ']', style: TextStyle(color: bracketColor, fontSize: 11)));
-      spans.add(TextSpan(text: ' │ ', style: TextStyle(color: separatorColor)));
+      );
+      spans.add(
+        TextSpan(
+          text: provider,
+          style: TextStyle(
+            color: providerColor,
+            backgroundColor: providerBg,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      );
+      spans.add(
+        TextSpan(
+          text: ']',
+          style: TextStyle(color: bracketColor, fontSize: 11),
+        ),
+      );
+      spans.add(
+        TextSpan(
+          text: ' │ ',
+          style: TextStyle(color: separatorColor),
+        ),
+      );
     }
 
     final (tagBlock, sentencePart) = NmeaTagBlock.split(raw);
     final isNmea = sentencePart.startsWith('!') || tagBlock != null;
     if (!isNmea) {
-      spans.add(TextSpan(text: raw, style: TextStyle(color: scheme.onSurface)));
+      spans.add(
+        TextSpan(
+          text: raw,
+          style: TextStyle(color: scheme.onSurface),
+        ),
+      );
       _cachePut(cacheKey, spans);
       return spans;
     }
 
     if (tagBlock != null) {
-      spans.addAll(_tagSpans(tagBlock, tagColor, tagDelimColor, framingColor, isDark));
+      spans.addAll(
+        _tagSpans(tagBlock, tagColor, tagDelimColor, framingColor, isDark),
+      );
     }
 
     final sentenceRaw = sentencePart.trim();
@@ -184,7 +219,15 @@ class NmeaLogText extends StatelessWidget {
 
     // For log display we don't need full NMEA validation; the lightweight
     // fallback split is enough and avoids per-row checksum computation.
-    spans.addAll(_fallbackSentenceSpans(sentenceRaw, framingColor, payloadColor, checksumColor, isDark));
+    spans.addAll(
+      _fallbackSentenceSpans(
+        sentenceRaw,
+        framingColor,
+        payloadColor,
+        checksumColor,
+        isDark,
+      ),
+    );
 
     _cachePut(cacheKey, spans);
     return spans;
@@ -200,7 +243,12 @@ class NmeaLogText extends StatelessWidget {
     final raw = tag.raw;
     final inner = raw.substring(1, raw.length - 1);
     final spans = <InlineSpan>[];
-    spans.add(TextSpan(text: '\\', style: TextStyle(color: delimColor, fontWeight: FontWeight.w700)));
+    spans.add(
+      TextSpan(
+        text: '\\',
+        style: TextStyle(color: delimColor, fontWeight: FontWeight.w700),
+      ),
+    );
     final pairs = inner.split(',');
     for (var i = 0; i < pairs.length; i++) {
       final pair = pairs[i];
@@ -209,28 +257,53 @@ class NmeaLogText extends StatelessWidget {
         final k = pair.substring(0, colon + 1);
         final v = pair.substring(colon + 1);
         final isChecksum = k == 'c:';
-        spans.add(TextSpan(
-          text: k,
-          style: TextStyle(color: isChecksum ? Colors.amber.shade400 : tagColor, fontWeight: FontWeight.w700),
-        ));
-        spans.add(TextSpan(text: v, style: TextStyle(color: tagColor)));
+        spans.add(
+          TextSpan(
+            text: k,
+            style: TextStyle(
+              color: isChecksum ? Colors.amber.shade400 : tagColor,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        );
+        spans.add(
+          TextSpan(
+            text: v,
+            style: TextStyle(color: tagColor),
+          ),
+        );
       } else {
-        spans.add(TextSpan(text: pair, style: TextStyle(color: tagColor)));
+        spans.add(
+          TextSpan(
+            text: pair,
+            style: TextStyle(color: tagColor),
+          ),
+        );
       }
       if (i < pairs.length - 1) {
-        spans.add(TextSpan(text: ',', style: TextStyle(color: framingColor)));
+        spans.add(
+          TextSpan(
+            text: ',',
+            style: TextStyle(color: framingColor),
+          ),
+        );
       }
     }
-    spans.add(TextSpan(text: '\\', style: TextStyle(color: delimColor, fontWeight: FontWeight.w700)));
+    spans.add(
+      TextSpan(
+        text: '\\',
+        style: TextStyle(color: delimColor, fontWeight: FontWeight.w700),
+      ),
+    );
     return spans;
   }
 
-void _cachePut(String key, List<InlineSpan> spans) {
-  if (_spanCache.length >= _spanCacheMax) {
-    _spanCache.remove(_spanCache.keys.first);
+  void _cachePut(String key, List<InlineSpan> spans) {
+    if (_spanCache.length >= _spanCacheMax) {
+      _spanCache.remove(_spanCache.keys.first);
+    }
+    _spanCache[key] = spans;
   }
-  _spanCache[key] = spans;
-}
 
   List<InlineSpan> _fallbackSentenceSpans(
     String sentenceRaw,
@@ -250,18 +323,45 @@ void _cachePut(String key, List<InlineSpan> spans) {
     if (commas.length >= 6) {
       final payloadStart = commas[4] + 1;
       final payloadEnd = commas.last;
-      spans.add(TextSpan(text: body.substring(0, payloadStart), style: TextStyle(color: framingColor)));
-      spans.add(TextSpan(
-        text: body.substring(payloadStart, payloadEnd),
-        style: TextStyle(color: payloadColor, fontWeight: FontWeight.w600),
-      ));
-      spans.add(TextSpan(text: body.substring(payloadEnd), style: TextStyle(color: framingColor)));
+      spans.add(
+        TextSpan(
+          text: body.substring(0, payloadStart),
+          style: TextStyle(color: framingColor),
+        ),
+      );
+      spans.add(
+        TextSpan(
+          text: body.substring(payloadStart, payloadEnd),
+          style: TextStyle(color: payloadColor, fontWeight: FontWeight.w600),
+        ),
+      );
+      spans.add(
+        TextSpan(
+          text: body.substring(payloadEnd),
+          style: TextStyle(color: framingColor),
+        ),
+      );
     } else {
-      spans.add(TextSpan(text: body, style: TextStyle(color: framingColor)));
+      spans.add(
+        TextSpan(
+          text: body,
+          style: TextStyle(color: framingColor),
+        ),
+      );
     }
     if (checksum.isNotEmpty) {
-      spans.add(TextSpan(text: '*', style: TextStyle(color: framingColor)));
-      spans.add(TextSpan(text: checksum.substring(1), style: TextStyle(color: checksumColor, fontWeight: FontWeight.w700)));
+      spans.add(
+        TextSpan(
+          text: '*',
+          style: TextStyle(color: framingColor),
+        ),
+      );
+      spans.add(
+        TextSpan(
+          text: checksum.substring(1),
+          style: TextStyle(color: checksumColor, fontWeight: FontWeight.w700),
+        ),
+      );
     }
     return spans;
   }

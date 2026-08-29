@@ -243,7 +243,8 @@ const Map<String, String> kValueLabelsFr = {
   'Aid to Navigation station': 'Station d\'aide à la navigation',
   'Aid-to-Navigation Report': 'Rapport d\'aide à la navigation',
   'AIS-SART is active': 'AIS-SART actif',
-  'All types of Class B mobile stations': 'Tous types de stations mobiles classe B',
+  'All types of Class B mobile stations':
+      'Tous types de stations mobiles classe B',
   'All types of mobiles (default)': 'Tous types de mobiles (par défaut)',
   'Anti-pollution equipment': 'Équipement anti-pollution',
   'As given by the autonomous mode': 'Selon le mode autonome',
@@ -256,8 +257,10 @@ const Map<String, String> kValueLabelsFr = {
   'Beacon, Cardinal W': 'Balise, cardinale W',
   'Beacon, Isolated danger': 'Balise, danger isolé',
   'Beacon, Port hand': 'Balise, bâbord',
-  'Beacon, Preferred Channel port hand': 'Balise, côté bâbord du chenal préféré',
-  'Beacon, Preferred Channel starboard hand': 'Balise, côté tribord du chenal préféré',
+  'Beacon, Preferred Channel port hand':
+      'Balise, côté bâbord du chenal préféré',
+  'Beacon, Preferred Channel starboard hand':
+      'Balise, côté tribord du chenal préféré',
   'Beacon, Safe water': 'Balise, eaux sûres',
   'Beacon, Special mark': 'Balise, marque spéciale',
   'Beacon, Starboard hand': 'Balise, tribord',
@@ -269,41 +272,58 @@ const Map<String, String> kValueLabelsFr = {
   'Cardinal Mark S': 'Marque cardinale S',
   'Cardinal Mark W': 'Marque cardinale W',
   'Cargo, all ships of this type': 'Cargo, tous les navires de ce type',
-  'Cargo, Hazardous category A': 'Cargo, catégorie de marchandises dangereuses A',
-  'Cargo, Hazardous category B': 'Cargo, catégorie de marchandises dangereuses B',
-  'Cargo, Hazardous category C': 'Cargo, catégorie de marchandises dangereuses C',
-  'Cargo, Hazardous category D': 'Cargo, catégorie de marchandises dangereuses D',
-  'Cargo, No additional information': 'Cargo, aucune information supplémentaire',
+  'Cargo, Hazardous category A':
+      'Cargo, catégorie de marchandises dangereuses A',
+  'Cargo, Hazardous category B':
+      'Cargo, catégorie de marchandises dangereuses B',
+  'Cargo, Hazardous category C':
+      'Cargo, catégorie de marchandises dangereuses C',
+  'Cargo, Hazardous category D':
+      'Cargo, catégorie de marchandises dangereuses D',
+  'Cargo, No additional information':
+      'Cargo, aucune information supplémentaire',
   'Cargo, Reserved for future use': 'Cargo, réservé pour usage futur',
   'Channel Management': 'Gestion des canaux',
   'Chayka': 'Tchaïka',
-  'Class B shipborne mobile station (IEC62287 only)': 'Station mobile embarquée classe B (norme IEC62287 uniquement)',
+  'Class B shipborne mobile station (IEC62287 only)':
+      'Station mobile embarquée classe B (norme IEC62287 uniquement)',
   'Combined GPS/GLONASS': 'GPS/GLONASS combinés',
   'Constrained by her draught': 'Contraint par son tirant d\'eau',
   'Data Link Management': 'Gestion de la liaison de données',
   'Data not available (not sent)': 'Données non disponibles (non envoyées)',
-  'Data Terminal not Ready (Default)': 'Terminal de données non prêt (par défaut)',
+  'Data Terminal not Ready (Default)':
+      'Terminal de données non prêt (par défaut)',
   'Data Terminal Ready': 'Terminal de données prêt',
   'DGNSS Binary Broadcast Message': 'Message binaire diffusé DGNSS',
   'Diving ops': 'Opérations de plongée',
   'Dredging or underwater ops': 'Dragage ou opérations sous-marines',
-  'Electronic Position Fixing System operates in estimated (dead reckoning) mode': 'Le système électronique de positionnement fonctionne en mode estimé (navigation à l\'estime)',
+  'Electronic Position Fixing System operates in estimated (dead reckoning) mode':
+      'Le système électronique de positionnement fonctionne en mode estimé (navigation à l\'estime)',
   'Engaged in Fishing': 'En pêche',
   'Error please Contact: ': 'Erreur, veuillez contacter : ',
-  'Extended Class B Equipment Position Report': 'Rapport de position étendu d\'équipement classe B',
+  'Extended Class B Equipment Position Report':
+      'Rapport de position étendu d\'équipement classe B',
   'Fishing': 'Pêche',
-  'Fixed structure off shore (Oil Platform, Windfarm etc)': 'Structure fixe au large (plateforme pétrolière, parc éolien, etc.)',
+  'Fixed structure off shore (Oil Platform, Windfarm etc)':
+      'Structure fixe au large (plateforme pétrolière, parc éolien, etc.)',
   'Galileo': 'Galileo',
   'GLONASS': 'GLONASS',
   'GPS': 'GPS',
   'Group Assignment Command': 'Commande d\'affectation de groupe',
-  'High speed craft (HSC), all ships of this type': 'Embarcation à grande vitesse (HSC), tous les navires de ce type',
-  'High speed craft (HSC), Hazardous category A': 'Embarcation à grande vitesse (HSC), catégorie de marchandises dangereuses A',
-  'High speed craft (HSC), Hazardous category B': 'Embarcation à grande vitesse (HSC), catégorie de marchandises dangereuses B',
-  'High speed craft (HSC), Hazardous category C': 'Embarcation à grande vitesse (HSC), catégorie de marchandises dangereuses C',
-  'High speed craft (HSC), Hazardous category D': 'Embarcation à grande vitesse (HSC), catégorie de marchandises dangereuses D',
-  'High speed craft (HSC), No additional information': 'Embarcation à grande vitesse (HSC), aucune information supplémentaire',
-  'High speed craft (HSC), Reserved for future use': 'Embarcation à grande vitesse (HSC), réservé pour usage futur',
+  'High speed craft (HSC), all ships of this type':
+      'Embarcation à grande vitesse (HSC), tous les navires de ce type',
+  'High speed craft (HSC), Hazardous category A':
+      'Embarcation à grande vitesse (HSC), catégorie de marchandises dangereuses A',
+  'High speed craft (HSC), Hazardous category B':
+      'Embarcation à grande vitesse (HSC), catégorie de marchandises dangereuses B',
+  'High speed craft (HSC), Hazardous category C':
+      'Embarcation à grande vitesse (HSC), catégorie de marchandises dangereuses C',
+  'High speed craft (HSC), Hazardous category D':
+      'Embarcation à grande vitesse (HSC), catégorie de marchandises dangereuses D',
+  'High speed craft (HSC), No additional information':
+      'Embarcation à grande vitesse (HSC), aucune information supplémentaire',
+  'High speed craft (HSC), Reserved for future use':
+      'Embarcation à grande vitesse (HSC), réservé pour usage futur',
   'Integrated Navigation System': 'Système de navigation intégré',
   'Internal GNSS': 'GNSS interne',
   'Interrogation': 'Interrogation',
@@ -319,58 +339,85 @@ const Map<String, String> kValueLabelsFr = {
   'Medical Transport': 'Transport médical',
   'Military ops': 'Opérations militaires',
   'Moored': 'Amarré',
-  'Multiple Slot Binary Message With Communications State': 'Message binaire multi-créneaux avec état de communication',
+  'Multiple Slot Binary Message With Communications State':
+      'Message binaire multi-créneaux avec état de communication',
   'Next Longer Reporting Interval': 'Prochain intervalle de rapport plus long',
-  'Next Shorter Reporting Interval': 'Prochain intervalle de rapport plus court',
-  'No information available (not sent)': 'Aucune information disponible (non envoyée)',
-  'No official terminology (Error in transmission)': 'Aucune terminologie officielle (erreur de transmission)',
+  'Next Shorter Reporting Interval':
+      'Prochain intervalle de rapport plus court',
+  'No information available (not sent)':
+      'Aucune information disponible (non envoyée)',
+  'No official terminology (Error in transmission)':
+      'Aucune terminologie officielle (erreur de transmission)',
   'No Special Maneuver': 'Aucune manœuvre spéciale',
-  'Noncombatant ship according to RR Resolution No. 18': 'Navire non combattant conformément à la Résolution RR n° 18',
+  'Noncombatant ship according to RR Resolution No. 18':
+      'Navire non combattant conformément à la Résolution RR n° 18',
   'Not available (default)': 'Non disponible (par défaut)',
   'Not available (not sent)': 'Non disponible (non envoyé)',
   'Not turning': 'Pas de rotation',
   'Not under command': 'Sans capacité de manœuvre',
-  'Other Type, all ships of this type': 'Autre type, tous les navires de ce type',
-  'Other Type, Hazardous category A': 'Autre type, catégorie de marchandises dangereuses A',
-  'Other Type, Hazardous category B': 'Autre type, catégorie de marchandises dangereuses B',
-  'Other Type, Hazardous category C': 'Autre type, catégorie de marchandises dangereuses C',
-  'Other Type, Hazardous category D': 'Autre type, catégorie de marchandises dangereuses D',
-  'Other Type, no additional information': 'Autre type, aucune information supplémentaire',
+  'Other Type, all ships of this type':
+      'Autre type, tous les navires de ce type',
+  'Other Type, Hazardous category A':
+      'Autre type, catégorie de marchandises dangereuses A',
+  'Other Type, Hazardous category B':
+      'Autre type, catégorie de marchandises dangereuses B',
+  'Other Type, Hazardous category C':
+      'Autre type, catégorie de marchandises dangereuses C',
+  'Other Type, Hazardous category D':
+      'Autre type, catégorie de marchandises dangereuses D',
+  'Other Type, no additional information':
+      'Autre type, aucune information supplémentaire',
   'Other Type, Reserved for future use': 'Autre type, réservé pour usage futur',
   'Passenger, all ships of this type': 'Passager, tous les navires de ce type',
-  'Passenger, Hazardous category A': 'Passager, catégorie de marchandises dangereuses A',
-  'Passenger, Hazardous category B': 'Passager, catégorie de marchandises dangereuses B',
-  'Passenger, Hazardous category C': 'Passager, catégorie de marchandises dangereuses C',
-  'Passenger, Hazardous category D': 'Passager, catégorie de marchandises dangereuses D',
-  'Passenger, No additional information': 'Passager, aucune information supplémentaire',
+  'Passenger, Hazardous category A':
+      'Passager, catégorie de marchandises dangereuses A',
+  'Passenger, Hazardous category B':
+      'Passager, catégorie de marchandises dangereuses B',
+  'Passenger, Hazardous category C':
+      'Passager, catégorie de marchandises dangereuses C',
+  'Passenger, Hazardous category D':
+      'Passager, catégorie de marchandises dangereuses D',
+  'Passenger, No additional information':
+      'Passager, aucune information supplémentaire',
   'Passenger, Reserved for future use': 'Passager, réservé pour usage futur',
   'Pilot Vessel': 'Navire pilote',
   'Pleasure Craft': 'Navire de plaisance',
   'Port hand Mark': 'Marque bâbord',
   'Port Tender': 'Vedette portuaire',
   'Position Report Class A': 'Rapport de position classe A',
-  'Position Report Class A (Assigned Schedule)': 'Rapport de position classe A (horaire assigné)',
-  'Position Report Class A (Response to interrogation)': 'Rapport de position classe A (réponse à une interrogation)',
-  'Position Report For Long-Range Applications': 'Rapport de position pour applications à longue portée',
+  'Position Report Class A (Assigned Schedule)':
+      'Rapport de position classe A (horaire assigné)',
+  'Position Report Class A (Response to interrogation)':
+      'Rapport de position classe A (réponse à une interrogation)',
+  'Position Report For Long-Range Applications':
+      'Rapport de position pour applications à longue portée',
   'Positioning System inoperative': 'Système de positionnement hors service',
-  'Positioning System is in manual mode': 'Le système de positionnement est en mode manuel',
-  'Power-driven vessel pushing ahead or towing alongside (regional)': 'Navire à propulsion mécanique poussant devant ou remorquant le long du bord (régional)',
-  'Power-driven vessel towing astern (regional)': 'Navire à propulsion mécanique remorquant par l\'arrière (régional)',
+  'Positioning System is in manual mode':
+      'Le système de positionnement est en mode manuel',
+  'Power-driven vessel pushing ahead or towing alongside (regional)':
+      'Navire à propulsion mécanique poussant devant ou remorquant le long du bord (régional)',
+  'Power-driven vessel towing astern (regional)':
+      'Navire à propulsion mécanique remorquant par l\'arrière (régional)',
   'Preferred Channel Port hand': 'Chenal préféré, côté bâbord',
   'Preferred Channel Starboard hand': 'Chenal préféré, côté tribord',
   'RACON': 'RACON',
-  'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)': 'RAIM activé (en savoir plus : https://fr.wikipedia.org/wiki/Receiver_Autonomous_Integrity_Monitoring)',
+  'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)':
+      'RAIM activé (en savoir plus : https://fr.wikipedia.org/wiki/Receiver_Autonomous_Integrity_Monitoring)',
   'RAIM not enabled (default)': 'RAIM non activé (par défaut)',
   'Reference Point': 'Point de référence',
-  'Regional use and inland waterways': 'Usage régional et voies navigables intérieures',
+  'Regional use and inland waterways':
+      'Usage régional et voies navigables intérieures',
   'Reserved': 'Réservé',
-  'Reserved for future amendment of Navigational Status for HSC': 'Réservé pour amendement futur du statut de navigation pour HSC',
-  'Reserved for future amendment of Navigational Status for WIG': 'Réservé pour amendement futur du statut de navigation pour WIG',
+  'Reserved for future amendment of Navigational Status for HSC':
+      'Réservé pour amendement futur du statut de navigation pour HSC',
+  'Reserved for future amendment of Navigational Status for WIG':
+      'Réservé pour amendement futur du statut de navigation pour WIG',
   'Reserved for Future Use': 'Réservé pour usage futur',
   'Reserved for future use': 'Réservé pour usage futur',
   'Restricted manoeuvrability': 'Manœuvrabilité restreinte',
   'Safe Water': 'Eaux sûres',
-  'Safety Related Acknowledgement': 'Accusé de réception de message de sécurité',
+  'Safety Related Acknowledgement':
+      'Accusé de réception de message de sécurité',
   'Safety Related Broadcast Message': 'Message de sécurité diffusé',
   'Sailing': 'Navigation à la voile',
   'SAR airborne mobile station': 'Station mobile aéroportée SAR',
@@ -382,26 +429,38 @@ const Map<String, String> kValueLabelsFr = {
   'Special Mark': 'Marque spéciale',
   'Speed not Available (not sent)': 'Vitesse non disponible (non envoyée)',
   'Speed over 102.2 knots': 'Vitesse supérieure à 102,2 nœuds',
-  'Standard Class B CS Position Report': 'Rapport de position CS classe B standard',
-  'Standard SAR Aircraft Position Report': 'Rapport de position standard d\'aéronef SAR',
+  'Standard Class B CS Position Report':
+      'Rapport de position CS classe B standard',
+  'Standard SAR Aircraft Position Report':
+      'Rapport de position standard d\'aéronef SAR',
   'Starboard hand Mark': 'Marque tribord',
   'Static and Voyage Related Data': 'Données statiques et relatives au voyage',
   'Static Data Report': 'Rapport de données statiques',
   'Surveyed': 'Relevé géodésique',
   'Tanker, all ships of this type': 'Pétrolier, tous les navires de ce type',
-  'Tanker, Hazardous category A': 'Pétrolier, catégorie de marchandises dangereuses A',
-  'Tanker, Hazardous category B': 'Pétrolier, catégorie de marchandises dangereuses B',
-  'Tanker, Hazardous category C': 'Pétrolier, catégorie de marchandises dangereuses C',
-  'Tanker, Hazardous category D': 'Pétrolier, catégorie de marchandises dangereuses D',
-  'Tanker, No additional information': 'Pétrolier, aucune information supplémentaire',
+  'Tanker, Hazardous category A':
+      'Pétrolier, catégorie de marchandises dangereuses A',
+  'Tanker, Hazardous category B':
+      'Pétrolier, catégorie de marchandises dangereuses B',
+  'Tanker, Hazardous category C':
+      'Pétrolier, catégorie de marchandises dangereuses C',
+  'Tanker, Hazardous category D':
+      'Pétrolier, catégorie de marchandises dangereuses D',
+  'Tanker, No additional information':
+      'Pétrolier, aucune information supplémentaire',
   'Tanker, Reserved for future use': 'Pétrolier, réservé pour usage futur',
   'Towing': 'Remorquage',
-  'Towing: length exceeds 200m or breadth exceeds 25m': 'Remorquage : longueur supérieure à 200 m ou largeur supérieure à 25 m',
+  'Towing: length exceeds 200m or breadth exceeds 25m':
+      'Remorquage : longueur supérieure à 200 m ou largeur supérieure à 25 m',
   'Tug': 'Remorqueur',
-  'turning left at more than 5deg/30s (No TI available)': 'rotation à gauche de plus de 5°/30 s (aucune TI disponible)',
-  'Turning left at up to 708 deg. per minute or higher': 'Rotation à gauche jusqu\'à 708°/min ou plus',
-  'turning right at more than 5deg/30s (No TI available)': 'rotation à droite de plus de 5°/30 s (aucune TI disponible)',
-  'Turning right at up to 708 deg. per minute or higher': 'Rotation à droite jusqu\'à 708°/min ou plus',
+  'turning left at more than 5deg/30s (No TI available)':
+      'rotation à gauche de plus de 5°/30 s (aucune TI disponible)',
+  'Turning left at up to 708 deg. per minute or higher':
+      'Rotation à gauche jusqu\'à 708°/min ou plus',
+  'turning right at more than 5deg/30s (No TI available)':
+      'rotation à droite de plus de 5°/30 s (aucune TI disponible)',
+  'Turning right at up to 708 deg. per minute or higher':
+      'Rotation à droite jusqu\'à 708°/min ou plus',
   'TxA, RxA/RxB': 'TxA, RxA/RxB',
   'TxA/TxB, RxA/RxB': 'TxA/TxB, RxA/RxB',
   'TxB, RxA/RxB': 'TxB, RxA/RxB',
@@ -416,10 +475,16 @@ const Map<String, String> kValueLabelsFr = {
   'Unknown Type': 'Type inconnu',
   'UTC and Date Inquiry': 'Demande d\'heure UTC et de date',
   'UTC and Date Response': 'Réponse d\'heure UTC et de date',
-  'Wing in ground (WIG), all ships of this type': 'Aéroglisseur à effet de sol (WIG), tous les navires de ce type',
-  'Wing in ground (WIG), Hazardous category A': 'Aéroglisseur à effet de sol (WIG), catégorie de marchandises dangereuses A',
-  'Wing in ground (WIG), Hazardous category B': 'Aéroglisseur à effet de sol (WIG), catégorie de marchandises dangereuses B',
-  'Wing in ground (WIG), Hazardous category C': 'Aéroglisseur à effet de sol (WIG), catégorie de marchandises dangereuses C',
-  'Wing in ground (WIG), Hazardous category D': 'Aéroglisseur à effet de sol (WIG), catégorie de marchandises dangereuses D',
-  'Wing in ground (WIG), Reserved for future use': 'Aéroglisseur à effet de sol (WIG), réservé pour usage futur',
+  'Wing in ground (WIG), all ships of this type':
+      'Aéroglisseur à effet de sol (WIG), tous les navires de ce type',
+  'Wing in ground (WIG), Hazardous category A':
+      'Aéroglisseur à effet de sol (WIG), catégorie de marchandises dangereuses A',
+  'Wing in ground (WIG), Hazardous category B':
+      'Aéroglisseur à effet de sol (WIG), catégorie de marchandises dangereuses B',
+  'Wing in ground (WIG), Hazardous category C':
+      'Aéroglisseur à effet de sol (WIG), catégorie de marchandises dangereuses C',
+  'Wing in ground (WIG), Hazardous category D':
+      'Aéroglisseur à effet de sol (WIG), catégorie de marchandises dangereuses D',
+  'Wing in ground (WIG), Reserved for future use':
+      'Aéroglisseur à effet de sol (WIG), réservé pour usage futur',
 };

@@ -8,10 +8,12 @@ import 'ais/ais_decoder.dart' show NmeaTagBlock;
 import 'ais/src/nmea/nmea_format.dart' show msSinceUtcMidnight;
 import 'forwarder_service.dart';
 
-final RegExp _isoTimestamp =
-    RegExp(r'^(\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2})(\.\d{1,3})?[, \t]+!');
-final RegExp _clockTimestamp =
-    RegExp(r'^\[(\d{2}):(\d{2}):(\d{2})(\.\d{1,3})?\]\s*!');
+final RegExp _isoTimestamp = RegExp(
+  r'^(\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2})(\.\d{1,3})?[, \t]+!',
+);
+final RegExp _clockTimestamp = RegExp(
+  r'^\[(\d{2}):(\d{2}):(\d{2})(\.\d{1,3})?\]\s*!',
+);
 
 /// Extracts a timestamp from a line, in milliseconds since UTC midnight:
 /// first the NMEA 4.0 tag-block `t:` value, then a leading ISO or `[HH:MM:SS]`
@@ -31,8 +33,7 @@ int? timestampMsOf(String line) {
     final m = int.parse(clock.group(2)!);
     final s = int.parse(clock.group(3)!);
     final fracRaw = clock.group(4) ?? '';
-    final frac =
-        fracRaw.isEmpty ? 0 : (double.parse(fracRaw) * 1000).round();
+    final frac = fracRaw.isEmpty ? 0 : (double.parse(fracRaw) * 1000).round();
     return h * 3600000 + m * 60000 + s * 1000 + frac;
   }
   return null;
@@ -71,6 +72,9 @@ class FileFeedPlayer extends ChangeNotifier {
   List<int> _deltasMs = [];
   int _index = 0;
   bool _loaded = false;
+  bool _disposed = false;
+  DateTime? _replayStartedAt;
+  int _scheduledElapsedMs = 0;
 
   FileFeedPlayer({
     required this.path,
@@ -134,11 +138,13 @@ class FileFeedPlayer extends ChangeNotifier {
   }
 
   void start() {
-    if (isRunning || !_loaded || _lines.isEmpty) return;
+    if (_disposed || isRunning || !_loaded || _lines.isEmpty) return;
     isRunning = true;
     _index = 0;
+    _replayStartedAt = DateTime.now();
+    _scheduledElapsedMs = 0;
     _scheduleNext(0);
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
   void stop() {
@@ -146,16 +152,22 @@ class FileFeedPlayer extends ChangeNotifier {
     isRunning = false;
     _timer?.cancel();
     _timer = null;
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
   void _scheduleNext(int delayMs) {
     _timer?.cancel();
-    _timer = Timer(Duration(milliseconds: delayMs), () => _tick());
+    _scheduledElapsedMs += delayMs;
+    final startedAt = _replayStartedAt;
+    final dueIn = startedAt == null
+        ? delayMs
+        : _scheduledElapsedMs -
+              DateTime.now().difference(startedAt).inMilliseconds;
+    _timer = Timer(Duration(milliseconds: math.max(0, dueIn)), () => _tick());
   }
 
   Future<void> _tick() async {
-    if (!isRunning) return;
+    if (_disposed || !isRunning) return;
     if (_index >= _lines.length) {
       if (!loop) {
         stop();
@@ -168,9 +180,9 @@ class FileFeedPlayer extends ChangeNotifier {
     _index++;
     emittedCount++;
     lastEmitAt = DateTime.now();
-    notifyListeners();
+    if (!_disposed) notifyListeners();
     await onSentence?.call(line);
-    _scheduleNext(delay);
+    if (!_disposed && isRunning) _scheduleNext(delay);
   }
 
   /// Status reported to the reception page, reusing the network feeds' dot
@@ -189,7 +201,10 @@ class FileFeedPlayer extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
+    isRunning = false;
     _timer?.cancel();
+    _timer = null;
     super.dispose();
   }
 }

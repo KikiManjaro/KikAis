@@ -250,7 +250,10 @@ void main() {
     });
     test('test equality of Type 18 examples legacy', () {
       final message = AISMessage.fromString(kType18Example1);
-      final messageLegacy = AISMessage.fromString(kType18Example1, legacy: true);
+      final messageLegacy = AISMessage.fromString(
+        kType18Example1,
+        legacy: true,
+      );
       expect(message, isNotNull);
       expect(message, equals(messageLegacy));
       expect(message.messageType, 18);
@@ -262,7 +265,10 @@ void main() {
   group('Type 19', () {
     test('example 1', () {
       final message = AISMessage.fromString(kType19Example1);
-      final messageLegacy = AISMessage.fromString(kType19Example1, legacy: true);
+      final messageLegacy = AISMessage.fromString(
+        kType19Example1,
+        legacy: true,
+      );
       expect(message, isNotNull);
       expect(message.messageType, 19);
       expect(message, equals(messageLegacy));
@@ -311,7 +317,10 @@ void main() {
       expect(typed.spare, 60);
     });
     test('example 3 - legacy Check Type A & B', () {
-      final messageALegacy = AISMessage.fromString(kType24Example1, legacy: true);
+      final messageALegacy = AISMessage.fromString(
+        kType24Example1,
+        legacy: true,
+      );
       final messageA = AISMessage.fromString(kType24Example1, legacy: false);
       expect(messageA, isNotNull);
       expect(messageALegacy, isNotNull);
@@ -326,7 +335,10 @@ void main() {
       expect(typedA.vesselName, 'GUTEE');
       expect(typedA.spare, 0);
 
-      final messageBLegacy = AISMessage.fromString(kType24Example2, legacy: true);
+      final messageBLegacy = AISMessage.fromString(
+        kType24Example2,
+        legacy: true,
+      );
       final messageB = AISMessage.fromString(kType24Example2, legacy: false);
       expect(messageB, isNotNull);
       expect(messageBLegacy, isNotNull);
@@ -358,7 +370,8 @@ void main() {
       expect(message, isNotNull);
       expect(message.messageType, 25);
       expect(message, isA<SingleSlotBinaryMessage>());
-      final typed = message as SingleSlotBinaryMessage;;
+      final typed = message as SingleSlotBinaryMessage;
+      ;
       print(typed);
     });
   });
@@ -368,14 +381,18 @@ void main() {
       expect(message, isNotNull);
       expect(message.messageType, 26);
       expect(message, isA<MultipleSlotBinaryMessage>());
-      final typed = message as MultipleSlotBinaryMessage;;
+      final typed = message as MultipleSlotBinaryMessage;
+      ;
       print(typed);
     });
   });
   group('Type 27', () {
     test('example 1', () {
       final message = AISMessage.fromString(kType27Example1);
-      final messageLegacy = AISMessage.fromString(kType27Example1, legacy: true);
+      final messageLegacy = AISMessage.fromString(
+        kType27Example1,
+        legacy: true,
+      );
       expect(message, isNotNull);
       expect(message.messageType, 27);
       expect(message, equals(messageLegacy));
@@ -401,23 +418,27 @@ const kType5Example2Line2 = '!AIVDM,2,2,1,A,kQ2H8888880,2*65';
 //binary
 const kType6Example1 = '!AIVDM,1,1,,B,6B?n;be:cbapalgc;i6?Ow4,2*4A';
 const kType7Example1 = '!AIVDM,1,1,,A,702R5`hwCjq8,0*6B';
-const kType8Example1 = '!AIVDM,1,1,,A,85Mwp`1Kf3aCnsNvBWLi=wQuNhA5t43N`5nCuI=p<IBfVqnMgPGs,0*47';
+const kType8Example1 =
+    '!AIVDM,1,1,,A,85Mwp`1Kf3aCnsNvBWLi=wQuNhA5t43N`5nCuI=p<IBfVqnMgPGs,0*47';
 
 const kType9Example1 = '!AIVDM,1,1,,B,91b55wi;hbOS@OdQAC062Ch2089h,0*30';
 
 const kType10Example1 = '!AIVDM,1,1,,B,:5MlU41GMK6@,0*6C';
 
-const kType12Example1= '!AIVDM,1,1,,A,<02:oP0kKcv0@<51C5PB5@?BDPD?P:?2?EB7PDB16693P381>>5<PikP,0*37';
+const kType12Example1 =
+    '!AIVDM,1,1,,A,<02:oP0kKcv0@<51C5PB5@?BDPD?P:?2?EB7PDB16693P381>>5<PikP,0*37';
 
 const kType18Example1 = '!AIVDM,1,1,,B,B3`e<W@01hJMcvUIe3rWSwnUoP06,0*48';
 const kType18Example2 = '!AIVDM,1,1,,A,B46CbvP008JN885IfS;Q3wsUoP06,0*25';
 
-const kType19Example1 = '!AIVDM,1,1,,B,C5N3SRgPEnJGEBT>NhWAwwo862PaLELTBJ:V00000000S0D:R220,0*0B';
+const kType19Example1 =
+    '!AIVDM,1,1,,B,C5N3SRgPEnJGEBT>NhWAwwo862PaLELTBJ:V00000000S0D:R220,0*0B';
 
 const kType24Example1 = '!AIVDM,1,1,,A,H4hJJ>0ME@DD000000000000000,2*46';
 const kType24Example2 = '!AIVDM,1,1,,A,H3@p9@4UCBD4GR1H@8jnih1P111t,0*31';
 
 const kType25Example1 = '!AIVDM,1,1,,A,I6SWo?8P00a3PKpEKEVj0?vNP<65,0*73';
-const kType26Example1 = '!AIVDM,1,1,,A,J1@@0IK70PGgT740000000000@000?D0ih1e00006JlPC9C3,0*6B';
+const kType26Example1 =
+    '!AIVDM,1,1,,A,J1@@0IK70PGgT740000000000@000?D0ih1e00006JlPC9C3,0*6B';
 
 const kType27Example1 = '!AIVDM,1,1,,A,KCQ9r=hrFUnH7P00,0*41';

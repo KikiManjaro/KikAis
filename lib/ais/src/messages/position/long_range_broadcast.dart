@@ -96,7 +96,8 @@ class LongRangeAISBroadcastMessage extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, RAIM: $raimEnabled, Status: $navigationStatus, Lat: $latitude, Lon: $longitude, SOG: $speedOverGround, COG: $courseOverGround, GNSS: $gnssPositionStatus, Spare: $spare)';
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, RAIM: $raimEnabled, Status: $navigationStatus, Lat: $latitude, Lon: $longitude, SOG: $speedOverGround, COG: $courseOverGround, GNSS: $gnssPositionStatus, Spare: $spare)';
   //endregion
 
   /// Decodes a pre-converted binary string into a
@@ -125,14 +126,15 @@ class LongRangeAISBroadcastMessage extends AISMessage {
 
     // conversion to actually readable data
     int raimEnabled = int.parse(raimEnabledBin, radix: 2);
-    String? navigationStatus = BinaryConverter().navigationStatusInfo(navigationStatusBin);
+    String? navigationStatus = BinaryConverter().navigationStatusInfo(
+      navigationStatusBin,
+    );
     double? longitude = CoordinateUtils().calculateLongitude(longitudeBin);
     double? latitude = CoordinateUtils().calculateLatitude(latitudeBin);
     double speed = int.parse(speedBin, radix: 2) / 10.0;
     double course = int.parse(courseBin, radix: 2) / 10.0;
     int gnssStatus = int.parse(gnssBin, radix: 2);
     int spare = int.parse(spareBin, radix: 2);
-
 
     return LongRangeAISBroadcastMessage(
       messageType: messageType,
@@ -174,22 +176,30 @@ class LongRangeAISBroadcastMessage extends AISMessage {
     int spare = getUintDirect(binary, 95, 96);
 
     // conversion to actually readable data
-    String? navigationStatus = BinaryConverter().navigationStatusInfoDirect(navigationStatusBin);
-    double? longitude = CoordinateUtils().calculateLongitudeDirect(longitudeBin, 18);
-    double? latitude = CoordinateUtils().calculateLatitudeDirect(latitudeBin, 17);
+    String? navigationStatus = BinaryConverter().navigationStatusInfoDirect(
+      navigationStatusBin,
+    );
+    double? longitude = CoordinateUtils().calculateLongitudeDirect(
+      longitudeBin,
+      18,
+    );
+    double? latitude = CoordinateUtils().calculateLatitudeDirect(
+      latitudeBin,
+      17,
+    );
 
     return LongRangeAISBroadcastMessage(
-        messageType: messageType,
-        mmsi: mmsi,
-        repeatIndicator: repeatIndicator,
-        raimEnabled: raimEnabled,
-        navigationStatus: navigationStatus ?? navigationStatusBin.toString(),
-        latitude: latitude,
-        longitude: longitude,
-        speedOverGround: speed,
-        courseOverGround: course,
-        gnssPositionStatus: gnss,
-        spare: spare
+      messageType: messageType,
+      mmsi: mmsi,
+      repeatIndicator: repeatIndicator,
+      raimEnabled: raimEnabled,
+      navigationStatus: navigationStatus ?? navigationStatusBin.toString(),
+      latitude: latitude,
+      longitude: longitude,
+      speedOverGround: speed,
+      courseOverGround: course,
+      gnssPositionStatus: gnss,
+      spare: spare,
     );
   }
 }

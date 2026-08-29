@@ -12,8 +12,12 @@ void main() {
   const knownPayload = '13lLUr02j01br3REUdh`eW3608Dn';
   final messageBits = payloadToBits(knownPayload);
 
-  void feedAll(AisDemodulator demod, Uint8List iq, List<String> out,
-      {int chunk = 4096}) {
+  void feedAll(
+    AisDemodulator demod,
+    Uint8List iq,
+    List<String> out, {
+    int chunk = 4096,
+  }) {
     for (var i = 0; i < iq.length; i += chunk) {
       final end = (i + chunk) > iq.length ? iq.length : (i + chunk);
       out.addAll(demod.process(iq.sublist(i, end)));
@@ -21,8 +25,9 @@ void main() {
   }
 
   String? payloadOf(String sentence) {
-    final m = RegExp(r'^!AIVDM,1,1,\d?,([AB]),([^,]*),(\d)\*(?:[0-9A-F]{2})$')
-        .firstMatch(sentence);
+    final m = RegExp(
+      r'^!AIVDM,1,1,\d?,([AB]),([^,]*),(\d)\*(?:[0-9A-F]{2})$',
+    ).firstMatch(sentence);
     return m?.group(2);
   }
 
@@ -61,8 +66,12 @@ void main() {
   });
 
   test('decodes through AWGN and a small frequency offset', () {
-    final iq = makeAisBurst(messageBits,
-        carrierHz: kAisChannel1Offset, snrDb: 14, freqOffsetHz: 200);
+    final iq = makeAisBurst(
+      messageBits,
+      carrierHz: kAisChannel1Offset,
+      snrDb: 14,
+      freqOffsetHz: 200,
+    );
     final demod = AisDemodulator();
     final sentences = <String>[];
     feedAll(demod, iq, sentences);
@@ -130,4 +139,3 @@ void main() {
     expect(payloadOf(sentences.first), knownPayload);
   });
 }
-

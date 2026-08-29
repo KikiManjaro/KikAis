@@ -44,8 +44,9 @@ PositionMessage _boat(String mmsi, double lat, double lon, double heading) {
 }
 
 void main() {
-  testWidgets('map renders vessels through the canvas layer without errors',
-      (tester) async {
+  testWidgets('map renders vessels through the canvas layer without errors', (
+    tester,
+  ) async {
     final stats = MessageStats();
     final boatManager = BoatManager(stats: stats);
     final settings = AppSettings();
@@ -62,7 +63,9 @@ void main() {
           ChangeNotifierProvider.value(value: settings),
           ChangeNotifierProvider.value(value: stats),
         ],
-        child: withLocalizations(WorldMapPage(tileProvider: _FakeTileProvider())),
+        child: withLocalizations(
+          WorldMapPage(tileProvider: _FakeTileProvider()),
+        ),
       ),
     );
     await tester.pump(const Duration(milliseconds: 300));
@@ -76,8 +79,7 @@ void main() {
     stats.dispose();
   });
 
-  testWidgets('clear button removes all vessels from the map',
-      (tester) async {
+  testWidgets('clear button removes all vessels from the map', (tester) async {
     final stats = MessageStats();
     final boatManager = BoatManager(stats: stats);
     final settings = AppSettings();
@@ -95,8 +97,9 @@ void main() {
           ChangeNotifierProvider.value(value: settings),
           ChangeNotifierProvider.value(value: stats),
         ],
-        child:
-            withLocalizations(WorldMapPage(tileProvider: _FakeTileProvider())),
+        child: withLocalizations(
+          WorldMapPage(tileProvider: _FakeTileProvider()),
+        ),
       ),
     );
     await tester.pump(const Duration(milliseconds: 300));

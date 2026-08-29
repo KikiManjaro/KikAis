@@ -235,28 +235,42 @@ const Map<String, String> kCountryNamesIt = {
 const Map<String, String> kValueLabelsIt = {
   'Not available (default)': 'Non disponibile (predefinito)',
   'Reserved for future use': 'Riservato per uso futuro',
-  'Wing in ground (WIG), all ships of this type': 'WIG (effetto suolo), tutte le navi di questo tipo',
-  'Wing in ground (WIG), Hazardous category A': 'WIG (effetto suolo), categoria pericolosa A',
-  'Wing in ground (WIG), Hazardous category B': 'WIG (effetto suolo), categoria pericolosa B',
-  'Wing in ground (WIG), Hazardous category C': 'WIG (effetto suolo), categoria pericolosa C',
-  'Wing in ground (WIG), Hazardous category D': 'WIG (effetto suolo), categoria pericolosa D',
-  'Wing in ground (WIG), Reserved for future use': 'WIG (effetto suolo), riservato per uso futuro',
+  'Wing in ground (WIG), all ships of this type':
+      'WIG (effetto suolo), tutte le navi di questo tipo',
+  'Wing in ground (WIG), Hazardous category A':
+      'WIG (effetto suolo), categoria pericolosa A',
+  'Wing in ground (WIG), Hazardous category B':
+      'WIG (effetto suolo), categoria pericolosa B',
+  'Wing in ground (WIG), Hazardous category C':
+      'WIG (effetto suolo), categoria pericolosa C',
+  'Wing in ground (WIG), Hazardous category D':
+      'WIG (effetto suolo), categoria pericolosa D',
+  'Wing in ground (WIG), Reserved for future use':
+      'WIG (effetto suolo), riservato per uso futuro',
   'Fishing': 'Pesca',
   'Towing': 'Rimorchio',
-  'Towing: length exceeds 200m or breadth exceeds 25m': 'Rimorchio: lunghezza oltre 200 m o larghezza oltre 25 m',
+  'Towing: length exceeds 200m or breadth exceeds 25m':
+      'Rimorchio: lunghezza oltre 200 m o larghezza oltre 25 m',
   'Dredging or underwater ops': 'Dragaggio o operazioni subacquee',
   'Diving ops': 'Operazioni di immersione',
   'Military ops': 'Operazioni militari',
   'Sailing': 'Vela',
   'Pleasure Craft': 'Unità da diporto',
   'Reserved': 'Riservato',
-  'High speed craft (HSC), all ships of this type': 'HSC (unità ad alta velocità), tutte le navi di questo tipo',
-  'High speed craft (HSC), Hazardous category A': 'HSC (unità ad alta velocità), categoria pericolosa A',
-  'High speed craft (HSC), Hazardous category B': 'HSC (unità ad alta velocità), categoria pericolosa B',
-  'High speed craft (HSC), Hazardous category C': 'HSC (unità ad alta velocità), categoria pericolosa C',
-  'High speed craft (HSC), Hazardous category D': 'HSC (unità ad alta velocità), categoria pericolosa D',
-  'High speed craft (HSC), Reserved for future use': 'HSC (unità ad alta velocità), riservato per uso futuro',
-  'High speed craft (HSC), No additional information': 'HSC (unità ad alta velocità), nessuna informazione aggiuntiva',
+  'High speed craft (HSC), all ships of this type':
+      'HSC (unità ad alta velocità), tutte le navi di questo tipo',
+  'High speed craft (HSC), Hazardous category A':
+      'HSC (unità ad alta velocità), categoria pericolosa A',
+  'High speed craft (HSC), Hazardous category B':
+      'HSC (unità ad alta velocità), categoria pericolosa B',
+  'High speed craft (HSC), Hazardous category C':
+      'HSC (unità ad alta velocità), categoria pericolosa C',
+  'High speed craft (HSC), Hazardous category D':
+      'HSC (unità ad alta velocità), categoria pericolosa D',
+  'High speed craft (HSC), Reserved for future use':
+      'HSC (unità ad alta velocità), riservato per uso futuro',
+  'High speed craft (HSC), No additional information':
+      'HSC (unità ad alta velocità), nessuna informazione aggiuntiva',
   'Pilot Vessel': 'Nave pilota',
   'Search and Rescue vessel': 'Nave SAR',
   'Tug': 'Rimorchiatore',
@@ -265,14 +279,17 @@ const Map<String, String> kValueLabelsIt = {
   'Law Enforcement': 'Forze dell\'ordine',
   'Spare - Local Vessel': 'Riservato - Unità locale',
   'Medical Transport': 'Trasporto sanitario',
-  'Noncombatant ship according to RR Resolution No. 18': 'Nave non combattente secondo la Risoluzione RR n. 18',
-  'Passenger, all ships of this type': 'Passeggeri, tutte le navi di questo tipo',
+  'Noncombatant ship according to RR Resolution No. 18':
+      'Nave non combattente secondo la Risoluzione RR n. 18',
+  'Passenger, all ships of this type':
+      'Passeggeri, tutte le navi di questo tipo',
   'Passenger, Hazardous category A': 'Passeggeri, categoria pericolosa A',
   'Passenger, Hazardous category B': 'Passeggeri, categoria pericolosa B',
   'Passenger, Hazardous category C': 'Passeggeri, categoria pericolosa C',
   'Passenger, Hazardous category D': 'Passeggeri, categoria pericolosa D',
   'Passenger, Reserved for future use': 'Passeggeri, riservato per uso futuro',
-  'Passenger, No additional information': 'Passeggeri, nessuna informazione aggiuntiva',
+  'Passenger, No additional information':
+      'Passeggeri, nessuna informazione aggiuntiva',
   'Cargo, all ships of this type': 'Cargo, tutte le navi di questo tipo',
   'Cargo, Hazardous category A': 'Cargo, categoria pericolosa A',
   'Cargo, Hazardous category B': 'Cargo, categoria pericolosa B',
@@ -286,14 +303,17 @@ const Map<String, String> kValueLabelsIt = {
   'Tanker, Hazardous category C': 'Tanker, categoria pericolosa C',
   'Tanker, Hazardous category D': 'Tanker, categoria pericolosa D',
   'Tanker, Reserved for future use': 'Tanker, riservato per uso futuro',
-  'Tanker, No additional information': 'Tanker, nessuna informazione aggiuntiva',
-  'Other Type, all ships of this type': 'Altro tipo, tutte le navi di questo tipo',
+  'Tanker, No additional information':
+      'Tanker, nessuna informazione aggiuntiva',
+  'Other Type, all ships of this type':
+      'Altro tipo, tutte le navi di questo tipo',
   'Other Type, Hazardous category A': 'Altro tipo, categoria pericolosa A',
   'Other Type, Hazardous category B': 'Altro tipo, categoria pericolosa B',
   'Other Type, Hazardous category C': 'Altro tipo, categoria pericolosa C',
   'Other Type, Hazardous category D': 'Altro tipo, categoria pericolosa D',
   'Other Type, Reserved for future use': 'Altro tipo, riservato per uso futuro',
-  'Other Type, no additional information': 'Altro tipo, nessuna informazione aggiuntiva',
+  'Other Type, no additional information':
+      'Altro tipo, nessuna informazione aggiuntiva',
   'Unknown Type': 'Tipo sconosciuto',
   'Undefined (default)': 'Non definito (predefinito)',
   'GPS': 'GPS',
@@ -308,17 +328,21 @@ const Map<String, String> kValueLabelsIt = {
   'Unknown (not sent)': 'Sconosciuto (non trasmesso)',
   'ITU1371': 'ITU1371',
   'Unknown AIS Version': 'Versione AIS sconosciuta',
-  'Data Terminal not Ready (Default)': 'Terminale dati non pronto (predefinito)',
+  'Data Terminal not Ready (Default)':
+      'Terminale dati non pronto (predefinito)',
   'Data Terminal Ready': 'Terminale dati pronto',
   'Position Report Class A': 'Rapporto di posizione Classe A',
-  'Position Report Class A (Assigned Schedule)': 'Rapporto di posizione Classe A (pianificazione assegnata)',
-  'Position Report Class A (Response to interrogation)': 'Rapporto di posizione Classe A (risposta a interrogazione)',
+  'Position Report Class A (Assigned Schedule)':
+      'Rapporto di posizione Classe A (pianificazione assegnata)',
+  'Position Report Class A (Response to interrogation)':
+      'Rapporto di posizione Classe A (risposta a interrogazione)',
   'Base Station Report': 'Rapporto di stazione base',
   'Static and Voyage Related Data': 'Dati statici e relativi al viaggio',
   'Binary Addressed Message': 'Messaggio binario indirizzato',
   'Binary Acknowledgement': 'Conferma binaria',
   'Binary Broadcast Message': 'Messaggio binario broadcast',
-  'Standard SAR Aircraft Position Report': 'Rapporto di posizione standard di aeromobile SAR',
+  'Standard SAR Aircraft Position Report':
+      'Rapporto di posizione standard di aeromobile SAR',
   'UTC and Date Inquiry': 'Richiesta di ora UTC e data',
   'UTC and Date Response': 'Risposta con ora UTC e data',
   'Addressed Safety Related Message': 'Messaggio di sicurezza indirizzato',
@@ -327,16 +351,20 @@ const Map<String, String> kValueLabelsIt = {
   'Interrogation': 'Interrogazione',
   'Assignment Mode Command': 'Comando di assegnazione modalità',
   'DGNSS Binary Broadcast Message': 'Messaggio binario broadcast DGNSS',
-  'Standard Class B CS Position Report': 'Rapporto di posizione standard CS Classe B',
-  'Extended Class B Equipment Position Report': 'Rapporto di posizione esteso di apparecchiatura Classe B',
+  'Standard Class B CS Position Report':
+      'Rapporto di posizione standard CS Classe B',
+  'Extended Class B Equipment Position Report':
+      'Rapporto di posizione esteso di apparecchiatura Classe B',
   'Data Link Management': 'Gestione del data link',
   'Aid-to-Navigation Report': 'Rapporto di aiuto alla navigazione',
   'Channel Management': 'Gestione dei canali',
   'Group Assignment Command': 'Comando di assegnazione di gruppo',
   'Static Data Report': 'Rapporto di dati statici',
   'Single Slot Binary Message': 'Messaggio binario a singolo slot',
-  'Multiple Slot Binary Message With Communications State': 'Messaggio binario a slot multipli con stato delle comunicazioni',
-  'Position Report For Long-Range Applications': 'Rapporto di posizione per applicazioni a lungo raggio',
+  'Multiple Slot Binary Message With Communications State':
+      'Messaggio binario a slot multipli con stato delle comunicazioni',
+  'Position Report For Long-Range Applications':
+      'Rapporto di posizione per applicazioni a lungo raggio',
   'Under way using engine': 'In navigazione (propulsione)',
   'At anchor': 'All\'ancora',
   'Not under command': 'Non in comando',
@@ -346,19 +374,29 @@ const Map<String, String> kValueLabelsIt = {
   'Aground': 'In secco',
   'Engaged in Fishing': 'Impegnato nella pesca',
   'Under way sailing': 'In navigazione a vela',
-  'Reserved for future amendment of Navigational Status for HSC': 'Riservato per future modifiche dello stato di navigazione per HSC',
-  'Reserved for future amendment of Navigational Status for WIG': 'Riservato per future modifiche dello stato di navigazione per WIG',
-  'Power-driven vessel towing astern (regional)': 'Nave a propulsione meccanica che rimorchia a poppa (regionale)',
-  'Power-driven vessel pushing ahead or towing alongside (regional)': 'Nave a propulsione meccanica che spinge a prora o rimorchia al fianco (regionale)',
-  'No official terminology (Error in transmission)': 'Nessuna terminologia ufficiale (errore di trasmissione)',
+  'Reserved for future amendment of Navigational Status for HSC':
+      'Riservato per future modifiche dello stato di navigazione per HSC',
+  'Reserved for future amendment of Navigational Status for WIG':
+      'Riservato per future modifiche dello stato di navigazione per WIG',
+  'Power-driven vessel towing astern (regional)':
+      'Nave a propulsione meccanica che rimorchia a poppa (regionale)',
+  'Power-driven vessel pushing ahead or towing alongside (regional)':
+      'Nave a propulsione meccanica che spinge a prora o rimorchia al fianco (regionale)',
+  'No official terminology (Error in transmission)':
+      'Nessuna terminologia ufficiale (errore di trasmissione)',
   'AIS-SART is active': 'AIS-SART attivo',
   'Undefined (Not transmitted)': 'Non definito (non trasmesso)',
   'Not turning': 'Non in virata',
-  'Turning right at up to 708 deg. per minute or higher': 'Virata a dritta fino a 708 gradi al minuto o più',
-  'Turning left at up to 708 deg. per minute or higher': 'Virata a sinistra fino a 708 gradi al minuto o più',
-  'turning right at more than 5deg/30s (No TI available)': 'virata a dritta a oltre 5°/30s (nessuna informazione di virata disponibile)',
-  'turning left at more than 5deg/30s (No TI available)': 'virata a sinistra a oltre 5°/30s (nessuna informazione di virata disponibile)',
-  'No information available (not sent)': 'Nessuna informazione disponibile (non trasmesso)',
+  'Turning right at up to 708 deg. per minute or higher':
+      'Virata a dritta fino a 708 gradi al minuto o più',
+  'Turning left at up to 708 deg. per minute or higher':
+      'Virata a sinistra fino a 708 gradi al minuto o più',
+  'turning right at more than 5deg/30s (No TI available)':
+      'virata a dritta a oltre 5°/30s (nessuna informazione di virata disponibile)',
+  'turning left at more than 5deg/30s (No TI available)':
+      'virata a sinistra a oltre 5°/30s (nessuna informazione di virata disponibile)',
+  'No information available (not sent)':
+      'Nessuna informazione disponibile (non trasmesso)',
   'Speed not Available (not sent)': 'Velocità non disponibile (non trasmessa)',
   'Speed over 102.2 knots': 'Velocità oltre 102,2 nodi',
   'Accuracy < 10ms': 'Precisione < 10 m',
@@ -366,18 +404,22 @@ const Map<String, String> kValueLabelsIt = {
   'Error please Contact: ': 'Errore, contattare: ',
   'Data not available (not sent)': 'Dati non disponibili (non trasmessi)',
   'Not available (not sent)': 'Non disponibile (non trasmesso)',
-  'Positioning System is in manual mode': 'Il sistema di posizionamento è in modalità manuale',
-  'Electronic Position Fixing System operates in estimated (dead reckoning) mode': 'Il sistema elettronico di rilevamento posizione opera in modalità stimata (calcolo stimato)',
+  'Positioning System is in manual mode':
+      'Il sistema di posizionamento è in modalità manuale',
+  'Electronic Position Fixing System operates in estimated (dead reckoning) mode':
+      'Il sistema elettronico di rilevamento posizione opera in modalità stimata (calcolo stimato)',
   'Positioning System inoperative': 'Sistema di posizionamento non operativo',
   'Not available (Default)': 'Non disponibile (predefinito)',
   'No Special Maneuver': 'Nessuna manovra speciale',
   'Special Maneuver in Progress': 'Manovra speciale in corso',
   'RAIM not enabled (default)': 'RAIM non abilitato (predefinito)',
-  'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)': 'RAIM abilitato (approfondisci su: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)',
+  'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)':
+      'RAIM abilitato (approfondisci su: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)',
   'Unknown (Please Contact: )': 'Sconosciuto (contattare: )',
   'Reference Point': 'Punto di riferimento',
   'RACON': 'RACON',
-  'Fixed structure off shore (Oil Platform, Windfarm etc)': 'Struttura fissa al largo (piattaforma petrolifera, parco eolico, ecc.)',
+  'Fixed structure off shore (Oil Platform, Windfarm etc)':
+      'Struttura fissa al largo (piattaforma petrolifera, parco eolico, ecc.)',
   'Spare, Reserved for future use': 'Riservato, per uso futuro',
   'Light, without sectors': 'Luce, senza settori',
   'Light, with sectors': 'Luce, con settori',
@@ -389,8 +431,10 @@ const Map<String, String> kValueLabelsIt = {
   'Beacon, Cardinal W': 'Fanale cardinale W',
   'Beacon, Port hand': 'Fanale di sinistra',
   'Beacon, Starboard hand': 'Fanale di dritta',
-  'Beacon, Preferred Channel port hand': 'Fanale del canale preferito a sinistra',
-  'Beacon, Preferred Channel starboard hand': 'Fanale del canale preferito a dritta',
+  'Beacon, Preferred Channel port hand':
+      'Fanale del canale preferito a sinistra',
+  'Beacon, Preferred Channel starboard hand':
+      'Fanale del canale preferito a dritta',
   'Beacon, Isolated danger': 'Fanale di pericolo isolato',
   'Beacon, Safe water': 'Fanale di acque sicure',
   'Beacon, Special mark': 'Fanale di segnalamento speciale',
@@ -410,14 +454,19 @@ const Map<String, String> kValueLabelsIt = {
   'TxA, RxA/RxB': 'TxA, RxA/RxB',
   'TxB, RxA/RxB': 'TxB, RxA/RxB',
   'Reserved for Future Use': 'Riservato per uso futuro',
-  'All types of mobiles (default)': 'Tutti i tipi di stazioni mobili (predefinito)',
-  'All types of Class B mobile stations': 'Tutti i tipi di stazioni mobili Classe B',
+  'All types of mobiles (default)':
+      'Tutti i tipi di stazioni mobili (predefinito)',
+  'All types of Class B mobile stations':
+      'Tutti i tipi di stazioni mobili Classe B',
   'SAR airborne mobile station': 'Stazione mobile SAR aerea',
   'Aid to Navigation station': 'Stazione di aiuto alla navigazione',
-  'Class B shipborne mobile station (IEC62287 only)': 'Stazione mobile di bordo Classe B (solo IEC62287)',
+  'Class B shipborne mobile station (IEC62287 only)':
+      'Stazione mobile di bordo Classe B (solo IEC62287)',
   'Regional use and inland waterways': 'Uso regionale e vie navigabili interne',
   'As given by the autonomous mode': 'Come indicato dalla modalità autonoma',
-  'Next Shorter Reporting Interval': 'Intervallo di trasmissione successivo più breve',
-  'Next Longer Reporting Interval': 'Intervallo di trasmissione successivo più lungo',
+  'Next Shorter Reporting Interval':
+      'Intervallo di trasmissione successivo più breve',
+  'Next Longer Reporting Interval':
+      'Intervallo di trasmissione successivo più lungo',
   'Unknown': 'Sconosciuto',
 };

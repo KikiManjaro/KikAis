@@ -434,11 +434,7 @@ class _DocumentationPageState extends State<DocumentationPage> {
       _p(l10n.docAsmDacFid1),
       _p(l10n.docAsmDacFid2),
       _h2(l10n.docAsmWhereTitle),
-      _bullets([
-        l10n.docAsmWhere1,
-        l10n.docAsmWhere2,
-        l10n.docAsmWhere3,
-      ]),
+      _bullets([l10n.docAsmWhere1, l10n.docAsmWhere2, l10n.docAsmWhere3]),
       _h2(l10n.docAsmInKikaisTitle),
       _p(l10n.docAsmInKikais),
       _h2(l10n.docAsmExampleTitle),

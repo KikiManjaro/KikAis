@@ -131,10 +131,7 @@ void main() {
   });
 
   test('type 14 safety broadcast round-trips', () {
-    final sentence = encodeSafetyBroadcast(
-      mmsi: 226545000,
-      text: 'WARNING',
-    );
+    final sentence = encodeSafetyBroadcast(mmsi: 226545000, text: 'WARNING');
     final msg = decoder.decode(sentence);
     expect(msg, isA<SafetyRelatedBroadcastMessage>());
     expect((msg as SafetyRelatedBroadcastMessage).text.trim(), 'WARNING');

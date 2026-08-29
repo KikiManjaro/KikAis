@@ -89,17 +89,22 @@ void main() {
     await player.connect();
     await player.disconnect();
 
-    expect(statuses.map((m) => m.key).toList(),
-        ['rtlSdrOpening', 'rtlSdrConnected', 'rtlSdrDisconnected']);
+    expect(statuses.map((m) => m.key).toList(), [
+      'rtlSdrOpening',
+      'rtlSdrConnected',
+      'rtlSdrDisconnected',
+    ]);
     expect(statuses[0].args['device'], '#0');
     final connected = statuses[1];
     expect(connected.args['freq'], '162.000 MHz');
     expect(connected.args['rate'], '1.024 MHz');
     expect(connected.args['gain'], 'auto');
     expect(connected.args['channels'], 'A + B');
-    expect(connected.fallback,
-        'RTL-SDR #0 connected (162.000 MHz, 1.024 MHz sample rate, '
-        'auto gain, channels A + B).');
+    expect(
+      connected.fallback,
+      'RTL-SDR #0 connected (162.000 MHz, 1.024 MHz sample rate, '
+      'auto gain, channels A + B).',
+    );
 
     player.dispose();
   });
@@ -126,8 +131,10 @@ void main() {
 
     await player.connect();
 
-    expect(statuses.map((m) => m.key).toList(),
-        ['rtlSdrOpening', 'rtlSdrError']);
+    expect(statuses.map((m) => m.key).toList(), [
+      'rtlSdrOpening',
+      'rtlSdrError',
+    ]);
     expect(statuses.last.args['error'], contains('Device busy'));
 
     player.dispose();
@@ -159,8 +166,11 @@ void main() {
     source.fail(StateError('USB unplugged'));
     await Future<void>.delayed(Duration.zero);
 
-    expect(statuses.map((m) => m.key).toList(),
-        ['rtlSdrOpening', 'rtlSdrConnected', 'rtlSdrError']);
+    expect(statuses.map((m) => m.key).toList(), [
+      'rtlSdrOpening',
+      'rtlSdrConnected',
+      'rtlSdrError',
+    ]);
     expect(statuses.last.args['error'], contains('USB unplugged'));
 
     player.dispose();
@@ -175,8 +185,11 @@ void main() {
     source.dispose(); // closes the stream -> onDone fires
     await Future<void>.delayed(Duration.zero);
 
-    expect(statuses.map((m) => m.key).toList(),
-        ['rtlSdrOpening', 'rtlSdrConnected', 'rtlSdrStreamClosed']);
+    expect(statuses.map((m) => m.key).toList(), [
+      'rtlSdrOpening',
+      'rtlSdrConnected',
+      'rtlSdrStreamClosed',
+    ]);
     expect(player.status.connected, isFalse);
 
     player.dispose();
@@ -203,4 +216,21 @@ void main() {
 
     player.dispose();
   });
+
+  test(
+    'reconnect restarts a source after a sleep or device interruption',
+    () async {
+      final source = FakeRtlSdrSource();
+      final player = RtlSdrFeedPlayer(config: config, source: source);
+
+      await player.connect();
+      await player.reconnect();
+
+      expect(source.started, isTrue);
+      expect(source.stopped, isTrue);
+      expect(player.isRunning, isTrue);
+      await player.disconnect();
+      player.dispose();
+    },
+  );
 }

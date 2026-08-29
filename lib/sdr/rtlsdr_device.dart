@@ -84,13 +84,13 @@ class RtlsdrFfiDevice implements RtlSdrDevice {
 
   /// The librtlsdr error message for [rc], or a generic one.
   static String errorFor(int rc) => switch (rc) {
-        -1 => 'Generic error',
-        -2 => 'Invalid argument',
-        -3 => 'Device not found',
-        -4 => 'Busy',
-        -5 => 'USB error',
-        _ => 'error $rc',
-      };
+    -1 => 'Generic error',
+    -2 => 'Invalid argument',
+    -3 => 'Device not found',
+    -4 => 'Busy',
+    -5 => 'USB error',
+    _ => 'error $rc',
+  };
 
   @override
   Future<void> openAndConfigure(
@@ -125,8 +125,10 @@ class RtlsdrFfiDevice implements RtlSdrDevice {
     // and a ~250 kHz filter keeps out-of-band noise down (AIS-catcher
     // recommends ~192 kHz for RTL-SDRs).
     check(bindings.setTunerBandwidth(dev, 250000), 'Setting bandwidth');
-    check(bindings.setTunerGainMode(dev, autoGain ? 0 : 1),
-        'Setting tuner gain mode');
+    check(
+      bindings.setTunerGainMode(dev, autoGain ? 0 : 1),
+      'Setting tuner gain mode',
+    );
     if (!autoGain && gainDb != null) {
       check(bindings.setTunerGain(dev, gainDb), 'Setting tuner gain');
     }

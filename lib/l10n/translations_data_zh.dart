@@ -260,7 +260,8 @@ const Map<String, String> kValueLabelsZh = {
   'DGNSS Binary Broadcast Message': 'DGNSS 二进制广播报文',
   'Diving ops': '潜水作业',
   'Dredging or underwater ops': '疏浚或水下作业',
-  'Electronic Position Fixing System operates in estimated (dead reckoning) mode': '电子定位系统以推算（航位推算）模式工作',
+  'Electronic Position Fixing System operates in estimated (dead reckoning) mode':
+      '电子定位系统以推算（航位推算）模式工作',
   'Error please Contact: ': '出错，请联系：',
   'Extended Class B Equipment Position Report': '扩展 B 类设备位置报告',
   'Fishing': '捕鱼',
@@ -306,7 +307,8 @@ const Map<String, String> kValueLabelsZh = {
   'Position Report For Long-Range Applications': '远距离应用位置报告',
   'Positioning System inoperative': '定位系统失效',
   'Positioning System is in manual mode': '定位系统处于手动模式',
-  'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)': 'RAIM 已启用（了解更多：https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring）',
+  'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)':
+      'RAIM 已启用（了解更多：https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring）',
   'RAIM not enabled (default)': 'RAIM 未启用（默认）',
   'Reserved': '保留',
   'Reserved for future use': '保留供将来使用',
@@ -330,12 +332,17 @@ const Map<String, String> kValueLabelsZh = {
   'Tanker, No additional information': '油轮，无其他信息',
   'Tanker, Reserved for future use': '油轮，保留供将来使用',
   'Towing': '拖带',
-  'Towing: length exceeds 200m or breadth exceeds 25m': '拖带：长度超过 200 米或宽度超过 25 米',
+  'Towing: length exceeds 200m or breadth exceeds 25m':
+      '拖带：长度超过 200 米或宽度超过 25 米',
   'Tug': '拖轮',
-  'turning left at more than 5deg/30s (No TI available)': '向左转向，超过 5 度/30 秒（无 TI 可用）',
-  'Turning left at up to 708 deg. per minute or higher': '向左转向，转速高达 708 度/分钟或更高',
-  'turning right at more than 5deg/30s (No TI available)': '向右转向，超过 5 度/30 秒（无 TI 可用）',
-  'Turning right at up to 708 deg. per minute or higher': '向右转向，转速高达 708 度/分钟或更高',
+  'turning left at more than 5deg/30s (No TI available)':
+      '向左转向，超过 5 度/30 秒（无 TI 可用）',
+  'Turning left at up to 708 deg. per minute or higher':
+      '向左转向，转速高达 708 度/分钟或更高',
+  'turning right at more than 5deg/30s (No TI available)':
+      '向右转向，超过 5 度/30 秒（无 TI 可用）',
+  'Turning right at up to 708 deg. per minute or higher':
+      '向右转向，转速高达 708 度/分钟或更高',
   'Unknown': '未知',
   'Unknown (Please Contact: )': '未知（请联系：）',
   'Unknown AIS Version': '未知 AIS 版本',

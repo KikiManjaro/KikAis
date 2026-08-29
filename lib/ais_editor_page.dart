@@ -106,8 +106,7 @@ class _AisEditorPageState extends State<AisEditorPage> {
     _asm = asm;
     if (asm != null) {
       for (final spec in asmFieldsFor(asm)) {
-        _controllers[spec.key] =
-            TextEditingController(text: spec.defaultText);
+        _controllers[spec.key] = TextEditingController(text: spec.defaultText);
       }
     }
   }
@@ -136,14 +135,14 @@ class _AisEditorPageState extends State<AisEditorPage> {
   static String _asmShortKey(AsmFormat asm) => asmShortKey(asm);
 
   String _stateLabel(AsmState state) => switch (state) {
-        AsmState.inForce => context.l10n.asmStateInForce,
-        AsmState.deprecated => context.l10n.asmStateDeprecated,
-        AsmState.replaced => context.l10n.asmStateReplaced,
-        AsmState.discontinued => context.l10n.asmStateDiscontinued,
-        AsmState.draft => context.l10n.asmStateDraft,
-        AsmState.proposal => context.l10n.asmStateProposal,
-        AsmState.testing => context.l10n.asmStateTesting,
-      };
+    AsmState.inForce => context.l10n.asmStateInForce,
+    AsmState.deprecated => context.l10n.asmStateDeprecated,
+    AsmState.replaced => context.l10n.asmStateReplaced,
+    AsmState.discontinued => context.l10n.asmStateDiscontinued,
+    AsmState.draft => context.l10n.asmStateDraft,
+    AsmState.proposal => context.l10n.asmStateProposal,
+    AsmState.testing => context.l10n.asmStateTesting,
+  };
 
   /// Small colored badge for the ASM lifecycle state.
   Widget _stateBadge(AsmFormat asm) {
@@ -153,10 +152,10 @@ class _AisEditorPageState extends State<AisEditorPage> {
     final color = asm.isDeprecated
         ? appColors.danger
         : (asm.state == AsmState.draft ||
-                asm.state == AsmState.proposal ||
-                asm.state == AsmState.testing)
-            ? appColors.warning
-            : scheme.onSurfaceVariant;
+              asm.state == AsmState.proposal ||
+              asm.state == AsmState.testing)
+        ? appColors.warning
+        : scheme.onSurfaceVariant;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
@@ -192,11 +191,7 @@ class _AisEditorPageState extends State<AisEditorPage> {
   void _rebuild() {
     _syncAsm();
     try {
-      final base = encodeMessage(
-        _type,
-        _values(),
-        dataSource: _dataSource,
-      );
+      final base = encodeMessage(_type, _values(), dataSource: _dataSource);
       final tag = _nmea4Tags
           ? buildTagBlock(
               sourceId: _tagSourceC.text.trim().isEmpty
@@ -326,7 +321,10 @@ class _AisEditorPageState extends State<AisEditorPage> {
                           suggestions.add(
                             ListTile(
                               dense: true,
-                              leading: const Icon(Icons.edit_outlined, size: 18),
+                              leading: const Icon(
+                                Icons.edit_outlined,
+                                size: 18,
+                              ),
                               title: Text(context.l10n.editorAsmPresetManual),
                               onTap: () {
                                 setState(() => _lockedPreset = null);
@@ -346,7 +344,11 @@ class _AisEditorPageState extends State<AisEditorPage> {
                               ListTile(
                                 dense: true,
                                 leading: const Icon(Icons.apps, size: 18),
-                                title: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                title: Text(
+                                  label,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                                 subtitle: asm.registrant == null
                                     ? null
                                     : Text(
@@ -453,7 +455,8 @@ class _AisEditorPageState extends State<AisEditorPage> {
                   ),
                 ),
               ),
-            if (_asm != null && _asm!.hasLayout &&
+            if (_asm != null &&
+                _asm!.hasLayout &&
                 _dataSource == EditorDataSource.asm)
               Card(
                 child: Padding(

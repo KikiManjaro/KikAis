@@ -71,8 +71,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('toggling a destination switch updates it immediately',
-      (tester) async {
+  testWidgets('toggling a destination switch updates it immediately', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final settings = AppSettings()
       ..targets = [

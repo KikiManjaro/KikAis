@@ -49,7 +49,11 @@ void main() {
         cog: 250.0,
         heading: 90.0,
       );
-      final bad = sentence.replaceRange(sentence.length - 2, sentence.length, '00');
+      final bad = sentence.replaceRange(
+        sentence.length - 2,
+        sentence.length,
+        '00',
+      );
       final s = NmeaSentence.tryParse(bad);
       expect(s, isNotNull);
       expect(s!.isChecksumValid, isFalse);
@@ -129,8 +133,7 @@ void main() {
           cog: 250.0,
           heading: 90.0,
         ),
-      )!
-          .binaryPayload;
+      )!.binaryPayload;
 
       final part1 = _fragment(full.substring(0, 144), 0, 2, 3);
       final part2 = _fragment(full.substring(144), 1, 2, 3);
@@ -154,8 +157,7 @@ void main() {
           cog: 250.0,
           heading: 90.0,
         ),
-      )!
-          .binaryPayload;
+      )!.binaryPayload;
       final part1 = _fragment(full.substring(0, 144), 0, 2, 3);
       final part2 = _fragment(full.substring(144), 1, 2, 3);
 
@@ -182,19 +184,22 @@ void main() {
           cog: 250.0,
           heading: 90.0,
         ),
-      )!
-          .binaryPayload;
+      )!.binaryPayload;
       return full;
     }
 
     test('drops a fragment whose total does not match the pending message', () {
       final full = twoPartBinary();
       final decoder = AisNmeaDecoder();
-      expect(decoder.decode(_fragment(full.substring(0, 144), 0, 2, 3)),
-          isNull);
+      expect(
+        decoder.decode(_fragment(full.substring(0, 144), 0, 2, 3)),
+        isNull,
+      );
       // Same key, different total -> different message -> dropped.
-      expect(decoder.decode(_fragment(full.substring(0, 100), 0, 3, 3)),
-          isNull);
+      expect(
+        decoder.decode(_fragment(full.substring(0, 100), 0, 3, 3)),
+        isNull,
+      );
       expect(decoder.droppedFragments, 1);
       expect(decoder.fragmentsSeen, 2);
       // The pending message can still complete.
@@ -207,8 +212,10 @@ void main() {
         'payload', () {
       final full = twoPartBinary();
       final decoder = AisNmeaDecoder();
-      expect(decoder.decode(_fragment(full.substring(0, 144), 0, 2, 3)),
-          isNull);
+      expect(
+        decoder.decode(_fragment(full.substring(0, 144), 0, 2, 3)),
+        isNull,
+      );
       // Same key, same index, different bits -> different message -> dropped.
       final conflicting = full.substring(0, 144).replaceRange(0, 6, '111111');
       expect(decoder.decode(_fragment(conflicting, 0, 2, 3)), isNull);
@@ -241,8 +248,10 @@ void main() {
       final full = twoPartBinary();
       final decoder = AisNmeaDecoder();
       // Message A (seq 3) fragment 0.
-      expect(decoder.decode(_fragment(full.substring(0, 144), 0, 2, 3)),
-          isNull);
+      expect(
+        decoder.decode(_fragment(full.substring(0, 144), 0, 2, 3)),
+        isNull,
+      );
       // Message B reuses seq 3 with a conflicting fragment 0 -> dropped.
       final b0 = full.substring(0, 144).replaceRange(0, 6, '111111');
       expect(decoder.decode(_fragment(b0, 0, 2, 3)), isNull);
@@ -280,7 +289,11 @@ void main() {
         cog: 250.0,
         heading: 90.0,
       );
-      final bad = sentence.replaceRange(sentence.length - 2, sentence.length, '00');
+      final bad = sentence.replaceRange(
+        sentence.length - 2,
+        sentence.length,
+        '00',
+      );
 
       final strict = AisNmeaDecoder(validateChecksum: true);
       expect(strict.decode(bad), isNull);

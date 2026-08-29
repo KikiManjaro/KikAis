@@ -84,9 +84,7 @@ class _BitLayoutViewerState extends State<BitLayoutViewer> {
               decoration: BoxDecoration(
                 color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: _accent(context, _selected % 8),
-                ),
+                border: Border.all(color: _accent(context, _selected % 8)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,8 +138,10 @@ class _BitLayoutViewerState extends State<BitLayoutViewer> {
                   child: Container(
                     margin: const EdgeInsets.only(right: 1),
                     decoration: BoxDecoration(
-                      color: _accent(context, i % 8)
-                          .withValues(alpha: i == _selected ? 0.95 : 0.45),
+                      color: _accent(
+                        context,
+                        i % 8,
+                      ).withValues(alpha: i == _selected ? 0.95 : 0.45),
                       borderRadius: BorderRadius.circular(3),
                     ),
                   ),
@@ -177,8 +177,9 @@ class _BitLayoutViewerState extends State<BitLayoutViewer> {
                           color: i == _selected
                               ? _accent(context, i % 8)
                               : scheme.onSurfaceVariant,
-                          fontWeight:
-                            i == _selected ? FontWeight.w700 : FontWeight.w400,
+                          fontWeight: i == _selected
+                              ? FontWeight.w700
+                              : FontWeight.w400,
                         ),
                       ),
                     ),
@@ -213,7 +214,9 @@ class _SixBitEncoderState extends State<SixBitEncoder> {
 
   String _code(String c, AppLocalizations l10n) {
     final v = aisDataChars.indexOf(c);
-    return v < 0 ? l10n.docSixBitUnencodable : v.toRadixString(2).padLeft(6, '0');
+    return v < 0
+        ? l10n.docSixBitUnencodable
+        : v.toRadixString(2).padLeft(6, '0');
   }
 
   @override
@@ -228,10 +231,7 @@ class _SixBitEncoderState extends State<SixBitEncoder> {
           children: [
             TextField(
               controller: _controller,
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 13,
-              ),
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
               decoration: InputDecoration(
                 isDense: true,
                 labelText: context.l10n.docTextToEncode,
@@ -250,8 +250,9 @@ class _SixBitEncoderState extends State<SixBitEncoder> {
                       width: 40,
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       decoration: BoxDecoration(
-                        color: scheme.surfaceContainerHighest
-                            .withValues(alpha: 0.5),
+                        color: scheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
+                        ),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Column(
@@ -323,13 +324,16 @@ class _ChecksumCalculatorState extends State<ChecksumCalculator> {
     for (final c in _controller.text.codeUnits) {
       xor ^= c;
     }
-    setState(() => _checksum = xor.toRadixString(16).padLeft(2, '0').toUpperCase());
+    setState(
+      () => _checksum = xor.toRadixString(16).padLeft(2, '0').toUpperCase(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final appColors = Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -418,13 +422,13 @@ class _CoordinateEncoderState extends State<CoordinateEncoder> {
     final rawLon = lon == null ? null : (lon * 600000).round();
 
     Widget value(Widget child) => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: child,
-        );
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: child,
+    );
 
     return Card(
       child: Padding(
@@ -469,7 +473,9 @@ class _CoordinateEncoderState extends State<CoordinateEncoder> {
                 rawLat == null
                     ? context.l10n.docLatitudeInvalid
                     : context.l10n.docCoordLatitudeValue(
-                        '${rawLat < 0 ? '-' : ''}${rawLat.abs()}', '$rawLat'),
+                        '${rawLat < 0 ? '-' : ''}${rawLat.abs()}',
+                        '$rawLat',
+                      ),
                 style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
               ),
             ),
@@ -479,7 +485,9 @@ class _CoordinateEncoderState extends State<CoordinateEncoder> {
                 rawLon == null
                     ? context.l10n.docLongitudeInvalid
                     : context.l10n.docCoordLongitudeValue(
-                        '${rawLon < 0 ? '-' : ''}${rawLon.abs()}', '$rawLon'),
+                        '${rawLon < 0 ? '-' : ''}${rawLon.abs()}',
+                        '$rawLon',
+                      ),
                 style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
               ),
             ),
@@ -623,8 +631,12 @@ class _GlossarySearchState extends State<GlossarySearch> {
     final terms = q.isEmpty
         ? kGlossary
         : kGlossary
-            .where((t) => t.$1.toLowerCase().contains(q) || t.$2.toLowerCase().contains(q))
-            .toList();
+              .where(
+                (t) =>
+                    t.$1.toLowerCase().contains(q) ||
+                    t.$2.toLowerCase().contains(q),
+              )
+              .toList();
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -693,7 +705,8 @@ class ClassComparisonTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final appColors = Theme.of(context).extension<AppColors>() ?? AppColors.dark;
+    final appColors =
+        Theme.of(context).extension<AppColors>() ?? AppColors.dark;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -878,39 +891,27 @@ class CheatSheet extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _block(
-          context,
-          l10n.docCheatRadio,
-          [
-            (l10n.docCheatFrequencies, l10n.docCheatFrequenciesValue),
-            (l10n.docCheatModulation, l10n.docCheatModulationValue),
-            (l10n.docCheatRange, l10n.docCheatRangeValue),
-          ],
-        ),
-        _block(
-          context,
-          l10n.docCheatReportingRates,
-          [
-            (l10n.docCheatClassAPos1, l10n.docCheatClassAPos1Value),
-            (l10n.docCheatStatic5, l10n.docCheatStatic5Value),
-            (l10n.docCheatClassBPos18, l10n.docCheatClassBPos18Value),
-            (l10n.docCheatAtoN21, l10n.docCheatAtoN21Value),
-          ],
-        ),
-        _block(
-          context,
-          l10n.docCheatNavStatus0_15,
-          [
-            (l10n.docCheatNavStatus0, l10n.docCheatNavStatus0Value),
-            (l10n.docCheatNavStatus1, l10n.docCheatNavStatus1Value),
-            (l10n.docCheatNavStatus3, l10n.docCheatNavStatus3Value),
-            (l10n.docCheatNavStatus5, l10n.docCheatNavStatus5Value),
-            (l10n.docCheatNavStatus6, l10n.docCheatNavStatus6Value),
-            (l10n.docCheatNavStatus7, l10n.docCheatNavStatus7Value),
-            (l10n.docCheatNavStatus8, l10n.docCheatNavStatus8Value),
-            (l10n.docCheatNavStatus14, l10n.docCheatNavStatus14Value),
-          ],
-        ),
+        _block(context, l10n.docCheatRadio, [
+          (l10n.docCheatFrequencies, l10n.docCheatFrequenciesValue),
+          (l10n.docCheatModulation, l10n.docCheatModulationValue),
+          (l10n.docCheatRange, l10n.docCheatRangeValue),
+        ]),
+        _block(context, l10n.docCheatReportingRates, [
+          (l10n.docCheatClassAPos1, l10n.docCheatClassAPos1Value),
+          (l10n.docCheatStatic5, l10n.docCheatStatic5Value),
+          (l10n.docCheatClassBPos18, l10n.docCheatClassBPos18Value),
+          (l10n.docCheatAtoN21, l10n.docCheatAtoN21Value),
+        ]),
+        _block(context, l10n.docCheatNavStatus0_15, [
+          (l10n.docCheatNavStatus0, l10n.docCheatNavStatus0Value),
+          (l10n.docCheatNavStatus1, l10n.docCheatNavStatus1Value),
+          (l10n.docCheatNavStatus3, l10n.docCheatNavStatus3Value),
+          (l10n.docCheatNavStatus5, l10n.docCheatNavStatus5Value),
+          (l10n.docCheatNavStatus6, l10n.docCheatNavStatus6Value),
+          (l10n.docCheatNavStatus7, l10n.docCheatNavStatus7Value),
+          (l10n.docCheatNavStatus8, l10n.docCheatNavStatus8Value),
+          (l10n.docCheatNavStatus14, l10n.docCheatNavStatus14Value),
+        ]),
         _block(
           context,
           l10n.docCheatMmsiFormats,
@@ -919,17 +920,13 @@ class CheatSheet extends StatelessWidget {
               .map((e) => (e.$1, docMmsiFmtLabel(context.l10n, e.$2)))
               .toList(),
         ),
-        _block(
-          context,
-          l10n.docCheatFixTypes,
-          [
-            (l10n.docCheatEpfd1, l10n.docCheatEpfd1Value),
-            (l10n.docCheatEpfd2, l10n.docCheatEpfd2Value),
-            (l10n.docCheatEpfd3, l10n.docCheatEpfd3Value),
-            (l10n.docCheatEpfd8, l10n.docCheatEpfd8Value),
-            (l10n.docCheatEpfd15, l10n.docCheatEpfd15Value),
-          ],
-        ),
+        _block(context, l10n.docCheatFixTypes, [
+          (l10n.docCheatEpfd1, l10n.docCheatEpfd1Value),
+          (l10n.docCheatEpfd2, l10n.docCheatEpfd2Value),
+          (l10n.docCheatEpfd3, l10n.docCheatEpfd3Value),
+          (l10n.docCheatEpfd8, l10n.docCheatEpfd8Value),
+          (l10n.docCheatEpfd15, l10n.docCheatEpfd15Value),
+        ]),
         const SizedBox(height: 4),
         Text(
           l10n.docCheatFooter,
@@ -943,7 +940,11 @@ class CheatSheet extends StatelessWidget {
     );
   }
 
-  Widget _block(BuildContext context, String title, List<(String, String)> rows) {
+  Widget _block(
+    BuildContext context,
+    String title,
+    List<(String, String)> rows,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Card(
@@ -972,11 +973,15 @@ class CheatSheet extends StatelessWidget {
                           k,
                           style: TextStyle(
                             fontSize: 11.5,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
-                      Expanded(child: Text(v, style: const TextStyle(fontSize: 11.5))),
+                      Expanded(
+                        child: Text(v, style: const TextStyle(fontSize: 11.5)),
+                      ),
                     ],
                   ),
                 ),

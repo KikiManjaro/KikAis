@@ -11,8 +11,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'l10n_test_utils.dart';
 
 void main() {
-  testWidgets('simulation feed emits frames when started with the forwarder',
-      (tester) async {
+  testWidgets('simulation feed emits frames when started with the forwarder', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final stats = MessageStats();
     final boatManager = BoatManager(stats: stats);
@@ -33,10 +34,7 @@ void main() {
     await tester.pump();
 
     // The Simulation feed is listed among the feeds, disabled by default.
-    expect(
-      find.widgetWithText(CheckboxListTile, 'Simulation'),
-      findsOneWidget,
-    );
+    expect(find.widgetWithText(CheckboxListTile, 'Simulation'), findsOneWidget);
 
     // Nothing runs while the forwarder is stopped.
     for (var i = 0; i < 3; i++) {

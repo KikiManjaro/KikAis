@@ -2,30 +2,32 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kik_ais/message_stats.dart';
 
 void main() {
-  test('recordReceived / recordDecoded track totals, feeds and types',
-      () async {
-    final stats = MessageStats();
+  test(
+    'recordReceived / recordDecoded track totals, feeds and types',
+    () async {
+      final stats = MessageStats();
 
-    stats.recordReceived('US');
-    stats.recordReceived('US');
-    stats.recordReceived('NO');
-    stats.recordDecoded(1, feed: 'US');
-    stats.recordDecoded(1, feed: 'US');
-    stats.recordDecoded(5, feed: 'NO');
-    stats.recordDecoded(9);
+      stats.recordReceived('US');
+      stats.recordReceived('US');
+      stats.recordReceived('NO');
+      stats.recordDecoded(1, feed: 'US');
+      stats.recordDecoded(1, feed: 'US');
+      stats.recordDecoded(5, feed: 'NO');
+      stats.recordDecoded(9);
 
-    expect(stats.totalReceived, 3);
-    expect(stats.totalDecoded, 4);
-    expect(stats.byFeed, {'US': 2, 'NO': 1});
-    expect(stats.byFeedDecoded, {'US': 2, 'NO': 1});
-    expect(stats.byType[1], 2);
-    expect(stats.byType[5], 1);
-    expect(stats.byType[9], 1);
-    expect(stats.byTypePerFeed['US']?[1], 2);
-    expect(stats.byTypePerFeed['NO']?[5], 1);
+      expect(stats.totalReceived, 3);
+      expect(stats.totalDecoded, 4);
+      expect(stats.byFeed, {'US': 2, 'NO': 1});
+      expect(stats.byFeedDecoded, {'US': 2, 'NO': 1});
+      expect(stats.byType[1], 2);
+      expect(stats.byType[5], 1);
+      expect(stats.byType[9], 1);
+      expect(stats.byTypePerFeed['US']?[1], 2);
+      expect(stats.byTypePerFeed['NO']?[5], 1);
 
-    stats.dispose();
-  });
+      stats.dispose();
+    },
+  );
 
   test('rateByFeed is computed by the sampler', () async {
     final stats = MessageStats();

@@ -177,12 +177,12 @@ class AidToNavigationReport extends AISMessage {
   @override
   String toString() =>
       'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, '
-          'Spare: $spare, Aid Type: $aidType ($aidTypeInt), Name: $name, '
-          'Position Accuracy: $positionAccuracy, Lat: $latitude, Lon: $longitude, '
-          'Dimensions: ${dimensionBow}m bow/${dimensionStern}m stern/${dimensionPort}m port/${dimensionStarboard}m starboard, '
-          'EPFD Fix Type: $epfdFixType, Second: $second, Off Position: $offPosition, '
-          'Regional: $regional, RAIM: $raimFlag, Virtual Aid: $virtualAid, Assigned Mode: $assignedMode, Name Extension: $nameExtension)';
-//endregion
+      'Spare: $spare, Aid Type: $aidType ($aidTypeInt), Name: $name, '
+      'Position Accuracy: $positionAccuracy, Lat: $latitude, Lon: $longitude, '
+      'Dimensions: ${dimensionBow}m bow/${dimensionStern}m stern/${dimensionPort}m port/${dimensionStarboard}m starboard, '
+      'EPFD Fix Type: $epfdFixType, Second: $second, Off Position: $offPosition, '
+      'Regional: $regional, RAIM: $raimFlag, Virtual Aid: $virtualAid, Assigned Mode: $assignedMode, Name Extension: $nameExtension)';
+  //endregion
 
   /// Decodes a six-bit-armored AIS payload string into an
   /// [AidToNavigationReport].
@@ -194,12 +194,12 @@ class AidToNavigationReport extends AISMessage {
   factory AidToNavigationReport.fromEncoded(String encoded) {
     String binary = encoded.padRight(360, '0');
 
-    // common  
+    // common
     int messageType = getUintDirect(binary, 0, 6);
     int repeatIndicator = getUintDirect(binary, 6, 8);
     int mmsi = getUintDirect(binary, 8, 38);
 
-    // type AidToNavigationReport specific  
+    // type AidToNavigationReport specific
     int spare = getUintDirect(binary, 271, 272);
     int aidTypeInt = getUintDirect(binary, 38, 43);
     String? aidType = BinaryConverter().navigationAidInfoDirect(aidTypeInt);
@@ -211,14 +211,20 @@ class AidToNavigationReport extends AISMessage {
     int dimensionStern = getUintDirect(binary, 228, 237);
     int dimensionPort = getUintDirect(binary, 237, 243);
     int dimensionStarboard = getUintDirect(binary, 243, 249);
-    String? epfdFixType = BinaryConverter().getEPFDFixTypeDirect(getUintDirect(binary, 249, 253));
+    String? epfdFixType = BinaryConverter().getEPFDFixTypeDirect(
+      getUintDirect(binary, 249, 253),
+    );
     int seconds = getUintDirect(binary, 253, 259);
     int offPosition = getUintDirect(binary, 259, 260);
     int regional = getUintDirect(binary, 260, 268);
     int raimFlag = getUintDirect(binary, 268, 269);
     int virtualAid = getUintDirect(binary, 269, 270);
     int assignedMode = getUintDirect(binary, 270, 271);
-    String? nameExtension = BinaryConverter().getVesselNameDirect(binary, 271, 360);
+    String? nameExtension = BinaryConverter().getVesselNameDirect(
+      binary,
+      271,
+      360,
+    );
 
     return AidToNavigationReport(
       messageType: messageType,

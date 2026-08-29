@@ -15,8 +15,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Send to target is disabled while the forwarder is stopped',
-      (tester) async {
+  testWidgets('Send to target is disabled while the forwarder is stopped', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1400, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -24,10 +25,7 @@ void main() {
     String? sent;
     await tester.pumpWidget(
       withLocalizations(
-        AisEditorPage(
-          running: running,
-          onSendToTarget: (s) async => sent = s,
-        ),
+        AisEditorPage(running: running, onSendToTarget: (s) async => sent = s),
       ),
     );
 
@@ -49,8 +47,9 @@ void main() {
     expect(sent, contains('!AIVDM'));
   });
 
-  testWidgets('manual DAC/FID entry (Custom) hides the ASM fields',
-      (tester) async {
+  testWidgets('manual DAC/FID entry (Custom) hides the ASM fields', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1400, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -79,8 +78,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('editor picks an ASM preset via the search picker',
-      (tester) async {
+  testWidgets('editor picks an ASM preset via the search picker', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1400, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -117,8 +117,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('editor toggles between Data bytes and ASM fields',
-      (tester) async {
+  testWidgets('editor toggles between Data bytes and ASM fields', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1400, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -160,8 +161,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('editor returns to manual DAC/FID via Custom',
-      (tester) async {
+  testWidgets('editor returns to manual DAC/FID via Custom', (tester) async {
     tester.view.physicalSize = const Size(1400, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -194,9 +194,7 @@ void main() {
       find.textContaining('Metreorological and hydrological data').first,
     );
     await tester.pumpAndSettle();
-    await tester.tap(
-      find.text('Custom — enter DAC/FID manually').last,
-    );
+    await tester.tap(find.text('Custom — enter DAC/FID manually').last);
     await tester.pumpAndSettle();
 
     // Manual DAC/FID fields only — the ASM sub-fields are hidden in Custom
@@ -216,8 +214,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('ASM preset list is filtered by message type',
-      (tester) async {
+  testWidgets('ASM preset list is filtered by message type', (tester) async {
     tester.view.physicalSize = const Size(1400, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -256,16 +253,17 @@ void main() {
     // Type 6: meteo (type-8 only) disappears, persons (type 6) stays.
     await selectType(6, '6 · Binary Addressed');
     await search('Metreorological and hydrological');
-    expect(find.textContaining('Metreorological and hydrological data'),
-        findsNothing);
+    expect(
+      find.textContaining('Metreorological and hydrological data'),
+      findsNothing,
+    );
     await tester.enterText(find.byType(TextField).last, 'persons');
     await tester.pumpAndSettle();
     expect(find.textContaining('Number of persons on board'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('text-only ASM preset shows a free-text field',
-      (tester) async {
+  testWidgets('text-only ASM preset shows a free-text field', (tester) async {
     tester.view.physicalSize = const Size(1400, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);

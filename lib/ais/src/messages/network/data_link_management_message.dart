@@ -99,7 +99,7 @@ class DataLinkManagementMessage extends AISMessage {
     required this.increment4,
   });
 
-  //region Overrides  
+  //region Overrides
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -151,8 +151,9 @@ class DataLinkManagementMessage extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Offset1: $offset1, Number1: $number1, Timeout1: $timeout1, Increment1: $increment1, Offset2: $offset2, Number2: $number2, Timeout2: $timeout2, Increment2: $increment2, Offset3: $offset3, Number3: $number3, Timeout3: $timeout3, Increment3: $increment3, Offset4: $offset4, Number4: $number4, Timeout4: $timeout4, Increment4: $increment4)';
-  //endregion  
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Offset1: $offset1, Number1: $number1, Timeout1: $timeout1, Increment1: $increment1, Offset2: $offset2, Number2: $number2, Timeout2: $timeout2, Increment2: $increment2, Offset3: $offset3, Number3: $number3, Timeout3: $timeout3, Increment3: $increment3, Offset4: $offset4, Number4: $number4, Timeout4: $timeout4, Increment4: $increment4)';
+  //endregion
 
   /// Decodes a six-bit-armored AIS payload string into a
   /// [DataLinkManagementMessage].
@@ -164,12 +165,12 @@ class DataLinkManagementMessage extends AISMessage {
   factory DataLinkManagementMessage.fromEncoded(String encoded) {
     String binary = encoded.padRight(160, '0');
 
-    // common  
+    // common
     int messageType = getUintDirect(binary, 0, 6);
     int repeatIndicator = getUintDirect(binary, 6, 8);
     int mmsi = getUintDirect(binary, 8, 38);
 
-    // type DataLinkManagementMessage specific  
+    // type DataLinkManagementMessage specific
     int spare = getUintDirect(binary, 38, 40);
     int offset1 = getUintDirect(binary, 40, 52);
     int number1 = getUintDirect(binary, 52, 56);

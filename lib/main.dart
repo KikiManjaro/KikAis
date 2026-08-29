@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -36,9 +37,9 @@ Future<void> main() async {
   // Auto-update is only meaningful for the installed app. The portable
   // self-extracting exe runs from a temporary directory, so skip it there.
   final exePath = Platform.resolvedExecutable.toLowerCase();
-  final updatesSupported = !exePath.startsWith(
-    Directory.systemTemp.path.toLowerCase(),
-  );
+  final updatesSupported =
+      !kDebugMode &&
+      !exePath.startsWith(Directory.systemTemp.path.toLowerCase());
   // Fire-and-forget: the updater talks to a remote appcast on a native thread
   // and must never delay the first frame (a hung call would keep the window
   // blank). [UpdateNotifier.initialize] also enforces an internal timeout.

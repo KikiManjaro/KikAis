@@ -335,7 +335,8 @@ const Map<String, String> kValueLabelsJa = {
   'Group Assignment Command': 'グループ割当コマンド',
   'Static Data Report': '静的データ通報',
   'Single Slot Binary Message': 'シングルスロットバイナリメッセージ',
-  'Multiple Slot Binary Message With Communications State': '通信状態付きマルチスロットバイナリメッセージ',
+  'Multiple Slot Binary Message With Communications State':
+      '通信状態付きマルチスロットバイナリメッセージ',
   'Position Report For Long-Range Applications': '長距離用途の位置通報',
   'Unknown': '不明',
   'Under way using engine': '航行中（機関使用）',
@@ -347,18 +348,23 @@ const Map<String, String> kValueLabelsJa = {
   'Aground': '座礁中',
   'Engaged in Fishing': '漁業従事中',
   'Under way sailing': '航行中（帆走）',
-  'Reserved for future amendment of Navigational Status for HSC': 'HSCの航行状態の将来改正のための予約',
-  'Reserved for future amendment of Navigational Status for WIG': 'WIGの航行状態の将来改正のための予約',
+  'Reserved for future amendment of Navigational Status for HSC':
+      'HSCの航行状態の将来改正のための予約',
+  'Reserved for future amendment of Navigational Status for WIG':
+      'WIGの航行状態の将来改正のための予約',
   'Power-driven vessel towing astern (regional)': '動力船による船尾曳航（地域指定）',
-  'Power-driven vessel pushing ahead or towing alongside (regional)': '動力船による押航または横付け曳航（地域指定）',
+  'Power-driven vessel pushing ahead or towing alongside (regional)':
+      '動力船による押航または横付け曳航（地域指定）',
   'No official terminology (Error in transmission)': '公式用語なし（送信エラー）',
   'AIS-SART is active': 'AIS-SART作動中',
   'Undefined (Not transmitted)': '未定義（送信されず）',
   'Not turning': '旋回なし',
   'Turning right at up to 708 deg. per minute or higher': '毎分最大708度以上の右旋回',
   'Turning left at up to 708 deg. per minute or higher': '毎分最大708度以上の左旋回',
-  'turning right at more than 5deg/30s (No TI available)': '5度/30秒を超える右旋回（TI情報なし）',
-  'turning left at more than 5deg/30s (No TI available)': '5度/30秒を超える左旋回（TI情報なし）',
+  'turning right at more than 5deg/30s (No TI available)':
+      '5度/30秒を超える右旋回（TI情報なし）',
+  'turning left at more than 5deg/30s (No TI available)':
+      '5度/30秒を超える左旋回（TI情報なし）',
   'No information available (not sent)': '情報なし（送信されず）',
   'Speed not Available (not sent)': '速度利用不可（送信されず）',
   'Speed over 102.2 knots': '速度が102.2ノット超',
@@ -368,17 +374,20 @@ const Map<String, String> kValueLabelsJa = {
   'Data not available (not sent)': 'データ利用不可（送信されず）',
   'Not available (not sent)': '利用不可（送信されず）',
   'Positioning System is in manual mode': '測位システムが手動モード',
-  'Electronic Position Fixing System operates in estimated (dead reckoning) mode': '電子測位システムが推定（推測航法）モードで動作',
+  'Electronic Position Fixing System operates in estimated (dead reckoning) mode':
+      '電子測位システムが推定（推測航法）モードで動作',
   'Positioning System inoperative': '測位システム作動不能',
   'Not available (Default)': '利用不可（デフォルト）',
   'No Special Maneuver': '特別な操船なし',
   'Special Maneuver in Progress': '特別操船実施中',
   'RAIM not enabled (default)': 'RAIM無効（デフォルト）',
-  'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)': 'RAIM有効（詳細: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring）',
+  'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)':
+      'RAIM有効（詳細: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring）',
   'Unknown (Please Contact: )': '不明（お問い合わせ先: ）',
   'Reference Point': '基準点',
   'RACON': 'RACON',
-  'Fixed structure off shore (Oil Platform, Windfarm etc)': '海上固定構造物（石油プラットフォーム、風力発電所など）',
+  'Fixed structure off shore (Oil Platform, Windfarm etc)':
+      '海上固定構造物（石油プラットフォーム、風力発電所など）',
   'Spare, Reserved for future use': '予備、将来の使用のための予約',
   'Light, without sectors': '灯光、セクターなし',
   'Light, with sectors': '灯光、セクター付き',
@@ -415,7 +424,8 @@ const Map<String, String> kValueLabelsJa = {
   'All types of Class B mobile stations': '全種類のClass B移動局',
   'SAR airborne mobile station': 'SAR航空機移動局',
   'Aid to Navigation station': '航路標識局',
-  'Class B shipborne mobile station (IEC62287 only)': 'Class B船載移動局（IEC62287のみ）',
+  'Class B shipborne mobile station (IEC62287 only)':
+      'Class B船載移動局（IEC62287のみ）',
   'Regional use and inland waterways': '地域利用および内陸水路',
   'As given by the autonomous mode': '自律モードによる指定通り',
   '10 Minutes': '10分',

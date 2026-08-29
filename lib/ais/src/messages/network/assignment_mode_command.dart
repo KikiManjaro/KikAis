@@ -51,7 +51,7 @@ class AssignmentModeCommand extends AISMessage {
     required this.increment2,
   });
 
-  //region Overrides  
+  //region Overrides
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -83,8 +83,9 @@ class AssignmentModeCommand extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, MMSI1: $mmsi1, Offset1: $offset1, Increment1: $increment1, MMSI2: $mmsi2, Offset2: $offset2, Increment2: $increment2)';
-  //endregion  
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, MMSI1: $mmsi1, Offset1: $offset1, Increment1: $increment1, MMSI2: $mmsi2, Offset2: $offset2, Increment2: $increment2)';
+  //endregion
 
   /// Decodes a six-bit-armored AIS payload string into an
   /// [AssignmentModeCommand].
@@ -96,12 +97,12 @@ class AssignmentModeCommand extends AISMessage {
   factory AssignmentModeCommand.fromEncoded(String encoded) {
     String binary = encoded.padRight(144, '0');
 
-    // common  
+    // common
     int messageType = getUintDirect(binary, 0, 6);
     int repeatIndicator = getUintDirect(binary, 6, 8);
     int mmsi = getUintDirect(binary, 8, 38);
 
-    // type AssignmentModeCommand specific  
+    // type AssignmentModeCommand specific
     int spare = getUintDirect(binary, 38, 40);
     int mmsi1 = getUintDirect(binary, 40, 70);
     int offset1 = getUintDirect(binary, 70, 82);
@@ -118,7 +119,7 @@ class AssignmentModeCommand extends AISMessage {
       mmsi1: mmsi1,
       offset1: offset1,
       increment1: increment1,
-      mmsi2: mmsi2 == 0 ? null: mmsi2,
+      mmsi2: mmsi2 == 0 ? null : mmsi2,
       offset2: offset2 == 0 ? null : offset2,
       increment2: increment2 == 0 ? null : increment2,
     );

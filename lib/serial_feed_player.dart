@@ -40,8 +40,7 @@ class LibserialportDevice implements SerialDevice {
   Stream<List<int>>? _data;
 
   @override
-  Stream<List<int>> get data =>
-      _data ?? const Stream<List<int>>.empty();
+  Stream<List<int>> get data => _data ?? const Stream<List<int>>.empty();
 
   @override
   Future<void> open(String address, int baudRate) async {
@@ -161,6 +160,12 @@ class SerialFeedPlayer extends ChangeNotifier {
     await _device?.close();
     _buffer.clear();
     notifyListeners();
+  }
+
+  /// Reopens the serial device after a suspend/resume or driver reset.
+  Future<void> reconnect() async {
+    await disconnect();
+    await connect();
   }
 
   /// Status reported to the reception page, reusing the network feeds' dot

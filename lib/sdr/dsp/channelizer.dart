@@ -27,26 +27,28 @@ class AisChannel {
   final double _phaseStep;
 
   AisChannel._(this.offsetHz, {required int numTaps})
-      :         _firI = DecimatingFir.lowPass(
-          inputRate: kAisInputRate,
-          outputRate: kAisOutputRate,
-          // Passband up to ~12 kHz (the AIS GMSK spans ±8 kHz). The RTL-SDR
-          // DC spike lands at ±25 kHz after mixing, so it and the adjacent
-          // channel (at +50 kHz) must fall in the stopband. 256 taps put the
-          // stopband edge around 25 kHz.
-          cutoffHz: 12000,
-          numTaps: numTaps,
-        ),
-        _firQ = DecimatingFir.lowPass(
-          inputRate: kAisInputRate,
-          outputRate: kAisOutputRate,
-          cutoffHz: 12000,
-          numTaps: numTaps,
-        ),
-        _phaseStep = 2 * math.pi * offsetHz / kAisInputRate;
+    : _firI = DecimatingFir.lowPass(
+        inputRate: kAisInputRate,
+        outputRate: kAisOutputRate,
+        // Passband up to ~12 kHz (the AIS GMSK spans ±8 kHz). The RTL-SDR
+        // DC spike lands at ±25 kHz after mixing, so it and the adjacent
+        // channel (at +50 kHz) must fall in the stopband. 256 taps put the
+        // stopband edge around 25 kHz.
+        cutoffHz: 12000,
+        numTaps: numTaps,
+      ),
+      _firQ = DecimatingFir.lowPass(
+        inputRate: kAisInputRate,
+        outputRate: kAisOutputRate,
+        cutoffHz: 12000,
+        numTaps: numTaps,
+      ),
+      _phaseStep = 2 * math.pi * offsetHz / kAisInputRate;
 
-  factory AisChannel({double offsetHz = kAisChannel1Offset, int numTaps = 256}) =>
-      AisChannel._(offsetHz, numTaps: numTaps);
+  factory AisChannel({
+    double offsetHz = kAisChannel1Offset,
+    int numTaps = 256,
+  }) => AisChannel._(offsetHz, numTaps: numTaps);
 
   Uint8List _pending = Uint8List(0);
 
@@ -91,5 +93,3 @@ class AisChannel {
     return (_firI.process(mi), _firQ.process(mq));
   }
 }
-
-

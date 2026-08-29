@@ -69,7 +69,7 @@ class SingleSlotBinaryMessage extends AISMessage {
     required this.data,
   });
 
-  //region Overrides  
+  //region Overrides
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -101,8 +101,9 @@ class SingleSlotBinaryMessage extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Destination Indicator: $destinationIndicator, Binary Data Flag: $binaryDataFlag, Destination MMSI: $destinationMmsi, Application ID: $applicationId, DAC: $dac, FID: $fid, Data: $data)';
-  //endregion  
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Destination Indicator: $destinationIndicator, Binary Data Flag: $binaryDataFlag, Destination MMSI: $destinationMmsi, Application ID: $applicationId, DAC: $dac, FID: $fid, Data: $data)';
+  //endregion
 
   /// Decodes a six-bit-armored AIS payload string into a
   /// [SingleSlotBinaryMessage].
@@ -113,7 +114,7 @@ class SingleSlotBinaryMessage extends AISMessage {
   factory SingleSlotBinaryMessage.fromEncoded(String encoded) {
     String binary = encoded.padRight(168, '0');
 
-    // common  
+    // common
     int messageType = getUintDirect(binary, 0, 6);
     int repeatIndicator = getUintDirect(binary, 6, 8);
     int mmsi = getUintDirect(binary, 8, 38);
@@ -121,17 +122,28 @@ class SingleSlotBinaryMessage extends AISMessage {
     // type 25 specific
     int destinationIndicator = getUintDirect(binary, 38, 39);
     int binaryDataFlag = getUintDirect(binary, 39, 40);
-    int? destinationMmsi = destinationIndicator == 1 ? getUintDirect(binary, 40, 70) : null;
+    int? destinationMmsi = destinationIndicator == 1
+        ? getUintDirect(binary, 40, 70)
+        : null;
     // Extract applicationId from binary payload at destination-specific bit offset (70-86 or 40-56); null if not binary-encoded
-    int? applicationId = destinationIndicator == 1 && binaryDataFlag == 1 ? getUintDirect(binary, 70, 86) : destinationIndicator == 0 && binaryDataFlag == 1 ? getUintDirect(binary, 40, 56) : null;
+    int? applicationId = destinationIndicator == 1 && binaryDataFlag == 1
+        ? getUintDirect(binary, 70, 86)
+        : destinationIndicator == 0 && binaryDataFlag == 1
+        ? getUintDirect(binary, 40, 56)
+        : null;
     int? dac = applicationId != null ? applicationId >> 6 : null;
     int? fid = applicationId != null ? applicationId & 0x3F : null;
 
     // oh god
-    int dataStart = destinationMmsi == null && applicationId == null ? 40 : destinationMmsi != null && applicationId == null ? 70 : destinationMmsi == null && applicationId != null ? 56 : 86;
+    int dataStart = destinationMmsi == null && applicationId == null
+        ? 40
+        : destinationMmsi != null && applicationId == null
+        ? 70
+        : destinationMmsi == null && applicationId != null
+        ? 56
+        : 86;
 
     Uint8List data = getBytesDirect(binary, dataStart, 168);
-
 
     return SingleSlotBinaryMessage(
       messageType: messageType,

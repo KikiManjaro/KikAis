@@ -270,7 +270,8 @@ const Map<String, String> kValueLabelsEs = {
   'Beacon, Cardinal W': 'Baliza, cardinal W',
   'Beacon, Isolated danger': 'Baliza, peligro aislado',
   'Beacon, Port hand': 'Baliza, banda de babor',
-  'Beacon, Preferred Channel port hand': 'Baliza, canal preferido, banda de babor',
+  'Beacon, Preferred Channel port hand':
+      'Baliza, canal preferido, banda de babor',
   'Beacon, Preferred Channel starboard hand':
       'Baliza, canal preferido, banda de estribor',
   'Beacon, Safe water': 'Baliza, aguas seguras',
@@ -298,7 +299,8 @@ const Map<String, String> kValueLabelsEs = {
   'Constrained by her draught': 'Limitado por su calado',
   'Data Link Management': 'Gestión del enlace de datos',
   'Data not available (not sent)': 'Datos no disponibles (no enviados)',
-  'Data Terminal not Ready (Default)': 'Terminal de datos no listo (por defecto)',
+  'Data Terminal not Ready (Default)':
+      'Terminal de datos no listo (por defecto)',
   'Data Terminal Ready': 'Terminal de datos listo',
   'DGNSS Binary Broadcast Message': 'Mensaje binario de difusión DGNSS',
   'Diving ops': 'Operaciones de buceo',
@@ -349,7 +351,8 @@ const Map<String, String> kValueLabelsEs = {
       'Mensaje binario de múltiples ranuras con estado de comunicaciones',
   'Next Longer Reporting Interval': 'Siguiente intervalo de informe más largo',
   'Next Shorter Reporting Interval': 'Siguiente intervalo de informe más corto',
-  'No information available (not sent)': 'Sin información disponible (no enviada)',
+  'No information available (not sent)':
+      'Sin información disponible (no enviada)',
   'No official terminology (Error in transmission)':
       'Sin terminología oficial (error en la transmisión)',
   'No Special Maneuver': 'Sin maniobra especial',
@@ -359,12 +362,14 @@ const Map<String, String> kValueLabelsEs = {
   'Not available (not sent)': 'No disponible (no enviado)',
   'Not turning': 'Sin giro',
   'Not under command': 'Sin gobierno',
-  'Other Type, all ships of this type': 'Otro tipo, todos los buques de este tipo',
+  'Other Type, all ships of this type':
+      'Otro tipo, todos los buques de este tipo',
   'Other Type, Hazardous category A': 'Otro tipo, categoría peligrosa A',
   'Other Type, Hazardous category B': 'Otro tipo, categoría peligrosa B',
   'Other Type, Hazardous category C': 'Otro tipo, categoría peligrosa C',
   'Other Type, Hazardous category D': 'Otro tipo, categoría peligrosa D',
-  'Other Type, no additional information': 'Otro tipo, sin información adicional',
+  'Other Type, no additional information':
+      'Otro tipo, sin información adicional',
   'Other Type, Reserved for future use': 'Otro tipo, reservado para uso futuro',
   'Passenger, all ships of this type': 'Pasaje, todos los buques de este tipo',
   'Passenger, Hazardous category A': 'Pasaje, categoría peligrosa A',
@@ -398,7 +403,8 @@ const Map<String, String> kValueLabelsEs = {
       'RAIM habilitado (más información en: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)',
   'RAIM not enabled (default)': 'RAIM no habilitado (por defecto)',
   'Reference Point': 'Punto de referencia',
-  'Regional use and inland waterways': 'Uso regional y vías navegables interiores',
+  'Regional use and inland waterways':
+      'Uso regional y vías navegables interiores',
   'Reserved': 'Reservado',
   'Reserved for future amendment of Navigational Status for HSC':
       'Reservado para futura modificación del estado de navegación para HSC',
@@ -419,8 +425,10 @@ const Map<String, String> kValueLabelsEs = {
   'Special Mark': 'Marca especial',
   'Speed not Available (not sent)': 'Velocidad no disponible (no enviada)',
   'Speed over 102.2 knots': 'Velocidad superior a 102,2 nudos',
-  'Standard Class B CS Position Report': 'Informe de posición estándar de Clase B CS',
-  'Standard SAR Aircraft Position Report': 'Informe de posición estándar de aeronave SAR',
+  'Standard Class B CS Position Report':
+      'Informe de posición estándar de Clase B CS',
+  'Standard SAR Aircraft Position Report':
+      'Informe de posición estándar de aeronave SAR',
   'Starboard hand Mark': 'Marca de banda de estribor',
   'Static and Voyage Related Data': 'Datos estáticos y relativos al viaje',
   'Static Data Report': 'Informe de datos estáticos',

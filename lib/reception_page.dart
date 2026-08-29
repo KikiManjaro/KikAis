@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:country_flags/country_flags.dart';
 import 'package:file_selector/file_selector.dart';
@@ -84,9 +85,8 @@ class ReceptionPage extends StatefulWidget {
   State<ReceptionPage> createState() => ReceptionPageState();
 }
 
-class ReceptionPageState extends State<ReceptionPage> {
-  static const int maxLogEntries = 2000;
-
+class ReceptionPageState extends State<ReceptionPage>
+    with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   late ForwarderService forwarderService;
   late SimulatorService sim;
@@ -96,6 +96,8 @@ class ReceptionPageState extends State<ReceptionPage> {
   static const Duration _logFlushDelay = Duration(milliseconds: 120);
   static const int _logFlushMaxBatch = 60;
   Timer? _logFlushTimer;
+  late final File _sessionLogFile;
+  Future<void> _archiveWrite = Future<void>.value();
 
   final List<LogEntry> logEntries = [];
   List<LogEntry> get _visibleLogEntries {
@@ -127,6 +129,7 @@ class ReceptionPageState extends State<ReceptionPage> {
   final Map<String, AisCatcherFeedPlayer> _rtlSdrPlayers = {};
 
   bool isRunning = false;
+  bool _reconnectingHardware = false;
   bool _validateChecksum = true;
   late NmeaFormat _importFormat;
   late String _importTagSource;
@@ -139,12 +142,17 @@ class ReceptionPageState extends State<ReceptionPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     boatManager = context.read<BoatManager>();
     settings = context.read<AppSettings>();
     stats = context.read<MessageStats>();
     _importFormat = settings.nmeaImportFormat;
     _importTagSource = settings.nmeaImportTagSource;
     _importTagSourceC.text = _importTagSource;
+    _sessionLogFile = File(
+      '${Directory.systemTemp.path}${Platform.pathSeparator}kikais_${DateTime.now().microsecondsSinceEpoch}.log',
+    );
+    _archiveWrite = _sessionLogFile.create(recursive: true);
 
     forwarderService = ForwarderService(
       onLog: (message, starter, name) {
@@ -152,6 +160,7 @@ class ReceptionPageState extends State<ReceptionPage> {
         final isAis = sentence.startsWith('!');
         if (isAis) {
           stats.recordReceived(name, channel: _extractChannel(sentence));
+          _archiveFrame(message, starter, name);
         }
         // Batched: a single setState per flush instead of one per frame, so
         // high-volume feeds (e.g. a large simulated fleet) don't stall the UI.
@@ -209,6 +218,30 @@ class ReceptionPageState extends State<ReceptionPage> {
     });
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && isRunning) {
+      unawaited(_reconnectHardwareFeeds());
+    }
+  }
+
+  Future<void> _reconnectHardwareFeeds() async {
+    if (_reconnectingHardware) return;
+    _reconnectingHardware = true;
+    try {
+      for (final feed in _allFeeds) {
+        if (feedEnabled[feed.key] != true || !mounted) continue;
+        if (feed.type == FeedType.serial) {
+          await _serialPlayers[feed.key]?.reconnect();
+        } else if (feed.type == FeedType.rtlsdr) {
+          await _rtlSdrPlayers[feed.key]?.reconnect();
+        }
+      }
+    } finally {
+      _reconnectingHardware = false;
+    }
+  }
+
   List<FeedDef> get _allFeeds => [...kFeedDefs, ..._customFeeds];
 
   /// The simulation service, exposed to the Simulation tab.
@@ -231,14 +264,25 @@ class ReceptionPageState extends State<ReceptionPage> {
     _logFlushTimer ??= Timer(_logFlushDelay, _flushLogs);
   }
 
+  void _archiveFrame(String message, String? starter, String? name) {
+    final frame = message.trim();
+    if (frame.isEmpty) return;
+    final source = starter ?? name ?? 'KikAis';
+    final line = frame.startsWith('\\')
+        ? frame
+        : '${buildTagBlock(sourceId: source, timeMs: msSinceUtcMidnight(DateTime.now()))}$frame';
+    _archiveWrite = _archiveWrite.then((_) async {
+      try {
+        await _sessionLogFile.writeAsString('$line\n', mode: FileMode.append);
+      } catch (_) {
+        // Logging must never interrupt reception when the temp directory is unavailable.
+      }
+    });
+  }
+
   void _flushLogs() {
     _logFlushTimer = null;
     if (_pendingLogs.isEmpty) return;
-    // Drop oldest logs if backlog grows too large at high throughput (300+ msg/s)
-    // to avoid UI backlog stalling the event loop.
-    if (_pendingLogs.length > 200) {
-      _pendingLogs.removeRange(0, _pendingLogs.length - 100);
-    }
     // Cap batch size to avoid a single huge setState when a burst arrives
     // (e.g. large simulated fleet at high rate).
     final bool hasMore = _pendingLogs.length > _logFlushMaxBatch;
@@ -257,9 +301,6 @@ class ReceptionPageState extends State<ReceptionPage> {
             _scrollController.position.maxScrollExtent;
     setState(() {
       logEntries.addAll(batch);
-      if (logEntries.length > maxLogEntries) {
-        logEntries.removeRange(0, logEntries.length - maxLogEntries);
-      }
     });
     if (!shouldAutoScroll) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -687,6 +728,10 @@ class ReceptionPageState extends State<ReceptionPage> {
   /// message editor page) and logs it with the "KikAis" source.
   void sendRaw(String nmea) {
     forwarderService.sendRaw(nmea);
+    final frame = nmea.trim();
+    if (frame.startsWith('!')) {
+      _archiveFrame(frame, 'KikAis', null);
+    }
     setState(() {
       logEntries.add(
         LogEntry(
@@ -696,9 +741,6 @@ class ReceptionPageState extends State<ReceptionPage> {
           time: DateTime.now(),
         ),
       );
-      if (logEntries.length > maxLogEntries) {
-        logEntries.removeRange(0, logEntries.length - maxLogEntries);
-      }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -815,6 +857,7 @@ class ReceptionPageState extends State<ReceptionPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _statusTimer?.cancel();
     _statusTick.dispose();
     _tilesCache.clear();
@@ -832,6 +875,13 @@ class ReceptionPageState extends State<ReceptionPage> {
     for (final player in _rtlSdrPlayers.values) {
       player.dispose();
     }
+    unawaited(
+      _archiveWrite.then((_) async {
+        try {
+          await _sessionLogFile.delete();
+        } catch (_) {}
+      }),
+    );
     super.dispose();
   }
 
@@ -847,30 +897,24 @@ class ReceptionPageState extends State<ReceptionPage> {
       return;
     }
 
-    final StringBuffer logBuffer = StringBuffer();
-    for (var entry in logEntries) {
-      if (entry.starter != null) {
-        // Prefix each frame with a NMEA 4.0 tag block carrying the source
-        // and the recorded time so it can be replayed chronologically.
-        if (entry.message.startsWith('\\')) {
-          logBuffer.writeln(entry.message);
-        } else {
-          final tag = buildTagBlock(
-            sourceId: entry.starter!,
-            timeMs: msSinceUtcMidnight(entry.time),
-          );
-          logBuffer.writeln('$tag${entry.message}');
-        }
-      }
+    await _archiveWrite;
+    await _sessionLogFile.copy(result.path);
+  }
+
+  Future<void> clearLogs() async {
+    _logFlushTimer?.cancel();
+    _logFlushTimer = null;
+    _pendingLogs.clear();
+    if (mounted) {
+      setState(logEntries.clear);
     }
-    final Uint8List data = Uint8List.fromList(logBuffer.toString().codeUnits);
-    const String mimeType = 'text/plain';
-    final XFile textFile = XFile.fromData(
-      data,
-      mimeType: mimeType,
-      name: fileName,
-    );
-    await textFile.saveTo(result.path);
+    _archiveWrite = _archiveWrite.then((_) async {
+      try {
+        await _sessionLogFile.delete();
+      } catch (_) {}
+      await _sessionLogFile.create(recursive: true);
+    });
+    await _archiveWrite;
   }
 
   Widget _buildStarterWidget(LogEntry entry) {
@@ -1235,11 +1279,11 @@ class ReceptionPageState extends State<ReceptionPage> {
                             icon: const Icon(Icons.delete_outline),
                             iconSize: 18,
                             visualDensity: VisualDensity.compact,
-                            onPressed: () {
-                              setState(() {
-                                logEntries.clear();
+                            onPressed: () async {
+                              await clearLogs();
+                              if (_scrollController.hasClients) {
                                 _scrollController.jumpTo(0);
-                              });
+                              }
                             },
                           ),
                         ),

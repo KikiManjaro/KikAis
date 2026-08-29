@@ -237,7 +237,8 @@ const Map<String, String> kCountryNamesNl = {
 const Map<String, String> kValueLabelsNl = {
   'Accuracy < 10ms': 'Nauwkeurigheid < 10 m',
   'Accuracy > 10ms': 'Nauwkeurigheid > 10 m',
-  'Addressed Safety Related Message': 'Geadresseerd veiligheidsgerelateerd bericht',
+  'Addressed Safety Related Message':
+      'Geadresseerd veiligheidsgerelateerd bericht',
   'Aid-to-Navigation Report': 'Rapport navigatiehulpmiddel',
   'Anti-pollution equipment': 'Antiverontreinigingsuitrusting',
   'Assignment Mode Command': 'Commando toewijzingsmodus',
@@ -250,8 +251,10 @@ const Map<String, String> kValueLabelsNl = {
   'Cargo, Hazardous category B': 'Vrachtschip, gevaarlijke categorie B',
   'Cargo, Hazardous category C': 'Vrachtschip, gevaarlijke categorie C',
   'Cargo, Hazardous category D': 'Vrachtschip, gevaarlijke categorie D',
-  'Cargo, No additional information': 'Vrachtschip, geen aanvullende informatie',
-  'Cargo, Reserved for future use': 'Vrachtschip, gereserveerd voor toekomstig gebruik',
+  'Cargo, No additional information':
+      'Vrachtschip, geen aanvullende informatie',
+  'Cargo, Reserved for future use':
+      'Vrachtschip, gereserveerd voor toekomstig gebruik',
   'Channel Management': 'Kanaalbeheer',
   'Data Link Management': 'Datalinkbeheer',
   'Data not available (not sent)': 'Geen gegevens beschikbaar (niet verzonden)',
@@ -260,53 +263,76 @@ const Map<String, String> kValueLabelsNl = {
   'DGNSS Binary Broadcast Message': 'DGNSS-binair broadcastbericht',
   'Diving ops': 'Duikoperaties',
   'Dredging or underwater ops': 'Bagger- of onderwateroperaties',
-  'Electronic Position Fixing System operates in estimated (dead reckoning) mode': 'Elektronisch plaatsbepalingssysteem werkt in geschatte (dode-rekening)modus',
+  'Electronic Position Fixing System operates in estimated (dead reckoning) mode':
+      'Elektronisch plaatsbepalingssysteem werkt in geschatte (dode-rekening)modus',
   'Error please Contact: ': 'Fout, neem contact op: ',
-  'Extended Class B Equipment Position Report': 'Uitgebreid klasse B-uitrustingspositierapport',
+  'Extended Class B Equipment Position Report':
+      'Uitgebreid klasse B-uitrustingspositierapport',
   'Fishing': 'Vissersvaartuig',
   'Group Assignment Command': 'Commando groepsopdracht',
-  'High speed craft (HSC), all ships of this type': 'Hogesnelheidsvaartuig (HSC), alle schepen van dit type',
-  'High speed craft (HSC), Hazardous category A': 'Hogesnelheidsvaartuig (HSC), gevaarlijke categorie A',
-  'High speed craft (HSC), Hazardous category B': 'Hogesnelheidsvaartuig (HSC), gevaarlijke categorie B',
-  'High speed craft (HSC), Hazardous category C': 'Hogesnelheidsvaartuig (HSC), gevaarlijke categorie C',
-  'High speed craft (HSC), Hazardous category D': 'Hogesnelheidsvaartuig (HSC), gevaarlijke categorie D',
-  'High speed craft (HSC), No additional information': 'Hogesnelheidsvaartuig (HSC), geen aanvullende informatie',
-  'High speed craft (HSC), Reserved for future use': 'Hogesnelheidsvaartuig (HSC), gereserveerd voor toekomstig gebruik',
+  'High speed craft (HSC), all ships of this type':
+      'Hogesnelheidsvaartuig (HSC), alle schepen van dit type',
+  'High speed craft (HSC), Hazardous category A':
+      'Hogesnelheidsvaartuig (HSC), gevaarlijke categorie A',
+  'High speed craft (HSC), Hazardous category B':
+      'Hogesnelheidsvaartuig (HSC), gevaarlijke categorie B',
+  'High speed craft (HSC), Hazardous category C':
+      'Hogesnelheidsvaartuig (HSC), gevaarlijke categorie C',
+  'High speed craft (HSC), Hazardous category D':
+      'Hogesnelheidsvaartuig (HSC), gevaarlijke categorie D',
+  'High speed craft (HSC), No additional information':
+      'Hogesnelheidsvaartuig (HSC), geen aanvullende informatie',
+  'High speed craft (HSC), Reserved for future use':
+      'Hogesnelheidsvaartuig (HSC), gereserveerd voor toekomstig gebruik',
   'Interrogation': 'Ondervraging',
   'ITU1371': 'ITU1371',
   'Law Enforcement': 'Wetshandhaving',
   'Medical Transport': 'Medisch transport',
   'Military ops': 'Militaire operaties',
-  'Multiple Slot Binary Message With Communications State': 'Binair bericht meerdere slots met communicatiestatus',
-  'No information available (not sent)': 'Geen informatie beschikbaar (niet verzonden)',
-  'Noncombatant ship according to RR Resolution No. 18': 'Niet-strijdend schip volgens RR-resolutie nr. 18',
+  'Multiple Slot Binary Message With Communications State':
+      'Binair bericht meerdere slots met communicatiestatus',
+  'No information available (not sent)':
+      'Geen informatie beschikbaar (niet verzonden)',
+  'Noncombatant ship according to RR Resolution No. 18':
+      'Niet-strijdend schip volgens RR-resolutie nr. 18',
   'Not available (default)': 'Niet beschikbaar (standaard)',
   'Not available (not sent)': 'Niet beschikbaar (niet verzonden)',
   'Not turning': 'Niet aan het draaien',
-  'Other Type, all ships of this type': 'Overig type, alle schepen van dit type',
+  'Other Type, all ships of this type':
+      'Overig type, alle schepen van dit type',
   'Other Type, Hazardous category A': 'Overig type, gevaarlijke categorie A',
   'Other Type, Hazardous category B': 'Overig type, gevaarlijke categorie B',
   'Other Type, Hazardous category C': 'Overig type, gevaarlijke categorie C',
   'Other Type, Hazardous category D': 'Overig type, gevaarlijke categorie D',
-  'Other Type, no additional information': 'Overig type, geen aanvullende informatie',
-  'Other Type, Reserved for future use': 'Overig type, gereserveerd voor toekomstig gebruik',
-  'Passenger, all ships of this type': 'Passagiersschip, alle schepen van dit type',
+  'Other Type, no additional information':
+      'Overig type, geen aanvullende informatie',
+  'Other Type, Reserved for future use':
+      'Overig type, gereserveerd voor toekomstig gebruik',
+  'Passenger, all ships of this type':
+      'Passagiersschip, alle schepen van dit type',
   'Passenger, Hazardous category A': 'Passagiersschip, gevaarlijke categorie A',
   'Passenger, Hazardous category B': 'Passagiersschip, gevaarlijke categorie B',
   'Passenger, Hazardous category C': 'Passagiersschip, gevaarlijke categorie C',
   'Passenger, Hazardous category D': 'Passagiersschip, gevaarlijke categorie D',
-  'Passenger, No additional information': 'Passagiersschip, geen aanvullende informatie',
-  'Passenger, Reserved for future use': 'Passagiersschip, gereserveerd voor toekomstig gebruik',
+  'Passenger, No additional information':
+      'Passagiersschip, geen aanvullende informatie',
+  'Passenger, Reserved for future use':
+      'Passagiersschip, gereserveerd voor toekomstig gebruik',
   'Pilot Vessel': 'Loodsvaartuig',
   'Pleasure Craft': 'Pleziervaartuig',
   'Port Tender': 'Haventender',
   'Position Report Class A': 'Positierapport klasse A',
-  'Position Report Class A (Assigned Schedule)': 'Positierapport klasse A (toegewezen schema)',
-  'Position Report Class A (Response to interrogation)': 'Positierapport klasse A (reactie op ondervraging)',
-  'Position Report For Long-Range Applications': 'Positierapport voor langeafstandstoepassingen',
+  'Position Report Class A (Assigned Schedule)':
+      'Positierapport klasse A (toegewezen schema)',
+  'Position Report Class A (Response to interrogation)':
+      'Positierapport klasse A (reactie op ondervraging)',
+  'Position Report For Long-Range Applications':
+      'Positierapport voor langeafstandstoepassingen',
   'Positioning System inoperative': 'Positiesysteem niet werkzaam',
-  'Positioning System is in manual mode': 'Positiesysteem staat in handmatige modus',
-  'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)': 'RAIM ingeschakeld (lees meer op: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)',
+  'Positioning System is in manual mode':
+      'Positiesysteem staat in handmatige modus',
+  'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)':
+      'RAIM ingeschakeld (lees meer op: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)',
   'RAIM not enabled (default)': 'RAIM niet ingeschakeld (standaard)',
   'Reserved': 'Gereserveerd',
   'Reserved for future use': 'Gereserveerd voor toekomstig gebruik',
@@ -316,10 +342,12 @@ const Map<String, String> kValueLabelsNl = {
   'Search and Rescue vessel': 'Zoek- en reddingsvaartuig',
   'Single Slot Binary Message': 'Binair bericht met één slot',
   'Spare - Local Vessel': 'Reserve - lokaal vaartuig',
-  'Speed not Available (not sent)': 'Snelheid niet beschikbaar (niet verzonden)',
+  'Speed not Available (not sent)':
+      'Snelheid niet beschikbaar (niet verzonden)',
   'Speed over 102.2 knots': 'Snelheid boven 102,2 knopen',
   'Standard Class B CS Position Report': 'Standaard klasse B CS-positierapport',
-  'Standard SAR Aircraft Position Report': 'Standaard SAR-vliegtuigpositierapport',
+  'Standard SAR Aircraft Position Report':
+      'Standaard SAR-vliegtuigpositierapport',
   'Static and Voyage Related Data': 'Statische en reisgerelateerde gegevens',
   'Static Data Report': 'Statisch gegevensrapport',
   'Tanker, all ships of this type': 'Tanker, alle schepen van dit type',
@@ -328,25 +356,36 @@ const Map<String, String> kValueLabelsNl = {
   'Tanker, Hazardous category C': 'Tanker, gevaarlijke categorie C',
   'Tanker, Hazardous category D': 'Tanker, gevaarlijke categorie D',
   'Tanker, No additional information': 'Tanker, geen aanvullende informatie',
-  'Tanker, Reserved for future use': 'Tanker, gereserveerd voor toekomstig gebruik',
+  'Tanker, Reserved for future use':
+      'Tanker, gereserveerd voor toekomstig gebruik',
   'Towing': 'Slepend',
-  'Towing: length exceeds 200m or breadth exceeds 25m': 'Slepend: lengte overschrijdt 200 m of breedte overschrijdt 25 m',
+  'Towing: length exceeds 200m or breadth exceeds 25m':
+      'Slepend: lengte overschrijdt 200 m of breedte overschrijdt 25 m',
   'Tug': 'Sleper',
-  'turning left at more than 5deg/30s (No TI available)': 'draaien naar links met meer dan 5°/30 s (geen TI beschikbaar)',
-  'Turning left at up to 708 deg. per minute or higher': 'Draaien naar links met maximaal 708°/min of meer',
-  'turning right at more than 5deg/30s (No TI available)': 'draaien naar rechts met meer dan 5°/30 s (geen TI beschikbaar)',
-  'Turning right at up to 708 deg. per minute or higher': 'Draaien naar rechts met maximaal 708°/min of meer',
+  'turning left at more than 5deg/30s (No TI available)':
+      'draaien naar links met meer dan 5°/30 s (geen TI beschikbaar)',
+  'Turning left at up to 708 deg. per minute or higher':
+      'Draaien naar links met maximaal 708°/min of meer',
+  'turning right at more than 5deg/30s (No TI available)':
+      'draaien naar rechts met meer dan 5°/30 s (geen TI beschikbaar)',
+  'Turning right at up to 708 deg. per minute or higher':
+      'Draaien naar rechts met maximaal 708°/min of meer',
   'Unknown': 'Onbekend',
   'Unknown (Please Contact: )': 'Onbekend (neem contact op: )',
   'Unknown AIS Version': 'Onbekende AIS-versie',
   'Unknown Type': 'Onbekend type',
   'UTC and Date Inquiry': 'UTC- en datumverzoek',
   'UTC and Date Response': 'UTC- en datumantwoord',
-  'Wing in ground (WIG), all ships of this type': 'Vleugel-in-grond (WIG), alle schepen van dit type',
-  'Wing in ground (WIG), Hazardous category A': 'Vleugel-in-grond (WIG), gevaarlijke categorie A',
-  'Wing in ground (WIG), Hazardous category B': 'Vleugel-in-grond (WIG), gevaarlijke categorie B',
-  'Wing in ground (WIG), Hazardous category C': 'Vleugel-in-grond (WIG), gevaarlijke categorie C',
-  'Wing in ground (WIG), Hazardous category D': 'Vleugel-in-grond (WIG), gevaarlijke categorie D',
-  'Wing in ground (WIG), Reserved for future use': 'Vleugel-in-grond (WIG), gereserveerd voor toekomstig gebruik',
+  'Wing in ground (WIG), all ships of this type':
+      'Vleugel-in-grond (WIG), alle schepen van dit type',
+  'Wing in ground (WIG), Hazardous category A':
+      'Vleugel-in-grond (WIG), gevaarlijke categorie A',
+  'Wing in ground (WIG), Hazardous category B':
+      'Vleugel-in-grond (WIG), gevaarlijke categorie B',
+  'Wing in ground (WIG), Hazardous category C':
+      'Vleugel-in-grond (WIG), gevaarlijke categorie C',
+  'Wing in ground (WIG), Hazardous category D':
+      'Vleugel-in-grond (WIG), gevaarlijke categorie D',
+  'Wing in ground (WIG), Reserved for future use':
+      'Vleugel-in-grond (WIG), gereserveerd voor toekomstig gebruik',
 };
-

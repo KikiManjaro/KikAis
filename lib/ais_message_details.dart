@@ -37,7 +37,11 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
       _add(fields, l10n.fRaim, m.raimEnabled);
     case 4:
       final m = message as BaseStationReport;
-      _add(fields, l10n.fUtc, _utc(m.year, m.month, m.day, m.hour, m.minute, m.second));
+      _add(
+        fields,
+        l10n.fUtc,
+        _utc(m.year, m.month, m.day, m.hour, m.minute, m.second),
+      );
       _add(fields, l10n.fLatitude, _coord(m.latitude));
       _add(fields, l10n.fLongitude, _coord(m.longitude));
       _add(fields, l10n.fAccuracy, m.accuracy);
@@ -51,10 +55,22 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
       _add(fields, l10n.fVesselName, _text(m.vesselName));
       _add(fields, l10n.fShipType, m.vesselTypeInt);
       _add(fields, l10n.fShipTypeText, valueLabel(l10n, m.vesselType));
-      _add(fields, l10n.fDims,
-          _dims(m.dimensionBow, m.dimensionStern, m.dimensionPort, m.dimensionStarboard));
+      _add(
+        fields,
+        l10n.fDims,
+        _dims(
+          m.dimensionBow,
+          m.dimensionStern,
+          m.dimensionPort,
+          m.dimensionStarboard,
+        ),
+      );
       _add(fields, l10n.fEpfdFixType, valueLabel(l10n, m.epfdFixType));
-      _add(fields, l10n.fEta, _eta(m.etaMonth, m.etaDay, m.etaHour, m.etaMinute));
+      _add(
+        fields,
+        l10n.fEta,
+        _eta(m.etaMonth, m.etaDay, m.etaHour, m.etaMinute),
+      );
       _add(fields, l10n.fDraughtM, m.draught);
       _add(fields, l10n.fDestination, _text(m.destination));
       _add(fields, l10n.fDte, m.dte);
@@ -68,8 +84,18 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
       _add(fields, l10n.fData, _hex(m.data));
     case 7:
       final m = message as BinaryAcknowledge;
-      _ackFields(fields, l10n, m.mmsi1, m.mmsiSeq1, m.mmsi2, m.mmsiSeq2, m.mmsi3,
-          m.mmsiSeq3, m.mmsi4, m.mmsiSeq4);
+      _ackFields(
+        fields,
+        l10n,
+        m.mmsi1,
+        m.mmsiSeq1,
+        m.mmsi2,
+        m.mmsiSeq2,
+        m.mmsi3,
+        m.mmsiSeq3,
+        m.mmsi4,
+        m.mmsiSeq4,
+      );
     case 8:
       final m = message as BinaryBroadcastMessage;
       _add(fields, l10n.fDac, m.dac);
@@ -93,7 +119,11 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
       _add(fields, l10n.fDestMmsi, m.destinationMmsi);
     case 11:
       final m = message as UtcDateResponse;
-      _add(fields, l10n.fUtc, _utc(m.year, m.month, m.day, m.hour, m.minute, m.second));
+      _add(
+        fields,
+        l10n.fUtc,
+        _utc(m.year, m.month, m.day, m.hour, m.minute, m.second),
+      );
       _add(fields, l10n.fLatitude, _coord(m.latitude));
       _add(fields, l10n.fLongitude, _coord(m.longitude));
       _add(fields, l10n.fAccuracy, m.accuracy);
@@ -108,23 +138,49 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
       _add(fields, l10n.fText, _text(m.text));
     case 13:
       final m = message as SafetyRelatedAcknowledgement;
-      _ackFields(fields, l10n, m.mmsi1, m.mmsiSeq1, m.mmsi2, m.mmsiSeq2, m.mmsi3,
-          m.mmsiSeq3, m.mmsi4, m.mmsiSeq4);
+      _ackFields(
+        fields,
+        l10n,
+        m.mmsi1,
+        m.mmsiSeq1,
+        m.mmsi2,
+        m.mmsiSeq2,
+        m.mmsi3,
+        m.mmsiSeq3,
+        m.mmsi4,
+        m.mmsiSeq4,
+      );
     case 14:
       final m = message as SafetyRelatedBroadcastMessage;
       _add(fields, l10n.fText, _text(m.text));
     case 15:
       final m = message as InterrogationMessage;
-      _add(fields, l10n.fStationN('1'), '${m.mmsi1} · T${m.type1_1}@${m.offset1_1}'
-          '${m.type1_2 != null ? ' · T${m.type1_2}@${m.offset1_2}' : ''}');
+      _add(
+        fields,
+        l10n.fStationN('1'),
+        '${m.mmsi1} · T${m.type1_1}@${m.offset1_1}'
+        '${m.type1_2 != null ? ' · T${m.type1_2}@${m.offset1_2}' : ''}',
+      );
       if (m.mmsi2 != null) {
-        _add(fields, l10n.fStationN('2'), '${m.mmsi2} · T${m.type2_1}@${m.offset2_1}');
+        _add(
+          fields,
+          l10n.fStationN('2'),
+          '${m.mmsi2} · T${m.type2_1}@${m.offset2_1}',
+        );
       }
     case 16:
       final m = message as AssignmentModeCommand;
-      _add(fields, l10n.fStationN('1'), '${m.mmsi1} · ${m.offset1}+${m.increment1}');
+      _add(
+        fields,
+        l10n.fStationN('1'),
+        '${m.mmsi1} · ${m.offset1}+${m.increment1}',
+      );
       if (m.mmsi2 != null) {
-        _add(fields, l10n.fStationN('2'), '${m.mmsi2} · ${m.offset2}+${m.increment2}');
+        _add(
+          fields,
+          l10n.fStationN('2'),
+          '${m.mmsi2} · ${m.offset2}+${m.increment2}',
+        );
       }
     case 17:
       final m = message as DgnssBroadcastBinaryMessage;
@@ -151,8 +207,16 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
       _add(fields, l10n.fVesselName, _text(m.vesselName));
       _add(fields, l10n.fShipType, m.vesselTypeInt);
       _add(fields, l10n.fShipTypeText, valueLabel(l10n, m.vesselType));
-      _add(fields, l10n.fDims,
-          _dims(m.dimensionBow, m.dimensionStern, m.dimensionPort, m.dimensionStarboard));
+      _add(
+        fields,
+        l10n.fDims,
+        _dims(
+          m.dimensionBow,
+          m.dimensionStern,
+          m.dimensionPort,
+          m.dimensionStarboard,
+        ),
+      );
       _add(fields, l10n.fEpfdFixType, valueLabel(l10n, m.epfdFixType));
       _add(fields, l10n.fAccuracy, m.positionAccuracy);
       _add(fields, l10n.fTimestamp, m.timestamp);
@@ -168,8 +232,11 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
         final timeout = _slotValue(m, 'timeout$i');
         final inc = _slotValue(m, 'increment$i');
         if (off != null && num != null) {
-          _add(fields, l10n.fSlotN('$i'),
-              l10n.fSlotDetail('$off', '$num', '$timeout', '$inc'));
+          _add(
+            fields,
+            l10n.fSlotN('$i'),
+            l10n.fSlotDetail('$off', '$num', '$timeout', '$inc'),
+          );
         }
       }
     case 21:
@@ -180,8 +247,16 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
       _add(fields, l10n.fNameExt, _text(m.nameExtension));
       _add(fields, l10n.fLatitude, _coord(m.latitude));
       _add(fields, l10n.fLongitude, _coord(m.longitude));
-      _add(fields, l10n.fDims,
-          _dims(m.dimensionBow, m.dimensionStern, m.dimensionPort, m.dimensionStarboard));
+      _add(
+        fields,
+        l10n.fDims,
+        _dims(
+          m.dimensionBow,
+          m.dimensionStern,
+          m.dimensionPort,
+          m.dimensionStarboard,
+        ),
+      );
       _add(fields, l10n.fEpfdFixType, valueLabel(l10n, m.epfdFixType));
       _add(fields, l10n.fVirtualAid, m.virtualAid);
       _add(fields, l10n.fOffPosition, m.offPosition);
@@ -194,8 +269,16 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
       _add(fields, l10n.fChannelA, m.channelA);
       _add(fields, l10n.fChannelB, m.channelB);
       _add(fields, l10n.fTxRxMode, valueLabel(l10n, m.txrxMode));
-      _add(fields, l10n.fPower, m.power == 1 ? l10n.fPowerHigh : l10n.fPowerLow);
-      _add(fields, l10n.fZone, '${_coord(m.swLatitude)} ${_coord(m.swLongitude)} → ${_coord(m.neLatitude)} ${_coord(m.neLongitude)}');
+      _add(
+        fields,
+        l10n.fPower,
+        m.power == 1 ? l10n.fPowerHigh : l10n.fPowerLow,
+      );
+      _add(
+        fields,
+        l10n.fZone,
+        '${_coord(m.swLatitude)} ${_coord(m.swLongitude)} → ${_coord(m.neLatitude)} ${_coord(m.neLongitude)}',
+      );
       _add(fields, l10n.fAddressed, m.addressed);
       _add(fields, l10n.fMmsi1, m.mmsi1);
       _add(fields, l10n.fMmsi2, m.mmsi2);
@@ -204,7 +287,11 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
       _add(fields, l10n.fZoneSize, m.zoneSize);
     case 23:
       final m = message as GroupAssignmentCommand;
-      _add(fields, l10n.fZone, '${_coord(m.swLatitude)} ${_coord(m.swLongitude)} → ${_coord(m.neLatitude)} ${_coord(m.neLongitude)}');
+      _add(
+        fields,
+        l10n.fZone,
+        '${_coord(m.swLatitude)} ${_coord(m.swLongitude)} → ${_coord(m.neLatitude)} ${_coord(m.neLongitude)}',
+      );
       _add(fields, l10n.fStationType, valueLabel(l10n, m.stationType));
       _add(fields, l10n.fShipType, valueLabel(l10n, m.shipType));
       _add(fields, l10n.fTxRxMode, valueLabel(l10n, m.txrxMode));
@@ -223,18 +310,48 @@ List<MessageField> describeMessage(AISMessage message, AppLocalizations l10n) {
         _add(fields, l10n.fUnitModel, m.unitModel);
         _add(fields, l10n.fSerialNumber, m.serialNumber);
         _add(fields, l10n.fCallSign, _text(m.callSign));
-        _add(fields, l10n.fDims,
-            _dims(m.dimensionBow, m.dimensionStern, m.dimensionPort, m.dimensionStarboard));
-        _add(fields, l10n.fMothershipMmsi, m.mothershipMMSI == 0 ? null : m.mothershipMMSI);
+        _add(
+          fields,
+          l10n.fDims,
+          _dims(
+            m.dimensionBow,
+            m.dimensionStern,
+            m.dimensionPort,
+            m.dimensionStarboard,
+          ),
+        );
+        _add(
+          fields,
+          l10n.fMothershipMmsi,
+          m.mothershipMMSI == 0 ? null : m.mothershipMMSI,
+        );
       }
     case 25:
       final m = message as SingleSlotBinaryMessage;
-      _binaryFields(fields, l10n, m.destinationIndicator, m.binaryDataFlag,
-          m.destinationMmsi, m.applicationId, m.dac, m.fid, m.data);
+      _binaryFields(
+        fields,
+        l10n,
+        m.destinationIndicator,
+        m.binaryDataFlag,
+        m.destinationMmsi,
+        m.applicationId,
+        m.dac,
+        m.fid,
+        m.data,
+      );
     case 26:
       final m = message as MultipleSlotBinaryMessage;
-      _binaryFields(fields, l10n, m.destinationIndicator, m.binaryDataFlag,
-          m.destinationMmsi, m.applicationId, m.dac, m.fid, m.data);
+      _binaryFields(
+        fields,
+        l10n,
+        m.destinationIndicator,
+        m.binaryDataFlag,
+        m.destinationMmsi,
+        m.applicationId,
+        m.dac,
+        m.fid,
+        m.data,
+      );
       _add(fields, l10n.fRadioStatus, m.radioStatus);
     case 27:
       final m = message as LongRangeAISBroadcastMessage;
@@ -288,18 +405,32 @@ int? _slotValue(DataLinkManagementMessage m, String name) {
   return null;
 }
 
-String _coord(double? value) =>
-    value == null ? '—' : value.toStringAsFixed(5);
+String _coord(double? value) => value == null ? '—' : value.toStringAsFixed(5);
 
 bool _isNa(double v) => v.isNaN || v == -128.0 || v == 127.0;
 
-void _ackFields(List<MessageField> fields, AppLocalizations l10n, int mmsi1,
-    int seq1, int? mmsi2, int? seq2, int? mmsi3, int? seq3, int? mmsi4,
-    int? seq4) {
+void _ackFields(
+  List<MessageField> fields,
+  AppLocalizations l10n,
+  int mmsi1,
+  int seq1,
+  int? mmsi2,
+  int? seq2,
+  int? mmsi3,
+  int? seq3,
+  int? mmsi4,
+  int? seq4,
+) {
   _add(fields, l10n.fDestN('1'), l10n.fDestDetail('$mmsi1', '$seq1'));
-  if (mmsi2 != null) _add(fields, l10n.fDestN('2'), l10n.fDestDetail('$mmsi2', '$seq2'));
-  if (mmsi3 != null) _add(fields, l10n.fDestN('3'), l10n.fDestDetail('$mmsi3', '$seq3'));
-  if (mmsi4 != null) _add(fields, l10n.fDestN('4'), l10n.fDestDetail('$mmsi4', '$seq4'));
+  if (mmsi2 != null) {
+    _add(fields, l10n.fDestN('2'), l10n.fDestDetail('$mmsi2', '$seq2'));
+  }
+  if (mmsi3 != null) {
+    _add(fields, l10n.fDestN('3'), l10n.fDestDetail('$mmsi3', '$seq3'));
+  }
+  if (mmsi4 != null) {
+    _add(fields, l10n.fDestN('4'), l10n.fDestDetail('$mmsi4', '$seq4'));
+  }
 }
 
 void _binaryFields(

@@ -508,7 +508,12 @@ class _WorldMapPageState extends State<WorldMapPage> {
             child: PopupMenuButton<String>(
               tooltip: '',
               icon: const Icon(Icons.layers_outlined),
-              onSelected: (id) => _settings.setBasemap(id),
+              onSelected: (id) {
+                switch (id) {
+                  default:
+                    _settings.setBasemap(id);
+                }
+              },
               itemBuilder: (context) => [
                 PopupMenuItem<String>(
                   value: '',
@@ -551,7 +556,9 @@ class _WorldMapPageState extends State<WorldMapPage> {
             options: MapOptions(
               initialCenter: const LatLng(48.8566, 2.3522),
               initialZoom: 5.0,
-              onPositionChanged: (camera, hasGesture) => _zoom = camera.zoom,
+              onPositionChanged: (camera, hasGesture) {
+                _zoom = camera.zoom;
+              },
             ),
             children: [
               TileLayer(

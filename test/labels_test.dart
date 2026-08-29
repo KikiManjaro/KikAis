@@ -11,11 +11,9 @@ void main() {
     expect(
       logMessageText(
         l10n,
-        const LogMessage(
-          'rtlSdrOpening',
-          {'device': 'Generic RTL2832U OEM'},
-          '',
-        ),
+        const LogMessage('rtlSdrOpening', {
+          'device': 'Generic RTL2832U OEM',
+        }, ''),
       ),
       'Opening RTL-SDR dongle Generic RTL2832U OEM...',
     );
@@ -23,17 +21,13 @@ void main() {
     expect(
       logMessageText(
         l10n,
-        const LogMessage(
-          'rtlSdrConnected',
-          {
-            'device': 'Generic RTL2832U OEM',
-            'freq': '162.000 MHz',
-            'rate': '1.024 MHz',
-            'gain': 'auto',
-            'channels': 'A + B',
-          },
-          '',
-        ),
+        const LogMessage('rtlSdrConnected', {
+          'device': 'Generic RTL2832U OEM',
+          'freq': '162.000 MHz',
+          'rate': '1.024 MHz',
+          'gain': 'auto',
+          'channels': 'A + B',
+        }, ''),
       ),
       'RTL-SDR Generic RTL2832U OEM connected (162.000 MHz, 1.024 MHz '
       'sample rate, auto gain, channels A + B).',
@@ -42,11 +36,10 @@ void main() {
     expect(
       logMessageText(
         l10n,
-        const LogMessage(
-          'rtlSdrError',
-          {'device': '#0', 'error': 'Device busy'},
-          '',
-        ),
+        const LogMessage('rtlSdrError', {
+          'device': '#0',
+          'error': 'Device busy',
+        }, ''),
       ),
       'RTL-SDR #0 error: Device busy',
     );
@@ -73,11 +66,7 @@ void main() {
     expect(
       logMessageText(
         l10n,
-        const LogMessage(
-          'feedConnected',
-          {'name': 'My AIS'},
-          '',
-        ),
+        const LogMessage('feedConnected', {'name': 'My AIS'}, ''),
       ),
       'Feed My AIS connected.',
     );
@@ -85,11 +74,10 @@ void main() {
     expect(
       logMessageText(
         l10n,
-        const LogMessage(
-          'feedConnectFailed',
-          {'name': 'My AIS', 'error': 'refused'},
-          '',
-        ),
+        const LogMessage('feedConnectFailed', {
+          'name': 'My AIS',
+          'error': 'refused',
+        }, ''),
       ),
       'Failed to connect feed My AIS: refused. Retrying in 5s...',
     );
@@ -97,19 +85,14 @@ void main() {
     expect(
       logMessageText(
         l10n,
-        const LogMessage(
-          'targetConnected',
-          {
-            'name': 'Boat',
-            'protocol': ForwardProtocol.tcpClient,
-            'host': '1.2.3.4',
-            'port': '3000',
-          },
-          '',
-        ),
+        const LogMessage('targetConnected', {
+          'name': 'Boat',
+          'protocol': ForwardProtocol.tcpClient,
+          'host': '1.2.3.4',
+          'port': '3000',
+        }, ''),
       ),
       'Target Boat connected (TCP Client 1.2.3.4:3000).',
     );
   });
 }
-

@@ -173,6 +173,7 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - **Add-source popup tooltips** (see the HoverTooltip workaround above).
 - **RTL-SDR lifecycle logs** in the Reception console (opening / connected with frequency, sample rate, gain and channels / errors / stream closed / disconnected), matching the network feeds.
 - **"Clear the map" button** (remove all vessels) — available on the map page toolbar.
+- Add colors to log (to visually split provider, nmea 4.0 tags, sentance, payload etc)
 
 #### Backlog
 - Logs processing for NMEA sentences and connection state are in the same pipeline causing some issues between them since there is only one processor — this should be reworked
@@ -183,7 +184,6 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - Test created ais sentences with external tool such as ais-decoder
 - Compact/minified mode always-on-top pin (top bar, FFI Win32 `SetWindowPos` / `window_manager`)
 - Look at why generated frame have a bunch of 0 at the end
- - Add colors to log (to visually split provider, nmea 4.0 tags, sentance, payload etc)
 - Minified mode
 - Improve log viewport perf for large receptions (variable-height virtualisation, memoised NMEA spans, adaptive cacheExtent / fade for very long frames) and throttle reception burst (chunked simulator emission, batched isolate decode, batched feedStatuses notify)
 

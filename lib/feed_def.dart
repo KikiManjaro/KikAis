@@ -61,53 +61,53 @@ class FeedDef {
   });
 
   Map<String, dynamic> toJson() => {
-        'key': key,
-        'displayName': displayName,
-        'type': type.name,
-        'host': host,
-        'port': port,
-        'header': header,
-        'path': path,
-        'intervalMs': intervalMs,
-        'loop': loop,
-        'useTimestamps': useTimestamps,
-        'speed': speed,
-        'serialPort': serialPort,
-        'baudRate': baudRate,
-        'deviceIndex': deviceIndex,
-        'gainDb': gainDb,
-        'sampleRate': sampleRate,
-        'useChannel1': useChannel1,
-        'useChannel2': useChannel2,
-        'tooltip': tooltip,
-      };
+    'key': key,
+    'displayName': displayName,
+    'type': type.name,
+    'host': host,
+    'port': port,
+    'header': header,
+    'path': path,
+    'intervalMs': intervalMs,
+    'loop': loop,
+    'useTimestamps': useTimestamps,
+    'speed': speed,
+    'serialPort': serialPort,
+    'baudRate': baudRate,
+    'deviceIndex': deviceIndex,
+    'gainDb': gainDb,
+    'sampleRate': sampleRate,
+    'useChannel1': useChannel1,
+    'useChannel2': useChannel2,
+    'tooltip': tooltip,
+  };
 
   /// Legacy JSON without a "type" field is treated as a network feed so
   /// previously saved custom feeds keep working.
   factory FeedDef.fromJson(Map<String, dynamic> json) => FeedDef(
-        key: json['key'] as String,
-        displayName: json['displayName'] as String,
-        type: FeedType.values.firstWhere(
-          (t) => t.name == json['type'],
-          orElse: () => FeedType.network,
-        ),
-        host: json['host'] as String? ?? '',
-        port: json['port'] as int? ?? 0,
-        header: json['header'] as String?,
-        path: json['path'] as String?,
-        intervalMs: json['intervalMs'] as int? ?? 1000,
-        loop: json['loop'] as bool? ?? true,
-        useTimestamps: json['useTimestamps'] as bool? ?? false,
-        speed: json['speed'] as int? ?? 1,
-        serialPort: json['serialPort'] as String?,
-        baudRate: json['baudRate'] as int? ?? 38400,
-        deviceIndex: json['deviceIndex'] as int? ?? 0,
-        gainDb: json['gainDb'] as int?,
-        sampleRate: json['sampleRate'] as int? ?? 1024000,
-        useChannel1: json['useChannel1'] as bool? ?? true,
-        useChannel2: json['useChannel2'] as bool? ?? true,
-        tooltip: json['tooltip'] as String?,
-      );
+    key: json['key'] as String,
+    displayName: json['displayName'] as String,
+    type: FeedType.values.firstWhere(
+      (t) => t.name == json['type'],
+      orElse: () => FeedType.network,
+    ),
+    host: json['host'] as String? ?? '',
+    port: json['port'] as int? ?? 0,
+    header: json['header'] as String?,
+    path: json['path'] as String?,
+    intervalMs: json['intervalMs'] as int? ?? 1000,
+    loop: json['loop'] as bool? ?? true,
+    useTimestamps: json['useTimestamps'] as bool? ?? false,
+    speed: json['speed'] as int? ?? 1,
+    serialPort: json['serialPort'] as String?,
+    baudRate: json['baudRate'] as int? ?? 38400,
+    deviceIndex: json['deviceIndex'] as int? ?? 0,
+    gainDb: json['gainDb'] as int?,
+    sampleRate: json['sampleRate'] as int? ?? 1024000,
+    useChannel1: json['useChannel1'] as bool? ?? true,
+    useChannel2: json['useChannel2'] as bool? ?? true,
+    tooltip: json['tooltip'] as String?,
+  );
 }
 
 const List<FeedDef> kFeedDefs = [
@@ -117,7 +117,8 @@ const List<FeedDef> kFeedDefs = [
     host: "kikimanjaro.hd.free.fr",
     port: 20000,
     builtIn: true,
-    tooltip: "Kikistream.io is based on a public AIS feed (aisstream.io),\n"
+    tooltip:
+        "Kikistream.io is based on a public AIS feed (aisstream.io),\n"
         "each message is transformed to a standard NMEA0183 AIS sentence\n"
         "(messages could be wrong or malformed)",
   ),

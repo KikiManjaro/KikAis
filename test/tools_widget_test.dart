@@ -16,8 +16,7 @@ Future<void> _pump(WidgetTester tester, Widget widget) async {
 }
 
 void main() {
-  testWidgets('checksum tool validates and repairs a sentence',
-      (tester) async {
+  testWidgets('checksum tool validates and repairs a sentence', (tester) async {
     await _pump(tester, const ChecksumTool());
     final good = encodePositionReport(
       mmsi: 226545000,
@@ -39,8 +38,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('mmsi lookup shows MID, country and station type',
-      (tester) async {
+  testWidgets('mmsi lookup shows MID, country and station type', (
+    tester,
+  ) async {
     await _pump(tester, const MmsiLookupTool());
     await tester.enterText(find.byType(TextField), '226545000');
     await tester.pump();
@@ -58,8 +58,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('text to binary shows bytes and armored payload',
-      (tester) async {
+  testWidgets('text to binary shows bytes and armored payload', (tester) async {
     await _pump(tester, const TextToBinaryTool());
     await tester.enterText(find.byType(TextField), 'HEL');
     await tester.pump();
@@ -70,17 +69,14 @@ void main() {
 
   testWidgets('eta calculator computes type-5 fields', (tester) async {
     await _pump(tester, const EtaCalculatorTool());
-    expect(tester.takeException(), isNull,
-        reason: 'overflow on initial build');
+    expect(tester.takeException(), isNull, reason: 'overflow on initial build');
     final fields = find.byType(TextField);
     await tester.enterText(fields.at(0), '60');
     await tester.pump();
-    expect(tester.takeException(), isNull,
-        reason: 'overflow after distance');
+    expect(tester.takeException(), isNull, reason: 'overflow after distance');
     await tester.enterText(fields.at(1), '15');
     await tester.pump();
-    expect(tester.takeException(), isNull,
-        reason: 'overflow after speed');
+    expect(tester.takeException(), isNull, reason: 'overflow after speed');
     expect(find.text('AIS type-5 ETA fields'), findsOneWidget);
     expect(find.text('Month'), findsOneWidget);
     expect(find.text('Minute'), findsOneWidget);

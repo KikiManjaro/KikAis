@@ -9,76 +9,89 @@ import 'package:kik_ais/themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  test('AppSettings round-trips all values through SharedPreferences',
-      () async {
-    SharedPreferences.setMockInitialValues({});
+  test(
+    'AppSettings round-trips all values through SharedPreferences',
+    () async {
+      SharedPreferences.setMockInitialValues({});
 
-    final settings = AppSettings();
-    settings.mapClusterEnabled = false;
-    settings.sendToMap = true;
-    settings.decodeEnabled = false;
-    settings.validateChecksum = false;
-    settings.setTheme(AppTheme.light);
-    settings.setBasemap('carto-dark');
-    settings.setShowTrails(false);
-    settings.setShowVectors(false);
-    settings.targets = [
-      const TargetConfig(
-        id: 't1',
-        name: 'Local',
-        protocol: ForwardProtocol.tcpClient,
-        host: '10.0.0.1',
-        port: 4000,
-        enabled: false,
-      ),
-    ];
-    settings.feedEnabled['US'] = true;
-    settings.feedEnabled['NO'] = false;
-    settings.customFeeds = [
-      const FeedDef(key: 'local', displayName: 'Local', host: '192.168.1.5', port: 9999),
-    ];
-    settings.setImportFormat(NmeaFormat.tag, 'MYSITE');
-    await settings.save();
+      final settings = AppSettings();
+      settings.mapClusterEnabled = false;
+      settings.sendToMap = true;
+      settings.decodeEnabled = false;
+      settings.validateChecksum = false;
+      settings.setTheme(AppTheme.light);
+      settings.setBasemap('carto-dark');
+      settings.setShowTrails(false);
+      settings.setShowVectors(false);
+      settings.targets = [
+        const TargetConfig(
+          id: 't1',
+          name: 'Local',
+          protocol: ForwardProtocol.tcpClient,
+          host: '10.0.0.1',
+          port: 4000,
+          enabled: false,
+        ),
+      ];
+      settings.feedEnabled['US'] = true;
+      settings.feedEnabled['NO'] = false;
+      settings.customFeeds = [
+        const FeedDef(
+          key: 'local',
+          displayName: 'Local',
+          host: '192.168.1.5',
+          port: 9999,
+        ),
+      ];
+      settings.setImportFormat(NmeaFormat.tag, 'MYSITE');
+      await settings.save();
 
-    final loaded = AppSettings();
-    await loaded.load();
+      final loaded = AppSettings();
+      await loaded.load();
 
-    expect(loaded.mapClusterEnabled, isFalse);
-    expect(loaded.sendToMap, isTrue);
-    expect(loaded.decodeEnabled, isFalse);
-    expect(loaded.validateChecksum, isFalse);
-    expect(loaded.appTheme, AppTheme.light);
-    expect(loaded.basemapId, 'carto-dark');
-    expect(loaded.showTrails, isFalse);
-    expect(loaded.showVectors, isFalse);
-    expect(loaded.targets, hasLength(1));
-    expect(loaded.targets.single.name, 'Local');
-    expect(loaded.targets.single.host, '10.0.0.1');
-    expect(loaded.targets.single.port, 4000);
-    expect(loaded.targets.single.protocol, ForwardProtocol.tcpClient);
-    expect(loaded.targets.single.enabled, isFalse);
-    expect(loaded.feedEnabled['US'], isTrue);
-    expect(loaded.feedEnabled['NO'], isFalse);
-    expect(loaded.customFeeds, hasLength(1));
-    expect(loaded.customFeeds.single.host, '192.168.1.5');
-    expect(loaded.customFeeds.single.port, 9999);
-    expect(loaded.nmeaImportFormat, NmeaFormat.tag);
-    expect(loaded.nmeaImportTagSource, 'MYSITE');
-  });
+      expect(loaded.mapClusterEnabled, isFalse);
+      expect(loaded.sendToMap, isTrue);
+      expect(loaded.decodeEnabled, isFalse);
+      expect(loaded.validateChecksum, isFalse);
+      expect(loaded.appTheme, AppTheme.light);
+      expect(loaded.basemapId, 'carto-dark');
+      expect(loaded.showTrails, isFalse);
+      expect(loaded.showVectors, isFalse);
+      expect(loaded.targets, hasLength(1));
+      expect(loaded.targets.single.name, 'Local');
+      expect(loaded.targets.single.host, '10.0.0.1');
+      expect(loaded.targets.single.port, 4000);
+      expect(loaded.targets.single.protocol, ForwardProtocol.tcpClient);
+      expect(loaded.targets.single.enabled, isFalse);
+      expect(loaded.feedEnabled['US'], isTrue);
+      expect(loaded.feedEnabled['NO'], isFalse);
+      expect(loaded.customFeeds, hasLength(1));
+      expect(loaded.customFeeds.single.host, '192.168.1.5');
+      expect(loaded.customFeeds.single.port, 9999);
+      expect(loaded.nmeaImportFormat, NmeaFormat.tag);
+      expect(loaded.nmeaImportTagSource, 'MYSITE');
+    },
+  );
 
-  test('AppSettings persists the simulation configuration (seed only)', () async {
-    SharedPreferences.setMockInitialValues({});
+  test(
+    'AppSettings persists the simulation configuration (seed only)',
+    () async {
+      SharedPreferences.setMockInitialValues({});
 
-    final settings = AppSettings();
-    settings.simConfig = SimFleetConfig(seed: 11, messageTypes: {1, 5, 4, 21});
-    await settings.save();
+      final settings = AppSettings();
+      settings.simConfig = SimFleetConfig(
+        seed: 11,
+        messageTypes: {1, 5, 4, 21},
+      );
+      await settings.save();
 
-    final loaded = AppSettings();
-    await loaded.load();
+      final loaded = AppSettings();
+      await loaded.load();
 
-    expect(loaded.simConfig.seed, 11);
-    expect(loaded.simConfig.messageTypes, {1, 5, 4, 21});
-  });
+      expect(loaded.simConfig.seed, 11);
+      expect(loaded.simConfig.messageTypes, {1, 5, 4, 21});
+    },
+  );
 
   test('AppSettings keeps defaults when nothing is stored', () async {
     SharedPreferences.setMockInitialValues({});

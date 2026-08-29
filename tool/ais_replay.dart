@@ -38,24 +38,28 @@ void main(List<String> args) {
   final stereo = args.contains('--stereo');
   final mixHz =
       double.tryParse(_arg(args, '--mix-hz') ?? '$kDefaultMixHz') ??
-          kDefaultMixHz;
+      kDefaultMixHz;
   final maxSeconds = int.tryParse(_arg(args, '--seconds') ?? '0') ?? 0;
   final verbose = args.contains('--verbose');
   final printSentences = args.contains('--print');
 
   if (audioPath == null && wavPath == null && cu8Path == null) {
-    stdout.writeln('Usage: dart run tool/ais_replay.dart '
-        '(--audio FILE|--wav FILE|--cu8 FILE) [--rate HZ] [--stereo] '
-        '[--mix-hz HZ] [--seconds N] [--verbose]');
+    stdout.writeln(
+      'Usage: dart run tool/ais_replay.dart '
+      '(--audio FILE|--wav FILE|--cu8 FILE) [--rate HZ] [--stereo] '
+      '[--mix-hz HZ] [--seconds N] [--verbose]',
+    );
     exitCode = 1;
     return;
   }
 
   if (audioPath != null) {
     final bytes = _readFile(audioPath);
-    stdout.writeln('Audio: $audioPath (${bytes.length} bytes, '
-        '${bytes.length / rate} s at $rate Hz, '
-        '${stereo ? 'stereo' : 'mono'} stream(s))');
+    stdout.writeln(
+      'Audio: $audioPath (${bytes.length} bytes, '
+      '${bytes.length / rate} s at $rate Hz, '
+      '${stereo ? 'stereo' : 'mono'} stream(s))',
+    );
     final streams = <Float64List>[];
     if (stereo) {
       final n = bytes.length ~/ 2;
@@ -68,16 +72,24 @@ void main(List<String> args) {
       streams.add(a);
       streams.add(b);
     } else {
-      streams.add(Float64List.fromList(
-          List<double>.generate(bytes.length, (i) => (bytes[i] - 128).toDouble())));
+      streams.add(
+        Float64List.fromList(
+          List<double>.generate(
+            bytes.length,
+            (i) => (bytes[i] - 128).toDouble(),
+          ),
+        ),
+      );
     }
     for (var s = 0; s < streams.length; s++) {
       final label = streams.length > 1 ? 'stream $s' : 'mono';
-      final out = replayAudio(streams[s],
-          rate: rate,
-          mixHz: mixHz,
-          maxSeconds: maxSeconds,
-          verbose: verbose);
+      final out = replayAudio(
+        streams[s],
+        rate: rate,
+        mixHz: mixHz,
+        maxSeconds: maxSeconds,
+        verbose: verbose,
+      );
       if (printSentences) {
         for (final sentence in out) {
           stdout.writeln(sentence);
@@ -91,16 +103,22 @@ void main(List<String> args) {
   if (wavPath != null) {
     final bytes = _readFile(wavPath);
     final wav = _parseWav(bytes);
-    stdout.writeln('WAV: $wavPath (${wav.sampleRate} Hz, '
-        '${wav.channels} ch, ${wav.bits} bit, '
-        '${wav.dataLen / wav.sampleRate} s)');
+    stdout.writeln(
+      'WAV: $wavPath (${wav.sampleRate} Hz, '
+      '${wav.channels} ch, ${wav.bits} bit, '
+      '${wav.dataLen / wav.sampleRate} s)',
+    );
     if (wav.bits != 8) {
       stderr.writeln('Only 8-bit PCM WAV is supported.');
       exitCode = 1;
       return;
     }
     final samples = Float64List.fromList(
-        List<double>.generate(wav.dataLen, (i) => (bytes[wav.dataOffset + i] - 128).toDouble()));
+      List<double>.generate(
+        wav.dataLen,
+        (i) => (bytes[wav.dataOffset + i] - 128).toDouble(),
+      ),
+    );
     if (wav.channels == 2) {
       final n = samples.length ~/ 2;
       for (var ch = 0; ch < 2; ch++) {
@@ -108,19 +126,23 @@ void main(List<String> args) {
         for (var i = 0; i < n; i++) {
           s[i] = samples[i * 2 + ch];
         }
-        final out = replayAudio(s,
-            rate: wav.sampleRate,
-            mixHz: mixHz,
-            maxSeconds: maxSeconds,
-            verbose: verbose);
-        stdout.writeln('== channel $ch: ${_summarize(out, 'ch$ch')}');
-      }
-    } else {
-      final out = replayAudio(samples,
+        final out = replayAudio(
+          s,
           rate: wav.sampleRate,
           mixHz: mixHz,
           maxSeconds: maxSeconds,
-          verbose: verbose);
+          verbose: verbose,
+        );
+        stdout.writeln('== channel $ch: ${_summarize(out, 'ch$ch')}');
+      }
+    } else {
+      final out = replayAudio(
+        samples,
+        rate: wav.sampleRate,
+        mixHz: mixHz,
+        maxSeconds: maxSeconds,
+        verbose: verbose,
+      );
       stdout.writeln('== mono: ${_summarize(out, 'mono')}');
     }
     return;
@@ -128,8 +150,10 @@ void main(List<String> args) {
 
   if (cu8Path != null) {
     final bytes = _readFile(cu8Path);
-    stdout.writeln('CU8 IQ: $cu8Path (${bytes.length} bytes, '
-        '${bytes.length / (kInputRate * 2)} s at 1.024 MHz)');
+    stdout.writeln(
+      'CU8 IQ: $cu8Path (${bytes.length} bytes, '
+      '${bytes.length / (kInputRate * 2)} s at 1.024 MHz)',
+    );
     final demod = AisDemodulator();
     final sentences = <String>[];
     var fed = 0;
@@ -207,7 +231,8 @@ List<String> replayAudio(
     // 16 input samples x 2 bytes per decimated sample. The 15 interleaved
     // input samples are silence (128/128 = zero amplitude); only the first
     // sample of each group carries the 64 kHz value.
-    final cu8 = Uint8List((end - off) * 32)..fillRange(0, (end - off) * 32, 128);
+    final cu8 = Uint8List((end - off) * 32)
+      ..fillRange(0, (end - off) * 32, 128);
     var k = 0;
     for (var n = off; n < end; n++) {
       // Phase advance per decimated sample = audio value + carrier offset.
@@ -223,8 +248,10 @@ List<String> replayAudio(
     sentences.addAll(demod.process(cu8));
   }
   if (verbose) {
-    stdout.writeln('  fed ${resampled.length} decimated samples '
-        '(${resampled.length / kDecimatedRate} s)');
+    stdout.writeln(
+      '  fed ${resampled.length} decimated samples '
+      '(${resampled.length / kDecimatedRate} s)',
+    );
   }
   return sentences;
 }
@@ -248,7 +275,7 @@ Float64List resample(Float64List x, int inRate, int outRate) {
 int _u8(double v) => ((v + 1) * 127.5).round().clamp(0, 255);
 
 ({int sampleRate, int channels, int bits, int dataOffset, int dataLen})
-    _parseWav(Uint8List b) {
+_parseWav(Uint8List b) {
   int u32(int o) =>
       b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24);
   int u16(int o) => b[o] | (b[o + 1] << 8);

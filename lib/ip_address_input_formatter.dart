@@ -5,7 +5,9 @@ class IpAddressInputFormatter extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     if (_ipRegex.hasMatch(newValue.text)) {
       return newValue;
     }

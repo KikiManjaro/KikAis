@@ -26,67 +26,69 @@ Widget _app(
 }
 
 void main() {
-  testWidgets('configuration-only page: no run switch, banner and fleet shown',
-      (tester) async {
-    SharedPreferences.setMockInitialValues({});
-    final stats = MessageStats();
-    final boatManager = BoatManager(stats: stats);
-    final settings = AppSettings();
-    final sim = SimulatorService(config: settings.simConfig);
+  testWidgets(
+    'configuration-only page: no run switch, banner and fleet shown',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final stats = MessageStats();
+      final boatManager = BoatManager(stats: stats);
+      final settings = AppSettings();
+      final sim = SimulatorService(config: settings.simConfig);
 
-    await tester.pumpWidget(_app(sim, settings, boatManager));
-    await tester.pump();
+      await tester.pumpWidget(_app(sim, settings, boatManager));
+      await tester.pump();
 
-    // The simulation is started from the Reception feed, not from this page:
-    // the sim never runs and no run switch is shown (only config toggles).
-    expect(sim.isRunning, isFalse);
-    expect(find.text('Realistic names'), findsOneWidget);
-    expect(find.textContaining('forwarder is running'), findsOneWidget);
+      // The simulation is started from the Reception feed, not from this page:
+      // the sim never runs and no run switch is shown (only config toggles).
+      expect(sim.isRunning, isFalse);
+      expect(find.text('Realistic names'), findsOneWidget);
+      expect(find.textContaining('forwarder is running'), findsOneWidget);
 
-    // The generated fleet is shown with its role icons.
-    expect(find.text('SIM-1'), findsOneWidget);
-    expect(find.textContaining('boats'), findsWidgets);
-    expect(find.byIcon(Icons.directions_boat), findsWidgets);
+      // The generated fleet is shown with its role icons.
+      expect(find.text('SIM-1'), findsOneWidget);
+      expect(find.textContaining('boats'), findsWidgets);
+      expect(find.byIcon(Icons.directions_boat), findsWidgets);
 
-    sim.dispose();
-    boatManager.dispose();
-    stats.dispose();
-  });
+      sim.dispose();
+      boatManager.dispose();
+      stats.dispose();
+    },
+  );
 
-  testWidgets('apply fleet updates the generated fleet and persists the config',
-      (tester) async {
-    SharedPreferences.setMockInitialValues({});
-    final stats = MessageStats();
-    final boatManager = BoatManager(stats: stats);
-    final settings = AppSettings();
-    final sim = SimulatorService(config: settings.simConfig);
+  testWidgets(
+    'apply fleet updates the generated fleet and persists the config',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final stats = MessageStats();
+      final boatManager = BoatManager(stats: stats);
+      final settings = AppSettings();
+      final sim = SimulatorService(config: settings.simConfig);
 
-    await tester.pumpWidget(_app(sim, settings, boatManager));
-    await tester.pump();
+      await tester.pumpWidget(_app(sim, settings, boatManager));
+      await tester.pump();
 
-    expect(find.textContaining('10 boats'), findsOneWidget);
+      expect(find.textContaining('10 boats'), findsOneWidget);
 
-    // Increase the vessel count and apply.
-    await tester.enterText(
-      find.widgetWithText(TextField, 'Vessels'),
-      '15',
-    );
-    await tester.ensureVisible(find.text('Apply fleet'));
-    await tester.tap(find.text('Apply fleet'));
-    await tester.pump();
+      // Increase the vessel count and apply.
+      await tester.enterText(find.widgetWithText(TextField, 'Vessels'), '15');
+      await tester.ensureVisible(find.text('Apply fleet'));
+      await tester.tap(find.text('Apply fleet'));
+      await tester.pump();
 
-    expect(find.textContaining('15 boats'), findsOneWidget);
-    expect(sim.config.boatCount, 15);
-    expect(settings.simConfig.boatCount, 15);
-    expect(tester.takeException(), isNull);
+      expect(find.textContaining('15 boats'), findsOneWidget);
+      expect(sim.config.boatCount, 15);
+      expect(settings.simConfig.boatCount, 15);
+      expect(tester.takeException(), isNull);
 
-    sim.dispose();
-    boatManager.dispose();
-    stats.dispose();
-  });
+      sim.dispose();
+      boatManager.dispose();
+      stats.dispose();
+    },
+  );
 
-  testWidgets('realistic names toggle changes the generated fleet',
-      (tester) async {
+  testWidgets('realistic names toggle changes the generated fleet', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final stats = MessageStats();
     final boatManager = BoatManager(stats: stats);
@@ -183,8 +185,9 @@ void main() {
     stats.dispose();
   });
 
-  testWidgets('a very large fleet renders without building every row',
-      (tester) async {
+  testWidgets('a very large fleet renders without building every row', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final stats = MessageStats();
     final boatManager = BoatManager(stats: stats);
@@ -200,9 +203,7 @@ void main() {
     expect(find.textContaining('10000 boats'), findsOneWidget);
     // ...but only the visible rows are actually built (virtualized list), so
     // a tiny number of vessel icons exists instead of one per boat.
-    final built = tester
-        .widgetList(find.byIcon(Icons.directions_boat))
-        .length;
+    final built = tester.widgetList(find.byIcon(Icons.directions_boat)).length;
     expect(built, lessThan(100));
     expect(tester.takeException(), isNull);
 

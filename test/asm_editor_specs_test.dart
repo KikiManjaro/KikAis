@@ -47,17 +47,13 @@ void main() {
   });
 
   test('raw Data bytes are used when dataSource is raw', () {
-    final sentence = encodeMessage(
-      8,
-      {
-        'mmsi': 226545000,
-        'dac': 1,
-        'fid': 11,
-        'data': [1, 2, 3],
-        'asm.avgWindSpeed': 99,
-      },
-      dataSource: EditorDataSource.raw,
-    );
+    final sentence = encodeMessage(8, {
+      'mmsi': 226545000,
+      'dac': 1,
+      'fid': 11,
+      'data': [1, 2, 3],
+      'asm.avgWindSpeed': 99,
+    }, dataSource: EditorDataSource.raw);
     final msg = AisNmeaDecoder().decode(sentence);
     final data = (msg as BinaryBroadcastMessage).data;
     expect(data.sublist(0, 3), [1, 2, 3]);
@@ -73,11 +69,7 @@ void main() {
       'asm.day': 15,
       'asm.hour': 12,
     };
-    final sentence = encodeMessage(
-      8,
-      values,
-      dataSource: EditorDataSource.asm,
-    );
+    final sentence = encodeMessage(8, values, dataSource: EditorDataSource.asm);
     final msg = AisNmeaDecoder().decode(sentence);
     final expected = packAsmData(asm, values);
     final data = (msg as BinaryBroadcastMessage).data;
@@ -86,11 +78,12 @@ void main() {
   });
 
   test('unknown ASM falls back to raw bytes regardless of source', () {
-    final sentence = encodeMessage(
-      8,
-      {'mmsi': 226545000, 'dac': 366, 'fid': 1, 'data': [7, 8, 9]},
-      dataSource: EditorDataSource.asm,
-    );
+    final sentence = encodeMessage(8, {
+      'mmsi': 226545000,
+      'dac': 366,
+      'fid': 1,
+      'data': [7, 8, 9],
+    }, dataSource: EditorDataSource.asm);
     final msg = AisNmeaDecoder().decode(sentence);
     expect((msg as BinaryBroadcastMessage).data.sublist(0, 3), [7, 8, 9]);
   });

@@ -117,8 +117,9 @@ class NmeaTagBlock {
     final inner = raw.substring(1, raw.length - 1);
     // The c: field is excluded from the XOR.
     final cIndex = inner.indexOf(',c:');
-    final content =
-        cIndex >= 0 ? inner.substring(0, cIndex) : inner.replaceAll('c:$checksum', '');
+    final content = cIndex >= 0
+        ? inner.substring(0, cIndex)
+        : inner.replaceAll('c:$checksum', '');
     return computeNmeaChecksum(content) == checksum;
   }
 

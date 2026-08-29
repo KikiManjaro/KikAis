@@ -74,7 +74,8 @@ class AddressedSafetyRelatedMessage extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Sequence: $sequenceNumber, Destination: $destinationMmsi, Retransmit: $retransmit, Text: $text)';
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Sequence: $sequenceNumber, Destination: $destinationMmsi, Retransmit: $retransmit, Text: $text)';
   //endregion
 
   /// Decodes a six-bit-armored AIS payload string into an
@@ -84,7 +85,10 @@ class AddressedSafetyRelatedMessage extends AISMessage {
   /// string is zero-padded to 1008 bits before parsing to accommodate the
   /// maximum allowed text length.
   factory AddressedSafetyRelatedMessage.fromEncoded(String encoded) {
-    String binary = encoded.padRight(1008, '0'); // ToDo: This is kind of inefficient - might have to change to an dynamic approach
+    String binary = encoded.padRight(
+      1008,
+      '0',
+    ); // ToDo: This is kind of inefficient - might have to change to an dynamic approach
 
     // common
     int messageType = getUintDirect(binary, 0, 6);
@@ -96,8 +100,11 @@ class AddressedSafetyRelatedMessage extends AISMessage {
     int sequenceNumber = getUintDirect(binary, 38, 40);
     int destinationMmsi = getUintDirect(binary, 40, 70);
     int retransmit = getUintDirect(binary, 70, 71);
-    String text = BinaryConverter().getTextFromSixBitCharacters(binary, 72, binary.length + 1);
-
+    String text = BinaryConverter().getTextFromSixBitCharacters(
+      binary,
+      72,
+      binary.length + 1,
+    );
 
     return AddressedSafetyRelatedMessage(
       messageType: messageType,

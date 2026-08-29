@@ -171,7 +171,12 @@ List<FieldSpec> fieldsForType(int type) {
         const FieldSpec('sog', 'SOG (kn)', FieldKind.decimal, '12'),
         const FieldSpec('cog', 'COG (°)', FieldKind.decimal, '250'),
         const FieldSpec('heading', 'Heading (°)', FieldKind.decimal, '90'),
-        const FieldSpec('navigationStatus', 'Nav status (0-15)', FieldKind.number, '0'),
+        const FieldSpec(
+          'navigationStatus',
+          'Nav status (0-15)',
+          FieldKind.number,
+          '0',
+        ),
       ];
     case 4 || 11:
       return [
@@ -195,7 +200,12 @@ List<FieldSpec> fieldsForType(int type) {
         const FieldSpec('dimensionBow', 'Bow (m)', FieldKind.number, '0'),
         const FieldSpec('dimensionStern', 'Stern (m)', FieldKind.number, '0'),
         const FieldSpec('dimensionPort', 'Port (m)', FieldKind.number, '0'),
-        const FieldSpec('dimensionStarboard', 'Starboard (m)', FieldKind.number, '0'),
+        const FieldSpec(
+          'dimensionStarboard',
+          'Starboard (m)',
+          FieldKind.number,
+          '0',
+        ),
         const FieldSpec('etaMonth', 'ETA month', FieldKind.number, '0'),
         const FieldSpec('etaDay', 'ETA day', FieldKind.number, '0'),
         const FieldSpec('etaHour', 'ETA hour', FieldKind.number, '24'),
@@ -206,24 +216,54 @@ List<FieldSpec> fieldsForType(int type) {
     case 6:
       return [
         ..._mmsi,
-        const FieldSpec('destinationMmsi', 'Destination MMSI', FieldKind.number, '227000000'),
-        const FieldSpec('sequenceNumber', 'Sequence (0-3)', FieldKind.number, '0'),
+        const FieldSpec(
+          'destinationMmsi',
+          'Destination MMSI',
+          FieldKind.number,
+          '227000000',
+        ),
+        const FieldSpec(
+          'sequenceNumber',
+          'Sequence (0-3)',
+          FieldKind.number,
+          '0',
+        ),
         const FieldSpec('dac', 'DAC', FieldKind.number, '0'),
         const FieldSpec('fid', 'FID', FieldKind.number, '0'),
-        const FieldSpec('data', 'Data bytes (hex or 1,2,3)', FieldKind.bytes, ''),
+        const FieldSpec(
+          'data',
+          'Data bytes (hex or 1,2,3)',
+          FieldKind.bytes,
+          '',
+        ),
       ];
     case 7 || 13:
       return [
         ..._mmsi,
-        const FieldSpec('destinationMmsis', 'Dest. MMSIs (comma)', FieldKind.intList, '227000000,0,0,0'),
-        const FieldSpec('sequenceNumbers', 'Sequences (comma)', FieldKind.intList, '0,0,0,0'),
+        const FieldSpec(
+          'destinationMmsis',
+          'Dest. MMSIs (comma)',
+          FieldKind.intList,
+          '227000000,0,0,0',
+        ),
+        const FieldSpec(
+          'sequenceNumbers',
+          'Sequences (comma)',
+          FieldKind.intList,
+          '0,0,0,0',
+        ),
       ];
     case 8:
       return [
         ..._mmsi,
         const FieldSpec('dac', 'DAC', FieldKind.number, '0'),
         const FieldSpec('fid', 'FID', FieldKind.number, '0'),
-        const FieldSpec('data', 'Data bytes (hex or 1,2,3)', FieldKind.bytes, ''),
+        const FieldSpec(
+          'data',
+          'Data bytes (hex or 1,2,3)',
+          FieldKind.bytes,
+          '',
+        ),
       ];
     case 9:
       return [
@@ -237,13 +277,28 @@ List<FieldSpec> fieldsForType(int type) {
     case 10:
       return [
         ..._mmsi,
-        const FieldSpec('destinationMmsi', 'Destination MMSI', FieldKind.number, '227000000'),
+        const FieldSpec(
+          'destinationMmsi',
+          'Destination MMSI',
+          FieldKind.number,
+          '227000000',
+        ),
       ];
     case 12:
       return [
         ..._mmsi,
-        const FieldSpec('destinationMmsi', 'Destination MMSI', FieldKind.number, '227000000'),
-        const FieldSpec('sequenceNumber', 'Sequence (0-3)', FieldKind.number, '0'),
+        const FieldSpec(
+          'destinationMmsi',
+          'Destination MMSI',
+          FieldKind.number,
+          '227000000',
+        ),
+        const FieldSpec(
+          'sequenceNumber',
+          'Sequence (0-3)',
+          FieldKind.number,
+          '0',
+        ),
         const FieldSpec('text', 'Text', FieldKind.text, 'HELLO'),
       ];
     case 14:
@@ -254,7 +309,12 @@ List<FieldSpec> fieldsForType(int type) {
     case 15:
       return [
         ..._mmsi,
-        const FieldSpec('mmsi1', 'Interrogated MMSI', FieldKind.number, '227000000'),
+        const FieldSpec(
+          'mmsi1',
+          'Interrogated MMSI',
+          FieldKind.number,
+          '227000000',
+        ),
         const FieldSpec('type1_1', 'Type 1', FieldKind.number, '5'),
         const FieldSpec('offset1_1', 'Offset 1', FieldKind.number, '0'),
       ];
@@ -270,7 +330,12 @@ List<FieldSpec> fieldsForType(int type) {
         ..._mmsi,
         const FieldSpec('latitude', 'Latitude', FieldKind.decimal, '47.5'),
         const FieldSpec('longitude', 'Longitude', FieldKind.decimal, '-3.2'),
-        const FieldSpec('data', 'Data bytes (hex or 1,2,3)', FieldKind.bytes, ''),
+        const FieldSpec(
+          'data',
+          'Data bytes (hex or 1,2,3)',
+          FieldKind.bytes,
+          '',
+        ),
       ];
     case 18:
       return [
@@ -307,7 +372,12 @@ List<FieldSpec> fieldsForType(int type) {
         const FieldSpec('aidType', 'Aid type (0-31)', FieldKind.number, '1'),
         const FieldSpec('latitude', 'Latitude', FieldKind.decimal, '46.5'),
         const FieldSpec('longitude', 'Longitude', FieldKind.decimal, '-3.5'),
-        const FieldSpec('virtualAid', 'Virtual aid (0/1)', FieldKind.number, '0'),
+        const FieldSpec(
+          'virtualAid',
+          'Virtual aid (0/1)',
+          FieldKind.number,
+          '0',
+        ),
       ];
     case 22:
       return [
@@ -316,24 +386,49 @@ List<FieldSpec> fieldsForType(int type) {
         const FieldSpec('channelB', 'Channel B', FieldKind.number, '2088'),
         const FieldSpec('txrxMode', 'Tx/Rx mode (0-15)', FieldKind.number, '0'),
         const FieldSpec('neLatitude', 'NE latitude', FieldKind.decimal, '47.5'),
-        const FieldSpec('neLongitude', 'NE longitude', FieldKind.decimal, '-3.0'),
+        const FieldSpec(
+          'neLongitude',
+          'NE longitude',
+          FieldKind.decimal,
+          '-3.0',
+        ),
         const FieldSpec('swLatitude', 'SW latitude', FieldKind.decimal, '46.5'),
-        const FieldSpec('swLongitude', 'SW longitude', FieldKind.decimal, '-4.0'),
+        const FieldSpec(
+          'swLongitude',
+          'SW longitude',
+          FieldKind.decimal,
+          '-4.0',
+        ),
       ];
     case 23:
       return [
         ..._mmsi,
         const FieldSpec('neLatitude', 'NE latitude', FieldKind.decimal, '47.5'),
-        const FieldSpec('neLongitude', 'NE longitude', FieldKind.decimal, '-3.0'),
+        const FieldSpec(
+          'neLongitude',
+          'NE longitude',
+          FieldKind.decimal,
+          '-3.0',
+        ),
         const FieldSpec('swLatitude', 'SW latitude', FieldKind.decimal, '46.5'),
-        const FieldSpec('swLongitude', 'SW longitude', FieldKind.decimal, '-4.0'),
+        const FieldSpec(
+          'swLongitude',
+          'SW longitude',
+          FieldKind.decimal,
+          '-4.0',
+        ),
         const FieldSpec('txrxMode', 'Tx/Rx mode (0-3)', FieldKind.number, '0'),
         const FieldSpec('interval', 'Interval (0-15)', FieldKind.number, '0'),
       ];
     case 24:
       return [
         ..._mmsi,
-        const FieldSpec('part', 'Part (0 = A name, 1 = B static)', FieldKind.number, '0'),
+        const FieldSpec(
+          'part',
+          'Part (0 = A name, 1 = B static)',
+          FieldKind.number,
+          '0',
+        ),
         const FieldSpec('name', 'Vessel name', FieldKind.text, 'KIKAIS'),
         const FieldSpec('shipType', 'Ship type', FieldKind.number, '70'),
         const FieldSpec('callSign', 'Call sign', FieldKind.text, 'FLO21'),
@@ -341,10 +436,30 @@ List<FieldSpec> fieldsForType(int type) {
     case 25 || 26:
       return [
         ..._mmsi,
-        const FieldSpec('destinationMmsi', 'Destination MMSI (empty = broadcast)', FieldKind.number, ''),
-        const FieldSpec('appDac', 'App DAC (empty = none)', FieldKind.number, ''),
-        const FieldSpec('appFid', 'App FID (empty = none)', FieldKind.number, ''),
-        const FieldSpec('data', 'Data bytes (hex or 1,2,3)', FieldKind.bytes, ''),
+        const FieldSpec(
+          'destinationMmsi',
+          'Destination MMSI (empty = broadcast)',
+          FieldKind.number,
+          '',
+        ),
+        const FieldSpec(
+          'appDac',
+          'App DAC (empty = none)',
+          FieldKind.number,
+          '',
+        ),
+        const FieldSpec(
+          'appFid',
+          'App FID (empty = none)',
+          FieldKind.number,
+          '',
+        ),
+        const FieldSpec(
+          'data',
+          'Data bytes (hex or 1,2,3)',
+          FieldKind.bytes,
+          '',
+        ),
       ];
     case 27:
       return [
@@ -377,15 +492,15 @@ List<int> _parseBytes(String raw) {
 
 /// DAC that selects an ASM for binary message [type], or null when absent.
 int? asmDacFor(int type, Map<String, dynamic> values) {
-  if (type == 25 || type == 26) return _v(values, 'appDac', null);
-  if (type == 6 || type == 8) return _v(values, 'dac', null);
+  if (type == 25 || type == 26) return _v(values, 'appDac', null) as int?;
+  if (type == 6 || type == 8) return _v(values, 'dac', null) as int?;
   return null;
 }
 
 /// FID that selects an ASM for binary message [type], or null when absent.
 int? asmFidFor(int type, Map<String, dynamic> values) {
-  if (type == 25 || type == 26) return _v(values, 'appFid', null);
-  if (type == 6 || type == 8) return _v(values, 'fid', null);
+  if (type == 25 || type == 26) return _v(values, 'appFid', null) as int?;
+  if (type == 6 || type == 8) return _v(values, 'fid', null) as int?;
   return null;
 }
 
@@ -594,10 +709,7 @@ String encodeMessage(
         sequenceNumbers: _lv(values, 'sequenceNumbers'),
       );
     case 14:
-      return encodeSafetyBroadcast(
-        mmsi: mmsi,
-        text: _sv(values, 'text', ''),
-      );
+      return encodeSafetyBroadcast(mmsi: mmsi, text: _sv(values, 'text', ''));
     case 15:
       return encodeInterrogation(
         mmsi: mmsi,
@@ -692,7 +804,7 @@ String encodeMessage(
       return encodeSingleSlotBinary(
         mmsi: mmsi,
         data: _binaryData(values, type, dataSource),
-        destinationMmsi: _v(values, 'destinationMmsi', null),
+        destinationMmsi: _v(values, 'destinationMmsi', null) as int?,
         applicationId: _v(values, 'appDac', null) != null
             ? (_iv(values, 'appDac', 0), _iv(values, 'appFid', 0))
             : null,
@@ -701,7 +813,7 @@ String encodeMessage(
       return encodeMultipleSlotBinary(
         mmsi: mmsi,
         data: _binaryData(values, type, dataSource),
-        destinationMmsi: _v(values, 'destinationMmsi', null),
+        destinationMmsi: _v(values, 'destinationMmsi', null) as int?,
         applicationId: _v(values, 'appDac', null) != null
             ? (_iv(values, 'appDac', 0), _iv(values, 'appFid', 0))
             : null,

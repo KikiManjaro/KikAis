@@ -49,11 +49,12 @@ class UtcDateInquiry extends AISMessage {
     repeatIndicator,
     spare,
     destinationMmsi,
-    spare2
+    spare2,
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Destination MMSI: $destinationMmsi, Spare2: $spare2)';
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Destination MMSI: $destinationMmsi, Spare2: $spare2)';
   //endregion
 
   /// Decodes a six-bit-armored AIS payload string into a [UtcDateInquiry].
@@ -72,7 +73,6 @@ class UtcDateInquiry extends AISMessage {
     int spare = getUintDirect(binary, 38, 40);
     int destinationMmsi = getUintDirect(binary, 40, 70);
     int spare2 = getUintDirect(binary, 70, 72);
-
 
     return UtcDateInquiry(
       messageType: messageType,

@@ -6,7 +6,12 @@ import 'src/utils/convert_char_to_bin.dart';
 // ToDo: (Medium Priority) isPayload should be later moved into a separate function if any more parameters become necessary, fine for now - for later documentation: isPayload bypasses the String splitting via , and just passes the payload directly into encoded.
 
 class MessageFactory {
-  static AISMessage create(String input, bool logging, bool legacy, bool isPayload) {
+  static AISMessage create(
+    String input,
+    bool logging,
+    bool legacy,
+    bool isPayload,
+  ) {
     String encoded = '';
 
     //region sanitizing
@@ -19,77 +24,85 @@ class MessageFactory {
       }
       return binaryOutput;
     }
-    
-    if(input.isEmpty) {
+
+    if (input.isEmpty) {
       throw InvalidBinaryDataException(
-          "Supplied String is empty or undefined!");
+        "Supplied String is empty or undefined!",
+      );
     }
 
     // Accept any NMEA 4.0 talker ID in front of VDM/VDO (!AIVDM, !ABVDM,
     // !ANVDM, ...) as well as the classic forms.
     if (RegExp(r'![A-Za-z0-9]{2}VD[MO],').hasMatch(input)) {
-
       List<String> fields = input.split(',');
 
       // Legacy Mode:
-      if(legacy) {
+      if (legacy) {
         encoded = isPayload ? input : makeBinaryString(fields[5]);
       } else {
         encoded = isPayload ? input : fields[5];
       }
-      
     } else {
       // fallback if no AIVDM String is found aka is payload
       encoded = input;
     }
 
     // minimum length for mmsi part of sentence
-    if(legacy && encoded.length < 38) {
-      throw InvalidBinaryDataException("Supplied binary String too short (${encoded.length} bits)!");
+    if (legacy && encoded.length < 38) {
+      throw InvalidBinaryDataException(
+        "Supplied binary String too short (${encoded.length} bits)!",
+      );
     }
     //endregion
 
     try {
       // get message type
-      int messageType = legacy ? int.parse(encoded.substring(0,6), radix: 2) : getUintDirect(encoded, 0, 6);
-      int messagePart = legacy ? int.parse(encoded.substring(38, 40), radix: 2) : getUintDirect(encoded, 38, 40);
-      if(messageType == 24) { messagePart = legacy ? int.parse(encoded.substring(38, 40), radix: 2) : getUintDirect(encoded, 38, 40); }
+      int messageType = legacy
+          ? int.parse(encoded.substring(0, 6), radix: 2)
+          : getUintDirect(encoded, 0, 6);
+      int messagePart = legacy
+          ? int.parse(encoded.substring(38, 40), radix: 2)
+          : getUintDirect(encoded, 38, 40);
+      if (messageType == 24) {
+        messagePart = legacy
+            ? int.parse(encoded.substring(38, 40), radix: 2)
+            : getUintDirect(encoded, 38, 40);
+      }
 
       // switch to correct message type handling scenario
-      if(!legacy) {
-
+      if (!legacy) {
         return switch (messageType) {
-
-        // Position reports
+          // Position reports
           1 || 2 || 3 => PositionMessage.fromEncoded(encoded),
           18 => StandardClassBCSPositionReport.fromEncoded(encoded),
           19 => ExtendedClassBCSPositionReport.fromEncoded(encoded),
           27 => LongRangeAISBroadcastMessage.fromEncoded(encoded),
           9 => SarAircraftPositionReport.fromEncoded(encoded),
 
-        // Static data
+          // Static data
           5 => StaticAndVoyageRelatedData.fromEncoded(encoded),
-          24 => messagePart == 0
-              ? StaticDataReportA.fromEncoded(encoded)
-              : StaticDataReportB.fromEncoded(encoded),
+          24 =>
+            messagePart == 0
+                ? StaticDataReportA.fromEncoded(encoded)
+                : StaticDataReportB.fromEncoded(encoded),
 
-        // Safety messages
+          // Safety messages
           12 => AddressedSafetyRelatedMessage.fromEncoded(encoded),
           13 => SafetyRelatedAcknowledgement.fromEncoded(encoded),
           14 => SafetyRelatedBroadcastMessage.fromEncoded(encoded),
 
-        // Specialized
+          // Specialized
           4 => BaseStationReport.fromEncoded(encoded),
           21 => AidToNavigationReport.fromEncoded(encoded),
 
-        // Binary messages
+          // Binary messages
           6 => BinaryAddressedMessage.fromEncoded(encoded),
           7 => BinaryAcknowledge.fromEncoded(encoded),
           8 => BinaryBroadcastMessage.fromEncoded(encoded),
           25 => SingleSlotBinaryMessage.fromEncoded(encoded),
           26 => MultipleSlotBinaryMessage.fromEncoded(encoded),
 
-        // Network messages
+          // Network messages
           15 => InterrogationMessage.fromEncoded(encoded),
           16 => AssignmentModeCommand.fromEncoded(encoded),
           17 => DgnssBroadcastBinaryMessage.fromEncoded(encoded),
@@ -97,7 +110,7 @@ class MessageFactory {
           22 => ChannelManagementMessage.fromEncoded(encoded),
           23 => GroupAssignmentCommand.fromEncoded(encoded),
 
-        // Time messages
+          // Time messages
           10 => UtcDateInquiry.fromEncoded(encoded),
           11 => UtcDateResponse.fromEncoded(encoded),
 
@@ -105,28 +118,25 @@ class MessageFactory {
         };
       } else {
         return switch (messageType) {
-
-        // Position reports
+          // Position reports
           1 || 2 || 3 => PositionMessage.fromBinary(encoded),
           18 => StandardClassBCSPositionReport.fromBinary(encoded),
           19 => ExtendedClassBCSPositionReport.fromBinary(encoded),
           27 => LongRangeAISBroadcastMessage.fromBinary(encoded),
 
-        // Static data
+          // Static data
           5 => StaticAndVoyageRelatedData.fromBinary(encoded),
           24 =>
-          messagePart == 0
-              ? StaticDataReportA.fromBinary(encoded)
-              : StaticDataReportB.fromBinary(encoded),
+            messagePart == 0
+                ? StaticDataReportA.fromBinary(encoded)
+                : StaticDataReportB.fromBinary(encoded),
 
-        // Specialized
+          // Specialized
           4 => BaseStationReport.fromBinary(encoded),
 
           _ => throw UnsupportedMessageTypeExceptionLegacy(messageType),
         };
       }
-
-
     } catch (e) {
       throw Exception(e);
     }
@@ -134,14 +144,71 @@ class MessageFactory {
 
   // Helper method to check if a message type is supported
   static bool isSupported(int messageType) {
-    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27].contains(messageType);
+    return [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+    ].contains(messageType);
   }
+
   static bool isSupportedByLegacy(int messageType) {
     return [1, 2, 3, 4, 5, 18, 19, 24, 27].contains(messageType);
   }
 
   // Helper method to get supported message types
   static List<int> getSupportedTypes() {
-    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27];
+    return [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+    ];
   }
 }

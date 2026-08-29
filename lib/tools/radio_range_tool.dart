@@ -43,83 +43,84 @@ class _RadioRangeToolState extends State<RadioRangeTool> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-        SectionHeader(
-          icon: Icons.radar,
-          title: context.l10n.toolRadio,
-        ),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Wrap(
-              spacing: 12,
-              runSpacing: 8,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                SizedBox(
-                  width: 170,
-                  child: TextField(
-                    controller: _h1,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: context.l10n.radioHeight1,
-                      suffixText: 'm',
-                      isDense: true,
-                      border: const OutlineInputBorder(),
-                    ),
-                    onChanged: (_) => _run(),
-                  ),
-                ),
-                SizedBox(
-                  width: 170,
-                  child: TextField(
-                    controller: _h2,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: context.l10n.radioHeight2,
-                      suffixText: 'm',
-                      isDense: true,
-                      border: const OutlineInputBorder(),
-                    ),
-                    onChanged: (_) => _run(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        if (nm != null)
+          SectionHeader(icon: Icons.radar, title: context.l10n.toolRadio),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  _row(context, context.l10n.radioHorizon, '${nm.toStringAsFixed(1)} nm'),
-                  _row(
-                    context,
-                    context.l10n.radioHorizonKm,
-                    '${(nm * 1.852).toStringAsFixed(1)} km',
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    context.l10n.radioFrequencies,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: scheme.onSurfaceVariant,
+                  SizedBox(
+                    width: 170,
+                    child: TextField(
+                      controller: _h1,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: InputDecoration(
+                        labelText: context.l10n.radioHeight1,
+                        suffixText: 'm',
+                        isDense: true,
+                        border: const OutlineInputBorder(),
+                      ),
+                      onChanged: (_) => _run(),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  _row(context, context.l10n.radioAis1, '161.975 MHz (87B)'),
-                  _row(context, context.l10n.radioAis2, '162.025 MHz (88B)'),
+                  SizedBox(
+                    width: 170,
+                    child: TextField(
+                      controller: _h2,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: InputDecoration(
+                        labelText: context.l10n.radioHeight2,
+                        suffixText: 'm',
+                        isDense: true,
+                        border: const OutlineInputBorder(),
+                      ),
+                      onChanged: (_) => _run(),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
+          const SizedBox(height: 12),
+          if (nm != null)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _row(
+                      context,
+                      context.l10n.radioHorizon,
+                      '${nm.toStringAsFixed(1)} nm',
+                    ),
+                    _row(
+                      context,
+                      context.l10n.radioHorizonKm,
+                      '${(nm * 1.852).toStringAsFixed(1)} km',
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.l10n.radioFrequencies,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    _row(context, context.l10n.radioAis1, '161.975 MHz (87B)'),
+                    _row(context, context.l10n.radioAis2, '162.025 MHz (88B)'),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

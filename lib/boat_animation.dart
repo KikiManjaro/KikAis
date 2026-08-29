@@ -91,10 +91,8 @@ class _BoatAnimationState extends State<BoatAnimation>
                   bool goingRight =
                       _controller.status == AnimationStatus.forward;
                   double scaleX = goingRight ? 1.0 : -1.0;
-                  double tilt = math.sin(
-                        _controller.value * 2 * math.pi * 8,
-                      ) *
-                      0.10;
+                  double tilt =
+                      math.sin(_controller.value * 2 * math.pi * 8) * 0.10;
 
                   return Positioned(
                     left: dx,

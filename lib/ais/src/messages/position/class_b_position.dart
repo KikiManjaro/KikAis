@@ -92,11 +92,12 @@ class StandardClassBCSPositionReport extends AISMessage {
     speedOverGround,
     courseOverGround,
     raimFlag,
-    timestamp
+    timestamp,
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Heading: $heading, Accuracy: $positionAccuracy, Lat: $latitude, Lon: $longitude, COG: $courseOverGround, RAIM: $raimFlag, SOG: $speedOverGround, Timestamp: $timestamp)';
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Heading: $heading, Accuracy: $positionAccuracy, Lat: $latitude, Lon: $longitude, COG: $courseOverGround, RAIM: $raimFlag, SOG: $speedOverGround, Timestamp: $timestamp)';
   //endregion
 
   /// Decodes a pre-converted binary string into a
@@ -125,15 +126,21 @@ class StandardClassBCSPositionReport extends AISMessage {
 
     // conversion to actually readable data
     int headingDecoded = int.parse(headingBin, radix: 2);
-    double? heading = 0 <= headingDecoded && headingDecoded < 360 ? headingDecoded.toDouble() : null;
+    double? heading = 0 <= headingDecoded && headingDecoded < 360
+        ? headingDecoded.toDouble()
+        : null;
     int positionAccuracy = int.parse(positionAccuracyBin, radix: 2);
     int raimFlag = int.parse(raimFlagBin, radix: 2);
     double? longitude = CoordinateUtils().calculateLongitude(longitudeBin);
     double? latitude = CoordinateUtils().calculateLatitude(latitudeBin);
     int speedDecoded = int.parse(speedBin, radix: 2);
-    double? speed = 0 <= speedDecoded && speedDecoded <= 1022 ? speedDecoded / 10.0 : null;
+    double? speed = 0 <= speedDecoded && speedDecoded <= 1022
+        ? speedDecoded / 10.0
+        : null;
     int courseDecoded = int.parse(courseBin, radix: 2);
-    double? course = 0 <= courseDecoded && courseDecoded < 3600 ? courseDecoded / 10.0 : null;
+    double? course = 0 <= courseDecoded && courseDecoded < 3600
+        ? courseDecoded / 10.0
+        : null;
     int timestamp = int.parse(timestampBin, radix: 2);
 
     return StandardClassBCSPositionReport(
@@ -179,11 +186,21 @@ class StandardClassBCSPositionReport extends AISMessage {
     int timestamp = getUintDirect(binary, 133, 139);
 
     // conversion to actually readable data
-    double? heading = 0 <= headingBin && headingBin < 360 ? headingBin.toDouble() : null;
-    double? longitude = CoordinateUtils().calculateLongitudeDirect(longitudeBin, 28);
-    double? latitude = CoordinateUtils().calculateLatitudeDirect(latitudeBin, 27);
+    double? heading = 0 <= headingBin && headingBin < 360
+        ? headingBin.toDouble()
+        : null;
+    double? longitude = CoordinateUtils().calculateLongitudeDirect(
+      longitudeBin,
+      28,
+    );
+    double? latitude = CoordinateUtils().calculateLatitudeDirect(
+      latitudeBin,
+      27,
+    );
     double? speed = 0 <= speedBin && speedBin <= 1022 ? speedBin / 10.0 : null;
-    double? course = 0 <= courseBin && courseBin < 3600 ? courseBin / 10.0 : null;
+    double? course = 0 <= courseBin && courseBin < 3600
+        ? courseBin / 10.0
+        : null;
 
     return StandardClassBCSPositionReport(
       messageType: messageType,

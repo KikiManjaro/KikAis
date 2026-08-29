@@ -27,16 +27,17 @@ class GmskViterbi {
   final double _wNext;
 
   GmskViterbi()
-      : _wPrev = GmskMath.frequencyPulse(1.0),
-        _wCur = GmskMath.frequencyPulse(0.0),
-        _wNext = GmskMath.frequencyPulse(-1.0);
+    : _wPrev = GmskMath.frequencyPulse(1.0),
+      _wCur = GmskMath.frequencyPulse(0.0),
+      _wNext = GmskMath.frequencyPulse(-1.0);
 
   int _stateOf(int a, int b) => (a > 0 ? 2 : 0) | (b > 0 ? 1 : 0);
   int _prevOf(int s) => (s & 2) != 0 ? 1 : -1;
   int _curOf(int s) => (s & 1) != 0 ? 1 : -1;
 
   double _expected(int state, int next, double scale) =>
-      kDev * scale *
+      kDev *
+      scale *
       (_wPrev * _prevOf(state) + _wCur * _curOf(state) + _wNext * next);
 
   /// Decodes [samples] (one per symbol boundary, τ = n) into a symbol stream.
@@ -44,14 +45,16 @@ class GmskViterbi {
   /// [forced] is the known symbol sequence `b_{-1}, b_0, ..., b_{K-1}` (the
   /// initial NRZI reference followed by the preamble and flag) and [scale] is
   /// the fitted discriminator amplitude. Returns `b_{-1}, b_0, ...`.
-  List<int> decode(List<double> samples,
-      {required double scale, required List<int> forced}) {
+  List<int> decode(
+    List<double> samples, {
+    required double scale,
+    required List<int> forced,
+  }) {
     const double negInf = -1e18;
     final kKnown = forced.length - 1;
     final n = samples.length;
 
-    final metrics = Float64List((n + 1) * 4)
-      ..fillRange(0, (n + 1) * 4, negInf);
+    final metrics = Float64List((n + 1) * 4)..fillRange(0, (n + 1) * 4, negInf);
     final trace = List.generate(n, (_) => List<int>.filled(4, -1));
 
     // Initial state (b_{-1}, b_0).

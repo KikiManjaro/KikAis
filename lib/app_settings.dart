@@ -168,7 +168,9 @@ class AppSettings extends ChangeNotifier {
     feedEnabled
       ..clear()
       ..addAll({
-        for (final k in prefs.getKeys().where((k) => k.startsWith(_kFeedPrefix)))
+        for (final k in prefs.getKeys().where(
+          (k) => k.startsWith(_kFeedPrefix),
+        ))
           k.substring(_kFeedPrefix.length): prefs.getBool(k) ?? false,
       });
 
@@ -176,13 +178,14 @@ class AppSettings extends ChangeNotifier {
     customFeeds = raw == null
         ? []
         : (jsonDecode(raw) as List)
-            .map((e) => FeedDef.fromJson(e as Map<String, dynamic>))
-            .toList();
+              .map((e) => FeedDef.fromJson(e as Map<String, dynamic>))
+              .toList();
 
     final simRaw = prefs.getString(_kSimulation);
     if (simRaw != null && simRaw.isNotEmpty) {
-      simConfig =
-          SimFleetConfig.fromJson(jsonDecode(simRaw) as Map<String, dynamic>);
+      simConfig = SimFleetConfig.fromJson(
+        jsonDecode(simRaw) as Map<String, dynamic>,
+      );
     }
 
     nmeaImportFormat = NmeaFormat.values.firstWhere(

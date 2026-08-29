@@ -54,13 +54,12 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? success,
     Color? warning,
     Color? danger,
-  }) =>
-      AppColors(
-        info: info ?? this.info,
-        success: success ?? this.success,
-        warning: warning ?? this.warning,
-        danger: danger ?? this.danger,
-      );
+  }) => AppColors(
+    info: info ?? this.info,
+    success: success ?? this.success,
+    warning: warning ?? this.warning,
+    danger: danger ?? this.danger,
+  );
 
   @override
   AppColors lerp(ThemeExtension<AppColors>? other, double t) {
@@ -225,29 +224,19 @@ ThemeData _base({
     // Force the pointing hand on every clickable control instead, while keeping
     // the arrow on disabled ones.
     elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ButtonStyle(
-        mouseCursor: WidgetStatePropertyAll(_clickableCursor),
-      ),
+      style: ButtonStyle(mouseCursor: WidgetStatePropertyAll(_clickableCursor)),
     ),
     textButtonTheme: TextButtonThemeData(
-      style: ButtonStyle(
-        mouseCursor: WidgetStatePropertyAll(_clickableCursor),
-      ),
+      style: ButtonStyle(mouseCursor: WidgetStatePropertyAll(_clickableCursor)),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
-      style: ButtonStyle(
-        mouseCursor: WidgetStatePropertyAll(_clickableCursor),
-      ),
+      style: ButtonStyle(mouseCursor: WidgetStatePropertyAll(_clickableCursor)),
     ),
     filledButtonTheme: FilledButtonThemeData(
-      style: ButtonStyle(
-        mouseCursor: WidgetStatePropertyAll(_clickableCursor),
-      ),
+      style: ButtonStyle(mouseCursor: WidgetStatePropertyAll(_clickableCursor)),
     ),
     iconButtonTheme: IconButtonThemeData(
-      style: ButtonStyle(
-        mouseCursor: WidgetStatePropertyAll(_clickableCursor),
-      ),
+      style: ButtonStyle(mouseCursor: WidgetStatePropertyAll(_clickableCursor)),
     ),
     checkboxTheme: CheckboxThemeData(
       mouseCursor: WidgetStatePropertyAll(_clickableCursor),
@@ -309,4 +298,5 @@ ThemeData _base({
 }
 
 /// The hand cursor on enabled controls, the plain arrow on disabled ones.
-const WidgetStateMouseCursor _clickableCursor = WidgetStateMouseCursor.clickable;
+const WidgetStateMouseCursor _clickableCursor =
+    WidgetStateMouseCursor.clickable;

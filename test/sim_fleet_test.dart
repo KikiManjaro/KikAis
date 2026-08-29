@@ -56,7 +56,12 @@ void main() {
           (boat.lon - startLon).abs() > 0.001) {
         moved = true;
       }
-      final d = _distanceKm(boat.lat, boat.lon, config.centerLat, config.centerLon);
+      final d = _distanceKm(
+        boat.lat,
+        boat.lon,
+        config.centerLat,
+        config.centerLon,
+      );
       expect(d, lessThanOrEqualTo(config.radiusKm + 0.01));
     }
     expect(moved, isTrue);
@@ -229,10 +234,12 @@ void main() {
     final decoder = AisNmeaDecoder();
     final all = <AISMessage>[];
     for (var tick = 1; tick <= 10; tick++) {
-      all.addAll(fleet
-          .advanceAndCollect(config, tick)
-          .map((s) => decoder.decode(s))
-          .whereType<AISMessage>());
+      all.addAll(
+        fleet
+            .advanceAndCollect(config, tick)
+            .map((s) => decoder.decode(s))
+            .whereType<AISMessage>(),
+      );
     }
     expect(all.whereType<StaticDataReportA>().length, greaterThan(0));
     expect(all.whereType<StaticDataReportB>().length, greaterThan(0));
@@ -251,10 +258,12 @@ void main() {
     final decoder = AisNmeaDecoder();
     final all = <AISMessage>[];
     for (var tick = 1; tick <= 60; tick++) {
-      all.addAll(fleet
-          .advanceAndCollect(config, tick)
-          .map((s) => decoder.decode(s))
-          .whereType<AISMessage>());
+      all.addAll(
+        fleet
+            .advanceAndCollect(config, tick)
+            .map((s) => decoder.decode(s))
+            .whereType<AISMessage>(),
+      );
     }
     expect(all.whereType<UtcDateResponse>().isNotEmpty, isTrue);
     expect(all.whereType<ChannelManagementMessage>().isNotEmpty, isTrue);
@@ -279,25 +288,23 @@ void main() {
     expect(vessels.every((b) => b.vesselType == 30), isTrue);
   });
 
-  test('realisticNames assigns plausible names, call signs and destinations',
-      () {
-    final config = SimFleetConfig(realisticNames: true);
-    final fleet = SimFleet();
-    fleet.generate(config);
-    final vessels = fleet.boats.where((b) => !b.fixed).toList();
-    for (final b in vessels) {
-      expect(b.name, isNot(startsWith('SIM-')));
-      expect(b.callSign, isNot(startsWith('SIM')));
-      expect(b.destination, isNot('SIM PORT'));
-    }
-  });
+  test(
+    'realisticNames assigns plausible names, call signs and destinations',
+    () {
+      final config = SimFleetConfig(realisticNames: true);
+      final fleet = SimFleet();
+      fleet.generate(config);
+      final vessels = fleet.boats.where((b) => !b.fixed).toList();
+      for (final b in vessels) {
+        expect(b.name, isNot(startsWith('SIM-')));
+        expect(b.callSign, isNot(startsWith('SIM')));
+        expect(b.destination, isNot('SIM PORT'));
+      }
+    },
+  );
 
   test('anchored vessels stay still with an anchor/moored status', () {
-    final config = SimFleetConfig(
-      anchoredPercent: 100,
-      sogMin: 10,
-      sogMax: 10,
-    );
+    final config = SimFleetConfig(anchoredPercent: 100, sogMin: 10, sogMax: 10);
     final fleet = SimFleet();
     fleet.generate(config);
     final vessels = fleet.boats.where((b) => !b.fixed).toList();
@@ -331,33 +338,35 @@ void main() {
     expect(changed, isTrue);
   });
 
-  test('reportIntervalMax staggers emissions and every vessel reports in 2 ticks',
-      () {
-    final config = SimFleetConfig(reportIntervalMax: 2, seed: 5);
-    final fleet = SimFleet();
-    fleet.generate(config);
-    final vessels = fleet.boats.where((b) => !b.fixed).toList();
+  test(
+    'reportIntervalMax staggers emissions and every vessel reports in 2 ticks',
+    () {
+      final config = SimFleetConfig(reportIntervalMax: 2, seed: 5);
+      final fleet = SimFleet();
+      fleet.generate(config);
+      final vessels = fleet.boats.where((b) => !b.fixed).toList();
 
-    final decoder = AisNmeaDecoder();
-    final mmsis = <int>{};
-    for (var tick = 1; tick <= 2; tick++) {
-      for (final s in fleet.advanceAndCollect(config, tick)) {
-        final m = decoder.decode(s);
-        if (m != null) mmsis.add(m.mmsi);
+      final decoder = AisNmeaDecoder();
+      final mmsis = <int>{};
+      for (var tick = 1; tick <= 2; tick++) {
+        for (final s in fleet.advanceAndCollect(config, tick)) {
+          final m = decoder.decode(s);
+          if (m != null) mmsis.add(m.mmsi);
+        }
       }
-    }
-    for (final b in vessels) {
-      expect(mmsis, contains(b.mmsi));
-    }
+      for (final b in vessels) {
+        expect(mmsis, contains(b.mmsi));
+      }
 
-    final tick1 = fleet
-        .advanceAndCollect(config, 1)
-        .map((s) => decoder.decode(s))
-        .whereType<PositionMessage>()
-        .map((m) => m.mmsi)
-        .toSet();
-    expect(tick1.length, lessThan(vessels.length));
-  });
+      final tick1 = fleet
+          .advanceAndCollect(config, 1)
+          .map((s) => decoder.decode(s))
+          .whereType<PositionMessage>()
+          .map((m) => m.mmsi)
+          .toSet();
+      expect(tick1.length, lessThan(vessels.length));
+    },
+  );
 
   test('station counts create the requested fixed stations', () {
     final config = SimFleetConfig(
@@ -392,12 +401,15 @@ void main() {
     final fleet = SimFleet();
     fleet.generate(config);
     final vessels = fleet.boats.where((b) => !b.fixed).toList();
-    expect(vessels.every((b) => b.mmsi >= 205000000 && b.mmsi < 206000000),
-        isTrue);
-    expect(fleet.boats.any((b) => b.emitType == 4 && b.mmsi == 205900000),
-        isTrue);
-    expect(fleet.boats.map((b) => b.mmsi).toSet().length,
-        fleet.boats.length);
+    expect(
+      vessels.every((b) => b.mmsi >= 205000000 && b.mmsi < 206000000),
+      isTrue,
+    );
+    expect(
+      fleet.boats.any((b) => b.emitType == 4 && b.mmsi == 205900000),
+      isTrue,
+    );
+    expect(fleet.boats.map((b) => b.mmsi).toSet().length, fleet.boats.length);
   });
 
   test('invalid mmsiMid falls back to 247', () {
@@ -421,12 +433,24 @@ void main() {
     expect(mmsis.length, fleet.boats.length);
 
     expect(fleet.boats.where((b) => b.emitType == 4).first.mmsi, 2050000);
-    expect(fleet.boats.where((b) => b.emitType == 21).every(
-        (b) => b.mmsi >= 992050000 && b.mmsi < 992060000), isTrue);
-    expect(fleet.boats.where((b) => b.emitType == 18).every(
-        (b) => b.mmsi >= 982050000 && b.mmsi < 982060000), isTrue);
-    expect(fleet.boats.where((b) => b.emitType == 9).every(
-        (b) => b.mmsi >= 111205000 && b.mmsi < 111206000), isTrue);
+    expect(
+      fleet.boats
+          .where((b) => b.emitType == 21)
+          .every((b) => b.mmsi >= 992050000 && b.mmsi < 992060000),
+      isTrue,
+    );
+    expect(
+      fleet.boats
+          .where((b) => b.emitType == 18)
+          .every((b) => b.mmsi >= 982050000 && b.mmsi < 982060000),
+      isTrue,
+    );
+    expect(
+      fleet.boats
+          .where((b) => b.emitType == 9)
+          .every((b) => b.mmsi >= 111205000 && b.mmsi < 111206000),
+      isTrue,
+    );
   });
 
   test('namePrefix customises placeholder names', () {

@@ -32,8 +32,8 @@ class _AnimatedBoat {
       from.latitude != to.latitude || from.longitude != to.longitude;
 
   double fraction(DateTime now) {
-    final d = now.difference(start).inMilliseconds /
-        _kAnimDuration.inMilliseconds;
+    final d =
+        now.difference(start).inMilliseconds / _kAnimDuration.inMilliseconds;
     return d.clamp(0.0, 1.0);
   }
 }
@@ -118,16 +118,15 @@ class _BoatMapLayerState extends State<BoatMapLayer>
       final cur = LatLng(b.lat!, b.lon!);
       final heading = b.heading ?? b.cog ?? 0.0;
       final prev = _display[b.mmsi];
-      final moved = prev != null &&
+      final moved =
+          prev != null &&
           (prev.to.latitude != cur.latitude ||
               prev.to.longitude != cur.longitude);
       // Reuse the existing animation object when neither the position nor the
       // heading changed, so unrelated rebuilds don't tear down every boat's
       // interpolation state (and the painter can skip redrawing it).
-      final unchanged = prev != null &&
-          prev.boat == b &&
-          !moved &&
-          prev.toHeading == heading;
+      final unchanged =
+          prev != null && prev.boat == b && !moved && prev.toHeading == heading;
       if (unchanged) {
         next[b.mmsi] = prev;
       } else {
@@ -190,7 +189,10 @@ class _BoatMapLayerState extends State<BoatMapLayer>
         dx += pos.dx;
         dy += pos.dy;
       }
-      return _Cluster(Offset(dx / members.length, dy / members.length), members);
+      return _Cluster(
+        Offset(dx / members.length, dy / members.length),
+        members,
+      );
     }).toList();
   }
 
@@ -367,7 +369,10 @@ class _BoatPainter extends CustomPainter {
         dx += pos.dx;
         dy += pos.dy;
       }
-      return _Cluster(Offset(dx / members.length, dy / members.length), members);
+      return _Cluster(
+        Offset(dx / members.length, dy / members.length),
+        members,
+      );
     }).toList();
   }
 
@@ -402,7 +407,9 @@ class _BoatPainter extends CustomPainter {
     final pos = _pos(ab);
     if (!camera.visibleBounds.contains(pos)) return;
     final o = camera.latLngToScreenOffset(pos);
-    if (o.dx < -30 || o.dy < -30 || o.dx > camera.size.width + 30 ||
+    if (o.dx < -30 ||
+        o.dy < -30 ||
+        o.dx > camera.size.width + 30 ||
         o.dy > camera.size.height + 30) {
       return;
     }
@@ -545,7 +552,12 @@ class _BoatPainter extends CustomPainter {
     double fontSize = 12,
     bool anchorCenter = false,
   }) {
-    final painter = _textPainter(text, fontSize: fontSize, bold: bold, color: color);
+    final painter = _textPainter(
+      text,
+      fontSize: fontSize,
+      bold: bold,
+      color: color,
+    );
     final dx = anchorCenter ? x - painter.width / 2 : x;
     final dy = anchorCenter ? y - painter.height / 2 : y;
     painter.paint(canvas, Offset(dx, dy));
@@ -585,11 +597,11 @@ class _BoatPainter extends CustomPainter {
   }
 
   Color _kindColor(BoatKind kind) => switch (kind) {
-        BoatKind.vessel => const Color(0xFF4C9BFF),
-        BoatKind.aircraft => const Color(0xFFFF8A3D),
-        BoatKind.aton => const Color(0xFF2EC4B6),
-        BoatKind.station => const Color(0xFFB65CE8),
-      };
+    BoatKind.vessel => const Color(0xFF4C9BFF),
+    BoatKind.aircraft => const Color(0xFFFF8A3D),
+    BoatKind.aton => const Color(0xFF2EC4B6),
+    BoatKind.station => const Color(0xFFB65CE8),
+  };
 
   @override
   bool shouldRepaint(_BoatPainter oldDelegate) =>

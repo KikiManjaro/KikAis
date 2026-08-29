@@ -8,7 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _kPrefsKey = 'ais_catcher_exe_path';
-const _kGitHubApi = 'https://api.github.com/repos/jvde-github/AIS-catcher/releases/latest';
+const _kGitHubApi =
+    'https://api.github.com/repos/jvde-github/AIS-catcher/releases/latest';
 const _kGitHubReleases = 'https://github.com/jvde-github/AIS-catcher/releases';
 
 /// Manages an ais-catcher.exe process that reads from an RTL-SDR dongle and
@@ -89,7 +90,7 @@ class AisCatcherProcess {
   /// [onProgress] is called with a value in 0.0..1.0 during download.
   /// Returns the resolved path, or null if the user cancelled / download failed.
   static Future<String?> ensureAvailable({
-    Function(double progress, String speed)? onProgress,
+    void Function(double progress, String speed)? onProgress,
   }) async {
     // 1. Already available?
     final found = findExecutable();
@@ -107,7 +108,7 @@ class AisCatcherProcess {
   /// Downloads the latest ais-catcher release from GitHub, extracts it,
   /// copies RTL-SDR DLLs next to the binary, and returns the exe path.
   static Future<String?> _downloadLatest({
-    Function(double progress, String speed)? onProgress,
+    void Function(double progress, String speed)? onProgress,
   }) async {
     final destDir = Directory('${Directory.current.path}\\tools\\ais-catcher');
     if (!destDir.existsSync()) destDir.createSync(recursive: true);
@@ -183,7 +184,9 @@ class AisCatcherProcess {
         if (file.isFile) {
           // Flatten: skip leading directory component if present.
           final parts = filename.split('/');
-          final flatName = parts.length > 1 ? parts.sublist(1).join('/') : filename;
+          final flatName = parts.length > 1
+              ? parts.sublist(1).join('/')
+              : filename;
           if (flatName.isEmpty) continue;
           final outFile = File('${destDir.path}\\$flatName');
           outFile.parent.createSync(recursive: true);
@@ -233,7 +236,8 @@ class AisCatcherProcess {
 
   Process? _process;
   final int _udpPort;
-  final StreamController<String> _sentences = StreamController<String>.broadcast();
+  final StreamController<String> _sentences =
+      StreamController<String>.broadcast();
   StreamSubscription<dynamic>? _stdoutSub;
   StreamSubscription<dynamic>? _stderrSub;
 
@@ -280,9 +284,9 @@ class AisCatcherProcess {
       '-s', '$sampleRate',
       ...gainArg,
       '-c', channel,
-      '-X', 'off',             // disable community data sharing
+      '-X', 'off', // disable community data sharing
       '-u', '127.0.0.1', '$_udpPort', // NMEA sentences to UDP
-      '-q',                           // quiet output
+      '-q', // quiet output
     ];
 
     _process = await Process.start(exe, args);
@@ -291,31 +295,29 @@ class AisCatcherProcess {
         .transform(const Utf8Decoder())
         .transform(const LineSplitter())
         .listen((line) {
-      final trimmed = line.trim();
-      if (trimmed.startsWith('!AIVDM') || trimmed.startsWith('!AIVDO')) {
-        _sentences.add(trimmed);
-      }
-    });
+          final trimmed = line.trim();
+          if (trimmed.startsWith('!AIVDM') || trimmed.startsWith('!AIVDO')) {
+            _sentences.add(trimmed);
+          }
+        });
 
     _stderrSub = _process!.stderr
         .transform(const Utf8Decoder())
         .transform(const LineSplitter())
         .listen((line) {
-      final lower = line.toLowerCase();
-      if (lower.contains('error') ||
-          lower.contains('failed') ||
-          lower.contains('fatal') ||
-          lower.contains('cannot') ||
-          lower.contains('unable')) {
-        _sentences.addError(StateError(line.trim()));
-      }
-    });
+          final lower = line.toLowerCase();
+          if (lower.contains('error') ||
+              lower.contains('failed') ||
+              lower.contains('fatal') ||
+              lower.contains('cannot') ||
+              lower.contains('unable')) {
+            _sentences.addError(StateError(line.trim()));
+          }
+        });
 
     _process!.exitCode.then((code) {
       if (code != 0 && _sentences.hasListener) {
-        _sentences.addError(
-          StateError('ais-catcher exited with code $code'),
-        );
+        _sentences.addError(StateError('ais-catcher exited with code $code'));
       }
       _cleanup();
     });

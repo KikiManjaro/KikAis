@@ -12,8 +12,9 @@ Future<void> _pump(WidgetTester tester, DocumentationPage page) async {
 }
 
 void main() {
-  testWidgets('renders the searchable chapter table of contents',
-      (tester) async {
+  testWidgets('renders the searchable chapter table of contents', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1200, 1400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -44,7 +45,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.widgetWithText(ListTile, 'Radio & TDMA'), findsOneWidget);
-    expect(find.widgetWithText(ListTile, 'Classes & equipment'), findsOneWidget);
+    expect(
+      find.widgetWithText(ListTile, 'Classes & equipment'),
+      findsOneWidget,
+    );
     expect(find.widgetWithText(ListTile, 'Overview'), findsNothing);
   });
 
@@ -66,23 +70,22 @@ void main() {
 
     await _pump(tester, DocumentationPage(onOpenTab: (_) {}));
 
-    await tester.tap(
-      find.widgetWithText(ListTile, 'History & regulation'),
-    );
+    await tester.tap(find.widgetWithText(ListTile, 'History & regulation'));
     await tester.pumpAndSettle();
 
     expect(find.text('A Swedish invention'), findsOneWidget);
   });
 
-  testWidgets('message catalog expands a type and shows its decoded sample',
-      (tester) async {
+  testWidgets('message catalog expands a type and shows its decoded sample', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1200, 1400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    await _pump(tester, DocumentationPage(
-      onOpenTab: (_) {},
-      onOpenInDecoder: (_) {},
-    ));
+    await _pump(
+      tester,
+      DocumentationPage(onOpenTab: (_) {}, onOpenInDecoder: (_) {}),
+    );
 
     await tester.tap(find.widgetWithText(ListTile, 'The 27 messages'));
     await tester.pumpAndSettle();
@@ -103,10 +106,7 @@ void main() {
     String? sent;
     await _pump(
       tester,
-      DocumentationPage(
-        onOpenTab: (_) {},
-        onOpenInDecoder: (s) => sent = s,
-      ),
+      DocumentationPage(onOpenTab: (_) {}, onOpenInDecoder: (s) => sent = s),
     );
 
     await tester.tap(find.widgetWithText(ListTile, 'The 27 messages'));
@@ -123,8 +123,9 @@ void main() {
     expect(sent, startsWith('!AIVDM'));
   });
 
-  testWidgets('sentence inspector breaks a sentence into fields',
-      (tester) async {
+  testWidgets('sentence inspector breaks a sentence into fields', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1200, 1400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 

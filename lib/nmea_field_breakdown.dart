@@ -6,15 +6,15 @@ import 'l10n_ext.dart';
 
 /// Localized label for the comma-separated fields of an AIVDM/AIVDO sentence.
 String nmeaFieldLabel(AppLocalizations l10n, int index) => switch (index) {
-      0 => l10n.nmeaTalker,
-      1 => l10n.nmeaFragments,
-      2 => l10n.nmeaFragmentN,
-      3 => l10n.nmeaMessageId,
-      4 => l10n.nmeaChannel,
-      5 => l10n.nmeaPayload,
-      6 => l10n.nmeaFillBits,
-      _ => '',
-    };
+  0 => l10n.nmeaTalker,
+  1 => l10n.nmeaFragments,
+  2 => l10n.nmeaFragmentN,
+  3 => l10n.nmeaMessageId,
+  4 => l10n.nmeaChannel,
+  5 => l10n.nmeaPayload,
+  6 => l10n.nmeaFillBits,
+  _ => '',
+};
 
 /// Renders a single NMEA AIS sentence as coloured, per-field chips so the
 /// framing is obvious at a glance (the "sentence inspector").
@@ -60,9 +60,7 @@ class NmeaFieldBreakdown extends StatelessWidget {
             isDark,
             7 % _palette.length,
             context.l10n.nmeaTagBlock,
-            tagBlock.sourceId != null
-                ? 's:${tagBlock.sourceId}'
-                : tagBlock.raw,
+            tagBlock.sourceId != null ? 's:${tagBlock.sourceId}' : tagBlock.raw,
           ),
         for (var i = 0; i < parts.length; i++) ...[
           _chip(

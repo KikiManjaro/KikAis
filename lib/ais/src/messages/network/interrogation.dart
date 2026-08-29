@@ -64,7 +64,7 @@ class InterrogationMessage extends AISMessage {
     required this.offset2_1,
   });
 
-  //region Overrides  
+  //region Overrides
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -100,8 +100,9 @@ class InterrogationMessage extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, MMSI1: $mmsi1, Type1_1: $type1_1, Offset1_1: $offset1_1, Type1_2: $type1_2, Offset1_2: $offset1_2, MMSI2: $mmsi2, Type2_1: $type2_1, Offset2_1: $offset2_1)';
-  //endregion  
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, MMSI1: $mmsi1, Type1_1: $type1_1, Offset1_1: $offset1_1, Type1_2: $type1_2, Offset1_2: $offset1_2, MMSI2: $mmsi2, Type2_1: $type2_1, Offset2_1: $offset2_1)';
+  //endregion
 
   /// Decodes a six-bit-armored AIS payload string into an
   /// [InterrogationMessage].
@@ -112,12 +113,12 @@ class InterrogationMessage extends AISMessage {
   factory InterrogationMessage.fromEncoded(String encoded) {
     String binary = encoded.padRight(160, '0');
 
-    // common  
+    // common
     int messageType = getUintDirect(binary, 0, 6);
     int repeatIndicator = getUintDirect(binary, 6, 8);
     int mmsi = getUintDirect(binary, 8, 38);
 
-    // type InterrogationMessage specific  
+    // type InterrogationMessage specific
     int spare = getUintDirect(binary, 38, 40);
     int mmsi1 = getUintDirect(binary, 40, 70);
     int type1_1 = getUintDirect(binary, 70, 76);

@@ -66,10 +66,13 @@ List<int> _trainingSymbols() {
   }
   data.addAll(const [0, 1, 1, 1, 1, 1, 1, 0]); // 0x7E
   var sym = 1;
-  return [1, ...data.map((b) {
-    if (b == 0) sym = -sym;
-    return sym;
-  })];
+  return [
+    1,
+    ...data.map((b) {
+      if (b == 0) sym = -sym;
+      return sym;
+    }),
+  ];
 }
 
 /// Detects and decodes bursts in the discriminator stream of one channel.
@@ -86,8 +89,8 @@ class _BurstProcessor {
   double _dc = 0;
   int _scanFrom = 0;
   _BurstProcessor(this.channel)
-      : _refLen = (kKnownSymbols * GmskMath.samplesPerBit).ceil(),
-        _ref = Float64List((kKnownSymbols * GmskMath.samplesPerBit).ceil()) {
+    : _refLen = (kKnownSymbols * GmskMath.samplesPerBit).ceil(),
+      _ref = Float64List((kKnownSymbols * GmskMath.samplesPerBit).ceil()) {
     for (var t = 0; t < _refLen; t++) {
       _ref[t] = GmskMath.instantaneousFrequency(_training, t.toDouble());
     }
@@ -210,7 +213,8 @@ class _BurstProcessor {
     var den = 0.0;
     // Skip the burst-leading transient (samples 0..4).
     for (var n = 5; n <= 29; n++) {
-      final e = kDev *
+      final e =
+          kDev *
           (wp * _training[n] + wc * _training[n + 1] + wn * _training[n + 2]);
       num += samples[n] * e;
       den += e * e;
@@ -226,11 +230,7 @@ class _BurstProcessor {
       }
     }
 
-    final symbols = _viterbi.decode(
-      samples,
-      scale: scale,
-      forced: _training,
-    );
+    final symbols = _viterbi.decode(samples, scale: scale, forced: _training);
     final (payload, consumed) = AisFrameDecoder.decode(symbols);
     if (payload != null) {
       final sentence = bitsToAivdm(payload, channel: channel);

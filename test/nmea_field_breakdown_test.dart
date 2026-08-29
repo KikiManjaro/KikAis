@@ -7,13 +7,11 @@ import 'l10n_test_utils.dart';
 const _sample = '!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C';
 
 Widget _wrap(Brightness brightness) => withLocalizations(
-      Scaffold(
-        body: SingleChildScrollView(
-          child: NmeaFieldBreakdown(sentence: _sample),
-        ),
-      ),
-      theme: ThemeData(brightness: brightness),
-    );
+  Scaffold(
+    body: SingleChildScrollView(child: NmeaFieldBreakdown(sentence: _sample)),
+  ),
+  theme: ThemeData(brightness: brightness),
+);
 
 void main() {
   testWidgets('renders the field chips of a sentence', (tester) async {

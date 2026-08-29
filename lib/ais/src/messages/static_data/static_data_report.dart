@@ -63,8 +63,8 @@ class StaticDataReportA extends AISMessage {
   @override
   String toString() =>
       'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, '
-          'Vessel Name: $vesselName, Part Number: $partNumber,'
-          'spare: $spare, Hint: This is Part/Type A of the Type 24 AIS Message, expect Part/Type B)';
+      'Vessel Name: $vesselName, Part Number: $partNumber,'
+      'spare: $spare, Hint: This is Part/Type A of the Type 24 AIS Message, expect Part/Type B)';
   //endregion
 
   /// Decodes a pre-converted binary string into a [StaticDataReportA].
@@ -73,7 +73,10 @@ class StaticDataReportA extends AISMessage {
   /// zero-padded to 168 bits before parsing to tolerate the common real-world
   /// case where Part A is transmitted as only 160 bits.
   factory StaticDataReportA.fromBinary(String binaryInput) {
-    String binary = binaryInput.padRight(168, '0'); // add padding of zeroes if type a part got truncated for some f*ck-all reasons - // "According to the standard, both the A and B parts are supposed to be 168 bits. However, in the wild, A parts are often transmitted with only 160 bits, omitting the 'spare' 7 bits at the end. Implementers should be permissive about this."
+    String binary = binaryInput.padRight(
+      168,
+      '0',
+    ); // add padding of zeroes if type a part got truncated for some f*ck-all reasons - // "According to the standard, both the A and B parts are supposed to be 168 bits. However, in the wild, A parts are often transmitted with only 160 bits, omitting the 'spare' 7 bits at the end. Implementers should be permissive about this."
 
     // common
     int messageType = int.parse(binary.substring(0, 6), radix: 2);
@@ -85,19 +88,18 @@ class StaticDataReportA extends AISMessage {
     String vesselNameBin = binary.substring(40, 160);
     String spareBin = binary.substring(160, 168);
 
-
     // conversion to actually readable data
     int partNumber = int.parse(partNumberBin, radix: 2);
     String vesselName = BinaryConverter().getVesselName(vesselNameBin);
     int spare = int.parse(spareBin, radix: 2);
 
     return StaticDataReportA(
-        messageType: messageType,
-        mmsi: mmsi,
-        repeatIndicator: repeatIndicator,
-        partNumber: partNumber,
-        vesselName: vesselName,
-        spare: spare
+      messageType: messageType,
+      mmsi: mmsi,
+      repeatIndicator: repeatIndicator,
+      partNumber: partNumber,
+      vesselName: vesselName,
+      spare: spare,
     );
   }
 
@@ -107,7 +109,10 @@ class StaticDataReportA extends AISMessage {
   /// The string is zero-padded to 168 bits before parsing to tolerate the
   /// common real-world case where Part A is transmitted as only 160 bits.
   factory StaticDataReportA.fromEncoded(String encoded) {
-    String binary = encoded.padRight(168, '0'); // add padding of zeroes if type a part got truncated for some f*ck-all reasons - // "According to the standard, both the A and B parts are supposed to be 168 bits. However, in the wild, A parts are often transmitted with only 160 bits, omitting the 'spare' 7 bits at the end. Implementers should be permissive about this."
+    String binary = encoded.padRight(
+      168,
+      '0',
+    ); // add padding of zeroes if type a part got truncated for some f*ck-all reasons - // "According to the standard, both the A and B parts are supposed to be 168 bits. However, in the wild, A parts are often transmitted with only 160 bits, omitting the 'spare' 7 bits at the end. Implementers should be permissive about this."
 
     // common
     int messageType = getUintDirect(binary, 0, 6);
@@ -120,12 +125,12 @@ class StaticDataReportA extends AISMessage {
     int spare = getUintDirect(binary, 160, 168);
 
     return StaticDataReportA(
-        messageType: messageType,
-        mmsi: mmsi,
-        repeatIndicator: repeatIndicator,
-        partNumber: partNumber,
-        vesselName: vesselName,
-        spare: spare
+      messageType: messageType,
+      mmsi: mmsi,
+      repeatIndicator: repeatIndicator,
+      partNumber: partNumber,
+      vesselName: vesselName,
+      spare: spare,
     );
   }
 }
@@ -255,11 +260,11 @@ class StaticDataReportB extends AISMessage {
   @override
   String toString() =>
       'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Part Number: $partNumber, '
-          'VendorID: $vendorId, Unit Model: $unitModel, Call Sign: $callSign, '
-          'Vessel Type Int: $vesselTypeInt, Vessel Type: $vesselType, '
-          'Dimensions: ${dimensionBow}m bow/${dimensionStern}m stern/${dimensionPort}m port/${dimensionStarboard}m starboard, '
-          'Mothership MMSI: $mothershipMMSI'
-          'Serial Number: $serialNumber, spare: $spare)';
+      'VendorID: $vendorId, Unit Model: $unitModel, Call Sign: $callSign, '
+      'Vessel Type Int: $vesselTypeInt, Vessel Type: $vesselType, '
+      'Dimensions: ${dimensionBow}m bow/${dimensionStern}m stern/${dimensionPort}m port/${dimensionStarboard}m starboard, '
+      'Mothership MMSI: $mothershipMMSI'
+      'Serial Number: $serialNumber, spare: $spare)';
   //endregion
 
   /// Decodes a pre-converted binary string into a [StaticDataReportB].
@@ -267,7 +272,10 @@ class StaticDataReportB extends AISMessage {
   /// Prefer [StaticDataReportB.fromEncoded] for new code. The string is
   /// zero-padded to 168 bits before parsing to tolerate truncated frames.
   factory StaticDataReportB.fromBinary(String binaryInput) {
-    String binary = binaryInput.padRight(168, '0'); // add padding of zeroes if second part got truncated for some f*ck-all reasons...
+    String binary = binaryInput.padRight(
+      168,
+      '0',
+    ); // add padding of zeroes if second part got truncated for some f*ck-all reasons...
 
     // common
     int messageType = int.parse(binary.substring(0, 6), radix: 2);
@@ -303,22 +311,22 @@ class StaticDataReportB extends AISMessage {
     int spare = int.parse(spareBin, radix: 2);
 
     return StaticDataReportB(
-        messageType: messageType,
-        mmsi: mmsi,
-        repeatIndicator: repeatIndicator,
-        partNumber: partNumber,
-        vendorId: vendorId,
-        vesselType: vesselType,
-        vesselTypeInt: int.parse(vesselTypeBin, radix: 2),
-        unitModel: unitModelCode,
-        serialNumber: serialNumber,
-        callSign: callSign,
-        dimensionBow: dimensionBow,
-        dimensionStern: dimensionStern,
-        dimensionPort: dimensionPort,
-        dimensionStarboard: dimensionStarboard,
-        mothershipMMSI: motherShipMMSI,
-        spare: spare
+      messageType: messageType,
+      mmsi: mmsi,
+      repeatIndicator: repeatIndicator,
+      partNumber: partNumber,
+      vendorId: vendorId,
+      vesselType: vesselType,
+      vesselTypeInt: int.parse(vesselTypeBin, radix: 2),
+      unitModel: unitModelCode,
+      serialNumber: serialNumber,
+      callSign: callSign,
+      dimensionBow: dimensionBow,
+      dimensionStern: dimensionStern,
+      dimensionPort: dimensionPort,
+      dimensionStarboard: dimensionStarboard,
+      mothershipMMSI: motherShipMMSI,
+      spare: spare,
     );
   }
 
@@ -328,7 +336,10 @@ class StaticDataReportB extends AISMessage {
   /// The string is zero-padded to 168 bits before parsing. String fields
   /// ([vesselType], [vendorId], [callSign]) are resolved via [BinaryConverter].
   factory StaticDataReportB.fromEncoded(String encoded) {
-    String binary = encoded.padRight(168, '0'); // add padding of zeroes if second part got truncated.
+    String binary = encoded.padRight(
+      168,
+      '0',
+    ); // add padding of zeroes if second part got truncated.
 
     // common
     int messageType = getUintDirect(binary, 0, 6);
@@ -337,12 +348,18 @@ class StaticDataReportB extends AISMessage {
 
     // binary ranges specific to type 24B
     int partNumber = getUintDirect(binary, 38, 40);
-    String vesselType = BinaryConverter().getVesselTypeDirect(getUintDirect(binary, 40, 48));
+    String vesselType = BinaryConverter().getVesselTypeDirect(
+      getUintDirect(binary, 40, 48),
+    );
     int vesselTypeInt = getUintDirect(binary, 40, 48);
     String vendorId = BinaryConverter().getVendorIdDirect(binary, 48, 66);
     int unitModel = getUintDirect(binary, 66, 70);
     int serialNumber = getUintDirect(binary, 70, 90);
-    String callSign = BinaryConverter().getVesselCallSignDirect(binary, 90, 132);
+    String callSign = BinaryConverter().getVesselCallSignDirect(
+      binary,
+      90,
+      132,
+    );
     int dimensionBow = getUintDirect(binary, 132, 141);
     int dimensionStern = getUintDirect(binary, 141, 150);
     int dimensionPort = getUintDirect(binary, 150, 156);
@@ -350,25 +367,23 @@ class StaticDataReportB extends AISMessage {
     int mothershipMMSI = getUintDirect(binary, 132, 162);
     int spare = getUintDirect(binary, 162, 168);
 
-
     return StaticDataReportB(
-        messageType: messageType,
-        mmsi: mmsi,
-        repeatIndicator: repeatIndicator,
-        partNumber: partNumber,
-        vesselTypeInt: vesselTypeInt,
-        vesselType: vesselType,
-        vendorId: vendorId,
-        unitModel: unitModel,
-        serialNumber: serialNumber,
-        callSign: callSign,
-        dimensionBow: dimensionBow,
-        dimensionStern: dimensionStern,
-        dimensionPort: dimensionPort,
-        dimensionStarboard: dimensionStarboard,
-        mothershipMMSI: mothershipMMSI,
-        spare: spare
+      messageType: messageType,
+      mmsi: mmsi,
+      repeatIndicator: repeatIndicator,
+      partNumber: partNumber,
+      vesselTypeInt: vesselTypeInt,
+      vesselType: vesselType,
+      vendorId: vendorId,
+      unitModel: unitModel,
+      serialNumber: serialNumber,
+      callSign: callSign,
+      dimensionBow: dimensionBow,
+      dimensionStern: dimensionStern,
+      dimensionPort: dimensionPort,
+      dimensionStarboard: dimensionStarboard,
+      mothershipMMSI: mothershipMMSI,
+      spare: spare,
     );
   }
 }
-

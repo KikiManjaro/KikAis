@@ -25,8 +25,7 @@ String _fragment(String binary, int index, int total, int seq) {
 }
 
 void main() {
-  test('describeMessage lists the fields of a decoded position report',
-      () {
+  test('describeMessage lists the fields of a decoded position report', () {
     final sentence = encodePositionReport(
       mmsi: 226545000,
       latitude: 48.85,
@@ -50,8 +49,9 @@ void main() {
     expect(labels, contains('COG (°)'));
   });
 
-  testWidgets('decoder page decodes a pasted sentence and shows the details',
-      (tester) async {
+  testWidgets('decoder page decodes a pasted sentence and shows the details', (
+    tester,
+  ) async {
     final settings = AppSettings();
     await tester.pumpWidget(
       ChangeNotifierProvider.value(
@@ -83,8 +83,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('decoder page groups multi-part fragments into one block',
-      (tester) async {
+  testWidgets('decoder page groups multi-part fragments into one block', (
+    tester,
+  ) async {
     final settings = AppSettings();
     await tester.pumpWidget(
       ChangeNotifierProvider.value(
@@ -110,8 +111,7 @@ void main() {
         cog: 120.0,
         heading: 45.0,
       ),
-    )!
-        .binaryPayload;
+    )!.binaryPayload;
     final part1 = _fragment(full.substring(0, 144), 0, 2, 3);
     final part2 = _fragment(full.substring(144), 1, 2, 3);
 

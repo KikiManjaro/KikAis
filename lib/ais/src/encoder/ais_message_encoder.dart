@@ -1,6 +1,7 @@
 import 'ais_payload_encoder.dart';
 
-String _bits(int value, int width) => value.toRadixString(2).padLeft(width, '0');
+String _bits(int value, int width) =>
+    value.toRadixString(2).padLeft(width, '0');
 
 int _signed(int value, int bits) => value < 0 ? value + (1 << bits) : value;
 
@@ -97,19 +98,18 @@ String encodeBaseStationReport({
   required int second,
   required double latitude,
   required double longitude,
-}) =>
-    _baseStationLike(
-      type: 4,
-      mmsi: mmsi,
-      year: year,
-      month: month,
-      day: day,
-      hour: hour,
-      minute: minute,
-      second: second,
-      latitude: latitude,
-      longitude: longitude,
-    );
+}) => _baseStationLike(
+  type: 4,
+  mmsi: mmsi,
+  year: year,
+  month: month,
+  day: day,
+  hour: hour,
+  minute: minute,
+  second: second,
+  latitude: latitude,
+  longitude: longitude,
+);
 
 /// Encodes a Type 5 static and voyage related data sentence (424 bits).
 String encodeStaticAndVoyage({
@@ -197,13 +197,12 @@ String encodeBinaryAcknowledge({
   required int mmsi,
   List<int> destinationMmsis = const [],
   List<int> sequenceNumbers = const [],
-}) =>
-    _acknowledgeLike(
-      type: 7,
-      mmsi: mmsi,
-      destMmsis: destinationMmsis,
-      seqs: sequenceNumbers,
-    );
+}) => _acknowledgeLike(
+  type: 7,
+  mmsi: mmsi,
+  destMmsis: destinationMmsis,
+  seqs: sequenceNumbers,
+);
 
 /// Encodes a Type 8 binary broadcast message sentence (padded to 1008 bits).
 String encodeBinaryBroadcast({
@@ -251,10 +250,7 @@ String encodeSarAircraftPosition({
 }
 
 /// Encodes a Type 10 UTC/date inquiry sentence (72 bits).
-String encodeUtcDateInquiry({
-  required int mmsi,
-  required int destinationMmsi,
-}) {
+String encodeUtcDateInquiry({required int mmsi, required int destinationMmsi}) {
   final sb = StringBuffer();
   sb.write(_head(type: 10, mmsi: mmsi));
   sb.write(_bits(0, 2)); // spare
@@ -274,19 +270,18 @@ String encodeUtcDateResponse({
   required int second,
   required double latitude,
   required double longitude,
-}) =>
-    _baseStationLike(
-      type: 11,
-      mmsi: mmsi,
-      year: year,
-      month: month,
-      day: day,
-      hour: hour,
-      minute: minute,
-      second: second,
-      latitude: latitude,
-      longitude: longitude,
-    );
+}) => _baseStationLike(
+  type: 11,
+  mmsi: mmsi,
+  year: year,
+  month: month,
+  day: day,
+  hour: hour,
+  minute: minute,
+  second: second,
+  latitude: latitude,
+  longitude: longitude,
+);
 
 /// Encodes a Type 12 addressed safety related message (padded to 1008 bits).
 String encodeAddressedSafety({
@@ -311,19 +306,15 @@ String encodeSafetyAck({
   required int mmsi,
   List<int> destinationMmsis = const [],
   List<int> sequenceNumbers = const [],
-}) =>
-    _acknowledgeLike(
-      type: 13,
-      mmsi: mmsi,
-      destMmsis: destinationMmsis,
-      seqs: sequenceNumbers,
-    );
+}) => _acknowledgeLike(
+  type: 13,
+  mmsi: mmsi,
+  destMmsis: destinationMmsis,
+  seqs: sequenceNumbers,
+);
 
 /// Encodes a Type 14 safety related broadcast message (padded to 1008 bits).
-String encodeSafetyBroadcast({
-  required int mmsi,
-  String text = '',
-}) {
+String encodeSafetyBroadcast({required int mmsi, String text = ''}) {
   final sb = StringBuffer();
   sb.write(_head(type: 14, mmsi: mmsi));
   sb.write(_bits(0, 2)); // spare
@@ -435,18 +426,22 @@ String encodeClassBPosition({
   int timestamp = 0,
 }) {
   final sb = StringBuffer();
-  sb.write(_classBHead(
-    type: 18,
-    mmsi: mmsi,
-    latitude: latitude,
-    longitude: longitude,
-    sog: sog,
-    cog: cog,
-    heading: heading,
-    timestamp: timestamp,
-    positionAccuracy: positionAccuracy,
-  ));
-  sb.write(_bits(0, 8)); // regional / CS / display / DSC / band / msg22 / assigned
+  sb.write(
+    _classBHead(
+      type: 18,
+      mmsi: mmsi,
+      latitude: latitude,
+      longitude: longitude,
+      sog: sog,
+      cog: cog,
+      heading: heading,
+      timestamp: timestamp,
+      positionAccuracy: positionAccuracy,
+    ),
+  );
+  sb.write(
+    _bits(0, 8),
+  ); // regional / CS / display / DSC / band / msg22 / assigned
   sb.write(_bits(0, 1)); // RAIM
   sb.write(_bits(0, 20)); // radio
   return buildNmeaSentence(sb.toString());
@@ -470,17 +465,19 @@ String encodeClassBExtended({
   int timestamp = 0,
 }) {
   final sb = StringBuffer();
-  sb.write(_classBHead(
-    type: 19,
-    mmsi: mmsi,
-    latitude: latitude,
-    longitude: longitude,
-    sog: sog,
-    cog: cog,
-    heading: heading,
-    timestamp: timestamp,
-    positionAccuracy: positionAccuracy,
-  ));
+  sb.write(
+    _classBHead(
+      type: 19,
+      mmsi: mmsi,
+      latitude: latitude,
+      longitude: longitude,
+      sog: sog,
+      cog: cog,
+      heading: heading,
+      timestamp: timestamp,
+      positionAccuracy: positionAccuracy,
+    ),
+  );
   sb.write(_bits(0, 4)); // regional reserved
   sb.write(encodeAisText(name, 120));
   sb.write(_bits(vesselType.clamp(0, 255), 8));
@@ -616,10 +613,7 @@ String encodeGroupAssignment({
 }
 
 /// Encodes a Type 24 Part A sentence (vessel name).
-String encodeStaticDataReportPartA({
-  required int mmsi,
-  required String name,
-}) {
+String encodeStaticDataReportPartA({required int mmsi, required String name}) {
   final sb = StringBuffer();
   sb.write(_head(type: 24, mmsi: mmsi));
   sb.write(_bits(0, 2)); // part number A
@@ -687,12 +681,14 @@ String encodeSingleSlotBinary({
   (int, int)? applicationId,
 }) {
   final sb = StringBuffer();
-  sb.write(_binarySlotHead(
-    type: 25,
-    mmsi: mmsi,
-    destinationMmsi: destinationMmsi,
-    applicationId: applicationId,
-  ));
+  sb.write(
+    _binarySlotHead(
+      type: 25,
+      mmsi: mmsi,
+      destinationMmsi: destinationMmsi,
+      applicationId: applicationId,
+    ),
+  );
   sb.write(_bytesToBits(data));
   return buildNmeaSentence(sb.toString().padRight(168, '0'));
 }
@@ -705,12 +701,14 @@ String encodeMultipleSlotBinary({
   (int, int)? applicationId,
 }) {
   final sb = StringBuffer();
-  sb.write(_binarySlotHead(
-    type: 26,
-    mmsi: mmsi,
-    destinationMmsi: destinationMmsi,
-    applicationId: applicationId,
-  ));
+  sb.write(
+    _binarySlotHead(
+      type: 26,
+      mmsi: mmsi,
+      destinationMmsi: destinationMmsi,
+      applicationId: applicationId,
+    ),
+  );
   sb.write(_bytesToBits(data));
   sb.write(_bits(0, 20)); // radio status
   return buildNmeaSentence(sb.toString().padRight(1064, '0'));

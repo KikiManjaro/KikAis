@@ -31,15 +31,15 @@ class RtlSdrFeedConfig {
   });
 
   Map<String, Object?> toIsolateMap() => {
-        'deviceIndex': deviceIndex,
-        'gainDb': gainDb,
-        'autoGain': autoGain,
-        'agc': agc,
-        'sampleRate': sampleRate,
-        'useChannel1': useChannel1,
-        'useChannel2': useChannel2,
-        'chunkBytes': chunkBytes,
-      };
+    'deviceIndex': deviceIndex,
+    'gainDb': gainDb,
+    'autoGain': autoGain,
+    'agc': agc,
+    'sampleRate': sampleRate,
+    'useChannel1': useChannel1,
+    'useChannel2': useChannel2,
+    'chunkBytes': chunkBytes,
+  };
 
   factory RtlSdrFeedConfig.fromIsolateMap(Map<Object?, Object?> m) =>
       RtlSdrFeedConfig(
@@ -178,9 +178,7 @@ void _rtlSdrDspEntry(SendPort reply) {
   }
 
   command.listen((message) {
-    if (message is List &&
-        message.isNotEmpty &&
-        message[0] == 'start') {
+    if (message is List && message.isNotEmpty && message[0] == 'start') {
       unawaited(run((message[1] as Map).cast<Object?, Object?>()));
     } else if (message == 'stop') {
       running = false;
@@ -210,10 +208,8 @@ class RtlSdrFeedPlayer extends ChangeNotifier {
   RtlSdrSentenceSource? _source;
   StreamSubscription<String>? _subscription;
 
-  RtlSdrFeedPlayer({
-    required this.config,
-    RtlSdrSentenceSource? source,
-  }) : _injectedSource = source;
+  RtlSdrFeedPlayer({required this.config, RtlSdrSentenceSource? source})
+    : _injectedSource = source;
 
   /// Human-friendly label of the configured dongle, falling back to a generic
   /// "#index" tag when no device is enumerated (tests, missing drivers). The
@@ -226,8 +222,7 @@ class RtlSdrFeedPlayer extends ChangeNotifier {
     return '#${config.deviceIndex}';
   }
 
-  String get _gainText =>
-      config.autoGain ? 'auto' : '${config.gainDb} dB';
+  String get _gainText => config.autoGain ? 'auto' : '${config.gainDb} dB';
   String get _channelsText => config.useChannel1 && config.useChannel2
       ? 'A + B'
       : (config.useChannel1 ? 'A' : 'B');
@@ -238,39 +233,42 @@ class RtlSdrFeedPlayer extends ChangeNotifier {
   /// (surfaced as a red feed status) and nothing is emitted.
   Future<void> connect() async {
     error = null;
-    _status(LogMessage(
-      'rtlSdrOpening',
-      {'device': deviceLabel},
-      'Opening RTL-SDR dongle $deviceLabel...',
-    ));
+    _status(
+      LogMessage('rtlSdrOpening', {
+        'device': deviceLabel,
+      }, 'Opening RTL-SDR dongle $deviceLabel...'),
+    );
     try {
-      final source = _source ??= (_injectedSource ??
-          _IsolateSentenceSource(config));
+      final source = _source ??=
+          (_injectedSource ?? _IsolateSentenceSource(config));
       await source.start();
-      _status(LogMessage(
-        'rtlSdrConnected',
-        {
-          'device': deviceLabel,
-          'freq': '162.000 MHz',
-          'rate': '${(config.sampleRate / 1000000).toStringAsFixed(3)} MHz',
-          'gain': _gainText,
-          'channels': _channelsText,
-        },
-        'RTL-SDR $deviceLabel connected (162.000 MHz, '
-            '${(config.sampleRate / 1000000).toStringAsFixed(3)} MHz sample '
-            'rate, $_gainText gain, channels $_channelsText).',
-      ));
+      _status(
+        LogMessage(
+          'rtlSdrConnected',
+          {
+            'device': deviceLabel,
+            'freq': '162.000 MHz',
+            'rate': '${(config.sampleRate / 1000000).toStringAsFixed(3)} MHz',
+            'gain': _gainText,
+            'channels': _channelsText,
+          },
+          'RTL-SDR $deviceLabel connected (162.000 MHz, '
+              '${(config.sampleRate / 1000000).toStringAsFixed(3)} MHz sample '
+              'rate, $_gainText gain, channels $_channelsText).',
+        ),
+      );
       _subscription = source.sentences.listen(
         _onSentence,
         onError: (Object e) {
           if (isRunning) {
             error = '$e';
             isRunning = false;
-            _status(LogMessage(
-              'rtlSdrError',
-              {'device': deviceLabel, 'error': '$e'},
-              'RTL-SDR $deviceLabel error: $e',
-            ));
+            _status(
+              LogMessage('rtlSdrError', {
+                'device': deviceLabel,
+                'error': '$e',
+              }, 'RTL-SDR $deviceLabel error: $e'),
+            );
             notifyListeners();
           }
         },
@@ -278,11 +276,11 @@ class RtlSdrFeedPlayer extends ChangeNotifier {
           if (isRunning) {
             error = 'RTL-SDR stream closed';
             isRunning = false;
-            _status(LogMessage(
-              'rtlSdrStreamClosed',
-              {'device': deviceLabel},
-              'RTL-SDR $deviceLabel stream closed.',
-            ));
+            _status(
+              LogMessage('rtlSdrStreamClosed', {
+                'device': deviceLabel,
+              }, 'RTL-SDR $deviceLabel stream closed.'),
+            );
             notifyListeners();
           }
         },
@@ -291,11 +289,12 @@ class RtlSdrFeedPlayer extends ChangeNotifier {
     } catch (e) {
       error = '$e';
       isRunning = false;
-      _status(LogMessage(
-        'rtlSdrError',
-        {'device': deviceLabel, 'error': '$e'},
-        'RTL-SDR $deviceLabel error: $e',
-      ));
+      _status(
+        LogMessage('rtlSdrError', {
+          'device': deviceLabel,
+          'error': '$e',
+        }, 'RTL-SDR $deviceLabel error: $e'),
+      );
     }
     notifyListeners();
   }
@@ -309,17 +308,23 @@ class RtlSdrFeedPlayer extends ChangeNotifier {
 
   Future<void> disconnect() async {
     if (isRunning) {
-      _status(LogMessage(
-        'rtlSdrDisconnected',
-        {'device': deviceLabel},
-        'RTL-SDR $deviceLabel disconnected.',
-      ));
+      _status(
+        LogMessage('rtlSdrDisconnected', {
+          'device': deviceLabel,
+        }, 'RTL-SDR $deviceLabel disconnected.'),
+      );
     }
     isRunning = false;
     await _subscription?.cancel();
     _subscription = null;
     await _source?.stop();
     notifyListeners();
+  }
+
+  /// Reopens the receive chain after an OS sleep, USB reset, or stream error.
+  Future<void> reconnect() async {
+    await disconnect();
+    await connect();
   }
 
   /// Status reported to the reception page, reusing the network feeds' dot

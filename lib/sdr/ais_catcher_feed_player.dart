@@ -44,13 +44,9 @@ class AisCatcherFeedPlayer extends ChangeNotifier {
   AisCatcherProcess? _process;
   RawDatagramSocket? _udpSocket;
 
-  AisCatcherFeedPlayer({
-    required this.config,
-    this.udpPort = 12345,
-  });
+  AisCatcherFeedPlayer({required this.config, this.udpPort = 12345});
 
-  String get _gainText =>
-      config.autoGain ? 'auto' : '${config.gainDb} dB';
+  String get _gainText => config.autoGain ? 'auto' : '${config.gainDb} dB';
   String get _channelsText => config.useChannel1 && config.useChannel2
       ? 'A + B'
       : (config.useChannel1 ? 'A' : 'B');
@@ -60,11 +56,13 @@ class AisCatcherFeedPlayer extends ChangeNotifier {
   /// Spawns ais-catcher and binds the UDP socket to receive NMEA sentences.
   Future<void> connect() async {
     error = null;
-    _status(LogMessage(
-      'rtlSdrOpening',
-      {'device': '#${config.deviceIndex}'},
-      'Starting AIS-catcher for RTL-SDR #${config.deviceIndex}...',
-    ));
+    _status(
+      LogMessage(
+        'rtlSdrOpening',
+        {'device': '#${config.deviceIndex}'},
+        'Starting AIS-catcher for RTL-SDR #${config.deviceIndex}...',
+      ),
+    );
 
     try {
       // Bind UDP socket BEFORE starting ais-catcher so it can connect.
@@ -84,18 +82,20 @@ class AisCatcherFeedPlayer extends ChangeNotifier {
         useChannel2: config.useChannel2,
       );
 
-      _status(LogMessage(
-        'rtlSdrConnected',
-        {
-          'device': '#${config.deviceIndex}',
-          'freq': '162.000 MHz',
-          'rate': '${config.sampleRate / 1000000} MHz',
-          'gain': _gainText,
-          'channels': _channelsText,
-        },
-        'AIS-catcher connected (RTL-SDR #${config.deviceIndex}, '
-            '162.000 MHz, $_channelsText channels, gain $_gainText).',
-      ));
+      _status(
+        LogMessage(
+          'rtlSdrConnected',
+          {
+            'device': '#${config.deviceIndex}',
+            'freq': '162.000 MHz',
+            'rate': '${config.sampleRate / 1000000} MHz',
+            'gain': _gainText,
+            'channels': _channelsText,
+          },
+          'AIS-catcher connected (RTL-SDR #${config.deviceIndex}, '
+              '162.000 MHz, $_channelsText channels, gain $_gainText).',
+        ),
+      );
 
       isRunning = true;
 
@@ -114,11 +114,13 @@ class AisCatcherFeedPlayer extends ChangeNotifier {
           if (isRunning) {
             error = '$e';
             isRunning = false;
-            _status(LogMessage(
-              'rtlSdrError',
-              {'device': '#${config.deviceIndex}', 'error': '$e'},
-              'AIS-catcher RTL-SDR #${config.deviceIndex} error: $e',
-            ));
+            _status(
+              LogMessage(
+                'rtlSdrError',
+                {'device': '#${config.deviceIndex}', 'error': '$e'},
+                'AIS-catcher RTL-SDR #${config.deviceIndex} error: $e',
+              ),
+            );
             notifyListeners();
           }
         },
@@ -126,11 +128,11 @@ class AisCatcherFeedPlayer extends ChangeNotifier {
           if (isRunning) {
             error = 'UDP socket closed';
             isRunning = false;
-            _status(LogMessage(
-              'rtlSdrStreamClosed',
-              {'device': '#${config.deviceIndex}'},
-              'AIS-catcher UDP socket closed.',
-            ));
+            _status(
+              LogMessage('rtlSdrStreamClosed', {
+                'device': '#${config.deviceIndex}',
+              }, 'AIS-catcher UDP socket closed.'),
+            );
             notifyListeners();
           }
         },
@@ -144,22 +146,24 @@ class AisCatcherFeedPlayer extends ChangeNotifier {
         },
         onError: (Object e) {
           if (isRunning && e is StateError) {
-            _status(LogMessage(
-              'rtlSdrError',
-              {'device': '#${config.deviceIndex}', 'error': '$e'},
-              'AIS-catcher: $e',
-            ));
+            _status(
+              LogMessage('rtlSdrError', {
+                'device': '#${config.deviceIndex}',
+                'error': '$e',
+              }, 'AIS-catcher: $e'),
+            );
           }
         },
       );
     } catch (e) {
       error = '$e';
       isRunning = false;
-      _status(LogMessage(
-        'rtlSdrError',
-        {'device': '#${config.deviceIndex}', 'error': '$e'},
-        'AIS-catcher RTL-SDR #${config.deviceIndex} error: $e',
-      ));
+      _status(
+        LogMessage('rtlSdrError', {
+          'device': '#${config.deviceIndex}',
+          'error': '$e',
+        }, 'AIS-catcher RTL-SDR #${config.deviceIndex} error: $e'),
+      );
       await _cleanup();
     }
     notifyListeners();
@@ -174,15 +178,23 @@ class AisCatcherFeedPlayer extends ChangeNotifier {
 
   Future<void> disconnect() async {
     if (isRunning) {
-      _status(LogMessage(
-        'rtlSdrDisconnected',
-        {'device': '#${config.deviceIndex}'},
-        'AIS-catcher RTL-SDR #${config.deviceIndex} disconnected.',
-      ));
+      _status(
+        LogMessage(
+          'rtlSdrDisconnected',
+          {'device': '#${config.deviceIndex}'},
+          'AIS-catcher RTL-SDR #${config.deviceIndex} disconnected.',
+        ),
+      );
     }
     isRunning = false;
     await _cleanup();
     notifyListeners();
+  }
+
+  /// Restarts AIS-catcher after Windows has suspended or reset the USB device.
+  Future<void> reconnect() async {
+    await disconnect();
+    await connect();
   }
 
   Future<void> _cleanup() async {

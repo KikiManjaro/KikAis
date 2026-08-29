@@ -23,6 +23,7 @@ class BoatManager extends ChangeNotifier {
   static const Duration boatTtl = Duration(minutes: 30);
   static const Duration purgeInterval = Duration(minutes: 1);
   static const Duration notifyThrottle = Duration(milliseconds: 200);
+  static const int _decodeBatchSize = 8;
 
   final Map<int, Boat> _boats = {};
   final MessageStats stats;
@@ -47,9 +48,8 @@ class BoatManager extends ChangeNotifier {
   final ReceivePort _decoderControl = ReceivePort();
   final AisNmeaDecoder _fallbackDecoder = AisNmeaDecoder();
 
-  // Pre-allocated send buffer: reuses the same List object to avoid per-message
-  // allocation + GC pressure at high throughput (300+ msg/s).
-  final List<dynamic> _sendBuf = [null, null, null];
+  final List<List<dynamic>> _decodeBatch = [];
+  bool _decodeFlushScheduled = false;
 
   DateTime _lastNotify = DateTime.fromMillisecondsSinceEpoch(0);
   bool _pendingNotify = false;
@@ -69,6 +69,7 @@ class BoatManager extends ChangeNotifier {
     _purgeTimer?.cancel();
     _throttleTimer?.cancel();
     _decoderControl.close();
+    _decodeBatch.clear();
     _decoderIsolate?.kill(priority: Isolate.immediate);
     super.dispose();
   }
@@ -155,19 +156,24 @@ class BoatManager extends ChangeNotifier {
         return;
       }
       if (message is List) {
-        final feed = message[0] as String?;
-        final line = message[1] as String;
-        final ts = message.length > 2 ? message[2] as int? : null;
-        final decoded = decoder.decode(line);
-        if (decoded != null) {
-          control.send(
-            _DecodedWithFeed(decoded, feed, decoder.lastRawSentences),
-          );
+        final batch = message.isNotEmpty && message.first is List
+            ? message.cast<List<dynamic>>()
+            : [message];
+        for (final item in batch) {
+          final feed = item[0] as String?;
+          final line = item[1] as String;
+          final ts = item.length > 2 ? item[2] as int? : null;
+          final decoded = decoder.decode(line);
+          if (decoded != null) {
+            control.send(
+              _DecodedWithFeed(decoded, feed, decoder.lastRawSentences),
+            );
+          }
+          if (ts != null) {
+            control.send(ts);
+          }
+          control.send(decoder.report());
         }
-        if (ts != null) {
-          control.send(ts);
-        }
-        control.send(decoder.report());
       }
     });
   }
@@ -177,10 +183,11 @@ class BoatManager extends ChangeNotifier {
       final ts = DateTime.now().microsecondsSinceEpoch;
       PerfProbe.isolateSent++;
       PerfProbe.isolatePending++;
-      _sendBuf[0] = feed;
-      _sendBuf[1] = msg;
-      _sendBuf[2] = ts;
-      _decoderSendPort!.send(_sendBuf);
+      _decodeBatch.add([feed, msg, ts]);
+      if (!_decodeFlushScheduled) {
+        _decodeFlushScheduled = true;
+        scheduleMicrotask(_flushDecodeBatch);
+      }
       return;
     }
     final decoded = _fallbackDecoder.decode(msg);
@@ -192,6 +199,20 @@ class BoatManager extends ChangeNotifier {
       );
     }
     _applyReport(_fallbackDecoder.report());
+  }
+
+  void _flushDecodeBatch() {
+    _decodeFlushScheduled = false;
+    final port = _decoderSendPort;
+    if (port == null || _decodeBatch.isEmpty || _disposed) return;
+    while (_decodeBatch.isNotEmpty) {
+      final count = _decodeBatch.length < _decodeBatchSize
+          ? _decodeBatch.length
+          : _decodeBatchSize;
+      final batch = _decodeBatch.sublist(0, count);
+      _decodeBatch.removeRange(0, count);
+      port.send(batch);
+    }
   }
 
   void _applyReport(DecoderReport report) {

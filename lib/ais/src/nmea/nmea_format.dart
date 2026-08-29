@@ -14,10 +14,10 @@ enum NmeaFormat {
 }
 
 String nmeaFormatLabel(NmeaFormat f) => switch (f) {
-      NmeaFormat.passthrough => 'Pass-through',
-      NmeaFormat.strip => 'Strip tag blocks',
-      NmeaFormat.tag => 'Add tag block',
-    };
+  NmeaFormat.passthrough => 'Pass-through',
+  NmeaFormat.strip => 'Strip tag blocks',
+  NmeaFormat.tag => 'Add tag block',
+};
 
 /// Builds a NMEA 4.0 tag block (`\s:...,t:...,c:XX\`) from its fields.
 /// A `c:` checksum is always computed over the tag content.
@@ -45,8 +45,7 @@ String buildTagBlock({
 
 /// Milliseconds since UTC midnight (the `t:` tag value).
 int msSinceUtcMidnight(DateTime now) =>
-    now.difference(DateTime.utc(now.year, now.month, now.day))
-        .inMilliseconds;
+    now.difference(DateTime.utc(now.year, now.month, now.day)).inMilliseconds;
 
 /// Rewrites a frame according to [format]: passes it through, strips its tag
 /// block, or tags it with [sourceId] and the current time. Returns an empty
@@ -65,23 +64,23 @@ String applyNmeaFormat(String line, NmeaFormat format, {String? sourceId}) {
     // or tag block); otherwise fall back to the extracted sentence so
     // timestamp-prefixed lines are not lost.
     NmeaFormat.passthrough =>
-      (trimmed.startsWith('\\') || trimmed.startsWith('!')) ? trimmed : sentence,
+      (trimmed.startsWith('\\') || trimmed.startsWith('!'))
+          ? trimmed
+          : sentence,
     NmeaFormat.strip => sentence,
-    NmeaFormat.tag => buildTagBlock(
-        sourceId: sourceId,
-        timeMs: msSinceUtcMidnight(DateTime.now()),
-      ) + sentence,
+    NmeaFormat.tag =>
+      buildTagBlock(
+            sourceId: sourceId,
+            timeMs: msSinceUtcMidnight(DateTime.now()),
+          ) +
+          sentence,
   };
 }
 
 /// Rewrites an encoded sentence to use [talker] (NMEA 4.0 talker ID) and
 /// optionally prefix a tag block, recomputing the checksum. The original
 /// checksum stays valid because the checksum is recalculated.
-String wrapNmea4(
-  String sentence, {
-  String talker = 'AI',
-  String? tagBlock,
-}) {
+String wrapNmea4(String sentence, {String talker = 'AI', String? tagBlock}) {
   final (_, base) = NmeaTagBlock.split(sentence);
   if (!base.startsWith('!')) return sentence;
   final star = base.lastIndexOf('*');

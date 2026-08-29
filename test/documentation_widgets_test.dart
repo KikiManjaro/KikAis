@@ -5,8 +5,8 @@ import 'package:kik_ais/documentation_widgets.dart';
 
 import 'l10n_test_utils.dart';
 
-Widget _wrap(Widget child) => withLocalizations(
-    Scaffold(body: SingleChildScrollView(child: child)));
+Widget _wrap(Widget child) =>
+    withLocalizations(Scaffold(body: SingleChildScrollView(child: child)));
 
 void main() {
   test('kVesselTypesFull exposes the full 0-99 table', () {
@@ -18,8 +18,9 @@ void main() {
     expect(names, contains('Fishing'));
   });
 
-  testWidgets('six-bit encoder shows the 6-bit code of a character',
-      (tester) async {
+  testWidgets('six-bit encoder shows the 6-bit code of a character', (
+    tester,
+  ) async {
     await tester.pumpWidget(_wrap(const SixBitEncoder()));
     await tester.enterText(find.byType(TextField), 'A');
     await tester.pump();
@@ -32,8 +33,9 @@ void main() {
     expect(find.text('*5C'), findsOneWidget);
   });
 
-  testWidgets('coordinate encoder converts lat/lon to raw integers',
-      (tester) async {
+  testWidgets('coordinate encoder converts lat/lon to raw integers', (
+    tester,
+  ) async {
     await tester.pumpWidget(_wrap(const CoordinateEncoder()));
     expect(find.textContaining('29034000'), findsOneWidget); // 48.39 * 600000
     expect(find.textContaining('-2694000'), findsOneWidget); // -4.49 * 600000

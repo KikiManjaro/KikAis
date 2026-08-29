@@ -1066,10 +1066,7 @@ class _ChannelOccupancyCard extends StatelessWidget {
           child: Center(
             child: Text(
               context.l10n.statsChannelNoData,
-              style: TextStyle(
-                color: scheme.onSurfaceVariant,
-                fontSize: 13,
-              ),
+              style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
             ),
           ),
         ),
@@ -1105,9 +1102,7 @@ class _ChannelOccupancyCard extends StatelessWidget {
                     if (other > 0)
                       Expanded(
                         flex: other,
-                        child: Container(
-                          color: scheme.surfaceContainerHighest,
-                        ),
+                        child: Container(color: scheme.surfaceContainerHighest),
                       ),
                   ],
                 ),
@@ -1194,10 +1189,7 @@ class _ChannelRow extends StatelessWidget {
           child: Text(
             context.l10n.statsChannelPercent(pct.toStringAsFixed(1)),
             textAlign: TextAlign.right,
-            style: TextStyle(
-              fontSize: 11,
-              color: scheme.onSurfaceVariant,
-            ),
+            style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant),
           ),
         ),
         if (rate > 0) ...[
@@ -1207,10 +1199,7 @@ class _ChannelRow extends StatelessWidget {
             child: Text(
               context.l10n.statsChannelRate(rate.toStringAsFixed(1)),
               textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 11,
-                color: scheme.onSurfaceVariant,
-              ),
+              style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant),
             ),
           ),
         ],

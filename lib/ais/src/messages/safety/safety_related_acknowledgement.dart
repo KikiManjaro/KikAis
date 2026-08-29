@@ -97,7 +97,8 @@ class SafetyRelatedAcknowledgement extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, MMSI1: $mmsi1, Seq1: $mmsiSeq1, MMSI2: $mmsi2, Seq2: $mmsiSeq2, MMSI3: $mmsi3, Seq3: $mmsiSeq3, MMSI4: $mmsi4, Seq4: $mmsiSeq4)';
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, MMSI1: $mmsi1, Seq1: $mmsiSeq1, MMSI2: $mmsi2, Seq2: $mmsiSeq2, MMSI3: $mmsi3, Seq3: $mmsiSeq3, MMSI4: $mmsi4, Seq4: $mmsiSeq4)';
   //endregion
 
   /// Decodes a six-bit-armored AIS payload string into a

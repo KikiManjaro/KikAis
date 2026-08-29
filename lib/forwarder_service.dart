@@ -24,6 +24,51 @@ class LogMessage {
   const LogMessage(this.key, this.args, this.fallback);
 }
 
+/// Serializes writes to one target without allowing a slow destination to
+/// block the feed pipeline indefinitely.
+class TargetSendQueue {
+  final int maxPending;
+  final Future<void> Function(String line) writer;
+  final List<String> _pending = [];
+  Future<void> _idle = Future<void>.value();
+  bool _draining = false;
+  int dropped = 0;
+
+  TargetSendQueue({required this.writer, this.maxPending = 2048})
+    : assert(maxPending > 0);
+
+  Future<void> get idle => _idle;
+
+  void enqueue(String line) {
+    if (_pending.length >= maxPending) {
+      _pending.removeAt(0);
+      dropped++;
+    }
+    _pending.add(line);
+    if (_draining) return;
+    _draining = true;
+    final completer = Completer<void>();
+    _idle = completer.future;
+    unawaited(_drain(completer));
+  }
+
+  Future<void> _drain(Completer<void> completer) async {
+    try {
+      while (_pending.isNotEmpty) {
+        final line = _pending.removeAt(0);
+        try {
+          await writer(line);
+        } catch (_) {
+          // Keep draining after a failed write so later frames are not stuck.
+        }
+      }
+    } finally {
+      _draining = false;
+      completer.complete();
+    }
+  }
+}
+
 typedef DataCallback =
     Future<void> Function(String feedName, String flag, String line);
 
@@ -61,10 +106,16 @@ class FeedStatus {
 /// Receives AIS frames from feeds (reception) and forwards them to every
 /// enabled [TargetConfig] (send).
 class ForwarderService {
+  static const _statusUpdateInterval = Duration(milliseconds: 50);
   final LogCallback onLog;
   final StatusCallback? onStatus;
+  final Duration reconnectDelay;
 
-  ForwarderService({required this.onLog, this.onStatus});
+  ForwarderService({
+    required this.onLog,
+    this.onStatus,
+    this.reconnectDelay = const Duration(seconds: 5),
+  });
 
   void _status(LogMessage m) {
     if (onStatus != null) {
@@ -77,6 +128,8 @@ class ForwarderService {
   final Map<String, _FeedConnection> _feeds = {};
   final ValueNotifier<Map<String, FeedStatus>> feedStatuses = ValueNotifier({});
   final Map<String, _TargetConnection> _targets = {};
+  final Map<String, FeedStatus> _pendingStatuses = {};
+  Timer? _statusUpdateTimer;
 
   List<TargetConfig> configuredTargets = [];
   bool _running = false;
@@ -154,6 +207,9 @@ class ForwarderService {
       await t.disconnect();
     }
     _targets.clear();
+    _statusUpdateTimer?.cancel();
+    _statusUpdateTimer = null;
+    _pendingStatuses.clear();
     feedStatuses.value = {};
     _status(const LogMessage('stopped', {}, 'Forwarder stopped.'));
   }
@@ -169,7 +225,7 @@ class ForwarderService {
         t.config.sendFormat,
         sourceId: t.config.tagSourceId ?? t.config.name,
       );
-      if (out.isNotEmpty) await t.send(out);
+      if (out.isNotEmpty) t.send(out);
     }
   }
 
@@ -193,9 +249,9 @@ class ForwarderService {
     var feed = _FeedConnection(name, flag, host, port, header);
     _feeds[name] = feed;
     feedStatuses.value = {...feedStatuses.value, name: feed.status};
-    feed.statusNotifier.addListener(() {
-      feedStatuses.value = {...feedStatuses.value, name: feed.status};
-    });
+    feed.statusNotifier.addListener(
+      () => _publishFeedStatus(name, feed.status),
+    );
 
     if (_running && !_stopping) {
       unawaited(_connectFeed(feed));
@@ -223,7 +279,25 @@ class ForwarderService {
   /// Updates the displayed status of a source that is not backed by a socket
   /// connection (e.g. file feeds), so its tile reuses the same dot semantics.
   void setFeedStatus(String name, FeedStatus status) {
-    feedStatuses.value = {...feedStatuses.value, name: status};
+    _publishFeedStatus(name, status);
+  }
+
+  void _publishFeedStatus(String name, FeedStatus status) {
+    final previous = feedStatuses.value[name];
+    if (previous == null ||
+        previous.connected != status.connected ||
+        previous.connecting != status.connecting ||
+        previous.error != status.error) {
+      feedStatuses.value = {...feedStatuses.value, name: status};
+      return;
+    }
+    _pendingStatuses[name] = status;
+    _statusUpdateTimer ??= Timer(_statusUpdateInterval, () {
+      _statusUpdateTimer = null;
+      if (_pendingStatuses.isEmpty) return;
+      feedStatuses.value = {...feedStatuses.value, ..._pendingStatuses};
+      _pendingStatuses.clear();
+    });
   }
 
   void removeFeedStatus(String name) {
@@ -231,7 +305,7 @@ class ForwarderService {
   }
 
   Future<void> _connectFeed(_FeedConnection feed) async {
-    while (!_stopping) {
+    while (!_stopping && !feed.isDisposed) {
       try {
         await feed.connect(_handleData);
         _status(
@@ -248,7 +322,7 @@ class ForwarderService {
             'Feed ${feed.name} disconnected. Reconnecting in 5s...',
           ),
         );
-        await Future<void>.delayed(const Duration(seconds: 5));
+        await Future<void>.delayed(reconnectDelay);
       } catch (e) {
         if (_stopping || feed.isDisposed) break;
         _status(
@@ -258,7 +332,7 @@ class ForwarderService {
             'Failed to connect feed ${feed.name}: $e. Retrying in 5s...',
           ),
         );
-        await Future<void>.delayed(const Duration(seconds: 5));
+        await Future<void>.delayed(reconnectDelay);
       }
     }
   }
@@ -280,7 +354,7 @@ class ForwarderService {
           t.config.sendFormat,
           sourceId: t.config.tagSourceId ?? t.config.name,
         );
-        if (out.isNotEmpty) await t.send(out);
+        if (out.isNotEmpty) t.send(out);
       }
       onLog(normalized, flag, feedName);
     } finally {
@@ -300,8 +374,11 @@ class _TargetConnection {
   Socket? _tcp;
   ServerSocket? _server;
   final List<Socket> _clients = [];
+  late final TargetSendQueue _sendQueue;
 
-  _TargetConnection(this.config, this.onLog, this.onStatus);
+  _TargetConnection(this.config, this.onLog, this.onStatus) {
+    _sendQueue = TargetSendQueue(writer: _write);
+  }
 
   Future<void> connect() async {
     switch (config.protocol) {
@@ -356,7 +433,11 @@ class _TargetConnection {
     }
   }
 
-  Future<void> send(String line) async {
+  void send(String line) {
+    _sendQueue.enqueue(line);
+  }
+
+  Future<void> _write(String line) async {
     try {
       switch (config.protocol) {
         case ForwardProtocol.udpServer || ForwardProtocol.udpClient:
@@ -432,6 +513,7 @@ class _FeedConnection {
   Socket? _socket;
   StreamSubscription<List<int>>? _subscription;
   Timer? _watchdog;
+  DateTime? _connectedAt;
   bool _disposed = false;
 
   static const Duration _watchdogInterval = Duration(seconds: 15);
@@ -451,6 +533,7 @@ class _FeedConnection {
       if (_disposed) {
         _socket?.destroy();
         _socket = null;
+        _completeClosed();
         return;
       }
       if (header != null) {
@@ -462,26 +545,40 @@ class _FeedConnection {
       } catch (_) {}
       try {
         // SO_KEEPALIVE
-        _socket!.setRawOption(RawSocketOption.fromBool(
-          RawSocketOption.levelSocket, 0x0008, true));
+        _socket!.setRawOption(
+          RawSocketOption.fromBool(RawSocketOption.levelSocket, 0x0008, true),
+        );
         if (Platform.isWindows) {
-          _socket!.setRawOption(RawSocketOption.fromInt(6, 3, 30));   // TCP_KEEPIDLE
-          _socket!.setRawOption(RawSocketOption.fromInt(6, 17, 10));  // TCP_KEEPINTVL
-          _socket!.setRawOption(RawSocketOption.fromInt(6, 10, 3));   // TCP_KEEPCNT (Winsock)
+          _socket!.setRawOption(
+            RawSocketOption.fromInt(6, 3, 30),
+          ); // TCP_KEEPIDLE
+          _socket!.setRawOption(
+            RawSocketOption.fromInt(6, 17, 10),
+          ); // TCP_KEEPINTVL
+          _socket!.setRawOption(
+            RawSocketOption.fromInt(6, 10, 3),
+          ); // TCP_KEEPCNT (Winsock)
         } else {
-          _socket!.setRawOption(RawSocketOption.fromInt(6, 4, 30));   // TCP_KEEPIDLE
-          _socket!.setRawOption(RawSocketOption.fromInt(6, 5, 10));   // TCP_KEEPINTVL
-          _socket!.setRawOption(RawSocketOption.fromInt(6, 6, 3));    // TCP_KEEPCNT
+          _socket!.setRawOption(
+            RawSocketOption.fromInt(6, 4, 30),
+          ); // TCP_KEEPIDLE
+          _socket!.setRawOption(
+            RawSocketOption.fromInt(6, 5, 10),
+          ); // TCP_KEEPINTVL
+          _socket!.setRawOption(
+            RawSocketOption.fromInt(6, 6, 3),
+          ); // TCP_KEEPCNT
         }
       } catch (_) {}
 
       _setStatus(const FeedStatus(connected: true));
+      _connectedAt = DateTime.now();
 
       // Watchdog: force reconnect if no data for _silentTimeout
       _watchdog?.cancel();
       _watchdog = Timer.periodic(_watchdogInterval, (_) {
         if (_disposed) return;
-        final last = statusNotifier.value.lastMessageAt;
+        final last = statusNotifier.value.lastMessageAt ?? _connectedAt;
         if (last != null &&
             statusNotifier.value.connected &&
             DateTime.now().difference(last) > _silentTimeout) {
@@ -524,7 +621,6 @@ class _FeedConnection {
           if (_disposed) return;
           _setStatus(status.copyWith(connected: false, error: '$e'));
           _completeClosed();
-          onData(name, flag, "Error: $e");
         },
         onDone: () {
           if (_disposed) return;
@@ -532,11 +628,11 @@ class _FeedConnection {
             status.copyWith(connected: false, error: 'Feed disconnected'),
           );
           _completeClosed();
-          onData(name, flag, "Feed disconnected");
         },
       );
     } catch (e) {
       _setStatus(status.copyWith(connecting: false, error: '$e'));
+      _completeClosed();
       rethrow;
     }
   }
@@ -568,6 +664,7 @@ class _FeedConnection {
     _socket = null;
     _subscription = null;
     _buffer.clear();
+    _connectedAt = null;
     _completeClosed();
   }
 }

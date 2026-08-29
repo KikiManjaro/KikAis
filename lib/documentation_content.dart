@@ -509,35 +509,34 @@ const List<DocEvent> kAisTimeline = [
 ];
 
 /// Resolves a [DocEvent] title l10n key to its translated label.
-String docEventTitle(DocEvent e, AppLocalizations l10n) =>
-    switch (e.titleKey) {
-      'docTimeline1990sTitle' => l10n.docTimeline1990sTitle,
-      'docTimeline1998Title' => l10n.docTimeline1998Title,
-      'docTimeline2001Title' => l10n.docTimeline2001Title,
-      'docTimeline2002Title' => l10n.docTimeline2002Title,
-      'docTimeline2006Title' => l10n.docTimeline2006Title,
-      'docTimeline2008_2015Title' => l10n.docTimeline2008_2015Title,
-      'docTimeline2010Title' => l10n.docTimeline2010Title,
-      'docTimeline2014Title' => l10n.docTimeline2014Title,
-      'docTimeline2021Title' => l10n.docTimeline2021Title,
-      'docTimelineVdesTitle' => l10n.docTimelineVdesTitle,
-      _ => e.titleKey,
-    };
+String docEventTitle(DocEvent e, AppLocalizations l10n) => switch (e.titleKey) {
+  'docTimeline1990sTitle' => l10n.docTimeline1990sTitle,
+  'docTimeline1998Title' => l10n.docTimeline1998Title,
+  'docTimeline2001Title' => l10n.docTimeline2001Title,
+  'docTimeline2002Title' => l10n.docTimeline2002Title,
+  'docTimeline2006Title' => l10n.docTimeline2006Title,
+  'docTimeline2008_2015Title' => l10n.docTimeline2008_2015Title,
+  'docTimeline2010Title' => l10n.docTimeline2010Title,
+  'docTimeline2014Title' => l10n.docTimeline2014Title,
+  'docTimeline2021Title' => l10n.docTimeline2021Title,
+  'docTimelineVdesTitle' => l10n.docTimelineVdesTitle,
+  _ => e.titleKey,
+};
 
 /// Resolves a [DocEvent] text l10n key to its translated label.
 String docEventText(DocEvent e, AppLocalizations l10n) => switch (e.textKey) {
-      'docTimeline1990sText' => l10n.docTimeline1990sText,
-      'docTimeline1998Text' => l10n.docTimeline1998Text,
-      'docTimeline2001Text' => l10n.docTimeline2001Text,
-      'docTimeline2002Text' => l10n.docTimeline2002Text,
-      'docTimeline2006Text' => l10n.docTimeline2006Text,
-      'docTimeline2008_2015Text' => l10n.docTimeline2008_2015Text,
-      'docTimeline2010Text' => l10n.docTimeline2010Text,
-      'docTimeline2014Text' => l10n.docTimeline2014Text,
-      'docTimeline2021Text' => l10n.docTimeline2021Text,
-      'docTimelineVdesText' => l10n.docTimelineVdesText,
-      _ => e.textKey,
-    };
+  'docTimeline1990sText' => l10n.docTimeline1990sText,
+  'docTimeline1998Text' => l10n.docTimeline1998Text,
+  'docTimeline2001Text' => l10n.docTimeline2001Text,
+  'docTimeline2002Text' => l10n.docTimeline2002Text,
+  'docTimeline2006Text' => l10n.docTimeline2006Text,
+  'docTimeline2008_2015Text' => l10n.docTimeline2008_2015Text,
+  'docTimeline2010Text' => l10n.docTimeline2010Text,
+  'docTimeline2014Text' => l10n.docTimeline2014Text,
+  'docTimeline2021Text' => l10n.docTimeline2021Text,
+  'docTimelineVdesText' => l10n.docTimelineVdesText,
+  _ => e.textKey,
+};
 
 /// Navigation status codes of the Common Navigation Block.
 const List<(int, String)> kNavStatus = [
@@ -836,10 +835,7 @@ String sampleSentencesFor(int type) {
         sog: 120,
       );
     case 10:
-      return encodeUtcDateInquiry(
-        mmsi: 227006789,
-        destinationMmsi: 227010000,
-      );
+      return encodeUtcDateInquiry(mmsi: 227006789, destinationMmsi: 227010000);
     case 11:
       return encodeUtcDateResponse(
         mmsi: 227010000,
@@ -869,11 +865,7 @@ String sampleSentencesFor(int type) {
         text: 'NAVIGATION OBSTRUCTION REPORTED',
       );
     case 15:
-      return encodeInterrogation(
-        mmsi: 227010000,
-        mmsi1: 227006789,
-        type1_1: 3,
-      );
+      return encodeInterrogation(mmsi: 227010000, mmsi1: 227006789, type1_1: 3);
     case 16:
       return encodeAssignmentMode(
         mmsi: 227010000,
@@ -985,20 +977,65 @@ class DocBitLayout {
 
 const List<DocBitField> _cnb = [
   DocBitField('Type', 0, 5, 'Message type (1-3): identifies the payload.'),
-  DocBitField('Repeat', 6, 7, 'Repeat indicator: hops this message has been rebroadcast.'),
-  DocBitField('MMSI', 8, 37, 'The 9-digit station identity (first 3 digits = country MID).'),
-  DocBitField('Nav status', 38, 41, 'Navigation status: under way, at anchor, moored, fishing…'),
+  DocBitField(
+    'Repeat',
+    6,
+    7,
+    'Repeat indicator: hops this message has been rebroadcast.',
+  ),
+  DocBitField(
+    'MMSI',
+    8,
+    37,
+    'The 9-digit station identity (first 3 digits = country MID).',
+  ),
+  DocBitField(
+    'Nav status',
+    38,
+    41,
+    'Navigation status: under way, at anchor, moored, fishing…',
+  ),
   DocBitField('ROT', 42, 49, 'Rate of turn, signed. Value ≈ 4.733 × √(°/min).'),
   DocBitField('SOG', 50, 59, 'Speed over ground in tenths of a knot.'),
-  DocBitField('Accuracy', 60, 60, 'Position accuracy: 1 = DGPS-quality (< 10 m).'),
-  DocBitField('Longitude', 61, 88, 'Longitude in 1/10 000 of a minute (÷ 600000 = degrees).'),
-  DocBitField('Latitude', 89, 115, 'Latitude in 1/10 000 of a minute (÷ 600000 = degrees).'),
+  DocBitField(
+    'Accuracy',
+    60,
+    60,
+    'Position accuracy: 1 = DGPS-quality (< 10 m).',
+  ),
+  DocBitField(
+    'Longitude',
+    61,
+    88,
+    'Longitude in 1/10 000 of a minute (÷ 600000 = degrees).',
+  ),
+  DocBitField(
+    'Latitude',
+    89,
+    115,
+    'Latitude in 1/10 000 of a minute (÷ 600000 = degrees).',
+  ),
   DocBitField('COG', 116, 127, 'Course over ground in tenths of a degree.'),
-  DocBitField('Heading', 128, 136, 'True heading in degrees (511 = not available).'),
+  DocBitField(
+    'Heading',
+    128,
+    136,
+    'True heading in degrees (511 = not available).',
+  ),
   DocBitField('Timestamp', 137, 142, 'Second of the UTC fix time (0-59).'),
-  DocBitField('Maneuver', 143, 144, 'Maneuver indicator (special maneuver or not).'),
+  DocBitField(
+    'Maneuver',
+    143,
+    144,
+    'Maneuver indicator (special maneuver or not).',
+  ),
   DocBitField('Spare', 145, 147, 'Spare bits — ignore.'),
-  DocBitField('RAIM', 148, 148, 'Receiver autonomous integrity monitoring flag.'),
+  DocBitField(
+    'RAIM',
+    148,
+    148,
+    'Receiver autonomous integrity monitoring flag.',
+  ),
   DocBitField('Radio', 149, 167, 'SOTDMA radio status / slot information.'),
 ];
 
@@ -1035,10 +1072,25 @@ const List<DocBitField> _static5 = [
   DocBitField('Port', 258, 263, 'Dimension to port (metres).'),
   DocBitField('Starboard', 264, 269, 'Dimension to starboard (metres).'),
   DocBitField('EPFD', 270, 273, 'Position fix type.'),
-  DocBitField('ETA month', 274, 277, 'Estimated arrival month (0 = not available).'),
+  DocBitField(
+    'ETA month',
+    274,
+    277,
+    'Estimated arrival month (0 = not available).',
+  ),
   DocBitField('ETA day', 278, 282, 'Estimated arrival day.'),
-  DocBitField('ETA hour', 283, 287, 'Estimated arrival hour (24 = not available).'),
-  DocBitField('ETA minute', 288, 293, 'Estimated arrival minute (60 = not available).'),
+  DocBitField(
+    'ETA hour',
+    283,
+    287,
+    'Estimated arrival hour (24 = not available).',
+  ),
+  DocBitField(
+    'ETA minute',
+    288,
+    293,
+    'Estimated arrival minute (60 = not available).',
+  ),
   DocBitField('Draught', 294, 301, 'Draught in decimetres.'),
   DocBitField('Destination', 302, 421, 'Destination (20 six-bit characters).'),
   DocBitField('DTE', 422, 422, 'Data terminal equipment ready flag.'),
@@ -1055,9 +1107,19 @@ const List<DocBitField> _classB18 = [
   DocBitField('Longitude', 57, 84, 'Longitude (÷ 600000 = degrees).'),
   DocBitField('Latitude', 85, 111, 'Latitude (÷ 600000 = degrees).'),
   DocBitField('COG', 112, 123, 'Course over ground in tenths of a degree.'),
-  DocBitField('Heading', 124, 132, 'True heading in degrees (511 = not available).'),
+  DocBitField(
+    'Heading',
+    124,
+    132,
+    'True heading in degrees (511 = not available).',
+  ),
   DocBitField('Timestamp', 133, 138, 'Second of the UTC fix time.'),
-  DocBitField('Flags', 139, 146, 'Regional, CS, display, DSC, band, msg22, assigned.'),
+  DocBitField(
+    'Flags',
+    139,
+    146,
+    'Regional, CS, display, DSC, band, msg22, assigned.',
+  ),
   DocBitField('RAIM', 147, 147, 'RAIM flag.'),
   DocBitField('Radio', 148, 167, 'CSTDMA radio status.'),
 ];
@@ -1077,7 +1139,12 @@ const List<DocBitField> _aton21 = [
   DocBitField('Starboard', 243, 248, 'Dimension to starboard (metres).'),
   DocBitField('EPFD', 249, 252, 'Position fix type.'),
   DocBitField('Second', 253, 258, 'Time of fix (UTC second).'),
-  DocBitField('Off position', 259, 259, '1 = the aid is off its assigned position.'),
+  DocBitField(
+    'Off position',
+    259,
+    259,
+    '1 = the aid is off its assigned position.',
+  ),
   DocBitField('Regional', 260, 267, 'Regional reserved bits.'),
   DocBitField('RAIM', 268, 268, 'RAIM flag.'),
   DocBitField('Virtual', 269, 269, '1 = virtual aid (no physical marker).'),
@@ -1123,60 +1190,169 @@ const List<DocBitLayout> kBitLayouts = [
 
 /// Searchable glossary of AIS terms.
 const List<(String, String)> kGlossary = [
-  ('AIS', 'Automatic Identification System — the VHF tracking system described by this guide.'),
-  ('SOTDMA', 'Self-Organizing Time Division Multiple Access — the TDMA scheme used by Class A transponders to reserve their own time slots.'),
-  ('CSTDMA', 'Carrier Sense Time Division Multiple Access — the simpler scheme used by Class B: listen for a free slot and grab it.'),
-  ('TDMA', 'Time Division Multiple Access — dividing one radio channel into time slots shared by many stations.'),
-  ('MMSI', 'Maritime Mobile Service Identity — the unique 9-digit number identifying a ship\'s radio equipment.'),
-  ('MID', 'Maritime Identification Digits — the first three digits of an MMSI, identifying the issuing country.'),
-  ('VTS', 'Vessel Traffic Service — shore-based traffic monitoring and management.'),
-  ('VDES', 'VHF Data Exchange System — the next-generation successor to AIS (ITU-R M.2092).'),
-  ('S-AIS', 'Satellite AIS — receiving AIS signals from low-Earth-orbit satellites for global coverage.'),
-  ('T-AIS', 'Terrestrial AIS — ship-to-ship and ship-to-shore AIS within VHF range.'),
-  ('EPFD', 'Electronic Position Fixing Device — the GNSS receiver feeding the transponder (GPS, GLONASS, Galileo…).'),
-  ('RAIM', 'Receiver Autonomous Integrity Monitoring — on-board GNSS health checking.'),
-  ('ROT', 'Rate of Turn — how fast a vessel turns, encoded with a square-root scale.'),
+  (
+    'AIS',
+    'Automatic Identification System — the VHF tracking system described by this guide.',
+  ),
+  (
+    'SOTDMA',
+    'Self-Organizing Time Division Multiple Access — the TDMA scheme used by Class A transponders to reserve their own time slots.',
+  ),
+  (
+    'CSTDMA',
+    'Carrier Sense Time Division Multiple Access — the simpler scheme used by Class B: listen for a free slot and grab it.',
+  ),
+  (
+    'TDMA',
+    'Time Division Multiple Access — dividing one radio channel into time slots shared by many stations.',
+  ),
+  (
+    'MMSI',
+    'Maritime Mobile Service Identity — the unique 9-digit number identifying a ship\'s radio equipment.',
+  ),
+  (
+    'MID',
+    'Maritime Identification Digits — the first three digits of an MMSI, identifying the issuing country.',
+  ),
+  (
+    'VTS',
+    'Vessel Traffic Service — shore-based traffic monitoring and management.',
+  ),
+  (
+    'VDES',
+    'VHF Data Exchange System — the next-generation successor to AIS (ITU-R M.2092).',
+  ),
+  (
+    'S-AIS',
+    'Satellite AIS — receiving AIS signals from low-Earth-orbit satellites for global coverage.',
+  ),
+  (
+    'T-AIS',
+    'Terrestrial AIS — ship-to-ship and ship-to-shore AIS within VHF range.',
+  ),
+  (
+    'EPFD',
+    'Electronic Position Fixing Device — the GNSS receiver feeding the transponder (GPS, GLONASS, Galileo…).',
+  ),
+  (
+    'RAIM',
+    'Receiver Autonomous Integrity Monitoring — on-board GNSS health checking.',
+  ),
+  (
+    'ROT',
+    'Rate of Turn — how fast a vessel turns, encoded with a square-root scale.',
+  ),
   ('SOG', 'Speed Over Ground — vessel speed relative to the seabed.'),
   ('COG', 'Course Over Ground — direction of travel relative to true north.'),
-  ('CPA', 'Closest Point of Approach — the closest a target will pass, used for collision alarms.'),
-  ('DGPS', 'Differential GPS — corrections that improve GNSS accuracy to a few metres.'),
-  ('DR', 'Dead Reckoning — estimating position from course and speed rather than a fix.'),
-  ('SART', 'Search and Rescue Transmitter — a distress beacon (AIS-SART broadcasts on MMSI 970MIDXXX).'),
+  (
+    'CPA',
+    'Closest Point of Approach — the closest a target will pass, used for collision alarms.',
+  ),
+  (
+    'DGPS',
+    'Differential GPS — corrections that improve GNSS accuracy to a few metres.',
+  ),
+  (
+    'DR',
+    'Dead Reckoning — estimating position from course and speed rather than a fix.',
+  ),
+  (
+    'SART',
+    'Search and Rescue Transmitter — a distress beacon (AIS-SART broadcasts on MMSI 970MIDXXX).',
+  ),
   ('MOB', 'Man Overboard — a personal AIS beacon (MMSI 972XXXXXX).'),
-  ('EPIRB', 'Emergency Position Indicating Radio Beacon — a float-free distress beacon (AIS EPIRB, MMSI 974XXXXXX).'),
-  ('IALA', 'International Association of Marine Aids to Navigation and Lighthouse Authorities.'),
-  ('SOLAS', 'International Convention for the Safety of Life at Sea — the IMO treaty that mandates AIS.'),
-  ('IMO', 'International Maritime Organization — the UN agency governing shipping.'),
-  ('ITU', 'International Telecommunication Union — publishes Recommendation M.1371 (the AIS standard).'),
-  ('IEC', 'International Electrotechnical Commission — publishes the NMEA framing and equipment standards.'),
-  ('HDLC', 'High-Level Data Link Control — the framing used on the radio link inside AIS.'),
-  ('NRZI', 'Non-Return-to-Zero Inverted — the line coding used before modulation.'),
-  ('GMSK', 'Gaussian Minimum Shift Keying — the modulation used for AIS (9600 baud).'),
-  ('Class A', 'Full-feature AIS transponder for SOLAS vessels (types 1/2/3 and 5, SOTDMA).'),
-  ('Class B', 'Low-cost AIS transponder for recreational/small craft (types 18/19 and 24, CSTDMA).'),
-  ('AtoN', 'Aid to Navigation — buoys, beacons and lights broadcasting via type 21.'),
-  ('NMEA', 'National Marine Electronics Association — the sentence formats used on the data wire.'),
-  ('AIVDM', 'An NMEA sentence reporting another station (AIVDO reports your own).'),
-  ('AIS-SART', 'A lifeboat distress transmitter that appears as navigation status 14.'),
+  (
+    'EPIRB',
+    'Emergency Position Indicating Radio Beacon — a float-free distress beacon (AIS EPIRB, MMSI 974XXXXXX).',
+  ),
+  (
+    'IALA',
+    'International Association of Marine Aids to Navigation and Lighthouse Authorities.',
+  ),
+  (
+    'SOLAS',
+    'International Convention for the Safety of Life at Sea — the IMO treaty that mandates AIS.',
+  ),
+  (
+    'IMO',
+    'International Maritime Organization — the UN agency governing shipping.',
+  ),
+  (
+    'ITU',
+    'International Telecommunication Union — publishes Recommendation M.1371 (the AIS standard).',
+  ),
+  (
+    'IEC',
+    'International Electrotechnical Commission — publishes the NMEA framing and equipment standards.',
+  ),
+  (
+    'HDLC',
+    'High-Level Data Link Control — the framing used on the radio link inside AIS.',
+  ),
+  (
+    'NRZI',
+    'Non-Return-to-Zero Inverted — the line coding used before modulation.',
+  ),
+  (
+    'GMSK',
+    'Gaussian Minimum Shift Keying — the modulation used for AIS (9600 baud).',
+  ),
+  (
+    'Class A',
+    'Full-feature AIS transponder for SOLAS vessels (types 1/2/3 and 5, SOTDMA).',
+  ),
+  (
+    'Class B',
+    'Low-cost AIS transponder for recreational/small craft (types 18/19 and 24, CSTDMA).',
+  ),
+  (
+    'AtoN',
+    'Aid to Navigation — buoys, beacons and lights broadcasting via type 21.',
+  ),
+  (
+    'NMEA',
+    'National Marine Electronics Association — the sentence formats used on the data wire.',
+  ),
+  (
+    'AIVDM',
+    'An NMEA sentence reporting another station (AIVDO reports your own).',
+  ),
+  (
+    'AIS-SART',
+    'A lifeboat distress transmitter that appears as navigation status 14.',
+  ),
   ('UTC', 'Coordinated Universal Time — the time reference used by AIS.'),
-  ('GNSS', 'Global Navigation Satellite System — GPS, GLONASS, Galileo, BeiDou.'),
+  (
+    'GNSS',
+    'Global Navigation Satellite System — GPS, GLONASS, Galileo, BeiDou.',
+  ),
   ('Checksum', 'A one-byte XOR used to detect corrupted NMEA sentences.'),
 ];
 
 /// Returns the full ITU ship-type table (0-99) using the app decoder mapping.
 List<(int, String)> kVesselTypesFull() {
   final converter = BinaryConverter();
-  return [
-    for (var t = 0; t <= 99; t++) (t, converter.getVesselTypeDirect(t)),
-  ];
+  return [for (var t = 0; t <= 99; t++) (t, converter.getVesselTypeDirect(t))];
 }
 
 /// Class A vs Class B comparison rows: attribute, Class A, Class B.
 const List<(String, String, String)> kClassComparison = [
-  ('Standard', 'Full AIS for SOLAS vessels', 'Simplified AIS for smaller craft'),
-  ('Position report', 'Type 1/2/3 (with nav status & ROT)', 'Type 18 (lighter), 19 (extended)'),
+  (
+    'Standard',
+    'Full AIS for SOLAS vessels',
+    'Simplified AIS for smaller craft',
+  ),
+  (
+    'Position report',
+    'Type 1/2/3 (with nav status & ROT)',
+    'Type 18 (lighter), 19 (extended)',
+  ),
   ('Static data', 'Type 5 (name, IMO, voyage)', 'Type 24 (Part A + Part B)'),
-  ('Access scheme', 'SOTDMA — reserves its own slots', 'CSTDMA — grabs a free slot'),
+  (
+    'Access scheme',
+    'SOTDMA — reserves its own slots',
+    'CSTDMA — grabs a free slot',
+  ),
   ('Report rate', '2-10 s underway, 3 min anchored', '~30 s'),
   ('Transmit power', '12.5 W typical', '2 W typical'),
   ('Mandatory', 'Yes (SOLAS 300 GT+)', 'Optional / regional rules'),
@@ -1185,57 +1361,186 @@ const List<(String, String, String)> kClassComparison = [
 
 /// Distress / safety transmitters and how to recognise them.
 const List<(String, String, String)> kDistressDevices = [
-  ('970MIDXXX', 'AIS-SART', 'Lifeboat search-and-rescue transmitter. Sends short bursts and shows up as navigation status 14.'),
+  (
+    '970MIDXXX',
+    'AIS-SART',
+    'Lifeboat search-and-rescue transmitter. Sends short bursts and shows up as navigation status 14.',
+  ),
   ('972XXXXXX', 'MOB', 'Man-overboard personal beacon worn on the crew.'),
   ('974XXXXXX', 'AIS EPIRB', 'Float-free emergency beacon for ship distress.'),
-  ('111MIDXXX', 'SAR aircraft', 'Search-and-rescue aircraft reporting via type 9.'),
+  (
+    '111MIDXXX',
+    'SAR aircraft',
+    'Search-and-rescue aircraft reporting via type 9.',
+  ),
 ];
 
 /// Real-world quirks worth knowing when receiving AIS.
 const List<(String, String)> kAisGotchas = [
-  ('Wrong payload lengths',
-      'About 0.3% of real-world messages have the right checksum but the '
-      'wrong payload length for their type. A decoder should reject them, '
-      'otherwise the fields decode as garbage.'),
-  ('Six-bit text noise',
-      'Transmitters pad text fields with "@"; many also leave garbage after '
-      'the "@", and some space-fill short names. Decoders must strip both.'),
-  ('Lowercase letters are impossible',
-      'The six-bit alphabet cannot encode lowercase letters, so names and '
-      'call signs are uppercase in AIS.'),
-  ('Spare and regional fields',
-      'Spare bits should be ignored but are not always zero. Regional '
-      'fields are sometimes repurposed by local authorities.'),
-  ('8-digit MMSIs',
-      'US vessels sailing only in US waters sometimes omit the leading "3", '
-      'transmitting 8-digit MMSIs.'),
-  ('Special timestamps',
-      'The type 1-3 timestamp is the UTC second, but 61 (manual input), 62 '
-      '(dead reckoning) and 63 (inoperative) are special values.'),
-  ('ROT special values',
-      'Rate of turn ±127 means "turning faster than 5°/30s, no turn '
-      'indicator", and -128 means "no turn information".'),
-  ('Ships that switch AIS off',
-      'AIS is cooperative: some vessels disable it for operational or '
-      'security reasons, and the channel can be jammed or spoofed.'),
+  (
+    'Wrong payload lengths',
+    'About 0.3% of real-world messages have the right checksum but the '
+        'wrong payload length for their type. A decoder should reject them, '
+        'otherwise the fields decode as garbage.',
+  ),
+  (
+    'Six-bit text noise',
+    'Transmitters pad text fields with "@"; many also leave garbage after '
+        'the "@", and some space-fill short names. Decoders must strip both.',
+  ),
+  (
+    'Lowercase letters are impossible',
+    'The six-bit alphabet cannot encode lowercase letters, so names and '
+        'call signs are uppercase in AIS.',
+  ),
+  (
+    'Spare and regional fields',
+    'Spare bits should be ignored but are not always zero. Regional '
+        'fields are sometimes repurposed by local authorities.',
+  ),
+  (
+    '8-digit MMSIs',
+    'US vessels sailing only in US waters sometimes omit the leading "3", '
+        'transmitting 8-digit MMSIs.',
+  ),
+  (
+    'Special timestamps',
+    'The type 1-3 timestamp is the UTC second, but 61 (manual input), 62 '
+        '(dead reckoning) and 63 (inoperative) are special values.',
+  ),
+  (
+    'ROT special values',
+    'Rate of turn ±127 means "turning faster than 5°/30s, no turn '
+        'indicator", and -128 means "no turn information".',
+  ),
+  (
+    'Ships that switch AIS off',
+    'AIS is cooperative: some vessels disable it for operational or '
+        'security reasons, and the channel can be jammed or spoofed.',
+  ),
 ];
 
 /// Keywords per chapter (0-indexed) used for full-text search.
 const Map<int, List<String>> kChapterKeywords = {
   0: ['AIS', 'introduction', 'radar', 'VTS', 'SOLAS', 'ADS-B'],
-  1: ['history', 'Sweden', 'IMO', 'SOLAS', '2002', 'class b', 'satellite', 'VDES'],
-  2: ['VHF', 'channel', '161.975', '162.025', 'TDMA', 'slot', 'range', 'report'],
-  3: ['radio', 'SOTDMA', 'CSTDMA', 'HDLC', 'GMSK', '9600', 'NRZI', 'frame', 'slots'],
-  4: ['class a', 'class b', 'SOTDMA', 'CSTDMA', 'comparison', 'transponder', 'SART', 'MOB', 'EPIRB'],
+  1: [
+    'history',
+    'Sweden',
+    'IMO',
+    'SOLAS',
+    '2002',
+    'class b',
+    'satellite',
+    'VDES',
+  ],
+  2: [
+    'VHF',
+    'channel',
+    '161.975',
+    '162.025',
+    'TDMA',
+    'slot',
+    'range',
+    'report',
+  ],
+  3: [
+    'radio',
+    'SOTDMA',
+    'CSTDMA',
+    'HDLC',
+    'GMSK',
+    '9600',
+    'NRZI',
+    'frame',
+    'slots',
+  ],
+  4: [
+    'class a',
+    'class b',
+    'SOTDMA',
+    'CSTDMA',
+    'comparison',
+    'transponder',
+    'SART',
+    'MOB',
+    'EPIRB',
+  ],
   5: ['MMSI', 'MID', 'country', 'format', 'identity'],
-  6: ['ship type', 'vessel type', 'cargo', 'tanker', 'fishing', 'tug', 'passenger', '0-99'],
-  7: ['message', 'type 1', 'type 5', 'catalog', 'position', 'static', 'safety', 'binary'],
-  8: ['NMEA', 'AIVDM', 'AIVDO', 'sentence', 'payload', 'checksum', 'fragment', 'armoring', 'six-bit'],
-  9: ['bits', 'payload', 'bit layout', 'coordinate', 'longitude', 'latitude', 'six-bit', 'nav status', 'EPFD'],
-  10: ['security', 'spoofing', 'jamming', 'meaconing', 'data quality', 'privacy'],
-  11: ['gotchas', 'quirks', 'length', 'noise', 'timestamp', 'regional', '8-digit'],
-  12: ['kikais', 'reception', 'decoder', 'editor', 'simulation', 'map', 'stats'],
+  6: [
+    'ship type',
+    'vessel type',
+    'cargo',
+    'tanker',
+    'fishing',
+    'tug',
+    'passenger',
+    '0-99',
+  ],
+  7: [
+    'message',
+    'type 1',
+    'type 5',
+    'catalog',
+    'position',
+    'static',
+    'safety',
+    'binary',
+  ],
+  8: [
+    'NMEA',
+    'AIVDM',
+    'AIVDO',
+    'sentence',
+    'payload',
+    'checksum',
+    'fragment',
+    'armoring',
+    'six-bit',
+  ],
+  9: [
+    'bits',
+    'payload',
+    'bit layout',
+    'coordinate',
+    'longitude',
+    'latitude',
+    'six-bit',
+    'nav status',
+    'EPFD',
+  ],
+  10: [
+    'security',
+    'spoofing',
+    'jamming',
+    'meaconing',
+    'data quality',
+    'privacy',
+  ],
+  11: [
+    'gotchas',
+    'quirks',
+    'length',
+    'noise',
+    'timestamp',
+    'regional',
+    '8-digit',
+  ],
+  12: [
+    'kikais',
+    'reception',
+    'decoder',
+    'editor',
+    'simulation',
+    'map',
+    'stats',
+  ],
   13: ['glossary', 'terms', 'SOTDMA', 'MMSI', 'VDES', 'dictionary'],
-  14: ['cheat sheet', 'reference', 'frequencies', 'report rates', 'at a glance'],
+  14: [
+    'cheat sheet',
+    'reference',
+    'frequencies',
+    'report rates',
+    'at a glance',
+  ],
   15: ['sources', 'gpsd', 'wikipedia', 'navcen', 'ITU', 'IALA', 'IEC'],
 };

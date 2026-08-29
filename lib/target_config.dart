@@ -36,52 +36,51 @@ class TargetConfig {
     bool? enabled,
     NmeaFormat? sendFormat,
     String? tagSourceId,
-  }) =>
-      TargetConfig(
-        id: id,
-        name: name ?? this.name,
-        protocol: protocol ?? this.protocol,
-        host: host ?? this.host,
-        port: port ?? this.port,
-        enabled: enabled ?? this.enabled,
-        sendFormat: sendFormat ?? this.sendFormat,
-        tagSourceId: tagSourceId ?? this.tagSourceId,
-      );
+  }) => TargetConfig(
+    id: id,
+    name: name ?? this.name,
+    protocol: protocol ?? this.protocol,
+    host: host ?? this.host,
+    port: port ?? this.port,
+    enabled: enabled ?? this.enabled,
+    sendFormat: sendFormat ?? this.sendFormat,
+    tagSourceId: tagSourceId ?? this.tagSourceId,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'protocol': protocol.name,
-        'host': host,
-        'port': port,
-        'enabled': enabled,
-        'sendFormat': sendFormat.name,
-        'tagSourceId': tagSourceId,
-      };
+    'id': id,
+    'name': name,
+    'protocol': protocol.name,
+    'host': host,
+    'port': port,
+    'enabled': enabled,
+    'sendFormat': sendFormat.name,
+    'tagSourceId': tagSourceId,
+  };
 
   factory TargetConfig.fromJson(Map<String, dynamic> json) => TargetConfig(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        protocol: ForwardProtocol.values.firstWhere(
-          (p) => p.name == json['protocol'],
-          orElse: () => ForwardProtocol.udpServer,
-        ),
-        host: json['host'] as String,
-        port: json['port'] as int,
-        enabled: json['enabled'] as bool? ?? true,
-        sendFormat: NmeaFormat.values.firstWhere(
-          (f) => f.name == json['sendFormat'],
-          orElse: () => NmeaFormat.passthrough,
-        ),
-        tagSourceId: json['tagSourceId'] as String?,
-      );
+    id: json['id'] as String,
+    name: json['name'] as String,
+    protocol: ForwardProtocol.values.firstWhere(
+      (p) => p.name == json['protocol'],
+      orElse: () => ForwardProtocol.udpServer,
+    ),
+    host: json['host'] as String,
+    port: json['port'] as int,
+    enabled: json['enabled'] as bool? ?? true,
+    sendFormat: NmeaFormat.values.firstWhere(
+      (f) => f.name == json['sendFormat'],
+      orElse: () => NmeaFormat.passthrough,
+    ),
+    tagSourceId: json['tagSourceId'] as String?,
+  );
 
   static String newId() => 't${DateTime.now().microsecondsSinceEpoch}';
 }
 
 String protocolLabel(ForwardProtocol p) => switch (p) {
-      ForwardProtocol.udpServer => 'UDP Server',
-      ForwardProtocol.udpClient => 'UDP Client',
-      ForwardProtocol.tcpClient => 'TCP Client',
-      ForwardProtocol.tcpServer => 'TCP Server',
-    };
+  ForwardProtocol.udpServer => 'UDP Server',
+  ForwardProtocol.udpClient => 'UDP Client',
+  ForwardProtocol.tcpClient => 'TCP Client',
+  ForwardProtocol.tcpServer => 'TCP Server',
+};

@@ -1,7 +1,8 @@
 import '../nmea/nmea_tag_block.dart';
 import '../utils/convert_char_to_bin.dart';
 
-String _bits(int value, int width) => value.toRadixString(2).padLeft(width, '0');
+String _bits(int value, int width) =>
+    value.toRadixString(2).padLeft(width, '0');
 
 /// Converts a binary string to AIS 6-bit payload characters, padding the
 /// final character with zero bits.

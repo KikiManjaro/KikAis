@@ -2,13 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kik_ais/ais/ais_decoder.dart';
 
 String _sentence() => encodePositionReport(
-      mmsi: 227006789,
-      latitude: 48.39,
-      longitude: -4.49,
-      sog: 12.5,
-      cog: 245,
-      heading: 250,
-    );
+  mmsi: 227006789,
+  latitude: 48.39,
+  longitude: -4.49,
+  sog: 12.5,
+  cog: 245,
+  heading: 250,
+);
 
 void main() {
   test('buildTagBlock produces a valid, self-checking tag block', () {
@@ -34,16 +34,18 @@ void main() {
     expect(rest, sentence);
   });
 
-  test('NmeaSentence parses a tagged line and validates the sentence checksum',
-      () {
-    final sentence = _sentence();
-    final line = '${buildTagBlock(sourceId: 'DF176387')}$sentence';
-    final parsed = NmeaSentence.tryParse(line);
-    expect(parsed, isNotNull);
-    expect(parsed!.tagBlock, isNotNull);
-    expect(parsed.sentenceRaw, sentence);
-    expect(parsed.isChecksumValid, isTrue);
-  });
+  test(
+    'NmeaSentence parses a tagged line and validates the sentence checksum',
+    () {
+      final sentence = _sentence();
+      final line = '${buildTagBlock(sourceId: 'DF176387')}$sentence';
+      final parsed = NmeaSentence.tryParse(line);
+      expect(parsed, isNotNull);
+      expect(parsed!.tagBlock, isNotNull);
+      expect(parsed.sentenceRaw, sentence);
+      expect(parsed.isChecksumValid, isTrue);
+    },
+  );
 
   test('a tagged line decodes to the same message', () {
     final sentence = _sentence();
@@ -73,16 +75,13 @@ void main() {
     final sentence = _sentence();
     final tagged = '${buildTagBlock(sourceId: 'SRC')}$sentence';
 
-    expect(
-      applyNmeaFormat(tagged, NmeaFormat.passthrough),
-      tagged,
-    );
-    expect(
-      applyNmeaFormat(tagged, NmeaFormat.strip),
+    expect(applyNmeaFormat(tagged, NmeaFormat.passthrough), tagged);
+    expect(applyNmeaFormat(tagged, NmeaFormat.strip), sentence);
+    final retagged = applyNmeaFormat(
       sentence,
+      NmeaFormat.tag,
+      sourceId: 'MYSITE',
     );
-    final retagged = applyNmeaFormat(sentence, NmeaFormat.tag,
-        sourceId: 'MYSITE');
     expect(retagged, startsWith('\\'));
     expect(retagged, contains('s:MYSITE'));
     expect(retagged, endsWith(sentence));

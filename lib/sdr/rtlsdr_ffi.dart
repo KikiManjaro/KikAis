@@ -14,55 +14,92 @@ typedef _ResetBufferNative = Int32 Function(Pointer<Void> dev);
 typedef _OpenNative = Int32 Function(Pointer<Pointer<Void>> dev, Uint32 index);
 typedef _CloseNative = Int32 Function(Pointer<Void> dev);
 typedef _GetNameNative = Pointer<Char> Function(Uint32 index);
-typedef _GetUsbStringsNative = Int32 Function(
-    Uint32 index, Pointer<Char> m, Pointer<Char> p, Pointer<Char> s);
-typedef _GetGainsNative = Int32 Function(Pointer<Void> dev, Pointer<Int32> gains);
-typedef _ReadSyncNative = Int32 Function(
-    Pointer<Void> dev, Pointer<Uint8> buf, Int32 len, Pointer<Int32> nRead);
+typedef _GetUsbStringsNative =
+    Int32 Function(
+      Uint32 index,
+      Pointer<Char> m,
+      Pointer<Char> p,
+      Pointer<Char> s,
+    );
+typedef _GetGainsNative =
+    Int32 Function(Pointer<Void> dev, Pointer<Int32> gains);
+typedef _ReadSyncNative =
+    Int32 Function(
+      Pointer<Void> dev,
+      Pointer<Uint8> buf,
+      Int32 len,
+      Pointer<Int32> nRead,
+    );
 
 /// Low-level typed access to librtlsdr.
 class RtlsdrBindings {
   final DynamicLibrary _lib;
   RtlsdrBindings._(this._lib) {
-    _getDeviceCount =
-        _lib.lookupFunction<_Uint32Native, int Function()>('rtlsdr_get_device_count');
-    _getDeviceName = _lib.lookupFunction<_GetNameNative, Pointer<Char> Function(int)>(
-        'rtlsdr_get_device_name');
-    _getDeviceUsbStrings = _lib.lookupFunction<
-        _GetUsbStringsNative,
-        int Function(int, Pointer<Char>, Pointer<Char>, Pointer<Char>)>(
-      'rtlsdr_get_device_usb_strings',
+    _getDeviceCount = _lib.lookupFunction<_Uint32Native, int Function()>(
+      'rtlsdr_get_device_count',
     );
-    _open =
-        _lib.lookupFunction<_OpenNative, int Function(Pointer<Pointer<Void>>, int)>(
-            'rtlsdr_open');
-    _close = _lib.lookupFunction<_CloseNative, int Function(Pointer<Void>)>('rtlsdr_close');
-    _setCenterFreq = _lib.lookupFunction<_SetUint32Native, int Function(Pointer<Void>, int)>(
-        'rtlsdr_set_center_freq');
-    _setSampleRate = _lib.lookupFunction<_SetUint32Native, int Function(Pointer<Void>, int)>(
-        'rtlsdr_set_sample_rate');
-    _setTunerGainMode = _lib.lookupFunction<_SetIntNative, int Function(Pointer<Void>, int)>(
-        'rtlsdr_set_tuner_gain_mode');
-    _setTunerGain =
-        _lib.lookupFunction<_SetIntNative, int Function(Pointer<Void>, int)>(
-            'rtlsdr_set_tuner_gain');
-    _getTunerGains =
-        _lib.lookupFunction<_GetGainsNative, int Function(Pointer<Void>, Pointer<Int32>)>(
-            'rtlsdr_get_tuner_gains');
-    _setAgcMode = _lib.lookupFunction<_SetIntNative, int Function(Pointer<Void>, int)>(
-        'rtlsdr_set_agc_mode');
-    _setTunerBandwidth =
-        _lib.lookupFunction<_SetUint32Native, int Function(Pointer<Void>, int)>(
-            'rtlsdr_set_tuner_bandwidth');
-    _setFreqCorrection = _lib.lookupFunction<_SetIntNative, int Function(Pointer<Void>, int)>(
-        'rtlsdr_set_freq_correction');
-    _setDirectSampling = _lib.lookupFunction<_SetIntNative, int Function(Pointer<Void>, int)>(
-        'rtlsdr_set_direct_sampling');
-    _resetBuffer = _lib.lookupFunction<_ResetBufferNative, int Function(Pointer<Void>)>(
-        'rtlsdr_reset_buffer');
-    _readSync = _lib.lookupFunction<
-        _ReadSyncNative,
-        int Function(Pointer<Void>, Pointer<Uint8>, int, Pointer<Int32>)>('rtlsdr_read_sync');
+    _getDeviceName = _lib
+        .lookupFunction<_GetNameNative, Pointer<Char> Function(int)>(
+          'rtlsdr_get_device_name',
+        );
+    _getDeviceUsbStrings = _lib
+        .lookupFunction<
+          _GetUsbStringsNative,
+          int Function(int, Pointer<Char>, Pointer<Char>, Pointer<Char>)
+        >('rtlsdr_get_device_usb_strings');
+    _open = _lib
+        .lookupFunction<_OpenNative, int Function(Pointer<Pointer<Void>>, int)>(
+          'rtlsdr_open',
+        );
+    _close = _lib.lookupFunction<_CloseNative, int Function(Pointer<Void>)>(
+      'rtlsdr_close',
+    );
+    _setCenterFreq = _lib
+        .lookupFunction<_SetUint32Native, int Function(Pointer<Void>, int)>(
+          'rtlsdr_set_center_freq',
+        );
+    _setSampleRate = _lib
+        .lookupFunction<_SetUint32Native, int Function(Pointer<Void>, int)>(
+          'rtlsdr_set_sample_rate',
+        );
+    _setTunerGainMode = _lib
+        .lookupFunction<_SetIntNative, int Function(Pointer<Void>, int)>(
+          'rtlsdr_set_tuner_gain_mode',
+        );
+    _setTunerGain = _lib
+        .lookupFunction<_SetIntNative, int Function(Pointer<Void>, int)>(
+          'rtlsdr_set_tuner_gain',
+        );
+    _getTunerGains = _lib
+        .lookupFunction<
+          _GetGainsNative,
+          int Function(Pointer<Void>, Pointer<Int32>)
+        >('rtlsdr_get_tuner_gains');
+    _setAgcMode = _lib
+        .lookupFunction<_SetIntNative, int Function(Pointer<Void>, int)>(
+          'rtlsdr_set_agc_mode',
+        );
+    _setTunerBandwidth = _lib
+        .lookupFunction<_SetUint32Native, int Function(Pointer<Void>, int)>(
+          'rtlsdr_set_tuner_bandwidth',
+        );
+    _setFreqCorrection = _lib
+        .lookupFunction<_SetIntNative, int Function(Pointer<Void>, int)>(
+          'rtlsdr_set_freq_correction',
+        );
+    _setDirectSampling = _lib
+        .lookupFunction<_SetIntNative, int Function(Pointer<Void>, int)>(
+          'rtlsdr_set_direct_sampling',
+        );
+    _resetBuffer = _lib
+        .lookupFunction<_ResetBufferNative, int Function(Pointer<Void>)>(
+          'rtlsdr_reset_buffer',
+        );
+    _readSync = _lib
+        .lookupFunction<
+          _ReadSyncNative,
+          int Function(Pointer<Void>, Pointer<Uint8>, int, Pointer<Int32>)
+        >('rtlsdr_read_sync');
   }
 
   /// Loads the librtlsdr shared library, returning null when it is not
@@ -89,7 +126,7 @@ class RtlsdrBindings {
   late final int Function() _getDeviceCount;
   late final Pointer<Char> Function(int) _getDeviceName;
   late final int Function(int, Pointer<Char>, Pointer<Char>, Pointer<Char>)
-      _getDeviceUsbStrings;
+  _getDeviceUsbStrings;
   late final int Function(Pointer<Pointer<Void>>, int) _open;
   late final int Function(Pointer<Void>) _close;
   late final int Function(Pointer<Void>, int) _setCenterFreq;
@@ -102,7 +139,8 @@ class RtlsdrBindings {
   late final int Function(Pointer<Void>, int) _setFreqCorrection;
   late final int Function(Pointer<Void>, int) _setDirectSampling;
   late final int Function(Pointer<Void>) _resetBuffer;
-  late final int Function(Pointer<Void>, Pointer<Uint8>, int, Pointer<Int32>) _readSync;
+  late final int Function(Pointer<Void>, Pointer<Uint8>, int, Pointer<Int32>)
+  _readSync;
 
   int get deviceCount => _getDeviceCount();
 
@@ -151,12 +189,16 @@ class RtlsdrBindings {
   int close(Pointer<Void> dev) => _close(dev);
   int setCenterFreq(Pointer<Void> dev, int freq) => _setCenterFreq(dev, freq);
   int setSampleRate(Pointer<Void> dev, int rate) => _setSampleRate(dev, rate);
-  int setTunerGainMode(Pointer<Void> dev, int manual) => _setTunerGainMode(dev, manual);
+  int setTunerGainMode(Pointer<Void> dev, int manual) =>
+      _setTunerGainMode(dev, manual);
   int setTunerGain(Pointer<Void> dev, int gain) => _setTunerGain(dev, gain);
   int setAgcMode(Pointer<Void> dev, int on) => _setAgcMode(dev, on);
-  int setTunerBandwidth(Pointer<Void> dev, int bw) => _setTunerBandwidth(dev, bw);
-  int setFreqCorrection(Pointer<Void> dev, int ppm) => _setFreqCorrection(dev, ppm);
-  int setDirectSampling(Pointer<Void> dev, int on) => _setDirectSampling(dev, on);
+  int setTunerBandwidth(Pointer<Void> dev, int bw) =>
+      _setTunerBandwidth(dev, bw);
+  int setFreqCorrection(Pointer<Void> dev, int ppm) =>
+      _setFreqCorrection(dev, ppm);
+  int setDirectSampling(Pointer<Void> dev, int on) =>
+      _setDirectSampling(dev, on);
   int resetBuffer(Pointer<Void> dev) => _resetBuffer(dev);
 
   /// The tuner gains available on [dev] (0 when auto).

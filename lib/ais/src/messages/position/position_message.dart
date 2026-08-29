@@ -78,7 +78,9 @@ class PositionMessage extends AISMessage {
   //region Overrides
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;   // cheap shortcut: same object, definitely equal
+    if (identical(this, other)) {
+      return true; // cheap shortcut: same object, definitely equal
+    }
     return other is PositionMessage &&
         messageType == other.messageType &&
         mmsi == other.mmsi &&
@@ -97,13 +99,24 @@ class PositionMessage extends AISMessage {
 
   @override
   int get hashCode => Object.hash(
-    messageType, mmsi, repeatIndicator, navigationStatus,
-    latitude, longitude, speedOverGround, courseOverGround,
-    maneuverIndicator, rateOfTurn, heading, timestamp, raimEnabled,
+    messageType,
+    mmsi,
+    repeatIndicator,
+    navigationStatus,
+    latitude,
+    longitude,
+    speedOverGround,
+    courseOverGround,
+    maneuverIndicator,
+    rateOfTurn,
+    heading,
+    timestamp,
+    raimEnabled,
   );
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Status: $navigationStatus, Lat: $latitude, Lon: $longitude, SOG: $speedOverGround, COG: $courseOverGround, Maneuver: $maneuverIndicator, ROT: $rateOfTurn, Heading: $heading, Timestamp: $timestamp, RAIM: $raimEnabled)';
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Status: $navigationStatus, Lat: $latitude, Lon: $longitude, SOG: $speedOverGround, COG: $courseOverGround, Maneuver: $maneuverIndicator, ROT: $rateOfTurn, Heading: $heading, Timestamp: $timestamp, RAIM: $raimEnabled)';
   //endregion
 
   /// Decodes a pre-converted binary string into a [PositionMessage].
@@ -132,17 +145,27 @@ class PositionMessage extends AISMessage {
     String raimEnabledBin = binary.substring(148, 149);
 
     // conversion to actually readable data
-    String? navigationStatus = BinaryConverter().navigationStatusInfo(navigationStatusBin);
+    String? navigationStatus = BinaryConverter().navigationStatusInfo(
+      navigationStatusBin,
+    );
     double? longitude = CoordinateUtils().calculateLongitude(longitudeBin);
     double? latitude = CoordinateUtils().calculateLatitude(latitudeBin);
-    String? maneuverIndicator = BinaryConverter().maneuverIndicatorInfo(maneuverIndicatorBin);
+    String? maneuverIndicator = BinaryConverter().maneuverIndicatorInfo(
+      maneuverIndicatorBin,
+    );
     int speedDecoded = int.parse(speedBin, radix: 2);
-    double? speed = 0 <= speedDecoded && speedDecoded <= 1022 ? speedDecoded / 10.0 : null;
+    double? speed = 0 <= speedDecoded && speedDecoded <= 1022
+        ? speedDecoded / 10.0
+        : null;
     int courseDecoded = int.parse(courseBin, radix: 2);
-    double? course = 0 <= courseDecoded && courseDecoded < 3600 ? courseDecoded / 10.0 : null;
+    double? course = 0 <= courseDecoded && courseDecoded < 3600
+        ? courseDecoded / 10.0
+        : null;
     double rateOfTurn = BinaryConverter().getRateOfTurn(rateOfTurnBin);
     int headingDecoded = int.parse(headingBin, radix: 2);
-    double? heading = 0 <= headingDecoded && headingDecoded < 360 ? headingDecoded.toDouble() : null;
+    double? heading = 0 <= headingDecoded && headingDecoded < 360
+        ? headingDecoded.toDouble()
+        : null;
     int timestamp = int.parse(timestampBin, radix: 2);
     int raimEnabled = int.parse(raimEnabledBin, radix: 2);
 
@@ -183,18 +206,28 @@ class PositionMessage extends AISMessage {
     int timestampRaw = getUintDirect(encoded, 137, 143);
     int maneuverIndicatorRaw = getUintDirect(encoded, 143, 145);
     int raimEnabledRaw = getUintDirect(encoded, 148, 149);
-    
+
     return PositionMessage(
       messageType: messageType,
       mmsi: mmsi,
       repeatIndicator: repeatIndicator,
-      navigationStatus: BinaryConverter().navigationStatusInfoDirect(navigationStatusRaw) ?? '',
+      navigationStatus:
+          BinaryConverter().navigationStatusInfoDirect(navigationStatusRaw) ??
+          '',
       latitude: CoordinateUtils().calculateLatitudeDirect(latitudeRaw, 27),
       longitude: CoordinateUtils().calculateLongitudeDirect(longitudeRaw, 28),
-      speedOverGround: 0 <= speedRaw && speedRaw <= 1022 ? speedRaw / 10.0 : null,
-      courseOverGround: 0 <= courseRaw && courseRaw < 3600 ? courseRaw / 10.0 : null,
-      maneuverIndicator: BinaryConverter().maneuverIndicatorInfoDirect(maneuverIndicatorRaw) ?? '',
-      heading: 0 <= headingRaw && headingRaw < 360 ? headingRaw.toDouble() : null,
+      speedOverGround: 0 <= speedRaw && speedRaw <= 1022
+          ? speedRaw / 10.0
+          : null,
+      courseOverGround: 0 <= courseRaw && courseRaw < 3600
+          ? courseRaw / 10.0
+          : null,
+      maneuverIndicator:
+          BinaryConverter().maneuverIndicatorInfoDirect(maneuverIndicatorRaw) ??
+          '',
+      heading: 0 <= headingRaw && headingRaw < 360
+          ? headingRaw.toDouble()
+          : null,
       rateOfTurn: BinaryConverter().getRateOfTurnDirect(rateOfTurnRaw),
       timestamp: timestampRaw,
       raimEnabled: raimEnabledRaw,

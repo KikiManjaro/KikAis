@@ -137,31 +137,33 @@ void main() {
     player.dispose();
   });
 
-  test('reports an error and stays stopped when the port cannot be opened',
-      () async {
-    final device = SimulatedSerialDevice(
-      openError: Exception('Access denied'),
-    );
-    final player = SerialFeedPlayer(
-      address: 'COM9',
-      baudRate: 9600,
-      device: device,
-    );
-    final emitted = <String>[];
-    player.onSentence = (n) async => emitted.add(n);
+  test(
+    'reports an error and stays stopped when the port cannot be opened',
+    () async {
+      final device = SimulatedSerialDevice(
+        openError: Exception('Access denied'),
+      );
+      final player = SerialFeedPlayer(
+        address: 'COM9',
+        baudRate: 9600,
+        device: device,
+      );
+      final emitted = <String>[];
+      player.onSentence = (n) async => emitted.add(n);
 
-    await player.connect();
-    expect(player.isRunning, isFalse);
-    expect(player.error, isNotNull);
-    expect(player.status.error, isNotNull);
-    expect(player.status.connected, isFalse);
+      await player.connect();
+      expect(player.isRunning, isFalse);
+      expect(player.error, isNotNull);
+      expect(player.status.error, isNotNull);
+      expect(player.status.connected, isFalse);
 
-    device.sendSentence(sentence);
-    await Future<void>.delayed(Duration.zero);
-    expect(emitted, isEmpty);
+      device.sendSentence(sentence);
+      await Future<void>.delayed(Duration.zero);
+      expect(emitted, isEmpty);
 
-    player.dispose();
-  });
+      player.dispose();
+    },
+  );
 
   test('disconnect stops the stream and closes the device', () async {
     final device = SimulatedSerialDevice();

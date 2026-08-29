@@ -40,7 +40,7 @@ class DgnssBroadcastBinaryMessage extends AISMessage {
     required this.data,
   });
 
-  //region Overrides  
+  //region Overrides
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -66,8 +66,9 @@ class DgnssBroadcastBinaryMessage extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Longitude: $longitude, Latitude: $latitude, Data: $data)';
-  //endregion  
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Longitude: $longitude, Latitude: $latitude, Data: $data)';
+  //endregion
 
   /// Decodes a six-bit-armored AIS payload string into a
   /// [DgnssBroadcastBinaryMessage].
@@ -79,18 +80,16 @@ class DgnssBroadcastBinaryMessage extends AISMessage {
   factory DgnssBroadcastBinaryMessage.fromEncoded(String encoded) {
     String binary = encoded.padRight(816, '0');
 
-    // common  
+    // common
     int messageType = getUintDirect(binary, 0, 6);
     int repeatIndicator = getUintDirect(binary, 6, 8);
     int mmsi = getUintDirect(binary, 8, 38);
 
-    // type DgnssBroadcastBinaryMessage specific  
+    // type DgnssBroadcastBinaryMessage specific
     int spare = getUintDirect(binary, 38, 40);
     int longitudeBin = getSignedIntDirect(binary, 40, 58);
     int latitudeBin = getSignedIntDirect(binary, 58, 75);
     Uint8List data = getBytesDirect(binary, 80, 816);
-
-
 
     return DgnssBroadcastBinaryMessage(
       messageType: messageType,

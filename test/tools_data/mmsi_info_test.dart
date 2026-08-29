@@ -31,38 +31,14 @@ void main() {
   });
 
   test('station types follow the first-digit convention', () {
-    expect(
-      inspectMmsi('000000001').stationType,
-      MmsiStationType.groupCall,
-    );
-    expect(
-      inspectMmsi('111226789').stationType,
-      MmsiStationType.sarAircraft,
-    );
-    expect(
-      inspectMmsi('366111111').stationType,
-      MmsiStationType.shipStation,
-    );
-    expect(
-      inspectMmsi('227111111').stationType,
-      MmsiStationType.coastStation,
-    );
-    expect(
-      inspectMmsi('400000001').stationType,
-      MmsiStationType.handheldVhf,
-    );
-    expect(
-      inspectMmsi('800000001').stationType,
-      MmsiStationType.aton,
-    );
-    expect(
-      inspectMmsi('970000001').stationType,
-      MmsiStationType.sar,
-    );
-    expect(
-      inspectMmsi('980000001').stationType,
-      MmsiStationType.aton,
-    );
+    expect(inspectMmsi('000000001').stationType, MmsiStationType.groupCall);
+    expect(inspectMmsi('111226789').stationType, MmsiStationType.sarAircraft);
+    expect(inspectMmsi('366111111').stationType, MmsiStationType.shipStation);
+    expect(inspectMmsi('227111111').stationType, MmsiStationType.coastStation);
+    expect(inspectMmsi('400000001').stationType, MmsiStationType.handheldVhf);
+    expect(inspectMmsi('800000001').stationType, MmsiStationType.aton);
+    expect(inspectMmsi('970000001').stationType, MmsiStationType.sar);
+    expect(inspectMmsi('980000001').stationType, MmsiStationType.aton);
   });
 
   test('unknown MID still yields a type but no country', () {

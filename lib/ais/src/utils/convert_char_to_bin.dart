@@ -8,7 +8,8 @@ const String aisPayloadChars =
 
 /// AIS "six-bit ASCII" alphabet used to decode TEXT fields (vessel names,
 /// call signs, destinations...). Per the ITU-R M.1371 / gpsd Table 3.
-const String aisDataChars = '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ !"#\$%&\'()*+,-./0123456789:;<=>?';
+const String aisDataChars =
+    '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ !"#\$%&\'()*+,-./0123456789:;<=>?';
 
 /// Converts an AIVDM/AIVDO payload character back to its 6-bit value.
 ///

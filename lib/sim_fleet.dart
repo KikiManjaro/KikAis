@@ -1,7 +1,8 @@
 import 'dart:math' as math;
 
 import 'ais/src/encoder/ais_message_encoder.dart';
-import 'ais/src/nmea/nmea_format.dart' show buildTagBlock, msSinceUtcMidnight, wrapNmea4;
+import 'ais/src/nmea/nmea_format.dart'
+    show buildTagBlock, msSinceUtcMidnight, wrapNmea4;
 
 const double kKmPerDegLat = 111.0;
 
@@ -23,7 +24,8 @@ const List<String> kSimTalkers = [
 ];
 
 /// A few realistic ITU-R M.1371 ship types used to vary the fleet.
-const List<(int, String)> kSimVesselTypes = [  (70, 'Cargo'),
+const List<(int, String)> kSimVesselTypes = [
+  (70, 'Cargo'),
   (80, 'Tanker'),
   (30, 'Fishing'),
   (36, 'Sailing'),
@@ -69,11 +71,45 @@ const List<String> kSimSafetyTexts = [
 /// Realistic vessel names per ITU-R M.1371 ship type, used when
 /// [SimFleetConfig.realisticNames] is enabled.
 const Map<int, List<String>> kSimNamesByType = {
-  70: ['NORDKAP', 'ELBE STAR', 'ATLANTIC MERCHANT', 'MSC ATHENA', 'SEABRIDGE', 'BALTIC TRADER', 'NORTHERN LIGHT'],
-  80: ['BRITISH MERIDIAN', 'EVER TOP', 'ALINE III', 'MAERSK TITAN', 'GUARDIAN ANGEL', 'PACIFIC VOYAGER'],
-  30: ['SAINT PIERRE', 'LA FLEUR DE LYS', 'PETIT BATEAU', 'LE STELLA', 'ARMORIQUE II', 'ROZ PENS'],
-  36: ["VENT D'EST", 'BLUE DOLPHIN', 'SV WINDROSE', 'OCEAN PEARL', 'LA MOUETTE'],
-  60: ['VIKING SKY', 'NORMANDIE EXPRESS', 'CORSAIRE DE BRETAGNE', 'PONT AVEN', 'ARMORIQUE'],
+  70: [
+    'NORDKAP',
+    'ELBE STAR',
+    'ATLANTIC MERCHANT',
+    'MSC ATHENA',
+    'SEABRIDGE',
+    'BALTIC TRADER',
+    'NORTHERN LIGHT',
+  ],
+  80: [
+    'BRITISH MERIDIAN',
+    'EVER TOP',
+    'ALINE III',
+    'MAERSK TITAN',
+    'GUARDIAN ANGEL',
+    'PACIFIC VOYAGER',
+  ],
+  30: [
+    'SAINT PIERRE',
+    'LA FLEUR DE LYS',
+    'PETIT BATEAU',
+    'LE STELLA',
+    'ARMORIQUE II',
+    'ROZ PENS',
+  ],
+  36: [
+    "VENT D'EST",
+    'BLUE DOLPHIN',
+    'SV WINDROSE',
+    'OCEAN PEARL',
+    'LA MOUETTE',
+  ],
+  60: [
+    'VIKING SKY',
+    'NORMANDIE EXPRESS',
+    'CORSAIRE DE BRETAGNE',
+    'PONT AVEN',
+    'ARMORIQUE',
+  ],
   52: ['ABEILLE LIBERTE', 'SD VANGUARD', 'CAP AUSTRAL', 'MORGLAS', 'VOS PRIDE'],
   40: ['TURBOJET', 'FAST FERRY III', 'CATLANTIC', 'NGV ATHOS'],
   90: ['SEA EXPLORER', 'OCEAN SCOUT', 'MERIDIEN', 'GRAND LARGE'],
@@ -81,13 +117,32 @@ const Map<int, List<String>> kSimNamesByType = {
 
 /// Realistic destinations cycled when [SimFleetConfig.realisticNames] is on.
 const List<String> kSimDestinations = [
-  'ROTTERDAM', 'LE HAVRE', 'BREST', 'VALENCIA', 'HAMBURG', 'GENOA',
-  'FOS SUR MER', 'ANTWERPEN', 'DOVER', 'SHANGHAI', 'LISBOA', 'PORTSMOUTH',
+  'ROTTERDAM',
+  'LE HAVRE',
+  'BREST',
+  'VALENCIA',
+  'HAMBURG',
+  'GENOA',
+  'FOS SUR MER',
+  'ANTWERPEN',
+  'DOVER',
+  'SHANGHAI',
+  'LISBOA',
+  'PORTSMOUTH',
 ];
 
 /// Country prefixes used to build plausible call signs.
 const List<String> _kSimCallSignPrefixes = [
-  'F', '9H', 'PB', 'SP', 'CQ', 'V2', '3V', 'T2', 'LA', 'DK',
+  'F',
+  '9H',
+  'PB',
+  'SP',
+  'CQ',
+  'V2',
+  '3V',
+  'T2',
+  'LA',
+  'DK',
 ];
 
 String _callSignForIndex(int index) {
@@ -388,13 +443,13 @@ enum SimBoatKind { vessel, aircraft, baseStation, aton, safety, weather }
 
 /// Maps an AIS message type to the role that emits it.
 SimBoatKind simBoatKind(int emitType) => switch (emitType) {
-      4 || 11 || 22 || 23 => SimBoatKind.baseStation,
-      9 => SimBoatKind.aircraft,
-      21 => SimBoatKind.aton,
-      12 || 14 => SimBoatKind.safety,
-      8 => SimBoatKind.weather,
-      _ => SimBoatKind.vessel,
-    };
+  4 || 11 || 22 || 23 => SimBoatKind.baseStation,
+  9 => SimBoatKind.aircraft,
+  21 => SimBoatKind.aton,
+  12 || 14 => SimBoatKind.safety,
+  8 => SimBoatKind.weather,
+  _ => SimBoatKind.vessel,
+};
 
 double _distanceKm(double lat1, double lon1, double lat2, double lon2) {
   final dLat = (lat2 - lat1) * kKmPerDegLat;
@@ -407,50 +462,80 @@ double _bearingDeg(double lat1, double lon1, double lat2, double lon2) {
   final l1 = lat1 * math.pi / 180;
   final l2 = lat2 * math.pi / 180;
   final y = math.sin(dLon) * math.cos(l2);
-  final x = math.cos(l1) * math.sin(l2) -
+  final x =
+      math.cos(l1) * math.sin(l2) -
       math.sin(l1) * math.cos(l2) * math.cos(dLon);
   return (math.atan2(y, x) * 180 / math.pi + 360) % 360;
 }
 
 /// Plausible dimensions (bow, stern, port, starboard, draught) for a ship
 /// type, used when [SimFleetConfig.realisticDimensions] is enabled.
-(int, int, int, int, double) _dimsForType(
-  int vesselType,
-  math.Random random,
-) {
+(int, int, int, int, double) _dimsForType(int vesselType, math.Random random) {
   switch (vesselType) {
     case 70:
-      return (20 + random.nextInt(30), 100 + random.nextInt(100),
-          10 + random.nextInt(15), 10 + random.nextInt(15),
-          8 + random.nextDouble() * 6);
+      return (
+        20 + random.nextInt(30),
+        100 + random.nextInt(100),
+        10 + random.nextInt(15),
+        10 + random.nextInt(15),
+        8 + random.nextDouble() * 6,
+      );
     case 80:
-      return (20 + random.nextInt(40), 150 + random.nextInt(150),
-          12 + random.nextInt(20), 12 + random.nextInt(20),
-          10 + random.nextDouble() * 10);
+      return (
+        20 + random.nextInt(40),
+        150 + random.nextInt(150),
+        12 + random.nextInt(20),
+        12 + random.nextInt(20),
+        10 + random.nextDouble() * 10,
+      );
     case 30:
-      return (3 + random.nextInt(5), 10 + random.nextInt(10),
-          2 + random.nextInt(3), 2 + random.nextInt(3),
-          2 + random.nextDouble() * 2);
+      return (
+        3 + random.nextInt(5),
+        10 + random.nextInt(10),
+        2 + random.nextInt(3),
+        2 + random.nextInt(3),
+        2 + random.nextDouble() * 2,
+      );
     case 36:
-      return (2 + random.nextInt(4), 8 + random.nextInt(5),
-          1 + random.nextInt(2), 1 + random.nextInt(2),
-          1 + random.nextDouble() * 2);
+      return (
+        2 + random.nextInt(4),
+        8 + random.nextInt(5),
+        1 + random.nextInt(2),
+        1 + random.nextInt(2),
+        1 + random.nextDouble() * 2,
+      );
     case 60:
-      return (10 + random.nextInt(20), 80 + random.nextInt(120),
-          8 + random.nextInt(15), 8 + random.nextInt(15),
-          5 + random.nextDouble() * 4);
+      return (
+        10 + random.nextInt(20),
+        80 + random.nextInt(120),
+        8 + random.nextInt(15),
+        8 + random.nextInt(15),
+        5 + random.nextDouble() * 4,
+      );
     case 52:
-      return (2 + random.nextInt(5), 15 + random.nextInt(10),
-          3 + random.nextInt(3), 3 + random.nextInt(3),
-          3 + random.nextDouble() * 2);
+      return (
+        2 + random.nextInt(5),
+        15 + random.nextInt(10),
+        3 + random.nextInt(3),
+        3 + random.nextInt(3),
+        3 + random.nextDouble() * 2,
+      );
     case 40:
-      return (3 + random.nextInt(5), 15 + random.nextInt(15),
-          2 + random.nextInt(4), 2 + random.nextInt(4),
-          1 + random.nextDouble() * 2);
+      return (
+        3 + random.nextInt(5),
+        15 + random.nextInt(15),
+        2 + random.nextInt(4),
+        2 + random.nextInt(4),
+        1 + random.nextDouble() * 2,
+      );
     default:
-      return (5 + random.nextInt(10), 20 + random.nextInt(40),
-          3 + random.nextInt(7), 3 + random.nextInt(7),
-          2 + random.nextDouble() * 4);
+      return (
+        5 + random.nextInt(10),
+        20 + random.nextInt(40),
+        3 + random.nextInt(7),
+        3 + random.nextInt(7),
+        2 + random.nextDouble() * 4,
+      );
   }
 }
 
@@ -490,15 +575,15 @@ int _extraMmsi(SimFleetConfig config, int suffix, int index) =>
 
 /// Speed range per ship type, used when [SimFleetConfig.speedByType] is on.
 (double, double) _speedForType(int vesselType) => switch (vesselType) {
-      70 => (10, 18),
-      80 => (8, 16),
-      30 => (2, 8),
-      36 => (2, 8),
-      60 => (8, 18),
-      52 => (3, 8),
-      40 => (12, 35),
-      _ => (5, 14),
-    };
+  70 => (10, 18),
+  80 => (8, 16),
+  30 => (2, 8),
+  36 => (2, 8),
+  60 => (8, 18),
+  52 => (3, 8),
+  40 => (12, 35),
+  _ => (5, 14),
+};
 
 /// Configuration of the simulation, persisted in [AppSettings].
 class SimFleetConfig {
@@ -635,12 +720,10 @@ class SimFleetConfig {
     this.realisticRot = false,
     this.nmeaTalker = 'AI',
     this.nmea4Tags = false,
-  })  : messageTypes = messageTypes ?? {1, 5},
-        vesselTypes = vesselTypes ?? {
-            70, 80, 30, 36, 60, 52, 40, 90,
-          },
-        safetyTexts = safetyTexts ?? List.of(kSimSafetyTexts),
-        destinations = destinations ?? List.of(kSimDestinations);
+  }) : messageTypes = messageTypes ?? {1, 5},
+       vesselTypes = vesselTypes ?? {70, 80, 30, 36, 60, 52, 40, 90},
+       safetyTexts = safetyTexts ?? List.of(kSimSafetyTexts),
+       destinations = destinations ?? List.of(kSimDestinations);
 
   SimFleetConfig copyWith({
     double? centerLat,
@@ -678,131 +761,130 @@ class SimFleetConfig {
     bool? realisticRot,
     String? nmeaTalker,
     bool? nmea4Tags,
-  }) =>
-      SimFleetConfig(
-        centerLat: centerLat ?? this.centerLat,
-        centerLon: centerLon ?? this.centerLon,
-        radiusKm: radiusKm ?? this.radiusKm,
-        boatCount: boatCount ?? this.boatCount,
-        sogMin: sogMin ?? this.sogMin,
-        sogMax: sogMax ?? this.sogMax,
-        emitIntervalSec: emitIntervalSec ?? this.emitIntervalSec,
-        seed: seed ?? this.seed,
-        messageTypes: messageTypes ?? Set.of(this.messageTypes),
-        vesselTypes: vesselTypes ?? Set.of(this.vesselTypes),
-        realisticNames: realisticNames ?? this.realisticNames,
-        anchoredPercent: anchoredPercent ?? this.anchoredPercent,
-        realisticDimensions: realisticDimensions ?? this.realisticDimensions,
-        varySpeed: varySpeed ?? this.varySpeed,
-        reportIntervalMax: reportIntervalMax ?? this.reportIntervalMax,
-        baseStationCount: baseStationCount ?? this.baseStationCount,
-        atonCount: atonCount ?? this.atonCount,
-        injectErrors: injectErrors ?? this.injectErrors,
-        errorRate: errorRate ?? this.errorRate,
-        mmsiMid: mmsiMid ?? this.mmsiMid,
-        realisticMmsi: realisticMmsi ?? this.realisticMmsi,
-        namePrefix: namePrefix ?? this.namePrefix,
-        safetyTexts: safetyTexts ?? List.of(this.safetyTexts),
-        destinations: destinations ?? List.of(this.destinations),
-        zoneShape: zoneShape ?? this.zoneShape,
-        transitPercent: transitPercent ?? this.transitPercent,
-        autoRegenerate: autoRegenerate ?? this.autoRegenerate,
-        regenEveryTicks: regenEveryTicks ?? this.regenEveryTicks,
-        wanderStrength: wanderStrength ?? this.wanderStrength,
-        speedByType: speedByType ?? this.speedByType,
-        classBPercent: classBPercent ?? this.classBPercent,
-        accuratePosition: accuratePosition ?? this.accuratePosition,
-        realisticRot: realisticRot ?? this.realisticRot,
-        nmeaTalker: nmeaTalker ?? this.nmeaTalker,
-        nmea4Tags: nmea4Tags ?? this.nmea4Tags,
-      );
+  }) => SimFleetConfig(
+    centerLat: centerLat ?? this.centerLat,
+    centerLon: centerLon ?? this.centerLon,
+    radiusKm: radiusKm ?? this.radiusKm,
+    boatCount: boatCount ?? this.boatCount,
+    sogMin: sogMin ?? this.sogMin,
+    sogMax: sogMax ?? this.sogMax,
+    emitIntervalSec: emitIntervalSec ?? this.emitIntervalSec,
+    seed: seed ?? this.seed,
+    messageTypes: messageTypes ?? Set.of(this.messageTypes),
+    vesselTypes: vesselTypes ?? Set.of(this.vesselTypes),
+    realisticNames: realisticNames ?? this.realisticNames,
+    anchoredPercent: anchoredPercent ?? this.anchoredPercent,
+    realisticDimensions: realisticDimensions ?? this.realisticDimensions,
+    varySpeed: varySpeed ?? this.varySpeed,
+    reportIntervalMax: reportIntervalMax ?? this.reportIntervalMax,
+    baseStationCount: baseStationCount ?? this.baseStationCount,
+    atonCount: atonCount ?? this.atonCount,
+    injectErrors: injectErrors ?? this.injectErrors,
+    errorRate: errorRate ?? this.errorRate,
+    mmsiMid: mmsiMid ?? this.mmsiMid,
+    realisticMmsi: realisticMmsi ?? this.realisticMmsi,
+    namePrefix: namePrefix ?? this.namePrefix,
+    safetyTexts: safetyTexts ?? List.of(this.safetyTexts),
+    destinations: destinations ?? List.of(this.destinations),
+    zoneShape: zoneShape ?? this.zoneShape,
+    transitPercent: transitPercent ?? this.transitPercent,
+    autoRegenerate: autoRegenerate ?? this.autoRegenerate,
+    regenEveryTicks: regenEveryTicks ?? this.regenEveryTicks,
+    wanderStrength: wanderStrength ?? this.wanderStrength,
+    speedByType: speedByType ?? this.speedByType,
+    classBPercent: classBPercent ?? this.classBPercent,
+    accuratePosition: accuratePosition ?? this.accuratePosition,
+    realisticRot: realisticRot ?? this.realisticRot,
+    nmeaTalker: nmeaTalker ?? this.nmeaTalker,
+    nmea4Tags: nmea4Tags ?? this.nmea4Tags,
+  );
 
   Map<String, dynamic> toJson() => {
-        'centerLat': centerLat,
-        'centerLon': centerLon,
-        'radiusKm': radiusKm,
-        'boatCount': boatCount,
-        'sogMin': sogMin,
-        'sogMax': sogMax,
-        'emitIntervalSec': emitIntervalSec,
-        'seed': seed,
-        'messageTypes': messageTypes.toList(),
-        'vesselTypes': vesselTypes.toList(),
-        'realisticNames': realisticNames,
-        'anchoredPercent': anchoredPercent,
-        'realisticDimensions': realisticDimensions,
-        'varySpeed': varySpeed,
-        'reportIntervalMax': reportIntervalMax,
-        'baseStationCount': baseStationCount,
-        'atonCount': atonCount,
-        'injectErrors': injectErrors,
-        'errorRate': errorRate,
-        'mmsiMid': mmsiMid,
-        'realisticMmsi': realisticMmsi,
-        'namePrefix': namePrefix,
-        'safetyTexts': safetyTexts,
-        'destinations': destinations,
-        'zoneShape': zoneShape.name,
-        'transitPercent': transitPercent,
-        'autoRegenerate': autoRegenerate,
-        'regenEveryTicks': regenEveryTicks,
-        'wanderStrength': wanderStrength,
-        'speedByType': speedByType,
-        'classBPercent': classBPercent,
-        'accuratePosition': accuratePosition,
-        'realisticRot': realisticRot,
-        'nmeaTalker': nmeaTalker,
-        'nmea4Tags': nmea4Tags,
-      };
+    'centerLat': centerLat,
+    'centerLon': centerLon,
+    'radiusKm': radiusKm,
+    'boatCount': boatCount,
+    'sogMin': sogMin,
+    'sogMax': sogMax,
+    'emitIntervalSec': emitIntervalSec,
+    'seed': seed,
+    'messageTypes': messageTypes.toList(),
+    'vesselTypes': vesselTypes.toList(),
+    'realisticNames': realisticNames,
+    'anchoredPercent': anchoredPercent,
+    'realisticDimensions': realisticDimensions,
+    'varySpeed': varySpeed,
+    'reportIntervalMax': reportIntervalMax,
+    'baseStationCount': baseStationCount,
+    'atonCount': atonCount,
+    'injectErrors': injectErrors,
+    'errorRate': errorRate,
+    'mmsiMid': mmsiMid,
+    'realisticMmsi': realisticMmsi,
+    'namePrefix': namePrefix,
+    'safetyTexts': safetyTexts,
+    'destinations': destinations,
+    'zoneShape': zoneShape.name,
+    'transitPercent': transitPercent,
+    'autoRegenerate': autoRegenerate,
+    'regenEveryTicks': regenEveryTicks,
+    'wanderStrength': wanderStrength,
+    'speedByType': speedByType,
+    'classBPercent': classBPercent,
+    'accuratePosition': accuratePosition,
+    'realisticRot': realisticRot,
+    'nmeaTalker': nmeaTalker,
+    'nmea4Tags': nmea4Tags,
+  };
 
-  factory SimFleetConfig.fromJson(Map<String, dynamic> json) =>
-      SimFleetConfig(
-        centerLat: (json['centerLat'] as num?)?.toDouble() ?? 48.85,
-        centerLon: (json['centerLon'] as num?)?.toDouble() ?? 2.35,
-        radiusKm: (json['radiusKm'] as num?)?.toDouble() ?? 25,
-        boatCount: json['boatCount'] as int? ?? 10,
-        sogMin: (json['sogMin'] as num?)?.toDouble() ?? 3,
-        sogMax: (json['sogMax'] as num?)?.toDouble() ?? 18,
-        emitIntervalSec: json['emitIntervalSec'] as int? ?? 2,
-        seed: json['seed'] as int? ?? 42,
-        messageTypes: ((json['messageTypes'] as List?) ?? [1, 5])
+  factory SimFleetConfig.fromJson(Map<String, dynamic> json) => SimFleetConfig(
+    centerLat: (json['centerLat'] as num?)?.toDouble() ?? 48.85,
+    centerLon: (json['centerLon'] as num?)?.toDouble() ?? 2.35,
+    radiusKm: (json['radiusKm'] as num?)?.toDouble() ?? 25,
+    boatCount: json['boatCount'] as int? ?? 10,
+    sogMin: (json['sogMin'] as num?)?.toDouble() ?? 3,
+    sogMax: (json['sogMax'] as num?)?.toDouble() ?? 18,
+    emitIntervalSec: json['emitIntervalSec'] as int? ?? 2,
+    seed: json['seed'] as int? ?? 42,
+    messageTypes: ((json['messageTypes'] as List?) ?? [1, 5])
+        .map((e) => e as int)
+        .toSet(),
+    vesselTypes:
+        ((json['vesselTypes'] as List?) ?? [70, 80, 30, 36, 60, 52, 40, 90])
             .map((e) => e as int)
             .toSet(),
-        vesselTypes: ((json['vesselTypes'] as List?) ??
-                [70, 80, 30, 36, 60, 52, 40, 90])
-            .map((e) => e as int)
-            .toSet(),
-        realisticNames: json['realisticNames'] as bool? ?? false,
-        anchoredPercent: json['anchoredPercent'] as int? ?? 0,
-        realisticDimensions: json['realisticDimensions'] as bool? ?? false,
-        varySpeed: json['varySpeed'] as bool? ?? false,
-        reportIntervalMax: json['reportIntervalMax'] as int? ?? 1,
-        baseStationCount: json['baseStationCount'] as int? ?? 1,
-        atonCount: json['atonCount'] as int? ?? 3,
-        injectErrors: json['injectErrors'] as bool? ?? false,
-        errorRate: (json['errorRate'] as num?)?.toDouble() ?? 0.05,
-        mmsiMid: json['mmsiMid'] as int? ?? 247,
-        realisticMmsi: json['realisticMmsi'] as bool? ?? false,
-        namePrefix: json['namePrefix'] as String? ?? 'SIM',
-        safetyTexts: ((json['safetyTexts'] as List?) ?? kSimSafetyTexts)
-            .map((e) => e as String)
-            .toList(),
-        destinations: ((json['destinations'] as List?) ?? kSimDestinations)
-            .map((e) => e as String)
-            .toList(),
-        zoneShape: SimZoneShape.values.asNameMap()[json['zoneShape']] ??
-            SimZoneShape.circle,
-        transitPercent: json['transitPercent'] as int? ?? 0,
-        autoRegenerate: json['autoRegenerate'] as bool? ?? false,
-        regenEveryTicks: json['regenEveryTicks'] as int? ?? 300,
-        wanderStrength: (json['wanderStrength'] as num?)?.toDouble() ?? 1.0,
-        speedByType: json['speedByType'] as bool? ?? false,
-        classBPercent: json['classBPercent'] as int? ?? 50,
-        accuratePosition: json['accuratePosition'] as bool? ?? false,
-        realisticRot: json['realisticRot'] as bool? ?? false,
-        nmeaTalker: json['nmeaTalker'] as String? ?? 'AI',
-        nmea4Tags: json['nmea4Tags'] as bool? ?? false,
-      );
+    realisticNames: json['realisticNames'] as bool? ?? false,
+    anchoredPercent: json['anchoredPercent'] as int? ?? 0,
+    realisticDimensions: json['realisticDimensions'] as bool? ?? false,
+    varySpeed: json['varySpeed'] as bool? ?? false,
+    reportIntervalMax: json['reportIntervalMax'] as int? ?? 1,
+    baseStationCount: json['baseStationCount'] as int? ?? 1,
+    atonCount: json['atonCount'] as int? ?? 3,
+    injectErrors: json['injectErrors'] as bool? ?? false,
+    errorRate: (json['errorRate'] as num?)?.toDouble() ?? 0.05,
+    mmsiMid: json['mmsiMid'] as int? ?? 247,
+    realisticMmsi: json['realisticMmsi'] as bool? ?? false,
+    namePrefix: json['namePrefix'] as String? ?? 'SIM',
+    safetyTexts: ((json['safetyTexts'] as List?) ?? kSimSafetyTexts)
+        .map((e) => e as String)
+        .toList(),
+    destinations: ((json['destinations'] as List?) ?? kSimDestinations)
+        .map((e) => e as String)
+        .toList(),
+    zoneShape:
+        SimZoneShape.values.asNameMap()[json['zoneShape']] ??
+        SimZoneShape.circle,
+    transitPercent: json['transitPercent'] as int? ?? 0,
+    autoRegenerate: json['autoRegenerate'] as bool? ?? false,
+    regenEveryTicks: json['regenEveryTicks'] as int? ?? 300,
+    wanderStrength: (json['wanderStrength'] as num?)?.toDouble() ?? 1.0,
+    speedByType: json['speedByType'] as bool? ?? false,
+    classBPercent: json['classBPercent'] as int? ?? 50,
+    accuratePosition: json['accuratePosition'] as bool? ?? false,
+    realisticRot: json['realisticRot'] as bool? ?? false,
+    nmeaTalker: json['nmeaTalker'] as String? ?? 'AI',
+    nmea4Tags: json['nmea4Tags'] as bool? ?? false,
+  );
 
   /// Types that produce a moving position report.
   static const Set<int> positionTypes = {1, 2, 3, 9, 18, 19, 27};
@@ -896,8 +978,10 @@ class SimBoat {
     if (sog <= 0.01) return;
 
     if (config.varySpeed) {
-      sog = (sog + (random.nextDouble() - 0.5) * 0.8)
-          .clamp(config.sogMin, config.sogMax);
+      sog = (sog + (random.nextDouble() - 0.5) * 0.8).clamp(
+        config.sogMin,
+        config.sogMax,
+      );
     }
 
     final dKm = sog * 1.852 * (dt / 3600);
@@ -939,7 +1023,8 @@ class SimBoat {
   bool _outsideZone(SimFleetConfig config, double lat, double lon) {
     if (config.zoneShape == SimZoneShape.rectangle) {
       final latR = config.radiusKm / kKmPerDegLat;
-      final lonDegKm = kKmPerDegLat * math.cos(config.centerLat * math.pi / 180);
+      final lonDegKm =
+          kKmPerDegLat * math.cos(config.centerLat * math.pi / 180);
       final lonR = config.radiusKm / (lonDegKm == 0 ? kKmPerDegLat : lonDegKm);
       return (lat - config.centerLat).abs() > latR ||
           (lon - config.centerLon).abs() > lonR;
@@ -953,8 +1038,7 @@ class SimBoat {
     final ang = random.nextDouble() * 2 * math.pi;
     final r = config.radiusKm;
     final dLat = math.cos(ang) * r / kKmPerDegLat;
-    final lonDegKm =
-        kKmPerDegLat * math.cos(config.centerLat * math.pi / 180);
+    final lonDegKm = kKmPerDegLat * math.cos(config.centerLat * math.pi / 180);
     final dLon = math.sin(ang) * r / (lonDegKm == 0 ? kKmPerDegLat : lonDegKm);
     lat = config.centerLat + dLat;
     lon = config.centerLon + dLon;
@@ -981,94 +1065,93 @@ class SimBoat {
     if (!config.messageTypes.contains(emitType)) return null;
     final now = DateTime.now();
     _emissionCounter++;
-    final texts = config.safetyTexts.isEmpty ? kSimSafetyTexts : config.safetyTexts;
+    final texts = config.safetyTexts.isEmpty
+        ? kSimSafetyTexts
+        : config.safetyTexts;
     final safetyText = texts[_emissionCounter % texts.length];
     final accuracy = config.accuratePosition ? 1 : 0;
     return switch (emitType) {
       1 || 2 || 3 => encodePositionReport(
-          mmsi: mmsi,
-          latitude: lat,
-          longitude: lon,
-          sog: sog,
-          cog: cog,
-          heading: heading,
-          navigationStatus: navigationStatus,
-          positionAccuracy: accuracy,
-          rot: rot,
-        ),
+        mmsi: mmsi,
+        latitude: lat,
+        longitude: lon,
+        sog: sog,
+        cog: cog,
+        heading: heading,
+        navigationStatus: navigationStatus,
+        positionAccuracy: accuracy,
+        rot: rot,
+      ),
       18 => encodeClassBPosition(
-          mmsi: mmsi,
-          latitude: lat,
-          longitude: lon,
-          sog: sog,
-          cog: cog,
-          heading: heading,
-          positionAccuracy: accuracy,
-        ),
+        mmsi: mmsi,
+        latitude: lat,
+        longitude: lon,
+        sog: sog,
+        cog: cog,
+        heading: heading,
+        positionAccuracy: accuracy,
+      ),
       19 => encodeClassBExtended(
-          mmsi: mmsi,
-          latitude: lat,
-          longitude: lon,
-          sog: sog,
-          cog: cog,
-          heading: heading,
-          name: name,
-          vesselType: vesselType,
-          dimensionBow: dimensionBow,
-          dimensionStern: dimensionStern,
-          dimensionPort: dimensionPort,
-          dimensionStarboard: dimensionStarboard,
-          positionAccuracy: accuracy,
-        ),
+        mmsi: mmsi,
+        latitude: lat,
+        longitude: lon,
+        sog: sog,
+        cog: cog,
+        heading: heading,
+        name: name,
+        vesselType: vesselType,
+        dimensionBow: dimensionBow,
+        dimensionStern: dimensionStern,
+        dimensionPort: dimensionPort,
+        dimensionStarboard: dimensionStarboard,
+        positionAccuracy: accuracy,
+      ),
       27 => encodeLongRangeBroadcast(
-          mmsi: mmsi,
-          latitude: lat,
-          longitude: lon,
-          sog: sog,
-          cog: cog,
-          navigationStatus: navigationStatus,
-        ),
+        mmsi: mmsi,
+        latitude: lat,
+        longitude: lon,
+        sog: sog,
+        cog: cog,
+        navigationStatus: navigationStatus,
+      ),
       9 => encodeSarAircraftPosition(
-          mmsi: mmsi,
-          latitude: lat,
-          longitude: lon,
-          cog: cog,
-          altitude: altitude,
-          sog: sog.round(),
-          positionAccuracy: accuracy,
-        ),
+        mmsi: mmsi,
+        latitude: lat,
+        longitude: lon,
+        cog: cog,
+        altitude: altitude,
+        sog: sog.round(),
+        positionAccuracy: accuracy,
+      ),
       4 => encodeBaseStationReport(
-          mmsi: mmsi,
-          year: now.year,
-          month: now.month,
-          day: now.day,
-          hour: now.hour,
-          minute: now.minute,
-          second: now.second,
-          latitude: lat,
-          longitude: lon,
-        ),
+        mmsi: mmsi,
+        year: now.year,
+        month: now.month,
+        day: now.day,
+        hour: now.hour,
+        minute: now.minute,
+        second: now.second,
+        latitude: lat,
+        longitude: lon,
+      ),
       21 => encodeAidToNavigation(
-          mmsi: mmsi,
-          latitude: lat,
-          longitude: lon,
-          name: name,
-        ),
+        mmsi: mmsi,
+        latitude: lat,
+        longitude: lon,
+        name: name,
+      ),
       12 => encodeAddressedSafety(
-          mmsi: mmsi,
-          destinationMmsi: _baseMmsi(config),
-          text: safetyText,
-        ),
-      14 => encodeSafetyBroadcast(
-          mmsi: mmsi,
-          text: safetyText,
-        ),
+        mmsi: mmsi,
+        destinationMmsi: _baseMmsi(config),
+        text: safetyText,
+      ),
+      14 => encodeSafetyBroadcast(mmsi: mmsi, text: safetyText),
       8 => encodeBinaryBroadcast(
-          mmsi: mmsi,
-          dac: 1,
-          fid: 11,
-          data: _weatherBytes(_emissionCounter),
-        ),
+        mmsi: mmsi,
+        dac: 1,
+        fid: 11,
+        data: _weatherBytes(_emissionCounter),
+      ),
       _ => null,
     };
   }
@@ -1087,40 +1170,46 @@ class SimBoat {
     final now = DateTime.now();
     final out = <String>[];
     if (config.messageTypes.contains(11) && tick % 5 == 0) {
-      out.add(encodeUtcDateResponse(
-        mmsi: mmsi,
-        year: now.year,
-        month: now.month,
-        day: now.day,
-        hour: now.hour,
-        minute: now.minute,
-        second: now.second,
-        latitude: lat,
-        longitude: lon,
-      ));
+      out.add(
+        encodeUtcDateResponse(
+          mmsi: mmsi,
+          year: now.year,
+          month: now.month,
+          day: now.day,
+          hour: now.hour,
+          minute: now.minute,
+          second: now.second,
+          latitude: lat,
+          longitude: lon,
+        ),
+      );
     }
     final neLat = _zoneLatOffset(config);
     final neLon = _zoneLonOffset(config);
     if (config.messageTypes.contains(22) && tick % 7 == 0) {
-      out.add(encodeChannelManagement(
-        mmsi: mmsi,
-        channelA: 2087,
-        channelB: 2088,
-        txrxMode: 0,
-        neLatitude: config.centerLat + neLat,
-        neLongitude: config.centerLon + neLon,
-        swLatitude: config.centerLat - neLat,
-        swLongitude: config.centerLon - neLon,
-      ));
+      out.add(
+        encodeChannelManagement(
+          mmsi: mmsi,
+          channelA: 2087,
+          channelB: 2088,
+          txrxMode: 0,
+          neLatitude: config.centerLat + neLat,
+          neLongitude: config.centerLon + neLon,
+          swLatitude: config.centerLat - neLat,
+          swLongitude: config.centerLon - neLon,
+        ),
+      );
     }
     if (config.messageTypes.contains(23) && tick % 11 == 0) {
-      out.add(encodeGroupAssignment(
-        mmsi: mmsi,
-        neLatitude: config.centerLat + neLat,
-        neLongitude: config.centerLon + neLon,
-        swLatitude: config.centerLat - neLat,
-        swLongitude: config.centerLon - neLon,
-      ));
+      out.add(
+        encodeGroupAssignment(
+          mmsi: mmsi,
+          neLatitude: config.centerLat + neLat,
+          neLongitude: config.centerLon + neLon,
+          swLatitude: config.centerLat - neLat,
+          swLongitude: config.centerLon - neLon,
+        ),
+      );
     }
     return out;
   }
@@ -1136,54 +1225,56 @@ class SimBoat {
   /// Static data report (type 24) emitted by Class B vessels: part A (name)
   /// followed by part B (ship data).
   List<String> classBStaticSentences() => [
-        encodeStaticDataReportPartA(mmsi: mmsi, name: name),
-        encodeStaticDataReportPartB(
-          mmsi: mmsi,
-          shipType: vesselType,
-          callSign: callSign,
-          dimensionBow: dimensionBow,
-          dimensionStern: dimensionStern,
-          dimensionPort: dimensionPort,
-          dimensionStarboard: dimensionStarboard,
-        ),
-      ];
+    encodeStaticDataReportPartA(mmsi: mmsi, name: name),
+    encodeStaticDataReportPartB(
+      mmsi: mmsi,
+      shipType: vesselType,
+      callSign: callSign,
+      dimensionBow: dimensionBow,
+      dimensionStern: dimensionStern,
+      dimensionPort: dimensionPort,
+      dimensionStarboard: dimensionStarboard,
+    ),
+  ];
 
   String staticSentence() => encodeStaticAndVoyage(
-        mmsi: mmsi,
-        name: name,
-        callSign: callSign,
-        imoNumber: imoNumber,
-        vesselType: vesselType,
-        dimensionBow: dimensionBow,
-        dimensionStern: dimensionStern,
-        dimensionPort: dimensionPort,
-        dimensionStarboard: dimensionStarboard,
-        draught: draught,
-        destination: destination,
-      );
+    mmsi: mmsi,
+    name: name,
+    callSign: callSign,
+    imoNumber: imoNumber,
+    vesselType: vesselType,
+    dimensionBow: dimensionBow,
+    dimensionStern: dimensionStern,
+    dimensionPort: dimensionPort,
+    dimensionStarboard: dimensionStarboard,
+    draught: draught,
+    destination: destination,
+  );
 }
 
 /// The simulated fleet: generated vessels plus a couple of fixed stations.
 class SimFleet {
   final List<SimBoat> boats = [];
 
-  void generate(SimFleetConfig config, {int? seed}) {    boats.clear();
+  void generate(SimFleetConfig config, {int? seed}) {
+    boats.clear();
     final random = math.Random(seed ?? config.seed);
     final posTypes = config.enabledPositionTypes;
     final classAPosTypes = posTypes
         .where((t) => t == 1 || t == 2 || t == 3 || t == 9 || t == 27)
         .toList();
-    final classBPosTypes =
-        posTypes.where((t) => t == 18 || t == 19).toList();
+    final classBPosTypes = posTypes.where((t) => t == 18 || t == 19).toList();
     var vesselTypes = kSimVesselTypes
         .where((vt) => config.vesselTypes.contains(vt.$1))
         .toList();
     if (vesselTypes.isEmpty) vesselTypes = kSimVesselTypes;
     final reportMax = math.max(1, config.reportIntervalMax);
-    final prefix =
-        config.namePrefix.trim().isEmpty ? 'SIM' : config.namePrefix.trim();
-    final destPool =
-        config.destinations.isEmpty ? kSimDestinations : config.destinations;
+    final prefix = config.namePrefix.trim().isEmpty
+        ? 'SIM'
+        : config.namePrefix.trim();
+    final destPool = config.destinations.isEmpty
+        ? kSimDestinations
+        : config.destinations;
     final transitShare = config.transitPercent.clamp(0, 100);
     var nextIndex = 0;
 
@@ -1194,8 +1285,10 @@ class SimFleet {
           config.sogMin + random.nextDouble() * (config.sogMax - config.sogMin);
       if (config.speedByType) {
         final (sMin, sMax) = _speedForType(vt.$1);
-        sog = (sMin + random.nextDouble() * (sMax - sMin))
-            .clamp(config.sogMin, config.sogMax);
+        sog = (sMin + random.nextDouble() * (sMax - sMin)).clamp(
+          config.sogMin,
+          config.sogMax,
+        );
       }
       final cog = random.nextDouble() * 360;
       var navStatus = 0;
@@ -1204,12 +1297,18 @@ class SimFleet {
         sog = 0;
         navStatus = random.nextInt(2) == 0 ? 1 : 5;
       }
-      final transit =
-          transitShare > 0 && random.nextInt(100) < transitShare;
+      final transit = transitShare > 0 && random.nextInt(100) < transitShare;
       final emitType = _pickEmitType(
-          config, classAPosTypes, classBPosTypes, posTypes, i, random);
+        config,
+        classAPosTypes,
+        classBPosTypes,
+        posTypes,
+        i,
+        random,
+      );
       final namePool = kSimNamesByType[vt.$1];
-      final name = config.realisticNames && namePool != null && namePool.isNotEmpty
+      final name =
+          config.realisticNames && namePool != null && namePool.isNotEmpty
           ? namePool[i % namePool.length]
           : '$prefix-${i + 1}';
       final callSign = config.realisticNames
@@ -1291,34 +1390,40 @@ class SimFleet {
       }
     }
     if (config.messageTypes.contains(14)) {
-      boats.add(_extraBoat(
-        config,
-        random,
-        index: nextIndex++,
-        mmsi: _extraMmsi(config, 700000, 0),
-        name: 'SIM SAFETY',
-        emitType: 14,
-      ));
+      boats.add(
+        _extraBoat(
+          config,
+          random,
+          index: nextIndex++,
+          mmsi: _extraMmsi(config, 700000, 0),
+          name: 'SIM SAFETY',
+          emitType: 14,
+        ),
+      );
     }
     if (config.messageTypes.contains(12)) {
-      boats.add(_extraBoat(
-        config,
-        random,
-        index: nextIndex++,
-        mmsi: _extraMmsi(config, 700000, 1),
-        name: 'SIM DISTRESS',
-        emitType: 12,
-      ));
+      boats.add(
+        _extraBoat(
+          config,
+          random,
+          index: nextIndex++,
+          mmsi: _extraMmsi(config, 700000, 1),
+          name: 'SIM DISTRESS',
+          emitType: 12,
+        ),
+      );
     }
     if (config.messageTypes.contains(8)) {
-      boats.add(_extraBoat(
-        config,
-        random,
-        index: nextIndex++,
-        mmsi: _extraMmsi(config, 600000, 0),
-        name: 'SIM METEO',
-        emitType: 8,
-      ));
+      boats.add(
+        _extraBoat(
+          config,
+          random,
+          index: nextIndex++,
+          mmsi: _extraMmsi(config, 600000, 0),
+          name: 'SIM METEO',
+          emitType: 8,
+        ),
+      );
     }
   }
 
@@ -1388,7 +1493,7 @@ class SimFleet {
         final isClassB = b.emitType == 18 || b.emitType == 19;
         final emitStatic = isClassB
             ? config.messageTypes.contains(24) ||
-                config.messageTypes.contains(5)
+                  config.messageTypes.contains(5)
             : config.messageTypes.contains(5);
         if (emitStatic && (tick + b.index) % kStaticEveryTicks == 0) {
           if (isClassB && config.messageTypes.contains(24)) {

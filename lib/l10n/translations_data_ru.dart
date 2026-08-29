@@ -252,7 +252,8 @@ const Map<String, String> kValueLabelsRu = {
   'Addressed Safety Related Message': 'Адресованное сообщение по безопасности',
   'Aground': 'На мели',
   'Aid to Navigation station': 'Станция средств навигационного оборудования',
-  'Aid-to-Navigation Report': 'Сообщение о средстве навигационного оборудования',
+  'Aid-to-Navigation Report':
+      'Сообщение о средстве навигационного оборудования',
   'AIS-SART is active': 'AIS-SART активен',
   'All types of Class B mobile stations': 'Все типы мобильных станций класса B',
   'All types of mobiles (default)': 'Все типы мобильных станций (по умолчанию)',
@@ -267,8 +268,10 @@ const Map<String, String> kValueLabelsRu = {
   'Beacon, Cardinal W': 'Буй, кардинальный W',
   'Beacon, Isolated danger': 'Буй, отдельная опасность',
   'Beacon, Port hand': 'Буй, левой стороны',
-  'Beacon, Preferred Channel port hand': 'Буй, левой стороны предпочтительного канала',
-  'Beacon, Preferred Channel starboard hand': 'Буй, правой стороны предпочтительного канала',
+  'Beacon, Preferred Channel port hand':
+      'Буй, левой стороны предпочтительного канала',
+  'Beacon, Preferred Channel starboard hand':
+      'Буй, правой стороны предпочтительного канала',
   'Beacon, Safe water': 'Буй, чистая вода',
   'Beacon, Special mark': 'Буй, специальный знак',
   'Beacon, Starboard hand': 'Буй, правой стороны',
@@ -284,25 +287,31 @@ const Map<String, String> kValueLabelsRu = {
   'Cargo, Hazardous category B': 'Грузовое судно, опасный груз категории B',
   'Cargo, Hazardous category C': 'Грузовое судно, опасный груз категории C',
   'Cargo, Hazardous category D': 'Грузовое судно, опасный груз категории D',
-  'Cargo, No additional information': 'Грузовое судно, нет дополнительной информации',
-  'Cargo, Reserved for future use': 'Грузовое судно, зарезервировано для будущего использования',
+  'Cargo, No additional information':
+      'Грузовое судно, нет дополнительной информации',
+  'Cargo, Reserved for future use':
+      'Грузовое судно, зарезервировано для будущего использования',
   'Channel Management': 'Управление каналом',
   'Chayka': 'Чайка',
-  'Class B shipborne mobile station (IEC62287 only)': 'Судовая мобильная станция класса B (только IEC62287)',
+  'Class B shipborne mobile station (IEC62287 only)':
+      'Судовая мобильная станция класса B (только IEC62287)',
   'Combined GPS/GLONASS': 'Совмещённый GPS/GLONASS',
   'Constrained by her draught': 'С ограничением по осадке',
   'Data Link Management': 'Управление каналом данных',
   'Data not available (not sent)': 'Данные недоступны (не передавались)',
-  'Data Terminal not Ready (Default)': 'Терминал данных не готов (по умолчанию)',
+  'Data Terminal not Ready (Default)':
+      'Терминал данных не готов (по умолчанию)',
   'Data Terminal Ready': 'Терминал данных готов',
-  'DGNSS Binary Broadcast Message': 'Двоичное широковещательное сообщение DGNSS',
+  'DGNSS Binary Broadcast Message':
+      'Двоичное широковещательное сообщение DGNSS',
   'Diving ops': 'Водолазные работы',
   'Dredging or underwater ops': 'Дноуглубительные или подводные работы',
   'Electronic Position Fixing System operates in estimated (dead reckoning) mode':
       'Электронная система определения местоположения работает в режиме счисления пути',
   'Engaged in Fishing': 'Занимается рыбным промыслом',
   'Error please Contact: ': 'Ошибка, обратитесь: ',
-  'Extended Class B Equipment Position Report': 'Расширенное сообщение о местоположении оборудования класса B',
+  'Extended Class B Equipment Position Report':
+      'Расширенное сообщение о местоположении оборудования класса B',
   'Fishing': 'Рыболовное судно',
   'Fixed structure off shore (Oil Platform, Windfarm etc)':
       'Стационарное сооружение в море (нефтяная платформа, ветряная ферма и т. д.)',
@@ -310,11 +319,16 @@ const Map<String, String> kValueLabelsRu = {
   'GLONASS': 'GLONASS',
   'GPS': 'GPS',
   'Group Assignment Command': 'Команда группового назначения',
-  'High speed craft (HSC), all ships of this type': 'Высокоскоростное судно (HSC), все суда этого типа',
-  'High speed craft (HSC), Hazardous category A': 'Высокоскоростное судно (HSC), опасный груз категории A',
-  'High speed craft (HSC), Hazardous category B': 'Высокоскоростное судно (HSC), опасный груз категории B',
-  'High speed craft (HSC), Hazardous category C': 'Высокоскоростное судно (HSC), опасный груз категории C',
-  'High speed craft (HSC), Hazardous category D': 'Высокоскоростное судно (HSC), опасный груз категории D',
+  'High speed craft (HSC), all ships of this type':
+      'Высокоскоростное судно (HSC), все суда этого типа',
+  'High speed craft (HSC), Hazardous category A':
+      'Высокоскоростное судно (HSC), опасный груз категории A',
+  'High speed craft (HSC), Hazardous category B':
+      'Высокоскоростное судно (HSC), опасный груз категории B',
+  'High speed craft (HSC), Hazardous category C':
+      'Высокоскоростное судно (HSC), опасный груз категории C',
+  'High speed craft (HSC), Hazardous category D':
+      'Высокоскоростное судно (HSC), опасный груз категории D',
   'High speed craft (HSC), No additional information':
       'Высокоскоростное судно (HSC), нет дополнительной информации',
   'High speed craft (HSC), Reserved for future use':
@@ -337,9 +351,11 @@ const Map<String, String> kValueLabelsRu = {
   'Multiple Slot Binary Message With Communications State':
       'Многослотовое двоичное сообщение с состоянием связи',
   'Next Longer Reporting Interval': 'Следующий более длинный интервал передачи',
-  'Next Shorter Reporting Interval': 'Следующий более короткий интервал передачи',
+  'Next Shorter Reporting Interval':
+      'Следующий более короткий интервал передачи',
   'No information available (not sent)': 'Нет информации (не передавалось)',
-  'No official terminology (Error in transmission)': 'Нет официальной терминологии (ошибка при передаче)',
+  'No official terminology (Error in transmission)':
+      'Нет официальной терминологии (ошибка при передаче)',
   'No Special Maneuver': 'Без особого манёвра',
   'Noncombatant ship according to RR Resolution No. 18':
       'Некомбатантное судно согласно Регламенту радиосвязи, резолюция № 18',
@@ -353,15 +369,24 @@ const Map<String, String> kValueLabelsRu = {
   'Other Type, Hazardous category B': 'Другой тип, опасный груз категории B',
   'Other Type, Hazardous category C': 'Другой тип, опасный груз категории C',
   'Other Type, Hazardous category D': 'Другой тип, опасный груз категории D',
-  'Other Type, no additional information': 'Другой тип, нет дополнительной информации',
-  'Other Type, Reserved for future use': 'Другой тип, зарезервировано для будущего использования',
-  'Passenger, all ships of this type': 'Пассажирское судно, все суда этого типа',
-  'Passenger, Hazardous category A': 'Пассажирское судно, опасный груз категории A',
-  'Passenger, Hazardous category B': 'Пассажирское судно, опасный груз категории B',
-  'Passenger, Hazardous category C': 'Пассажирское судно, опасный груз категории C',
-  'Passenger, Hazardous category D': 'Пассажирское судно, опасный груз категории D',
-  'Passenger, No additional information': 'Пассажирское судно, нет дополнительной информации',
-  'Passenger, Reserved for future use': 'Пассажирское судно, зарезервировано для будущего использования',
+  'Other Type, no additional information':
+      'Другой тип, нет дополнительной информации',
+  'Other Type, Reserved for future use':
+      'Другой тип, зарезервировано для будущего использования',
+  'Passenger, all ships of this type':
+      'Пассажирское судно, все суда этого типа',
+  'Passenger, Hazardous category A':
+      'Пассажирское судно, опасный груз категории A',
+  'Passenger, Hazardous category B':
+      'Пассажирское судно, опасный груз категории B',
+  'Passenger, Hazardous category C':
+      'Пассажирское судно, опасный груз категории C',
+  'Passenger, Hazardous category D':
+      'Пассажирское судно, опасный груз категории D',
+  'Passenger, No additional information':
+      'Пассажирское судно, нет дополнительной информации',
+  'Passenger, Reserved for future use':
+      'Пассажирское судно, зарезервировано для будущего использования',
   'Pilot Vessel': 'Лоцманское судно',
   'Pleasure Craft': 'Прогулочное судно',
   'Port hand Mark': 'Знак левой стороны',
@@ -373,8 +398,10 @@ const Map<String, String> kValueLabelsRu = {
       'Сообщение о местоположении класса A (ответ на запрос)',
   'Position Report For Long-Range Applications':
       'Сообщение о местоположении для применения на больших дальностях',
-  'Positioning System inoperative': 'Система определения местоположения неисправна',
-  'Positioning System is in manual mode': 'Система определения местоположения в ручном режиме',
+  'Positioning System inoperative':
+      'Система определения местоположения неисправна',
+  'Positioning System is in manual mode':
+      'Система определения местоположения в ручном режиме',
   'Power-driven vessel pushing ahead or towing alongside (regional)':
       'Судно с механическим двигателем, толкающее впереди или буксирующее рядом (региональный статус)',
   'Power-driven vessel towing astern (regional)':
@@ -386,7 +413,8 @@ const Map<String, String> kValueLabelsRu = {
       'RAIM включён (подробнее: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)',
   'RAIM not enabled (default)': 'RAIM не включён (по умолчанию)',
   'Reference Point': 'Контрольная точка',
-  'Regional use and inland waterways': 'Региональное использование и внутренние водные пути',
+  'Regional use and inland waterways':
+      'Региональное использование и внутренние водные пути',
   'Reserved': 'Зарезервировано',
   'Reserved for future amendment of Navigational Status for HSC':
       'Зарезервировано для будущего уточнения навигационного статуса для HSC',
@@ -397,19 +425,23 @@ const Map<String, String> kValueLabelsRu = {
   'Restricted manoeuvrability': 'Ограниченная возможность манёвра',
   'Safe Water': 'Чистая вода',
   'Safety Related Acknowledgement': 'Подтверждение сообщения по безопасности',
-  'Safety Related Broadcast Message': 'Широковещательное сообщение по безопасности',
+  'Safety Related Broadcast Message':
+      'Широковещательное сообщение по безопасности',
   'Sailing': 'Парусное судно',
   'SAR airborne mobile station': 'Авиационная мобильная станция SAR',
   'Search and Rescue vessel': 'Поисково-спасательное судно',
   'Single Slot Binary Message': 'Однослотовое двоичное сообщение',
   'Spare - Local Vessel': 'Резерв — местное судно',
-  'Spare, Reserved for future use': 'Резерв, зарезервировано для будущего использования',
+  'Spare, Reserved for future use':
+      'Резерв, зарезервировано для будущего использования',
   'Special Maneuver in Progress': 'Выполняется особый манёвр',
   'Special Mark': 'Специальный знак',
   'Speed not Available (not sent)': 'Скорость недоступна (не передавалась)',
   'Speed over 102.2 knots': 'Скорость более 102,2 узлов',
-  'Standard Class B CS Position Report': 'Стандартное сообщение о местоположении класса B CS',
-  'Standard SAR Aircraft Position Report': 'Стандартное сообщение о местоположении самолёта SAR',
+  'Standard Class B CS Position Report':
+      'Стандартное сообщение о местоположении класса B CS',
+  'Standard SAR Aircraft Position Report':
+      'Стандартное сообщение о местоположении самолёта SAR',
   'Starboard hand Mark': 'Знак правой стороны',
   'Static and Voyage Related Data': 'Статические данные и данные рейса',
   'Static Data Report': 'Сообщение со статическими данными',
@@ -420,17 +452,20 @@ const Map<String, String> kValueLabelsRu = {
   'Tanker, Hazardous category C': 'Танкер, опасный груз категории C',
   'Tanker, Hazardous category D': 'Танкер, опасный груз категории D',
   'Tanker, No additional information': 'Танкер, нет дополнительной информации',
-  'Tanker, Reserved for future use': 'Танкер, зарезервировано для будущего использования',
+  'Tanker, Reserved for future use':
+      'Танкер, зарезервировано для будущего использования',
   'Towing': 'Буксировочное судно',
   'Towing: length exceeds 200m or breadth exceeds 25m':
       'Буксировка: длина превышает 200 м или ширина превышает 25 м',
   'Tug': 'Буксир',
   'turning left at more than 5deg/30s (No TI available)':
       'поворот влево более 5°/30 с (данные о TI недоступны)',
-  'Turning left at up to 708 deg. per minute or higher': 'Поворот влево до 708°/мин или выше',
+  'Turning left at up to 708 deg. per minute or higher':
+      'Поворот влево до 708°/мин или выше',
   'turning right at more than 5deg/30s (No TI available)':
       'поворот вправо более 5°/30 с (данные о TI недоступны)',
-  'Turning right at up to 708 deg. per minute or higher': 'Поворот вправо до 708°/мин или выше',
+  'Turning right at up to 708 deg. per minute or higher':
+      'Поворот вправо до 708°/мин или выше',
   'TxA, RxA/RxB': 'TxA, RxA/RxB',
   'TxA/TxB, RxA/RxB': 'TxA/TxB, RxA/RxB',
   'TxB, RxA/RxB': 'TxB, RxA/RxB',
@@ -445,11 +480,16 @@ const Map<String, String> kValueLabelsRu = {
   'Unknown Type': 'Неизвестный тип',
   'UTC and Date Inquiry': 'Запрос UTC и даты',
   'UTC and Date Response': 'Ответ UTC и даты',
-  'Wing in ground (WIG), all ships of this type': 'Экраноплан (WIG), все суда этого типа',
-  'Wing in ground (WIG), Hazardous category A': 'Экраноплан (WIG), опасный груз категории A',
-  'Wing in ground (WIG), Hazardous category B': 'Экраноплан (WIG), опасный груз категории B',
-  'Wing in ground (WIG), Hazardous category C': 'Экраноплан (WIG), опасный груз категории C',
-  'Wing in ground (WIG), Hazardous category D': 'Экраноплан (WIG), опасный груз категории D',
+  'Wing in ground (WIG), all ships of this type':
+      'Экраноплан (WIG), все суда этого типа',
+  'Wing in ground (WIG), Hazardous category A':
+      'Экраноплан (WIG), опасный груз категории A',
+  'Wing in ground (WIG), Hazardous category B':
+      'Экраноплан (WIG), опасный груз категории B',
+  'Wing in ground (WIG), Hazardous category C':
+      'Экраноплан (WIG), опасный груз категории C',
+  'Wing in ground (WIG), Hazardous category D':
+      'Экраноплан (WIG), опасный груз категории D',
   'Wing in ground (WIG), Reserved for future use':
       'Экраноплан (WIG), зарезервировано для будущего использования',
 };

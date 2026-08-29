@@ -15,8 +15,7 @@ class GmskMath {
   static const double bt = 0.4;
 
   /// Standard deviation of the Gaussian filter in bit periods.
-  static final double _sigma =
-      math.sqrt(math.ln2) / (math.pi * bt) * _t;
+  static final double _sigma = math.sqrt(math.ln2) / (math.pi * bt) * _t;
 
   static const double _t = 1.0;
 
@@ -27,11 +26,12 @@ class GmskMath {
     final sign = x < 0 ? -1.0 : 1.0;
     final ax = x.abs();
     final t = 1.0 / (1.0 + 0.3275911 * ax);
-    final y = 1.0 -
+    final y =
+        1.0 -
         (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t -
-                0.284496736) *
-                t +
-            0.254829592) *
+                        0.284496736) *
+                    t +
+                0.254829592) *
             t *
             math.exp(-ax * ax);
     return sign * y;
@@ -51,22 +51,19 @@ class GmskMath {
   static double phasePulse(double tau) {
     final a = tau + 0.5;
     final b = tau - 0.5;
-    return a * normalCdf(a / _sigma) - b * normalCdf(b / _sigma) +
+    return a * normalCdf(a / _sigma) -
+        b * normalCdf(b / _sigma) +
         _sigma * _phi(a / _sigma) -
         _sigma * _phi(b / _sigma);
   }
 
-  static double _phi(double x) =>
-      math.exp(-x * x / 2) / math.sqrt(2 * math.pi);
+  static double _phi(double x) => math.exp(-x * x / 2) / math.sqrt(2 * math.pi);
 
   /// Instantaneous frequency (rad/sample at the decimated rate) of a GMSK
   /// symbol stream [symbols] (values ±1) evaluated at sample time [tSamples].
   /// The first symbol spans [0, T); this is the discriminator reference for a
   /// known preamble.
-  static double instantaneousFrequency(
-    List<int> symbols,
-    double tSamples,
-  ) {
+  static double instantaneousFrequency(List<int> symbols, double tSamples) {
     final tau = tSamples / samplesPerBit;
     var f = 0.0;
     final first = (tau - 2).floor();

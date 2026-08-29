@@ -5,10 +5,7 @@ import '../../ais/src/encoder/ais_payload_encoder.dart'
 /// already stripped), armoring them into the 6-bit alphabet used by NMEA.
 String bitsToAivdm(List<int> bits, {String channel = 'A'}) {
   final fill = (6 - bits.length % 6) % 6;
-  final padded = [
-    ...bits,
-    ...List<int>.filled(fill, 0),
-  ];
+  final padded = [...bits, ...List<int>.filled(fill, 0)];
   final sb = StringBuffer();
   for (var i = 0; i < padded.length; i += 6) {
     var v = 0;
@@ -23,10 +20,12 @@ String bitsToAivdm(List<int> bits, {String channel = 'A'}) {
   const int maxChars = 82;
   final parts = <String>[];
   for (var i = 0; i < payload.length; i += maxChars) {
-    parts.add(payload.substring(
-      i,
-      i + maxChars > payload.length ? payload.length : i + maxChars,
-    ));
+    parts.add(
+      payload.substring(
+        i,
+        i + maxChars > payload.length ? payload.length : i + maxChars,
+      ),
+    );
   }
 
   final total = parts.length;

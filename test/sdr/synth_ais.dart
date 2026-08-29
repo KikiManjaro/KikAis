@@ -55,14 +55,34 @@ List<int> bitStuff(List<int> bits) {
 /// Builds the full on-air bit stream: 24-bit preamble (0x55 ×3), opening
 /// flag, stuffed [messageBits] (payload + CRC), closing flag.
 List<int> buildFrameBits(List<int> messageBits) {
-  final preamble = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
-  const flag = [0, 1, 1, 1, 1, 1, 1, 0];
-  return [
-    ...preamble,
-    ...flag,
-    ...bitStuff(messageBits),
-    ...flag,
+  final preamble = [
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
   ];
+  const flag = [0, 1, 1, 1, 1, 1, 1, 0];
+  return [...preamble, ...flag, ...bitStuff(messageBits), ...flag];
 }
 
 /// NRZI-encodes [bits] (0 -> transition, 1 -> no transition) into ±1 symbols,
@@ -119,7 +139,8 @@ Uint8List gmskModulate(
       if (k < 0 || k >= symbols.length) continue;
       phase += symbols[k] * GmskMath.phasePulse(tau - k);
     }
-    final total = phase * math.pi / 2 +
+    final total =
+        phase * math.pi / 2 +
         2 * math.pi * (carrierHz + freqOffsetHz) * s / kSynthSampleRate;
     final i = amplitude * math.cos(total) + noise * _gauss(rnd);
     final q = amplitude * math.sin(total) + noise * _gauss(rnd);

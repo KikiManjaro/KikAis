@@ -129,7 +129,8 @@ class SarAircraftPositionReport extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Altitude: $altitude, SOG: $speedOverGround, Accuracy: $positionAccuracy, Lon: $longitude, Lat: $latitude, COG: $courseOverGround, Timestamp: $timestamp, Regional: $regionalReserved, DTE: $dte, Mode: $assignedMode, RAIM: $raimEnabled, Radio: $radio)';
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, Altitude: $altitude, SOG: $speedOverGround, Accuracy: $positionAccuracy, Lon: $longitude, Lat: $latitude, COG: $courseOverGround, Timestamp: $timestamp, Regional: $regionalReserved, DTE: $dte, Mode: $assignedMode, RAIM: $raimEnabled, Radio: $radio)';
   //endregion
 
   /// Decodes a six-bit-armored AIS payload string into a
@@ -149,7 +150,11 @@ class SarAircraftPositionReport extends AISMessage {
 
     // type 9 specific
     int spare = getUintDirect(binary, 143, 146);
-    int altitude = getUintDirect(binary, 38, 50); // in meters - 4095 indicates null
+    int altitude = getUintDirect(
+      binary,
+      38,
+      50,
+    ); // in meters - 4095 indicates null
     int speed = getUintDirect(binary, 50, 60); // in knots - 1023 indicates null
     int positionAccuracy = getUintDirect(binary, 60, 61);
     int longitude = getSignedIntDirect(binary, 61, 89);
@@ -162,24 +167,22 @@ class SarAircraftPositionReport extends AISMessage {
     int raimEnabled = getUintDirect(binary, 147, 148);
     int radio = getUintDirect(binary, 148, 168);
 
-
-
     return SarAircraftPositionReport(
       messageType: messageType,
       mmsi: mmsi,
       repeatIndicator: repeatIndicator,
-      spare: spare, 
-      altitude: 0 <= altitude && altitude <= 4095 ? altitude : null, 
+      spare: spare,
+      altitude: 0 <= altitude && altitude <= 4095 ? altitude : null,
       speedOverGround: 0 <= speed && speed <= 1023 ? speed : null,
-      positionAccuracy: positionAccuracy, 
-      longitude: CoordinateUtils().calculateLongitudeDirect(longitude, 28), 
-      latitude: CoordinateUtils().calculateLatitudeDirect(latitude, 27), 
-      courseOverGround: 0 <= course && course < 3600 ? course / 10.0 : null, 
-      timestamp: timestamp, 
-      regionalReserved: regionalReserved, 
-      dte: dte, 
-      assignedMode: assignedMode, 
-      raimEnabled: raimEnabled, 
+      positionAccuracy: positionAccuracy,
+      longitude: CoordinateUtils().calculateLongitudeDirect(longitude, 28),
+      latitude: CoordinateUtils().calculateLatitudeDirect(latitude, 27),
+      courseOverGround: 0 <= course && course < 3600 ? course / 10.0 : null,
+      timestamp: timestamp,
+      regionalReserved: regionalReserved,
+      dte: dte,
+      assignedMode: assignedMode,
+      raimEnabled: raimEnabled,
       radio: radio,
     );
   }

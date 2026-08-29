@@ -36,7 +36,15 @@ void main() {
     } catch (_) {}
   });
 
-  Future<({BoatManager boatManager, MessageStats stats, BoatAnimationController boat, ValueNotifier<bool> running})> pumpReception(
+  Future<
+    ({
+      BoatManager boatManager,
+      MessageStats stats,
+      BoatAnimationController boat,
+      ValueNotifier<bool> running,
+    })
+  >
+  pumpReception(
     WidgetTester tester, {
     List<FeedDef> customFeeds = const [],
     Map<String, bool> enabled = const {},
@@ -102,18 +110,22 @@ void main() {
   }
 
   FeedDef fileFeed({bool loop = true, int intervalMs = 50}) => FeedDef(
-        key: 'Log',
-        displayName: 'Log',
-        type: FeedType.file,
-        path: logPath,
-        intervalMs: intervalMs,
-        loop: loop,
-      );
+    key: 'Log',
+    displayName: 'Log',
+    type: FeedType.file,
+    path: logPath,
+    intervalMs: intervalMs,
+    loop: loop,
+  );
 
-  testWidgets('file feed tile is listed and replays frames when started',
-      (tester) async {
-    final ctx =
-        await pumpReception(tester, customFeeds: [fileFeed()], enabled: {'Log': true});
+  testWidgets('file feed tile is listed and replays frames when started', (
+    tester,
+  ) async {
+    final ctx = await pumpReception(
+      tester,
+      customFeeds: [fileFeed()],
+      enabled: {'Log': true},
+    );
     final boatManager = ctx.boatManager;
 
     // The file feed is listed among the feeds.
@@ -189,8 +201,9 @@ void main() {
     );
   });
 
-  testWidgets('add source dialog offers file fields after switching type',
-      (tester) async {
+  testWidgets('add source dialog offers file fields after switching type', (
+    tester,
+  ) async {
     final ctx = await pumpReception(tester);
 
     await tester.tap(find.byIcon(Icons.add));
@@ -213,10 +226,7 @@ void main() {
 
     // Fill the fields and add the source.
     await tester.enterText(find.widgetWithText(TextField, 'Name'), 'My log');
-    await tester.enterText(
-      find.widgetWithText(TextField, 'File'),
-      logPath,
-    );
+    await tester.enterText(find.widgetWithText(TextField, 'File'), logPath);
     await tester.enterText(
       find.widgetWithText(TextField, 'Interval between frames (ms)'),
       '250',
@@ -234,8 +244,9 @@ void main() {
     );
   });
 
-  testWidgets('add source dialog offers serial fields after switching type',
-      (tester) async {
+  testWidgets('add source dialog offers serial fields after switching type', (
+    tester,
+  ) async {
     final ctx = await pumpReception(tester);
 
     await tester.tap(find.byIcon(Icons.add));
@@ -270,8 +281,9 @@ void main() {
     );
   });
 
-  testWidgets('add source dialog offers RTL-SDR fields after switching type',
-      (tester) async {
+  testWidgets('add source dialog offers RTL-SDR fields after switching type', (
+    tester,
+  ) async {
     final ctx = await pumpReception(tester);
 
     await tester.tap(find.byIcon(Icons.add));

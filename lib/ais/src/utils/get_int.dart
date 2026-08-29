@@ -9,7 +9,9 @@ int getUintDirect(String encoded, int startBit, int endBit) {
     final bitOffsetInChar = i % 6;
     final bitsAvailableInChar = 6 - bitOffsetInChar;
     final bitsNeeded = endBit - i;
-    final bitsToTake = bitsAvailableInChar < bitsNeeded ? bitsAvailableInChar : bitsNeeded;
+    final bitsToTake = bitsAvailableInChar < bitsNeeded
+        ? bitsAvailableInChar
+        : bitsNeeded;
 
     int chunk;
     if (charIndex >= encoded.length) {
@@ -25,7 +27,9 @@ int getUintDirect(String encoded, int startBit, int endBit) {
       chunk = (aisValue >> shiftAmount) & mask;
     }
 
-    value = value * (1 << bitsToTake) + chunk; // multiply, not <<, for web safety as this uses double when running on web, giving 2^52 instead of 2^32 which is important when fields (like mmsi) extend more than 32 bits.
+    value =
+        value * (1 << bitsToTake) +
+        chunk; // multiply, not <<, for web safety as this uses double when running on web, giving 2^52 instead of 2^32 which is important when fields (like mmsi) extend more than 32 bits.
     i += bitsToTake;
   }
   return value;
@@ -33,9 +37,14 @@ int getUintDirect(String encoded, int startBit, int endBit) {
 
 int getSignedIntDirect(String encoded, int startBit, int endBit) {
   final length = endBit - startBit;
-  int value = getUintDirect(encoded, startBit, endBit);   // read bits as if unsigned
-  if (value >= (1 << (length - 1))) {                     // top bit is set?
-    value -= (1 << length);                                // reinterpret as negative
+  int value = getUintDirect(
+    encoded,
+    startBit,
+    endBit,
+  ); // read bits as if unsigned
+  if (value >= (1 << (length - 1))) {
+    // top bit is set?
+    value -= (1 << length); // reinterpret as negative
   }
   return value;
 }
@@ -48,7 +57,9 @@ Uint8List getBytesDirect(String encoded, int startBit, int lengthInBits) {
     final chunkEnd = (chunkStart + 8 <= startBit + lengthInBits)
         ? chunkStart + 8
         : startBit + lengthInBits; // last byte may be partial
-    bytes[i] = getUintDirect(encoded, chunkStart, chunkEnd) << (chunkStart + 8 - chunkEnd);
+    bytes[i] =
+        getUintDirect(encoded, chunkStart, chunkEnd) <<
+        (chunkStart + 8 - chunkEnd);
   }
   return bytes;
 }

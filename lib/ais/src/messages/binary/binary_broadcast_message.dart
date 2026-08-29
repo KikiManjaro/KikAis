@@ -72,7 +72,8 @@ class BinaryBroadcastMessage extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, DAC: $dac, FID: $fid, Data: $data)';
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, DAC: $dac, FID: $fid, Data: $data)';
   //endregion
 
   /// Decodes a six-bit-armored AIS payload string into a
@@ -82,7 +83,10 @@ class BinaryBroadcastMessage extends AISMessage {
   /// is zero-padded to 1008 bits before parsing to accommodate the maximum
   /// allowed payload length.
   factory BinaryBroadcastMessage.fromEncoded(String encoded) {
-    String binary = encoded.padRight(1008, '0'); // ToDo: This is kind of inefficient - might have to change to an dynamic approach
+    String binary = encoded.padRight(
+      1008,
+      '0',
+    ); // ToDo: This is kind of inefficient - might have to change to an dynamic approach
 
     // common
     int messageType = getUintDirect(binary, 0, 6);

@@ -99,7 +99,7 @@ class ChannelManagementMessage extends AISMessage {
     required this.zoneSize,
   });
 
-  //region Overrides  
+  //region Overrides
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -147,8 +147,9 @@ class ChannelManagementMessage extends AISMessage {
   ]);
 
   @override
-  String toString() => 'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, ChannelA: $channelA, ChannelB: $channelB, TxRxMode: $txrxMode, Power: $power, NeLongitude: $neLongitude, NeLatitude: $neLatitude, SwLongitude: $swLongitude, SwLatitude: $swLatitude, MMSI1: $mmsi1, MMSI2: $mmsi2, Addressed: $addressed, BandA: $bandA, BandB: $bandB, ZoneSize: $zoneSize)';
-  //endregion  
+  String toString() =>
+      'AISMessage(Type: $messageType, MMSI: $mmsi, Repeat: $repeatIndicator, Spare: $spare, ChannelA: $channelA, ChannelB: $channelB, TxRxMode: $txrxMode, Power: $power, NeLongitude: $neLongitude, NeLatitude: $neLatitude, SwLongitude: $swLongitude, SwLatitude: $swLatitude, MMSI1: $mmsi1, MMSI2: $mmsi2, Addressed: $addressed, BandA: $bandA, BandB: $bandB, ZoneSize: $zoneSize)';
+  //endregion
 
   /// Decodes a six-bit-armored AIS payload string into a
   /// [ChannelManagementMessage].
@@ -160,12 +161,12 @@ class ChannelManagementMessage extends AISMessage {
   factory ChannelManagementMessage.fromEncoded(String encoded) {
     String binary = encoded.padRight(168, '0');
 
-    // common  
+    // common
     int messageType = getUintDirect(binary, 0, 6);
     int repeatIndicator = getUintDirect(binary, 6, 8);
     int mmsi = getUintDirect(binary, 8, 38);
 
-    // type ChannelManagementMessage specific  
+    // type ChannelManagementMessage specific
     int spare = getUintDirect(binary, 38, 40);
     int channelA = getUintDirect(binary, 40, 52);
     int channelB = getUintDirect(binary, 52, 64);
@@ -181,14 +182,14 @@ class ChannelManagementMessage extends AISMessage {
 
     int addressed = getUintDirect(binary, 139, 140);
 
-    if(addressed == 1) {
-       mmsi1 = getUintDirect(binary, 69, 99);
-       mmsi2 = getUintDirect(binary, 104, 134);
+    if (addressed == 1) {
+      mmsi1 = getUintDirect(binary, 69, 99);
+      mmsi2 = getUintDirect(binary, 104, 134);
     } else {
-       neLongitudeBin = getSignedIntDirect(binary, 69, 87);
-       neLatitudeBin = getSignedIntDirect(binary, 87, 104);
-       swLongitudeBin = getSignedIntDirect(binary, 104, 122);
-       swLatitudeBin = getSignedIntDirect(binary, 122, 139);
+      neLongitudeBin = getSignedIntDirect(binary, 69, 87);
+      neLatitudeBin = getSignedIntDirect(binary, 87, 104);
+      swLongitudeBin = getSignedIntDirect(binary, 104, 122);
+      swLatitudeBin = getSignedIntDirect(binary, 122, 139);
     }
 
     int bandA = getUintDirect(binary, 140, 141);
@@ -205,10 +206,18 @@ class ChannelManagementMessage extends AISMessage {
       txrxModeInt: txrxModeBin,
       txrxMode: BinaryConverter().transmitModeInfoDirect(txrxModeBin),
       power: power,
-      neLongitude: addressed == 0 ? CoordinateUtils().calculateLongitudeDirect(neLongitudeBin, 18) : null,
-      neLatitude: addressed == 0 ? CoordinateUtils().calculateLatitudeDirect(neLatitudeBin, 17) : null,
-      swLongitude: addressed == 0 ? CoordinateUtils().calculateLongitudeDirect(swLongitudeBin, 18) : null,
-      swLatitude: addressed == 0 ? CoordinateUtils().calculateLatitudeDirect(swLatitudeBin, 17) : null,
+      neLongitude: addressed == 0
+          ? CoordinateUtils().calculateLongitudeDirect(neLongitudeBin, 18)
+          : null,
+      neLatitude: addressed == 0
+          ? CoordinateUtils().calculateLatitudeDirect(neLatitudeBin, 17)
+          : null,
+      swLongitude: addressed == 0
+          ? CoordinateUtils().calculateLongitudeDirect(swLongitudeBin, 18)
+          : null,
+      swLatitude: addressed == 0
+          ? CoordinateUtils().calculateLatitudeDirect(swLatitudeBin, 17)
+          : null,
       mmsi1: addressed == 1 ? mmsi1 : null,
       mmsi2: addressed == 1 ? mmsi2 : null,
       addressed: addressed,

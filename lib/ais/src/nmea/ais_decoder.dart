@@ -72,8 +72,12 @@ class AisNmeaDecoder {
       return null;
     }
     try {
-      final message =
-          MessageFactory.create(assembled.payload, false, false, true);
+      final message = MessageFactory.create(
+        assembled.payload,
+        false,
+        false,
+        true,
+      );
       decodedCount++;
       _lastRawSentences = assembled.rawSentences;
       return message;
@@ -85,13 +89,13 @@ class AisNmeaDecoder {
   }
 
   DecoderReport report() => DecoderReport(
-        invalidChecksums: invalidChecksums,
-        droppedFragments: droppedFragments,
-        parseErrors: parseErrors,
-        pendingFragments: pendingFragments,
-        fragmentsSeen: fragmentsSeen,
-        multiPartCompleted: multiPartCompleted,
-      );
+    invalidChecksums: invalidChecksums,
+    droppedFragments: droppedFragments,
+    parseErrors: parseErrors,
+    pendingFragments: pendingFragments,
+    fragmentsSeen: fragmentsSeen,
+    multiPartCompleted: multiPartCompleted,
+  );
 
   /// Resets all counters and clears the fragment buffer.
   void reset() {
