@@ -94,7 +94,7 @@ class ReceptionPageState extends State<ReceptionPage> {
   /// Log lines waiting to be flushed to [logEntries] in a single rebuild.
   final List<LogEntry> _pendingLogs = [];
   static const Duration _logFlushDelay = Duration(milliseconds: 120);
-  static const int _logFlushMaxBatch = 120;
+  static const int _logFlushMaxBatch = 60;
   Timer? _logFlushTimer;
 
   final List<LogEntry> logEntries = [];
@@ -238,6 +238,11 @@ class ReceptionPageState extends State<ReceptionPage> {
   void _flushLogs() {
     _logFlushTimer = null;
     if (_pendingLogs.isEmpty) return;
+    // Drop oldest logs if backlog grows too large at high throughput (300+ msg/s)
+    // to avoid UI backlog stalling the event loop.
+    if (_pendingLogs.length > 200) {
+      _pendingLogs.removeRange(0, _pendingLogs.length - 100);
+    }
     // Cap batch size to avoid a single huge setState when a burst arrives
     // (e.g. large simulated fleet at high rate).
     final bool hasMore = _pendingLogs.length > _logFlushMaxBatch;

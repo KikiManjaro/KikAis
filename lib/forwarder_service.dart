@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
+import 'perf_probe.dart';
+
 import 'ais/ais_decoder.dart' show NmeaFormat, applyNmeaFormat;
 import 'target_config.dart';
 
@@ -269,21 +271,29 @@ class ForwarderService {
   }
 
   Future<void> _handleData(String feedName, String flag, String line) async {
-    // Normalize the incoming frame according to the chosen import format.
-    final normalized = applyNmeaFormat(line, importFormat,
-        sourceId: importTagSourceId);
-    if (normalized.isEmpty) return;
+    final sw = Stopwatch()..start();
+    PerfProbe.pendingHandleData++;
+    try {
+      final normalized = applyNmeaFormat(line, importFormat,
+          sourceId: importTagSourceId);
+      if (normalized.isEmpty) return;
 
-    for (final t in _targets.values) {
-      final out = applyNmeaFormat(
-        normalized,
-        t.config.sendFormat,
-        sourceId: t.config.tagSourceId ?? t.config.name,
-      );
-      if (out.isNotEmpty) await t.send(out);
+      for (final t in _targets.values) {
+        final out = applyNmeaFormat(
+          normalized,
+          t.config.sendFormat,
+          sourceId: t.config.tagSourceId ?? t.config.name,
+        );
+        if (out.isNotEmpty) await t.send(out);
+      }
+      onLog(normalized, flag, feedName);
+    } finally {
+      sw.stop();
+      PerfProbe.pendingHandleData--;
+      PerfProbe.recordHandleData(sw.elapsedMicroseconds);
     }
-    onLog(normalized, flag, feedName);
   }
+
 }
 
 class _TargetConnection {
@@ -363,11 +373,28 @@ class _TargetConnection {
           );
         case ForwardProtocol.tcpClient:
           _tcp?.write('$line\n');
-          await _tcp?.flush();
+          // Fire-and-forget flush: don't block event loop when downstream is slow.
+          // The OS TCP buffer handles flow control; awaiting flush would stall
+          // the entire pipeline and cause the feed to back up to 0.0/s.
+          final sw = Stopwatch()..start();
+          _tcp?.flush().then((_) {
+            sw.stop();
+            PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
+          }, onError: (_) {
+            sw.stop();
+            PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
+          });
         case ForwardProtocol.tcpServer:
           for (var client in List<Socket>.of(_clients)) {
             client.write('$line\n');
-            await client.flush();
+            final sw = Stopwatch()..start();
+            client.flush().then((_) {
+              sw.stop();
+              PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
+            }, onError: (_) {
+              sw.stop();
+              PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
+            });
           }
       }
     } catch (e) {
@@ -432,8 +459,13 @@ class _FeedConnection {
       _setStatus(const FeedStatus(connected: true));
       _subscription = _socket!.listen(
         (data) {
+          if (PerfProbe.pendingHandleData > 100) {
+            PerfProbe.recordBacklog();
+          }
           _buffer.write(String.fromCharCodes(data));
           final lines = _buffer.toString().split('\n');
+          final lineCount = lines.length - 1;
+          PerfProbe.recordChunk(data.length, lineCount);
           _buffer.clear();
           _buffer.write(lines.removeLast());
           for (final line in lines) {
@@ -473,7 +505,11 @@ class _FeedConnection {
   }
 
   void _setStatus(FeedStatus next) {
+    final prev = statusNotifier.value;
     statusNotifier.value = next;
+    if (prev.connected != next.connected || prev.error != next.error) {
+      debugPrint("[FEED] $name: connected=${next.connected} error=${next.error} msgs=${next.messageCount}");
+    }
   }
 
   void _completeClosed() {

@@ -3,6 +3,8 @@ import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 
+import 'perf_probe.dart';
+
 import 'ais/src/messages/base/ais_message.dart';
 import 'ais/src/messages/position/class_b_position.dart';
 import 'ais/src/messages/position/extended_class_b.dart';
@@ -44,6 +46,10 @@ class BoatManager extends ChangeNotifier {
   SendPort? _decoderSendPort;
   final ReceivePort _decoderControl = ReceivePort();
   final AisNmeaDecoder _fallbackDecoder = AisNmeaDecoder();
+
+  // Pre-allocated send buffer: reuses the same List object to avoid per-message
+  // allocation + GC pressure at high throughput (300+ msg/s).
+  final List<dynamic> _sendBuf = [null, null, null];
 
   DateTime _lastNotify = DateTime.fromMillisecondsSinceEpoch(0);
   bool _pendingNotify = false;
@@ -110,6 +116,13 @@ class BoatManager extends ChangeNotifier {
           feed: message.feed,
           rawLines: message.rawLines,
         );
+      } else if (message is int) {
+        final rtt = DateTime.now().microsecondsSinceEpoch - message;
+        PerfProbe.isolateRecv++;
+        PerfProbe.isolatePending--;
+        if (PerfProbe.isolatePending < 0) PerfProbe.isolatePending = 0;
+        PerfProbe.isolateTotalUs += rtt;
+        if (rtt > PerfProbe.isolateMaxUs) PerfProbe.isolateMaxUs = rtt;
       } else if (message is DecoderReport) {
         _applyReport(message);
       }
@@ -144,9 +157,13 @@ class BoatManager extends ChangeNotifier {
       if (message is List) {
         final feed = message[0] as String?;
         final line = message[1] as String;
+        final ts = message.length > 2 ? message[2] as int? : null;
         final decoded = decoder.decode(line);
         if (decoded != null) {
           control.send(_DecodedWithFeed(decoded, feed, decoder.lastRawSentences));
+        }
+        if (ts != null) {
+          control.send(ts);
         }
         control.send(decoder.report());
       }
@@ -155,7 +172,13 @@ class BoatManager extends ChangeNotifier {
 
   Future<void> processMessage(String msg, {String? feed}) async {
     if (_decoderSendPort != null) {
-      _decoderSendPort!.send([feed, msg]);
+      final ts = DateTime.now().microsecondsSinceEpoch;
+      PerfProbe.isolateSent++;
+      PerfProbe.isolatePending++;
+      _sendBuf[0] = feed;
+      _sendBuf[1] = msg;
+      _sendBuf[2] = ts;
+      _decoderSendPort!.send(_sendBuf);
       return;
     }
     final decoded = _fallbackDecoder.decode(msg);
