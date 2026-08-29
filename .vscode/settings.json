@@ -1,0 +1,9 @@
+{
+  // LLM + human consistency: same analysis as CI
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "dart.previewLspCloseErrorHandling": true,
+  "dart.lineLength": 80
+}
