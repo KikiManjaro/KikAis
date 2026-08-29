@@ -160,7 +160,9 @@ class BoatManager extends ChangeNotifier {
         final ts = message.length > 2 ? message[2] as int? : null;
         final decoded = decoder.decode(line);
         if (decoded != null) {
-          control.send(_DecodedWithFeed(decoded, feed, decoder.lastRawSentences));
+          control.send(
+            _DecodedWithFeed(decoded, feed, decoder.lastRawSentences),
+          );
         }
         if (ts != null) {
           control.send(ts);
@@ -193,7 +195,8 @@ class BoatManager extends ChangeNotifier {
   }
 
   void _applyReport(DecoderReport report) {
-    final changed = invalidChecksumCount != report.invalidChecksums ||
+    final changed =
+        invalidChecksumCount != report.invalidChecksums ||
         droppedFragmentCount != report.droppedFragments ||
         parseErrorCount != report.parseErrors ||
         pendingFragmentCount != report.pendingFragments ||

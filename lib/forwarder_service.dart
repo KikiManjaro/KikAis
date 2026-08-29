@@ -49,14 +49,13 @@ class FeedStatus {
     bool clearError = false,
     int? messageCount,
     DateTime? lastMessageAt,
-  }) =>
-      FeedStatus(
-        connecting: connecting ?? this.connecting,
-        connected: connected ?? this.connected,
-        error: clearError ? null : (error ?? this.error),
-        messageCount: messageCount ?? this.messageCount,
-        lastMessageAt: lastMessageAt ?? this.lastMessageAt,
-      );
+  }) => FeedStatus(
+    connecting: connecting ?? this.connecting,
+    connected: connected ?? this.connected,
+    error: clearError ? null : (error ?? this.error),
+    messageCount: messageCount ?? this.messageCount,
+    lastMessageAt: lastMessageAt ?? this.lastMessageAt,
+  );
 }
 
 /// Receives AIS frames from feeds (reception) and forwards them to every
@@ -118,16 +117,15 @@ class ForwarderService {
                 'port': t.port,
               },
               'Target ${t.name} connected '
-              '(${protocolLabel(t.protocol)} ${t.host}:${t.port}).',
+                  '(${protocolLabel(t.protocol)} ${t.host}:${t.port}).',
             ),
           );
         } catch (e) {
           _status(
-            LogMessage(
-              'targetConnectFailed',
-              {'name': t.name, 'error': '$e'},
-              'Failed to connect target ${t.name}: $e',
-            ),
+            LogMessage('targetConnectFailed', {
+              'name': t.name,
+              'error': '$e',
+            }, 'Failed to connect target ${t.name}: $e'),
           );
           _targets.remove(t.id);
         }
@@ -204,11 +202,11 @@ class ForwarderService {
     }
 
     _status(
-      LogMessage(
-        'feedAdded',
-        {'name': name, 'host': host, 'port': port},
-        'Feed added: $name ($host:$port)',
-      ),
+      LogMessage('feedAdded', {
+        'name': name,
+        'host': host,
+        'port': port,
+      }, 'Feed added: $name ($host:$port)'),
     );
   }
 
@@ -218,13 +216,7 @@ class ForwarderService {
       await feed.disconnect();
       feed.statusNotifier.dispose();
       feedStatuses.value = Map.of(feedStatuses.value)..remove(name);
-      _status(
-        LogMessage(
-          'feedRemoved',
-          {'name': name},
-          'Feed removed: $name',
-        ),
-      );
+      _status(LogMessage('feedRemoved', {'name': name}, 'Feed removed: $name'));
     }
   }
 
@@ -243,8 +235,9 @@ class ForwarderService {
       try {
         await feed.connect(_handleData);
         _status(
-          LogMessage('feedConnected', {'name': feed.name},
-              'Feed ${feed.name} connected.'),
+          LogMessage('feedConnected', {
+            'name': feed.name,
+          }, 'Feed ${feed.name} connected.'),
         );
         await feed.closed;
         if (_stopping || feed.isDisposed) break;
@@ -255,7 +248,7 @@ class ForwarderService {
             'Feed ${feed.name} disconnected. Reconnecting in 5s...',
           ),
         );
-        await Future.delayed(const Duration(seconds: 5));
+        await Future<void>.delayed(const Duration(seconds: 5));
       } catch (e) {
         if (_stopping || feed.isDisposed) break;
         _status(
@@ -265,7 +258,7 @@ class ForwarderService {
             'Failed to connect feed ${feed.name}: $e. Retrying in 5s...',
           ),
         );
-        await Future.delayed(const Duration(seconds: 5));
+        await Future<void>.delayed(const Duration(seconds: 5));
       }
     }
   }
@@ -274,8 +267,11 @@ class ForwarderService {
     final sw = Stopwatch()..start();
     PerfProbe.pendingHandleData++;
     try {
-      final normalized = applyNmeaFormat(line, importFormat,
-          sourceId: importTagSourceId);
+      final normalized = applyNmeaFormat(
+        line,
+        importFormat,
+        sourceId: importTagSourceId,
+      );
       if (normalized.isEmpty) return;
 
       for (final t in _targets.values) {
@@ -293,7 +289,6 @@ class ForwarderService {
       PerfProbe.recordHandleData(sw.elapsedMicroseconds);
     }
   }
-
 }
 
 class _TargetConnection {
@@ -335,7 +330,7 @@ class _TargetConnection {
                 'port': client.remotePort,
               },
               'Target ${config.name}: client connected '
-              '${client.remoteAddress.address}:${client.remotePort}',
+                  '${client.remoteAddress.address}:${client.remotePort}',
             ),
           );
           client.listen(
@@ -350,12 +345,11 @@ class _TargetConnection {
                 ),
               );
             },
-            onError: (e) => onStatus(
-              LogMessage(
-                'tcpClientError',
-                {'name': config.name, 'error': '$e'},
-                'Target ${config.name}: client error $e',
-              ),
+            onError: (Object e) => onStatus(
+              LogMessage('tcpClientError', {
+                'name': config.name,
+                'error': '$e',
+              }, 'Target ${config.name}: client error $e'),
             ),
           );
         });
@@ -366,44 +360,45 @@ class _TargetConnection {
     try {
       switch (config.protocol) {
         case ForwardProtocol.udpServer || ForwardProtocol.udpClient:
-          _udp?.send(
-            line.codeUnits,
-            InternetAddress(config.host),
-            config.port,
-          );
+          _udp?.send(line.codeUnits, InternetAddress(config.host), config.port);
         case ForwardProtocol.tcpClient:
           _tcp?.write('$line\n');
           // Fire-and-forget flush: don't block event loop when downstream is slow.
           // The OS TCP buffer handles flow control; awaiting flush would stall
           // the entire pipeline and cause the feed to back up to 0.0/s.
           final sw = Stopwatch()..start();
-          _tcp?.flush().then((_) {
-            sw.stop();
-            PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
-          }, onError: (_) {
-            sw.stop();
-            PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
-          });
+          _tcp?.flush().then(
+            (_) {
+              sw.stop();
+              PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
+            },
+            onError: (_) {
+              sw.stop();
+              PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
+            },
+          );
         case ForwardProtocol.tcpServer:
           for (var client in List<Socket>.of(_clients)) {
             client.write('$line\n');
             final sw = Stopwatch()..start();
-            client.flush().then((_) {
-              sw.stop();
-              PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
-            }, onError: (_) {
-              sw.stop();
-              PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
-            });
+            client.flush().then(
+              (_) {
+                sw.stop();
+                PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
+              },
+              onError: (_) {
+                sw.stop();
+                PerfProbe.recordTcpFlush(sw.elapsedMicroseconds);
+              },
+            );
           }
       }
     } catch (e) {
       onStatus(
-        LogMessage(
-          'sendError',
-          {'name': config.name, 'error': '$e'},
-          'Target ${config.name} send error: $e',
-        ),
+        LogMessage('sendError', {
+          'name': config.name,
+          'error': '$e',
+        }, 'Target ${config.name} send error: $e'),
       );
     }
   }
@@ -430,12 +425,17 @@ class _FeedConnection {
   final String? header;
 
   final StringBuffer _buffer = StringBuffer();
-  final ValueNotifier<FeedStatus> statusNotifier =
-      ValueNotifier(const FeedStatus(connecting: true));
+  final ValueNotifier<FeedStatus> statusNotifier = ValueNotifier(
+    const FeedStatus(connecting: true),
+  );
   Completer<void> _closedCompleter = Completer<void>();
   Socket? _socket;
   StreamSubscription<List<int>>? _subscription;
+  Timer? _watchdog;
   bool _disposed = false;
+
+  static const Duration _watchdogInterval = Duration(seconds: 15);
+  static const Duration _silentTimeout = Duration(seconds: 45);
 
   FeedStatus get status => statusNotifier.value;
   Future<void> get closed => _closedCompleter.future;
@@ -456,7 +456,44 @@ class _FeedConnection {
       if (header != null) {
         _socket!.write(header!);
       }
+      // Enable TCP keepalive to detect dead connections quickly after sleep
+      try {
+        _socket!.setOption(SocketOption.tcpNoDelay, true);
+      } catch (_) {}
+      try {
+        // SO_KEEPALIVE
+        _socket!.setRawOption(RawSocketOption.fromBool(
+          RawSocketOption.levelSocket, 0x0008, true));
+        if (Platform.isWindows) {
+          _socket!.setRawOption(RawSocketOption.fromInt(6, 3, 30));   // TCP_KEEPIDLE
+          _socket!.setRawOption(RawSocketOption.fromInt(6, 17, 10));  // TCP_KEEPINTVL
+          _socket!.setRawOption(RawSocketOption.fromInt(6, 10, 3));   // TCP_KEEPCNT (Winsock)
+        } else {
+          _socket!.setRawOption(RawSocketOption.fromInt(6, 4, 30));   // TCP_KEEPIDLE
+          _socket!.setRawOption(RawSocketOption.fromInt(6, 5, 10));   // TCP_KEEPINTVL
+          _socket!.setRawOption(RawSocketOption.fromInt(6, 6, 3));    // TCP_KEEPCNT
+        }
+      } catch (_) {}
+
       _setStatus(const FeedStatus(connected: true));
+
+      // Watchdog: force reconnect if no data for _silentTimeout
+      _watchdog?.cancel();
+      _watchdog = Timer.periodic(_watchdogInterval, (_) {
+        if (_disposed) return;
+        final last = statusNotifier.value.lastMessageAt;
+        if (last != null &&
+            statusNotifier.value.connected &&
+            DateTime.now().difference(last) > _silentTimeout) {
+          debugPrint(
+            "[FEED] $name: silent for ${DateTime.now().difference(last).inSeconds}s, forcing reconnect",
+          );
+          try {
+            _socket?.destroy();
+          } catch (_) {}
+        }
+      });
+
       _subscription = _socket!.listen(
         (data) {
           if (PerfProbe.pendingHandleData > 100) {
@@ -483,7 +520,7 @@ class _FeedConnection {
             }
           }
         },
-        onError: (e) {
+        onError: (Object e) {
           if (_disposed) return;
           _setStatus(status.copyWith(connected: false, error: '$e'));
           _completeClosed();
@@ -508,11 +545,15 @@ class _FeedConnection {
     final prev = statusNotifier.value;
     statusNotifier.value = next;
     if (prev.connected != next.connected || prev.error != next.error) {
-      debugPrint("[FEED] $name: connected=${next.connected} error=${next.error} msgs=${next.messageCount}");
+      debugPrint(
+        "[FEED] $name: connected=${next.connected} error=${next.error} msgs=${next.messageCount}",
+      );
     }
   }
 
   void _completeClosed() {
+    _watchdog?.cancel();
+    _watchdog = null;
     if (!_closedCompleter.isCompleted) {
       _closedCompleter.complete();
     }
@@ -520,6 +561,8 @@ class _FeedConnection {
 
   Future<void> disconnect() async {
     _disposed = true;
+    _watchdog?.cancel();
+    _watchdog = null;
     await _subscription?.cancel();
     _socket?.destroy();
     _socket = null;

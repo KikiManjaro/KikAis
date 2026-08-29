@@ -31,21 +31,25 @@ class PerfProbe {
     isolateTotalUs = 0;
     isolateMaxUs = 0;
   }
+
   static void recordHandleData(int us) {
     handleDataCount++;
     handleDataTotalUs += us;
     if (us > handleDataMaxUs) handleDataMaxUs = us;
   }
+
   static void recordTcpFlush(int us) {
     tcpFlushCount++;
     tcpFlushTotalUs += us;
     if (us > tcpFlushMaxUs) tcpFlushMaxUs = us;
   }
+
   static void recordChunk(int bytes, int lines) {
     chunkCount++;
     chunkBytes += bytes;
     chunkLines += lines;
   }
+
   static void recordBacklog() {
     backlogEvents++;
   }

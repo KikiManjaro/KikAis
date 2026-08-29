@@ -226,11 +226,7 @@ class ReceptionPageState extends State<ReceptionPage> {
   /// forwarder and the RTL-SDR feed player).
   void _queueLog(LogMessage status) {
     _pendingLogs.add(
-      LogEntry(
-        message: status.fallback,
-        status: status,
-        time: DateTime.now(),
-      ),
+      LogEntry(message: status.fallback, status: status, time: DateTime.now()),
     );
     _logFlushTimer ??= Timer(_logFlushDelay, _flushLogs);
   }
@@ -255,7 +251,8 @@ class ReceptionPageState extends State<ReceptionPage> {
     } else {
       _pendingLogs.clear();
     }
-    final shouldAutoScroll = !_scrollController.hasClients ||
+    final shouldAutoScroll =
+        !_scrollController.hasClients ||
         _scrollController.position.pixels + 80 >=
             _scrollController.position.maxScrollExtent;
     setState(() {
@@ -496,8 +493,8 @@ class ReceptionPageState extends State<ReceptionPage> {
                               onPressed: () async {
                                 setDialogState(() {
                                   downloading = true;
-                                  progressText = context
-                                      .l10n.aisCatcherDownloading;
+                                  progressText =
+                                      context.l10n.aisCatcherDownloading;
                                 });
                                 try {
                                   await AisCatcherProcess.ensureAvailable(
@@ -522,8 +519,7 @@ class ReceptionPageState extends State<ReceptionPage> {
                                 }
                               },
                               icon: const Icon(Icons.download),
-                              label:
-                                  Text(context.l10n.aisCatcherDownload),
+                              label: Text(context.l10n.aisCatcherDownload),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -539,15 +535,16 @@ class ReceptionPageState extends State<ReceptionPage> {
                                   ],
                                 );
                                 if (file == null) return;
-                                final ok = await AisCatcherProcess
-                                    .setCustomPath(file.path);
+                                final ok =
+                                    await AisCatcherProcess.setCustomPath(
+                                      file.path,
+                                    );
                                 if (!ok) {
                                   if (ctx.mounted) {
                                     ScaffoldMessenger.of(ctx).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          ctx
-                                              .l10n.aisCatcherInvalidPath,
+                                          ctx.l10n.aisCatcherInvalidPath,
                                         ),
                                       ),
                                     );
@@ -1125,7 +1122,9 @@ class ReceptionPageState extends State<ReceptionPage> {
                               '(${_visibleLogEntries.length}/${logEntries.length})',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -1138,21 +1137,32 @@ class ReceptionPageState extends State<ReceptionPage> {
                               icon: const Icon(Icons.filter_list),
                               iconSize: 18,
                               visualDensity: VisualDensity.compact,
-                              color: (settings.logHideStatus ||
+                              color:
+                                  (settings.logHideStatus ||
                                       !settings.logShowFeedNames ||
                                       !settings.logShowTimestamp ||
                                       !settings.logShowIcons)
                                   ? Theme.of(context).colorScheme.primary
                                   : null,
-                              onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+                              onPressed: () => controller.isOpen
+                                  ? controller.close()
+                                  : controller.open(),
                             ),
                           ),
                           menuChildren: [
                             CheckboxListTile(
                               dense: true,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                              title: const Text('Afficher icônes', style: TextStyle(fontSize: 12)),
-                              subtitle: const Text('drapeaux, simulation…', style: TextStyle(fontSize: 10)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              title: const Text(
+                                'Afficher icônes',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              subtitle: const Text(
+                                'drapeaux, simulation…',
+                                style: TextStyle(fontSize: 10),
+                              ),
                               value: settings.logShowIcons,
                               onChanged: (v) {
                                 if (v == null) return;
@@ -1161,8 +1171,13 @@ class ReceptionPageState extends State<ReceptionPage> {
                             ),
                             CheckboxListTile(
                               dense: true,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                              title: const Text('Afficher timestamps', style: TextStyle(fontSize: 12)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              title: const Text(
+                                'Afficher timestamps',
+                                style: TextStyle(fontSize: 12),
+                              ),
                               value: settings.logShowTimestamp,
                               onChanged: (v) {
                                 if (v == null) return;
@@ -1171,8 +1186,13 @@ class ReceptionPageState extends State<ReceptionPage> {
                             ),
                             CheckboxListTile(
                               dense: true,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                              title: const Text('Afficher noms feeds', style: TextStyle(fontSize: 12)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              title: const Text(
+                                'Afficher noms feeds',
+                                style: TextStyle(fontSize: 12),
+                              ),
                               value: settings.logShowFeedNames,
                               onChanged: (v) {
                                 if (v == null) return;
@@ -1181,9 +1201,17 @@ class ReceptionPageState extends State<ReceptionPage> {
                             ),
                             CheckboxListTile(
                               dense: true,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                              title: const Text('Masquer états connexion', style: TextStyle(fontSize: 12)),
-                              subtitle: const Text('n\'affiche que les trames', style: TextStyle(fontSize: 10)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              title: const Text(
+                                'Masquer états connexion',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              subtitle: const Text(
+                                'n\'affiche que les trames',
+                                style: TextStyle(fontSize: 10),
+                              ),
                               value: settings.logHideStatus,
                               onChanged: (v) {
                                 if (v == null) return;
@@ -1230,27 +1258,30 @@ class ReceptionPageState extends State<ReceptionPage> {
                               padding: const EdgeInsets.only(right: 14),
                               addAutomaticKeepAlives: false,
                               addRepaintBoundaries: true,
-                              cacheExtent: 400,
                               itemCount: visible.length,
                               itemBuilder: (context, index) {
                                 final entry = visible[index];
                                 return Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    if (settings.logShowIcons) _buildStarterWidget(entry),
-                                    if (settings.logShowIcons) const SizedBox(width: 5),
+                                    if (settings.logShowIcons)
+                                      _buildStarterWidget(entry),
+                                    if (settings.logShowIcons)
+                                      const SizedBox(width: 5),
                                     Expanded(
                                       child: NmeaLogText(
                                         entry: entry,
                                         showProvider: settings.logShowFeedNames,
-                                        showTimestamp: settings.logShowTimestamp,
+                                        showTimestamp:
+                                            settings.logShowTimestamp,
                                       ),
                                     ),
                                     if (entry.message.startsWith('!') ||
                                         entry.message.contains('!'))
                                       CopyIconButton(
                                         text: entry.message,
-                                        message: context.l10n.receptionFrameCopied,
+                                        message:
+                                            context.l10n.receptionFrameCopied,
                                         padding: EdgeInsets.zero,
                                       ),
                                   ],
@@ -1476,9 +1507,7 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
             children: [
               SegmentedButton<FeedType>(
                 showSelectedIcon: false,
-                style: const ButtonStyle(
-                  visualDensity: VisualDensity.compact,
-                ),
+                style: const ButtonStyle(visualDensity: VisualDensity.compact),
                 segments: [
                   ButtonSegment(
                     value: FeedType.network,
@@ -1513,8 +1542,9 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                 message: context.l10n.tooltipFeedName,
                 child: TextField(
                   controller: _name,
-                  decoration:
-                      InputDecoration(labelText: context.l10n.fieldName),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.fieldName,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -1808,12 +1838,15 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
                         isDense: true,
                         underline: const SizedBox.shrink(),
                         items: const [
+                          DropdownMenuItem(value: 'both', child: Text('A + B')),
                           DropdownMenuItem(
-                              value: 'both', child: Text('A + B')),
+                            value: 'A',
+                            child: Text('A (161.975)'),
+                          ),
                           DropdownMenuItem(
-                              value: 'A', child: Text('A (161.975)')),
-                          DropdownMenuItem(
-                              value: 'B', child: Text('B (162.025)')),
+                            value: 'B',
+                            child: Text('B (162.025)'),
+                          ),
                         ],
                         onChanged: (v) {
                           setState(() {
@@ -1848,5 +1881,3 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
     );
   }
 }
-
-

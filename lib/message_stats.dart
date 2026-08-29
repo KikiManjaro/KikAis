@@ -68,14 +68,11 @@ class MessageStats extends ChangeNotifier {
       final hAvg = hCount > 0 ? PerfProbe.handleDataTotalUs / hCount : 0;
       final fCount = PerfProbe.tcpFlushCount;
       final fAvg = fCount > 0 ? PerfProbe.tcpFlushTotalUs / fCount : 0;
-      final isoAvg = PerfProbe.isolateRecv > 0 ? PerfProbe.isolateTotalUs / PerfProbe.isolateRecv : 0;
+      final isoAvg = PerfProbe.isolateRecv > 0
+          ? PerfProbe.isolateTotalUs / PerfProbe.isolateRecv
+          : 0;
       debugPrint(
-        "[PERF] rate=" + messagesPerSecond.toStringAsFixed(0) + "/s "
-        "handleData avg=" + hAvg.toStringAsFixed(0) + "us max=" + PerfProbe.handleDataMaxUs.toString() + "us n=" + hCount.toString() + " "
-        "tcpFlush avg=" + fAvg.toStringAsFixed(0) + "us max=" + PerfProbe.tcpFlushMaxUs.toString() + "us n=" + fCount.toString() + " "
-        "chunk n=" + PerfProbe.chunkCount.toString() + " bytes=" + PerfProbe.chunkBytes.toString() + " lines=" + PerfProbe.chunkLines.toString() + " "
-        "backlog=" + PerfProbe.backlogEvents.toString() + " pending=" + PerfProbe.pendingHandleData.toString() + " "
-        "isolate avg=" + isoAvg.toStringAsFixed(0) + "us max=" + PerfProbe.isolateMaxUs.toString() + "us sent=" + PerfProbe.isolateSent.toString() + " recv=" + PerfProbe.isolateRecv.toString() + " pending=" + PerfProbe.isolatePending.toString(),
+        "[PERF] rate=${messagesPerSecond.toStringAsFixed(0)}/s handleData avg=${hAvg.toStringAsFixed(0)}us max=${PerfProbe.handleDataMaxUs}us n=$hCount tcpFlush avg=${fAvg.toStringAsFixed(0)}us max=${PerfProbe.tcpFlushMaxUs}us n=$fCount chunk n=${PerfProbe.chunkCount} bytes=${PerfProbe.chunkBytes} lines=${PerfProbe.chunkLines} backlog=${PerfProbe.backlogEvents} pending=${PerfProbe.pendingHandleData} isolate avg=${isoAvg.toStringAsFixed(0)}us max=${PerfProbe.isolateMaxUs}us sent=${PerfProbe.isolateSent} recv=${PerfProbe.isolateRecv} pending=${PerfProbe.isolatePending}",
       );
     }
     PerfProbe.resetSample();
@@ -98,8 +95,8 @@ class MessageStats extends ChangeNotifier {
     byType[type] = (byType[type] ?? 0) + 1;
     if (feed != null) {
       byFeedDecoded[feed] = (byFeedDecoded[feed] ?? 0) + 1;
-      byTypePerFeed
-          .putIfAbsent(feed, () => {})[type] = (byTypePerFeed[feed]?[type] ?? 0) + 1;
+      byTypePerFeed.putIfAbsent(feed, () => {})[type] =
+          (byTypePerFeed[feed]?[type] ?? 0) + 1;
     }
   }
 
