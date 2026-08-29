@@ -79,6 +79,18 @@
 - **Pourquoi:** Confiance encodeur.
 - **Done when:** CI job `verify-ais` vert.
 
+### P2.5 Panneau Avancé — exposer les micro-réglages en dur — 🟡 M
+- **Quoi:** inventaire complet des constantes aujourd'hui hard-codées + UI `Settings > Advanced` (behind `kAdvanced` toggle) persistées dans `AppSettings`/`SharedPreferences`. Recherche systématique (grep `static const` / `Duration` / magic numbers) :
+  - **Carte/boat:** `BoatManager.boatTtl 30m` + `purgeInterval 1m` (`boatmanager.dart:23`), `Boat.maxFrameLog 200` (`boat.dart:54`), `notifyThrottle 200ms` (`boatmanager.dart:25`), `trail length 24` + `_kAnimDuration 600ms` + `cluster cellSize 44` / hit 16-20px + vecteur `clamp 10-50` (`boat_map_layer.dart:10,148,177,221`), `feedStaleAfter 10s` (`reception_page.dart:34`), `initialZoom 5.0 / Paris 48.85,2.35` (`world_map_page.dart`)
+  - **Pipeline:** `_decodeBatchSize 8` + microtask batch (`boatmanager.dart:26`), `TargetSendQueue.maxPending 2048` (`forwarder_service.dart:37`), `_statusUpdateInterval 50ms` (`forwarder_service.dart:109`), `reconnectDelay 5s` + `_watchdogInterval 15s` + `_silentTimeout 45s` + TCP keepalive 30/10/3 (`forwarder_service.dart:117,519`), `PerfProbe` thresholds `pendingHandleData>100` / `backlogEvents`
+  - **Réception/log:** `_logFlushDelay 120ms` + `_logFlushMaxBatch 60` (`reception_page.dart:96`), `maxLogEntries` désormais unbounded disque, `message_stats` sampler `1s` (`message_stats.dart:37`), `FileFeedPlayer interval 1000ms loop` + `kBaudRates [...]` (`reception_page.dart:1420`), `NmeaBuilder maxChars 82`
+  - **Simulation/SDR:** `SimFleet kStaticEveryTicks 5` (`sim_fleet.dart:10`), `SimulatorService _syncGenerationThreshold 1000` (`simulator_service.dart:32`), `sdr: kAisOutputRate 64000 / kAisInputRate 1024000 / kKnownSymbols 32 / kMaxDataSymbols 600`, `RtlSdr deadline 5s + poll 5-20ms`
+  - **UI divers:** `HoverTooltip delay 500ms` / durations 120/180ms, `UpdateNotifier _startupTimeout 3s`, `StatsPage` durations 300/400/1100ms
+- **Pourquoi:** demandé — pouvoir ajuster TTL, batch, queues, timeouts, seuils sans recompiler; indispensable pour tuning 2k msg/s ×3 targets sur machines lentes/rapides.
+- **Comment:** `AppSettings` nouvelles clés `boatTtl`, `purgeInterval`, `notifyThrottle`, `frameLogCap`, `trailLen`, `animMs`, `clusterCell`, `logFlushMs/batch`, `feedStaleMs`, `decodeBatch`, `targetQueueCap`, `reconnectMs/watchdogMs/silentMs` — defaults = valeurs actuelles, validation bornes (ex: TTL 1-120m), migration `load()` garde defaults si absent, UI `ExpansionTile Advanced` avec reset defaults.
+- **Done when:** tous les hard-codés ci-dessus deviennent `AppSettings` lus (0 `static const` restant hors `const` sémantique), `flutter analyze` 0 + `flutter test` verts + doc `docs/advanced-tuning.md` + entrée `P1.4/P1.2` réutilise les mêmes réglages.
+- **Risque:** explosion combinatoire; garder profils `Default / Low-end / High-throughput` + garde-fous.
+
 ---
 
 ## P3 — UX / Produit
