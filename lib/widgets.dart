@@ -78,11 +78,15 @@ class _HoverTooltipState extends State<HoverTooltip> {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      key: _targetKey,
-      onEnter: _onEnter,
-      onExit: _onExit,
-      child: widget.child,
+    return Semantics(
+      label: widget.message,
+      tooltip: widget.message,
+      child: MouseRegion(
+        key: _targetKey,
+        onEnter: _onEnter,
+        onExit: _onExit,
+        child: widget.child,
+      ),
     );
   }
 }

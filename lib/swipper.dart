@@ -9,6 +9,7 @@ import 'boat_animation.dart';
 import 'decoder_page.dart';
 import 'documentation_page.dart';
 import 'l10n_ext.dart';
+import 'onboarding_dialog.dart';
 import 'reception_page.dart';
 import 'send_page.dart';
 import 'simulation_page.dart';
@@ -79,6 +80,12 @@ class _SwipperUiState extends State<SwipperUi> {
         _decoderKey.currentState?.loadSentences(sentence);
       },
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowOnboarding());
+  }
+
+  Future<void> _maybeShowOnboarding() async {
+    if (!mounted) return;
+    await OnboardingDialog.showIfNeeded(context);
   }
 
   @override
