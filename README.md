@@ -102,26 +102,6 @@ This architecture keeps data handling performant while maintaining a responsive,
 |---|---|
 | ![Simulation](readme_images/simulation.png) | ![Send](readme_images/send.png) |
 
-### 📸 Automated Screenshots
-
-Screenshots can be regenerated automatically for all pages:
-
-**Linux:**
-```bash
-# Install dependencies (Ubuntu/Debian)
-sudo apt install xvfb xdotool imagemagick
-
-# Run the script
-./scripts/take_screenshots.sh
-```
-
-**Windows:**
-```powershell
-.\scripts\take_screenshots.ps1
-```
-
-Screenshots are saved to `readme_images/` and can be committed to update the README.
-
 ## 🌍 Internationalization
 
 KikAis is available in **10 languages**: English (default), Français, Español, Deutsch, Português, Italiano, Nederlands, 中文, 日本語 and Русский. The UI follows the **operating system language** by default and can be changed at any time with the **language button** in the top bar (next to the theme button). See [`docs/i18n.md`](docs/i18n.md) for the full developer documentation on how strings, plurals and the translation workflow work.
