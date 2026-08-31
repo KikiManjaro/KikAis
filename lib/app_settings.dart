@@ -33,6 +33,7 @@ class AppSettings extends ChangeNotifier {
   static const _kLogHideStatus = 'logHideStatus';
   static const _kLogShowTimestamp = 'logShowTimestamp';
   static const _kLogShowIcons = 'logShowIcons';
+  static const _kOnboardingSeen = 'onboardingSeen';
 
   bool mapClusterEnabled = true;
   bool sendToMap = false;
@@ -65,6 +66,8 @@ class AppSettings extends ChangeNotifier {
   bool logHideStatus = false;
   bool logShowTimestamp = true;
   bool logShowIcons = true;
+
+  bool onboardingSeen = false;
 
   void setImportFormat(NmeaFormat format, String tagSource) {
     if (nmeaImportFormat == format && nmeaImportTagSource == tagSource) {
@@ -198,6 +201,7 @@ class AppSettings extends ChangeNotifier {
     logHideStatus = prefs.getBool(_kLogHideStatus) ?? false;
     logShowTimestamp = prefs.getBool(_kLogShowTimestamp) ?? true;
     logShowIcons = prefs.getBool(_kLogShowIcons) ?? true;
+    onboardingSeen = prefs.getBool(_kOnboardingSeen) ?? false;
 
     notifyListeners();
   }
@@ -307,6 +311,14 @@ class AppSettings extends ChangeNotifier {
     await prefs.setBool(_kLogShowIcons, logShowIcons);
   }
 
+  Future<void> setOnboardingSeen(bool value) async {
+    if (onboardingSeen == value) return;
+    onboardingSeen = value;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kOnboardingSeen, value);
+  }
+
   Future<void> save() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kCluster, mapClusterEnabled);
@@ -335,6 +347,7 @@ class AppSettings extends ChangeNotifier {
     await prefs.setBool(_kLogHideStatus, logHideStatus);
     await prefs.setBool(_kLogShowTimestamp, logShowTimestamp);
     await prefs.setBool(_kLogShowIcons, logShowIcons);
+    await prefs.setBool(_kOnboardingSeen, onboardingSeen);
     if (localeCode == null) {
       await prefs.remove(_kLocale);
     } else {
