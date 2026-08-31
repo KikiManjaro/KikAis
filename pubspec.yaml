@@ -1,5 +1,5 @@
 name: kik_ais
-description: "A new Flutter project."
+description: "AIS data forwarding and visualization hub for NMEA 0183 — receive, decode, visualize and rebroadcast AIS data via a Flutter desktop app."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
