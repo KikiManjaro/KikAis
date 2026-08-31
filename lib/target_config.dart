@@ -17,6 +17,9 @@ class TargetConfig {
   /// Source id used when [sendFormat] is [NmeaFormat.tag].
   final String? tagSourceId;
 
+  /// If non-empty, only AIS message types in this set are forwarded.
+  final Set<int> allowedTypes;
+
   const TargetConfig({
     required this.id,
     required this.name,
@@ -26,6 +29,7 @@ class TargetConfig {
     this.enabled = true,
     this.sendFormat = NmeaFormat.passthrough,
     this.tagSourceId,
+    this.allowedTypes = const {},
   });
 
   TargetConfig copyWith({
@@ -56,6 +60,7 @@ class TargetConfig {
     'enabled': enabled,
     'sendFormat': sendFormat.name,
     'tagSourceId': tagSourceId,
+    'allowedTypes': allowedTypes.toList(),
   };
 
   factory TargetConfig.fromJson(Map<String, dynamic> json) => TargetConfig(
@@ -73,6 +78,7 @@ class TargetConfig {
       orElse: () => NmeaFormat.passthrough,
     ),
     tagSourceId: json['tagSourceId'] as String?,
+    allowedTypes: (json['allowedTypes'] as List?)?.map((e) => e as int).toSet() ?? {},
   );
 
   static String newId() => 't${DateTime.now().microsecondsSinceEpoch}';

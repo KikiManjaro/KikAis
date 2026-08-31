@@ -105,6 +105,43 @@ class FeedStatus {
 
 /// Receives AIS frames from feeds (reception) and forwards them to every
 /// enabled [TargetConfig] (send).
+/// Returns true if [line] should be forwarded to [config] given its
+/// [allowedTypes] filter. Empty filter means allow all.
+bool shouldForwardToTarget(String line, TargetConfig config) {
+  if (config.allowedTypes.isEmpty) return true;
+  final type = tryExtractAisMessageType(line);
+  if (type == null) return true; // non-AIS or unparseable -> forward
+  return config.allowedTypes.contains(type);
+}
+
+/// Lightweight AIS type extraction without full decode. Decodes first 6-bit char.
+int? tryExtractAisMessageType(String line) {
+  try {
+    // Find payload between 5th and last comma (NMEA AIS sentence)
+    final star = line.lastIndexOf('*');
+    final body = star > 0 ? line.substring(1, star) : line;
+    if (!body.contains(',')) return null;
+    final parts = body.split(',');
+    if (parts.length < 6) return null;
+    final payload = parts[5];
+    if (payload.isEmpty) return null;
+    // AIS 6-bit decoding: first char -> 6 bits, type is first 6 bits
+    const table = '0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVW`abcdefghijklmnopqrstuvw';
+    int val(int c) {
+      if (c >= 48 && c <= 87) return c - 48;
+      if (c >= 96 && c <= 119) return c - 56;
+      return -1;
+    }
+    final v = val(payload.codeUnitAt(0));
+    if (v < 0) return null;
+    return v; // 6-bit value of first payload char == message type (1-27)
+    // Actually type is 6 bits of first payload char
+  } catch (_) {
+    return null;
+  }
+  return null;
+}
+
 class ForwarderService {
   static const _statusUpdateInterval = Duration(milliseconds: 50);
   final LogCallback onLog;
@@ -220,6 +257,7 @@ class ForwarderService {
     final clean = line.trim();
     if (clean.isEmpty) return;
     for (final t in _targets.values) {
+      if (!shouldForwardToTarget(clean, t.config)) continue;
       final out = applyNmeaFormat(
         clean,
         t.config.sendFormat,
@@ -349,6 +387,7 @@ class ForwarderService {
       if (normalized.isEmpty) return;
 
       for (final t in _targets.values) {
+        if (!shouldForwardToTarget(normalized, t.config)) continue;
         final out = applyNmeaFormat(
           normalized,
           t.config.sendFormat,
