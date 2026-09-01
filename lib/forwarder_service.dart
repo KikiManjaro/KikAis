@@ -103,8 +103,41 @@ class FeedStatus {
   );
 }
 
+/// Dedicated NMEA processing pipeline — stateless line-oriented processor.
+///
+/// Separated from connection state so a slow status consumer never stalls
+/// frame throughput. Each instance is bound to one feed's socket and only
+/// handles buffering + line splitting + dispatch.
+class NmeaPipeline {
+  final StringBuffer _buffer = StringBuffer();
+
+  /// Splits [data] into trimmed NMEA lines and dispatches each non-empty
+  /// line via [onLine]. The trailing incomplete fragment stays buffered.
+  void pushBytes(List<int> data, void Function(String line) onLine) {
+    _buffer.write(String.fromCharCodes(data));
+    final lines = _buffer.toString().split('\n');
+    _buffer.clear();
+    _buffer.write(lines.removeLast());
+    for (final line in lines) {
+      final trimmed = line.trim();
+      if (trimmed.isEmpty) continue;
+      onLine(trimmed);
+    }
+  }
+
+  /// Returns buffered fragment length for diagnostics.
+  int get bufferedLength => _buffer.length;
+
+  void clear() => _buffer.clear();
+}
+
 /// Receives AIS frames from feeds (reception) and forwards them to every
 /// enabled [TargetConfig] (send).
+///
+/// NMEA data and connection state travel on two distinct pipelines:
+/// - NMEA: socket bytes → [NmeaPipeline] → [_handleData] → forward/log/decode.
+/// - State: [_FeedConnection.statusNotifier] → [_publishFeedStatus] → [feedStatuses].
+/// They share no synchronous path so per-message stats never block decoding.
 class ForwarderService {
   static const _statusUpdateInterval = Duration(milliseconds: 50);
   final LogCallback onLog;
@@ -117,6 +150,7 @@ class ForwarderService {
     this.reconnectDelay = const Duration(seconds: 5),
   });
 
+  /// Connection-state channel only — never called for NMEA frames.
   void _status(LogMessage m) {
     if (onStatus != null) {
       onStatus!(m);
@@ -337,6 +371,8 @@ class ForwarderService {
     }
   }
 
+  /// Pure NMEA pipeline — normalizes, forwards, and logs a single sentence.
+  /// Never touches connection state; stats are handled by [_FeedConnection].
   Future<void> _handleData(String feedName, String flag, String line) async {
     final sw = Stopwatch()..start();
     PerfProbe.pendingHandleData++;
@@ -505,7 +541,10 @@ class _FeedConnection {
   final int port;
   final String? header;
 
-  final StringBuffer _buffer = StringBuffer();
+  /// NMEA pipeline — owns buffering and line splitting. Never touches status.
+  final NmeaPipeline _pipeline = NmeaPipeline();
+
+  /// Connection-state pipeline — only connection lifecycle + batched stats.
   final ValueNotifier<FeedStatus> statusNotifier = ValueNotifier(
     const FeedStatus(connecting: true),
   );
@@ -515,6 +554,12 @@ class _FeedConnection {
   Timer? _watchdog;
   DateTime? _connectedAt;
   bool _disposed = false;
+
+  // Stats batching — avoids a ValueNotifier update per frame at 300+ msg/s.
+  int _pendingMessageCount = 0;
+  DateTime? _pendingLastAt;
+  Timer? _statsTimer;
+  static const _statsInterval = Duration(milliseconds: 50);
 
   static const Duration _watchdogInterval = Duration(seconds: 15);
   static const Duration _silentTimeout = Duration(seconds: 45);
@@ -596,34 +641,26 @@ class _FeedConnection {
           if (PerfProbe.pendingHandleData > 100) {
             PerfProbe.recordBacklog();
           }
-          _buffer.write(String.fromCharCodes(data));
-          final lines = _buffer.toString().split('\n');
-          final lineCount = lines.length - 1;
+          final lineCount = _countLines(data);
           PerfProbe.recordChunk(data.length, lineCount);
-          _buffer.clear();
-          _buffer.write(lines.removeLast());
-          for (final line in lines) {
-            final trimmed = line.trim();
-            if (trimmed.isEmpty) continue;
+
+          // NMEA pipeline — pure data path, no status mutation inline.
+          _pipeline.pushBytes(data, (trimmed) {
             onData(name, flag, trimmed);
             if (trimmed.contains('!')) {
-              _setStatus(
-                status.copyWith(
-                  connected: true,
-                  messageCount: status.messageCount + 1,
-                  lastMessageAt: DateTime.now(),
-                ),
-              );
+              _accumulateStats();
             }
-          }
+          });
         },
         onError: (Object e) {
           if (_disposed) return;
+          _flushStats();
           _setStatus(status.copyWith(connected: false, error: '$e'));
           _completeClosed();
         },
         onDone: () {
           if (_disposed) return;
+          _flushStats();
           _setStatus(
             status.copyWith(connected: false, error: 'Feed disconnected'),
           );
@@ -637,6 +674,43 @@ class _FeedConnection {
     }
   }
 
+  /// Counts complete lines in [data] for PerfProbe without extra allocation.
+  int _countLines(List<int> data) {
+    var count = 0;
+    for (final b in data) {
+      if (b == 10) count++; // '\n'
+    }
+    return count;
+  }
+
+  /// Accumulates message stats without triggering a notifier per frame.
+  /// Flushes on a 50ms coalescing timer so the UI dots update smoothly
+  /// while the NMEA stream stays unblocked at high throughput.
+  void _accumulateStats() {
+    _pendingMessageCount++;
+    _pendingLastAt = DateTime.now();
+    _statsTimer ??= Timer(_statsInterval, _flushStats);
+  }
+
+  void _flushStats() {
+    _statsTimer?.cancel();
+    _statsTimer = null;
+    if (_pendingMessageCount == 0) return;
+    final count = _pendingMessageCount;
+    final at = _pendingLastAt;
+    _pendingMessageCount = 0;
+    _pendingLastAt = null;
+    _setStatus(
+      status.copyWith(
+        connected: true,
+        messageCount: status.messageCount + count,
+        lastMessageAt: at,
+      ),
+    );
+  }
+
+  /// Connection-state pipeline only — called for lifecycle changes and
+  /// periodic stats flushes, never inside the NMEA hot loop.
   void _setStatus(FeedStatus next) {
     final prev = statusNotifier.value;
     statusNotifier.value = next;
@@ -650,6 +724,8 @@ class _FeedConnection {
   void _completeClosed() {
     _watchdog?.cancel();
     _watchdog = null;
+    _statsTimer?.cancel();
+    _statsTimer = null;
     if (!_closedCompleter.isCompleted) {
       _closedCompleter.complete();
     }
@@ -659,11 +735,13 @@ class _FeedConnection {
     _disposed = true;
     _watchdog?.cancel();
     _watchdog = null;
+    _statsTimer?.cancel();
+    _statsTimer = null;
     await _subscription?.cancel();
     _socket?.destroy();
     _socket = null;
     _subscription = null;
-    _buffer.clear();
+    _pipeline.clear();
     _connectedAt = null;
     _completeClosed();
   }
