@@ -96,7 +96,7 @@ jobs:
             -DownloadBaseUrl "https://github.com/${{ github.repository }}/releases/download/${{ needs.version.outputs.tag }}/"
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: windows
           path: |
@@ -142,7 +142,7 @@ jobs:
           tar -czf "kikais-linux-${{ needs.version.outputs.version }}.tar.gz" -C build/linux/x64/release/bundle .
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: linux
           path: kikais-linux-*.tar.gz
