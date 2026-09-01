@@ -1297,6 +1297,9 @@ class ReceptionPageState extends State<ReceptionPage>
                         child: Builder(
                           builder: (context) {
                             final visible = _visibleLogEntries;
+                            // P0.1: cacheExtent removed — was deprecated (flutter fix
+                            // generated invalid ScrollCacheExtent.pixels(400)).
+                            // Default viewport caching is sufficient; flutter analyze clean.
                             return ListView.builder(
                               controller: _scrollController,
                               padding: const EdgeInsets.only(right: 14),
