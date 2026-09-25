@@ -72,7 +72,7 @@ class MessageStats extends ChangeNotifier {
           ? PerfProbe.isolateTotalUs / PerfProbe.isolateRecv
           : 0;
       debugPrint(
-        "[PERF] rate=${messagesPerSecond.toStringAsFixed(0)}/s handleData avg=${hAvg.toStringAsFixed(0)}us max=${PerfProbe.handleDataMaxUs}us n=$hCount tcpFlush avg=${fAvg.toStringAsFixed(0)}us max=${PerfProbe.tcpFlushMaxUs}us n=$fCount chunk n=${PerfProbe.chunkCount} bytes=${PerfProbe.chunkBytes} lines=${PerfProbe.chunkLines} backlog=${PerfProbe.backlogEvents} pending=${PerfProbe.pendingHandleData} isolate avg=${isoAvg.toStringAsFixed(0)}us max=${PerfProbe.isolateMaxUs}us sent=${PerfProbe.isolateSent} recv=${PerfProbe.isolateRecv} pending=${PerfProbe.isolatePending}",
+        '[PERF] rate=${messagesPerSecond.toStringAsFixed(0)}/s handleData avg=${hAvg.toStringAsFixed(0)}us max=${PerfProbe.handleDataMaxUs}us n=$hCount tcpFlush avg=${fAvg.toStringAsFixed(0)}us max=${PerfProbe.tcpFlushMaxUs}us n=$fCount chunk n=${PerfProbe.chunkCount} bytes=${PerfProbe.chunkBytes} lines=${PerfProbe.chunkLines} backlog=${PerfProbe.backlogEvents} pending=${PerfProbe.pendingHandleData} isolate avg=${isoAvg.toStringAsFixed(0)}us max=${PerfProbe.isolateMaxUs}us sent=${PerfProbe.isolateSent} recv=${PerfProbe.isolateRecv} pending=${PerfProbe.isolatePending}',
       );
     }
     PerfProbe.resetSample();

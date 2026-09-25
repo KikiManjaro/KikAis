@@ -63,7 +63,7 @@ Future<void> main() async {
     appWindow.minSize = const Size(640, 480);
     appWindow.size = const Size(1024, 810);
     appWindow.alignment = Alignment.center;
-    appWindow.title = "KikAis";
+    appWindow.title = 'KikAis';
     appWindow.show();
   });
 }

@@ -125,7 +125,7 @@ class PositionMessage extends AISMessage {
   /// operates on a fully expanded binary string (one character per bit) which
   /// is significantly slower than the direct bit-extraction path used by
   /// [fromEncoded].
-  @Deprecated("Legacy Code use .fromEncoded instead for performance reasons")
+  @Deprecated('Legacy Code use .fromEncoded instead for performance reasons')
   factory PositionMessage.fromBinary(String binary) {
     // common
     int messageType = int.parse(binary.substring(0, 6), radix: 2);

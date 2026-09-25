@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:kik_ais/ais/ais_decoder.dart';
+import '../../../ais_decoder.dart';
 import '../../utils/get_int.dart';
 
 // ToDo: Maybe add actual data decoder but this is way out of scope for now

@@ -1,5 +1,5 @@
-import 'package:kik_ais/ais/ais_decoder.dart';
-import 'package:kik_ais/ais/src/utils/get_int.dart';
+import 'ais_decoder.dart';
+import 'src/utils/get_int.dart';
 import 'src/utils/convert_char_to_bin.dart';
 
 // ToDo: (For Release) Needs Extensive Documentation
@@ -27,7 +27,7 @@ class MessageFactory {
 
     if (input.isEmpty) {
       throw InvalidBinaryDataException(
-        "Supplied String is empty or undefined!",
+        'Supplied String is empty or undefined!',
       );
     }
 
@@ -50,7 +50,7 @@ class MessageFactory {
     // minimum length for mmsi part of sentence
     if (legacy && encoded.length < 38) {
       throw InvalidBinaryDataException(
-        "Supplied binary String too short (${encoded.length} bits)!",
+        'Supplied binary String too short (${encoded.length} bits)!',
       );
     }
     //endregion
