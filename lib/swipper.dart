@@ -115,12 +115,12 @@ class _SwipperUiState extends State<SwipperUi> {
                       const Padding(
                         padding: EdgeInsets.all(4.0),
                         child: ImageIcon(
-                          AssetImage("resources/FireBoat2.png"),
+                          AssetImage('resources/FireBoat2.png'),
                           size: 26,
                         ),
                       ),
                       Text(
-                        "KikAis",
+                        'KikAis',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

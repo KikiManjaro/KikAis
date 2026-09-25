@@ -1,4 +1,4 @@
-import 'package:kik_ais/ais/src/utils/get_int.dart';
+import '../../utils/get_int.dart';
 
 import '../../../ais_decoder.dart';
 import '../../utils/binary_conversion.dart';
@@ -188,7 +188,7 @@ class StaticAndVoyageRelatedData extends AISMessage {
   /// This factory operates on a fully expanded binary string (one character
   /// per bit) which is significantly slower than the direct bit-extraction
   /// path used by [fromEncoded].
-  @Deprecated("Legacy Code use .fromEncoded instead for performance reasons")
+  @Deprecated('Legacy Code use .fromEncoded instead for performance reasons')
   factory StaticAndVoyageRelatedData.fromBinary(String binaryInput) {
     String binary = binaryInput.padRight(
       424,

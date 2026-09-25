@@ -1,4 +1,4 @@
-import 'package:kik_ais/ais/ais_decoder.dart';
+import '../../../ais_decoder.dart';
 
 /// The base type for every decoded AIS message.
 ///

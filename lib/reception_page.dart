@@ -310,7 +310,7 @@ class ReceptionPageState extends State<ReceptionPage>
     });
   }
 
-  void startForwarder() async {
+  Future<void> startForwarder() async {
     await forwarderService.start();
     setState(() => isRunning = true);
     widget.running.value = true;
@@ -340,7 +340,7 @@ class ReceptionPageState extends State<ReceptionPage>
     }
   }
 
-  void stopForwarder() async {
+  Future<void> stopForwarder() async {
     if (sim.isRunning) {
       sim.stop();
     }
@@ -629,7 +629,7 @@ class ReceptionPageState extends State<ReceptionPage>
     forwarderService.removeFeedStatus(feed.displayName);
   }
 
-  void toggleFeed(FeedDef feed, bool value) async {
+  Future<void> toggleFeed(FeedDef feed, bool value) async {
     setState(() => feedEnabled[feed.key] = value);
     settings.feedEnabled[feed.key] = value;
     settings.saveFeedEnabled(feed.key, value);
@@ -736,7 +736,7 @@ class ReceptionPageState extends State<ReceptionPage>
       logEntries.add(
         LogEntry(
           message: nmea.trim(),
-          starter: "KikAis",
+          starter: 'KikAis',
           name: null,
           time: DateTime.now(),
         ),
@@ -759,7 +759,7 @@ class ReceptionPageState extends State<ReceptionPage>
     if (feed.type == FeedType.file) {
       return const Icon(Icons.description, size: 30);
     }
-    if (feed.key == "Kikistream.io") {
+    if (feed.key == 'Kikistream.io') {
       return const Icon(Icons.public, size: 30);
     }
     if (feed.key.length == 2) {
@@ -920,10 +920,10 @@ class ReceptionPageState extends State<ReceptionPage>
   Widget _buildStarterWidget(LogEntry entry) {
     if (entry.starter == null) return const SizedBox.shrink();
 
-    if (entry.starter == "KikAis") {
+    if (entry.starter == 'KikAis') {
       return const Icon(Icons.send, size: 16, color: Colors.lightBlueAccent);
     }
-    if (entry.starter == "Kikistream.io") {
+    if (entry.starter == 'Kikistream.io') {
       return const Icon(Icons.public, size: 16);
     }
     if (_serialFeedKeys.contains(entry.starter)) {

@@ -1,5 +1,5 @@
-import 'package:kik_ais/ais/ais_decoder.dart';
-import 'package:kik_ais/ais/src/utils/binary_conversion.dart';
+import '../../../ais_decoder.dart';
+import '../../utils/binary_conversion.dart';
 import '../../utils/get_int.dart';
 
 /// ITU-R M.1371 Message Type 12 — Addressed Safety-Related Message.

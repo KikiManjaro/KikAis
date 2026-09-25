@@ -316,21 +316,18 @@ class ForwarderService {
         await feed.closed;
         if (_stopping || feed.isDisposed) break;
         _status(
-          LogMessage(
-            'feedDisconnected',
-            {'name': feed.name},
-            'Feed ${feed.name} disconnected. Reconnecting in 5s...',
-          ),
+          LogMessage('feedDisconnected', {
+            'name': feed.name,
+          }, 'Feed ${feed.name} disconnected. Reconnecting in 5s...'),
         );
         await Future<void>.delayed(reconnectDelay);
       } catch (e) {
         if (_stopping || feed.isDisposed) break;
         _status(
-          LogMessage(
-            'feedConnectFailed',
-            {'name': feed.name, 'error': '$e'},
-            'Failed to connect feed ${feed.name}: $e. Retrying in 5s...',
-          ),
+          LogMessage('feedConnectFailed', {
+            'name': feed.name,
+            'error': '$e',
+          }, 'Failed to connect feed ${feed.name}: $e. Retrying in 5s...'),
         );
         await Future<void>.delayed(reconnectDelay);
       }
@@ -415,11 +412,9 @@ class _TargetConnection {
             onDone: () {
               _clients.remove(client);
               onStatus(
-                LogMessage(
-                  'tcpClientDisconnected',
-                  {'name': config.name},
-                  'Target ${config.name}: client disconnected',
-                ),
+                LogMessage('tcpClientDisconnected', {
+                  'name': config.name,
+                }, 'Target ${config.name}: client disconnected'),
               );
             },
             onError: (Object e) => onStatus(
@@ -583,7 +578,7 @@ class _FeedConnection {
             statusNotifier.value.connected &&
             DateTime.now().difference(last) > _silentTimeout) {
           debugPrint(
-            "[FEED] $name: silent for ${DateTime.now().difference(last).inSeconds}s, forcing reconnect",
+            '[FEED] $name: silent for ${DateTime.now().difference(last).inSeconds}s, forcing reconnect',
           );
           try {
             _socket?.destroy();
@@ -642,7 +637,7 @@ class _FeedConnection {
     statusNotifier.value = next;
     if (prev.connected != next.connected || prev.error != next.error) {
       debugPrint(
-        "[FEED] $name: connected=${next.connected} error=${next.error} msgs=${next.messageCount}",
+        '[FEED] $name: connected=${next.connected} error=${next.error} msgs=${next.messageCount}',
       );
     }
   }
