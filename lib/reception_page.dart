@@ -762,6 +762,11 @@ class ReceptionPageState extends State<ReceptionPage>
     if (feed.key == "Kikistream.io") {
       return const Icon(Icons.public, size: 30);
     }
+    // Satellite downlink: same operator as the coastal feed, but the
+    // receiver is a satellite, so a flag would be misleading.
+    if (feed.key == 'NO-SAT') {
+      return const Icon(Icons.satellite_alt, size: 30);
+    }
     if (feed.key.length == 2) {
       return CountryFlag.fromCountryCode(
         feed.key,
@@ -824,12 +829,18 @@ class ReceptionPageState extends State<ReceptionPage>
   }
 
   Widget _buildFeedTile(FeedDef feed) {
+    // The description lives on the model; surface it on the label so a feed
+    // with surprising behaviour (silent between satellite passes, offline
+    // upstream…) explains itself without opening the edit dialog.
+    final label = Text(feed.displayName, overflow: TextOverflow.ellipsis);
     return CheckboxListTile(
       dense: true,
       title: Row(
         children: [
           Expanded(
-            child: Text(feed.displayName, overflow: TextOverflow.ellipsis),
+            child: feed.tooltip == null
+                ? label
+                : HoverTooltip(message: feed.tooltip!, child: label),
           ),
           _FeedStatusDot(
             statusSource: forwarderService.feedStatuses,

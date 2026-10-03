@@ -123,12 +123,38 @@ const List<FeedDef> kFeedDefs = [
         "(messages could be wrong or malformed)",
   ),
   FeedDef(
-    key: "NO",
-    displayName: "Norwegian Feed",
-    host: "153.44.253.27",
+    key: 'NO',
+    displayName: 'Norwegian Coastal Feed (Kystverket)',
+    host: '153.44.253.27',
     port: 5631,
     builtIn: true,
+    tooltip:
+        'Kystverket open coastal AIS stream, fed by terrestrial\n'
+        'receivers along the Norwegian coast.\n'
+        'Unreachable since 9 September 2026 — the entry is kept so the\n'
+        'feed works again as soon as the operator restores it.',
   ),
+  // Same host as the coastal feed, but this port carries the satellite
+  // downlink: a burst of frames while a satellite is over its ground
+  // stations, then silence until the next pass. The tag block names the
+  // receiving satellite (\s:NorSat_3) and carries its reception time.
+  FeedDef(
+    key: 'NO-SAT',
+    displayName: 'Norwegian Satellite Feed (NorSat)',
+    host: '153.44.253.27',
+    port: 5632,
+    builtIn: true,
+    tooltip:
+        'Kystverket satellite AIS: 7 sun-synchronous satellites\n'
+        '(NorSat 1-4, AIS-Sat 1/2/4) downlinking the same stream.\n'
+        'The tag block gives the receiving satellite (\\s:NorSat_3) and\n'
+        'its reception time (\\c:), so the same vessel is seen by\n'
+        'different satellites over time.\n'
+        'Expect silence between passes, and note that some satellites\n'
+        'store frames on board and dump them hours later.\n'
+        'Only one connection per IP address is accepted.',
+  ),
+
   FeedDef(
     key: "GPSD1",
     displayName: "Sinagot 2947 (GPSD1)",

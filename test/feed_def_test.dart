@@ -60,4 +60,38 @@ void main() {
     expect(restored.useChannel1, isTrue);
     expect(restored.useChannel2, isTrue);
   });
+
+  group('built-in feeds', () {
+    FeedDef byKey(String key) => kFeedDefs.firstWhere(
+      (f) => f.key == key,
+      orElse: () => throw ArgumentError('missing $key'),
+    );
+
+    test('use unique, non-empty keys', () {
+      final keys = kFeedDefs.map((f) => f.key).toList();
+      expect(keys, everyElement(isNotEmpty));
+      expect(keys.toSet().length, keys.length);
+    });
+
+    test('keep the coastal Norwegian feed on 5631 under key NO', () {
+      // The key drives the persisted enable flag, so it must not change.
+      final feed = byKey('NO');
+      expect(feed.host, '153.44.253.27');
+      expect(feed.port, 5631);
+      expect(feed.builtIn, isTrue);
+      expect(feed.type, FeedType.network);
+    });
+
+    test('expose the Norwegian satellite downlink on 5632', () {
+      final feed = byKey('NO-SAT');
+      expect(feed.host, '153.44.253.27');
+      expect(feed.port, 5632);
+      expect(feed.builtIn, isTrue);
+      expect(feed.type, FeedType.network);
+      expect(feed.displayName, contains('Satellite'));
+      // The intermittent/latency behaviour must be documented on the model.
+      expect(feed.tooltip, isNotNull);
+      expect(feed.tooltip, contains('satellite'));
+    });
+  });
 }
