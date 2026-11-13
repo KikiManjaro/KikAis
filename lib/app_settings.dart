@@ -157,7 +157,7 @@ class AppSettings extends ChangeNotifier {
         TargetConfig(
           id: TargetConfig.newId(),
           name: 'Default',
-          protocol: ForwardProtocol.udpServer,
+          protocol: ForwardProtocol.udpClient,
           host: '127.0.0.1',
           port: 33333,
           enabled: false,
@@ -202,11 +202,14 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Fallback for the legacy single-target preferences and for a protocol
+  /// name we no longer know: send to the stored endpoint rather than silently
+  /// turning the app into a listening server.
   ForwardProtocol _legacyProtocol(String? name) {
-    if (name == null) return ForwardProtocol.udpServer;
+    if (name == null) return ForwardProtocol.udpClient;
     return ForwardProtocol.values.firstWhere(
       (p) => p.name == name,
-      orElse: () => ForwardProtocol.udpServer,
+      orElse: () => ForwardProtocol.udpClient,
     );
   }
 

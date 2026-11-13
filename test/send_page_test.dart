@@ -111,7 +111,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('new destination defaults to sending to 127.0.0.1:10110', (
+  testWidgets('new destination defaults to sending to 127.0.0.1:33333', (
     tester,
   ) async {
     final settings = AppSettings();
@@ -125,7 +125,7 @@ void main() {
     expect(find.text('UDP · send (client)'), findsOneWidget);
     expect(find.textContaining('sends the frames'), findsOneWidget);
     expect(find.widgetWithText(TextField, '127.0.0.1'), findsOneWidget);
-    expect(find.widgetWithText(TextField, '10110'), findsOneWidget);
+    expect(find.widgetWithText(TextField, '33333'), findsOneWidget);
   });
 
   testWidgets('listen mode hides the host field and explains the role', (
@@ -160,7 +160,7 @@ void main() {
           name: 'Existing listener',
           protocol: ForwardProtocol.tcpServer,
           host: '0.0.0.0',
-          port: 10110,
+          port: 33333,
         ),
       ];
     final running = ValueNotifier<bool>(false);

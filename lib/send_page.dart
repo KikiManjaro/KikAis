@@ -81,7 +81,7 @@ class _SendPageState extends State<SendPage> {
       text: existing?.host ?? (isNew ? '127.0.0.1' : ''),
     );
     final portController = TextEditingController(
-      text: (existing?.port ?? 10110).toString(),
+      text: (existing?.port ?? 33333).toString(),
     );
     final tagSourceController = TextEditingController(
       text: existing?.tagSourceId ?? '',
@@ -238,7 +238,7 @@ class _SendPageState extends State<SendPage> {
     }
     final name = nameController.text.trim();
     final host = hostController.text.trim();
-    final port = int.tryParse(portController.text) ?? 10110;
+    final port = int.tryParse(portController.text) ?? 33333;
     final tagSource = tagSourceController.text.trim();
 
     nameController.dispose();
