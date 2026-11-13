@@ -28,6 +28,10 @@ dart tool/sdr_probe.dart --list
 dart tool/ais_replay.dart --cu8 capture.cu8
 dart tool/ais_replay.dart --audio ais.wav --rate 48000
 
+# Encoder conformance audit (NMEA framing + pyais cross-check)
+dart run tool/ais_encoder_audit.dart          # -> build/encoder_audit.jsonl
+python tool/ais_encoder_audit.py              # pyais oracle (needs pyais)
+
 # Full Windows artifacts (zip + portable exe + installer + appcast)
 pwsh scripts/build_release.ps1
 pwsh scripts/build_release.ps1 -SkipBuild   # reuse existing build/windows/x64/runner/Release
@@ -73,11 +77,13 @@ Generated: `lib/l10n/generated/**` only. No `*.freezed.dart`/`*.g.dart` in this 
 
 **TTL:** `boatTtl 30m`, `purgeInterval 1m` (`purgeStaleBoats()`).
 
-**NMEA pipeline (`lib/ais/src/nmea/`):** `NmeaTagBlock.split` → `NmeaSentence.tryParse` (payload may contain commas) → checksum XOR (`isChecksumValid`) → `FragmentAssembler` (5s timeout, key `sequentialId|channel`, dedupe) → `MessageFactory.create(payload,true)` (27 types) → `BoatManager.updateFromMessage`. Counters `invalidChecksumCount/droppedFragmentCount/parseErrorCount/pendingFragmentCount/fragmentsSeen/multiPartCompleted` via `DecoderReport`.
+**NMEA pipeline (`lib/ais/src/nmea/`):** `NmeaTagBlock.split` → `NmeaSentence.tryParse` (payload may contain commas) → checksum XOR (`isChecksumValid`) → `FragmentAssembler` (5s timeout, key `sequentialId|channel`, dedupe) → `MessageFactory.create(payload,true)` (27 types) → `BoatManager.updateFromMessage`. The last fragment's `fill` bits travel through `AssembledPayload.fillBits` → `MessageFactory.create(..., fillBits:)`: variable-length types need them to know the real message end (type 26 locates its 20-bit radio status that way; never derive a length from `payload.trimRight()`). Counters `invalidChecksumCount/droppedFragmentCount/parseErrorCount/pendingFragmentCount/fragmentsSeen/multiPartCompleted` via `DecoderReport`.
+
+**NMEA encoding (`lib/ais/src/encoder/`):** `buildNmeaSentence(binary)` returns the sentence(s) **joined by `\n`** — long types (5, 6, 8, 12, 14, 17, 26) are split into fragments of ≤62 payload chars to stay under the 82-char NMEA limit. Every consumer must iterate `nmeaLines(text)` (`nmea_format.dart`); `AisNmeaDecoder.decode` and `ForwarderService` already do. Never `padRight` a payload to the type's maximum length: variable-length types emit only their real data (see `_binaryPayload`/`_trailingText`).
 
 **NMEA formatting (`lib/ais/src/nmea/nmea_format.dart`):** `NmeaFormat {passthrough, strip, tag}` + `applyNmeaFormat(line, format, sourceId)` + `buildTagBlock(s:,t:msSinceUtcMidnight,c:)`. Reception import format `AppSettings.nmeaImportFormat` + `nmeaImportTagSource`; per-target `TargetConfig.sendFormat/tagSourceId`. Use helpers, don't hand-build tag blocks.
 
-**Forwarder (`lib/forwarder_service.dart`):** `ForwarderService.feedStatuses: ValueNotifier<Map<String,FeedStatus>>`, `_FeedConnection` (Socket + reconnect 5s) + `_TargetConnection` (UDP/TCP). `FeedStatus {connecting, connected, error, messageCount, lastMessageAt}` consumed by `reception_page.dart:46 feedDotColor()` grey/red/orange/green via `feedStaleAfter 10s`. `_handleData` normalizes via `importFormat`, forwards to all enabled targets, `onLog`. Fire-and-forget `tcp flush` — never `await` it in pipeline.
+**Forwarder (`lib/forwarder_service.dart`):** `ForwarderService.feedStatuses: ValueNotifier<Map<String,FeedStatus>>`, `_FeedConnection` (Socket + reconnect 5s) + `_TargetConnection` (UDP/TCP). `ForwardProtocol.udpServer` **listens** on `port` (exclusive bind) and forwards to every peer that sent it a datagram (`kUdpPeerTimeout` 60 s, `kMaxUdpPeers` 32); `udpClient` sends to `host:port`; `tcpServer` listens on `port`; `tcpClient` connects to `host:port`. Listening modes ignore `host` (`0.0.0.0`). UI labels are role-based (`protocolUdpServer` = "UDP · listen (server)"): never say "client/server" without saying who listens. `FeedStatus {connecting, connected, error, messageCount, lastMessageAt}` consumed by `reception_page.dart:46 feedDotColor()` grey/red/orange/green via `feedStaleAfter 10s`. `_handleData` normalizes via `importFormat`, forwards to all enabled targets, `onLog`. Fire-and-forget `tcp flush` — never `await` it in pipeline.
 
 **ReceptionPage (`lib/reception_page.dart`):** `maxLogEntries 2000`, flush `120ms/60` batched, `_tilesCache` per-feed (checkbox only rebuilds tile; dot repaints via `_FeedStatusDot` listening to `feedStatuses` + 1s `_statusTick`), `_statusTimer` gated on `isRunning`. Post-frame defer BoatManager setters to avoid `setState() during build`. `sendRaw()` logs + forwards.
 
