@@ -45,7 +45,7 @@ dependencies:
   flutter_map: ^8.3.1
   flutter_map_cancellable_tile_provider: ^3.1.1
   latlong2: ^0.10.1
-  url_launcher: ^6.3.2
+  url_launcher: ^6.3.3
   shared_preferences: ^2.5.5
   package_info_plus: ^9.0.1
   auto_updater: ^1.0.0
