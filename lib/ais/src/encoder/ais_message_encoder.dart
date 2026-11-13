@@ -1,12 +1,16 @@
 import 'ais_payload_encoder.dart';
 
 String _bits(int value, int width) =>
-    value.toRadixString(2).padLeft(width, '0');
+    (value & ((1 << width) - 1)).toRadixString(2).padLeft(width, '0');
 
 int _signed(int value, int bits) => value < 0 ? value + (1 << bits) : value;
 
+/// Scales [degrees] to the field's integer units, clamped to the signed range
+/// of [bits] so an out-of-range input cannot shift the rest of the message.
 String _coord(double degrees, int scale, int bits) {
-  return _bits(_signed((degrees * scale).round(), bits), bits);
+  final max = (1 << (bits - 1)) - 1;
+  final scaled = (degrees * scale).round().clamp(-max - 1, max);
+  return _bits(scaled, bits);
 }
 
 String _bytesToBits(List<int> bytes) {
@@ -15,6 +19,24 @@ String _bytesToBits(List<int> bytes) {
     sb.write(_bits(b, 8));
   }
   return sb.toString();
+}
+
+/// Writes [data] as an 8-bit aligned bit string, truncated to [capacityBits]
+/// so a binary message can never exceed the maximum length of its type.
+String _binaryPayload(List<int> data, int capacityBits) {
+  final maxBytes = capacityBits ~/ 8;
+  final bytes = data.length > maxBytes ? data.sublist(0, maxBytes) : data;
+  return _bytesToBits(bytes);
+}
+
+/// Encodes a free-text field that runs to the end of the message: only the
+/// characters actually typed are written, so a short text yields a short
+/// message instead of a payload padded with `@` up to the maximum length.
+String _trailingText(String text, {int maxChars = 0}) {
+  final clipped = maxChars > 0 && text.length > maxChars
+      ? text.substring(0, maxChars)
+      : text;
+  return encodeAisText(clipped, clipped.length * 6);
 }
 
 String _head({required int type, required int mmsi}) {
@@ -152,7 +174,7 @@ String encodeStaticAndVoyage({
   return buildNmeaSentence(sb.toString());
 }
 
-/// Encodes a Type 6 binary addressed message sentence (padded to 1008 bits).
+/// Encodes a Type 6 binary addressed message sentence (88-1008 bits).
 String encodeBinaryAddressed({
   required int mmsi,
   required int destinationMmsi,
@@ -170,8 +192,8 @@ String encodeBinaryAddressed({
   sb.write(_bits(0, 1)); // spare
   sb.write(_bits(dac.clamp(0, 1023), 10));
   sb.write(_bits(fid.clamp(0, 63), 6));
-  sb.write(_bytesToBits(data));
-  return buildNmeaSentence(sb.toString().padRight(1008, '0'));
+  sb.write(_binaryPayload(data, 1008 - 88));
+  return buildNmeaSentence(sb.toString());
 }
 
 String _acknowledgeLike({
@@ -183,7 +205,10 @@ String _acknowledgeLike({
   final sb = StringBuffer();
   sb.write(_head(type: type, mmsi: mmsi));
   sb.write(_bits(0, 2)); // spare
-  for (var i = 0; i < 4; i++) {
+  final pairs = destMmsis.isEmpty
+      ? 1
+      : (destMmsis.length > 4 ? 4 : destMmsis.length);
+  for (var i = 0; i < pairs; i++) {
     final dest = i < destMmsis.length ? destMmsis[i] : 0;
     final seq = i < seqs.length ? seqs[i] : 0;
     sb.write(_bits(dest, 30));
@@ -192,7 +217,7 @@ String _acknowledgeLike({
   return buildNmeaSentence(sb.toString());
 }
 
-/// Encodes a Type 7 binary acknowledge sentence (168 bits).
+/// Encodes a Type 7 binary acknowledge sentence (72-168 bits).
 String encodeBinaryAcknowledge({
   required int mmsi,
   List<int> destinationMmsis = const [],
@@ -204,7 +229,7 @@ String encodeBinaryAcknowledge({
   seqs: sequenceNumbers,
 );
 
-/// Encodes a Type 8 binary broadcast message sentence (padded to 1008 bits).
+/// Encodes a Type 8 binary broadcast message sentence (56-1008 bits).
 String encodeBinaryBroadcast({
   required int mmsi,
   int dac = 0,
@@ -216,8 +241,8 @@ String encodeBinaryBroadcast({
   sb.write(_bits(0, 2)); // spare
   sb.write(_bits(dac.clamp(0, 1023), 10));
   sb.write(_bits(fid.clamp(0, 63), 6));
-  sb.write(_bytesToBits(data));
-  return buildNmeaSentence(sb.toString().padRight(1008, '0'));
+  sb.write(_binaryPayload(data, 1008 - 56));
+  return buildNmeaSentence(sb.toString());
 }
 
 /// Encodes a Type 9 SAR aircraft position report sentence (168 bits).
@@ -283,7 +308,7 @@ String encodeUtcDateResponse({
   longitude: longitude,
 );
 
-/// Encodes a Type 12 addressed safety related message (padded to 1008 bits).
+/// Encodes a Type 12 addressed safety related message (72-1008 bits).
 String encodeAddressedSafety({
   required int mmsi,
   required int destinationMmsi,
@@ -297,7 +322,7 @@ String encodeAddressedSafety({
   sb.write(_bits(destinationMmsi, 30));
   sb.write(_bits(retransmit.clamp(0, 1), 1));
   sb.write(_bits(0, 1)); // spare
-  sb.write(encodeAisText(text, 936));
+  sb.write(_trailingText(text, maxChars: 156));
   return buildNmeaSentence(sb.toString());
 }
 
@@ -313,16 +338,16 @@ String encodeSafetyAck({
   seqs: sequenceNumbers,
 );
 
-/// Encodes a Type 14 safety related broadcast message (padded to 1008 bits).
+/// Encodes a Type 14 safety related broadcast message (40-1008 bits).
 String encodeSafetyBroadcast({required int mmsi, String text = ''}) {
   final sb = StringBuffer();
   sb.write(_head(type: 14, mmsi: mmsi));
   sb.write(_bits(0, 2)); // spare
-  sb.write(encodeAisText(text, 966));
+  sb.write(_trailingText(text, maxChars: 161));
   return buildNmeaSentence(sb.toString());
 }
 
-/// Encodes a Type 15 interrogation sentence (160 bits).
+/// Encodes a Type 15 interrogation sentence (88-160 bits).
 String encodeInterrogation({
   required int mmsi,
   required int mmsi1,
@@ -340,18 +365,20 @@ String encodeInterrogation({
   sb.write(_bits(mmsi1, 30));
   sb.write(_bits(type1_1.clamp(0, 63), 6));
   sb.write(_bits(offset1_1.clamp(0, 4095), 12));
-  sb.write(_bits(0, 2)); // spare
-  sb.write(_bits(type1_2.clamp(0, 63), 6));
-  sb.write(_bits(offset1_2.clamp(0, 4095), 12));
-  sb.write(_bits(0, 2)); // spare
-  sb.write(_bits(mmsi2, 30));
-  sb.write(_bits(type2_1.clamp(0, 63), 6));
-  sb.write(_bits(offset2_1.clamp(0, 4095), 12));
-  sb.write(_bits(0, 2)); // spare
+  if (mmsi2 != 0) {
+    sb.write(_bits(0, 2)); // spare
+    sb.write(_bits(type1_2.clamp(0, 63), 6));
+    sb.write(_bits(offset1_2.clamp(0, 4095), 12));
+    sb.write(_bits(0, 2)); // spare
+    sb.write(_bits(mmsi2, 30));
+    sb.write(_bits(type2_1.clamp(0, 63), 6));
+    sb.write(_bits(offset2_1.clamp(0, 4095), 12));
+    sb.write(_bits(0, 2)); // spare
+  }
   return buildNmeaSentence(sb.toString());
 }
 
-/// Encodes a Type 16 assignment mode command sentence (144 bits).
+/// Encodes a Type 16 assignment mode command sentence (96-144 bits).
 String encodeAssignmentMode({
   required int mmsi,
   required int mmsi1,
@@ -367,13 +394,16 @@ String encodeAssignmentMode({
   sb.write(_bits(mmsi1, 30));
   sb.write(_bits(offset1.clamp(0, 4095), 12));
   sb.write(_bits(increment1.clamp(0, 1023), 10));
-  sb.write(_bits(mmsi2, 30));
-  sb.write(_bits(offset2.clamp(0, 4095), 12));
-  sb.write(_bits(increment2.clamp(0, 1023), 10));
-  return buildNmeaSentence(sb.toString());
+  if (mmsi2 != 0) {
+    sb.write(_bits(mmsi2, 30));
+    sb.write(_bits(offset2.clamp(0, 4095), 12));
+    sb.write(_bits(increment2.clamp(0, 1023), 10));
+  }
+  // A single assignment is a 96-bit message: pad the 92 encoded bits.
+  return buildNmeaSentence(sb.toString().padRight(96, '0'));
 }
 
-/// Encodes a Type 17 DGNSS broadcast binary message (padded to 816 bits).
+/// Encodes a Type 17 DGNSS broadcast binary message (80-816 bits).
 String encodeDgnssBroadcast({
   required int mmsi,
   required double latitude,
@@ -386,8 +416,8 @@ String encodeDgnssBroadcast({
   sb.write(_coord(longitude, 600, 18));
   sb.write(_coord(latitude, 600, 17));
   sb.write(_bits(0, 5)); // spare
-  sb.write(_bytesToBits(data));
-  return buildNmeaSentence(sb.toString().padRight(816, '0'));
+  sb.write(_binaryPayload(data, 816 - 80));
+  return buildNmeaSentence(sb.toString());
 }
 
 String _classBHead({
@@ -493,7 +523,7 @@ String encodeClassBExtended({
   return buildNmeaSentence(sb.toString());
 }
 
-/// Encodes a Type 20 data link management message (160 bits).
+/// Encodes a Type 20 data link management message (72-160 bits).
 String encodeDataLinkManagement({
   required int mmsi,
   int offset1 = 0,
@@ -508,13 +538,8 @@ String encodeDataLinkManagement({
   sb.write(_bits(number1.clamp(0, 15), 4));
   sb.write(_bits(timeout1.clamp(0, 7), 3));
   sb.write(_bits(increment1.clamp(0, 2047), 11));
-  for (var i = 0; i < 3; i++) {
-    sb.write(_bits(0, 12)); // offset
-    sb.write(_bits(0, 4)); // number
-    sb.write(_bits(0, 3)); // timeout
-    sb.write(_bits(0, 11)); // increment
-  }
-  return buildNmeaSentence(sb.toString());
+  // One block is 70 bits; a trailing 2-bit spare pads the message to 72.
+  return buildNmeaSentence(sb.toString().padRight(72, '0'));
 }
 
 /// Encodes a Type 21 aid-to-navigation report sentence (360 bits).
@@ -603,8 +628,8 @@ String encodeGroupAssignment({
   sb.write(_coord(swLongitude, 600, 18));
   sb.write(_coord(swLatitude, 600, 17));
   sb.write(_bits(stationType.clamp(0, 15), 4));
-  sb.write(_bits(shipType.clamp(0, 127), 7));
-  sb.write(_bits(0, 23)); // spare
+  sb.write(_bits(shipType.clamp(0, 255), 8));
+  sb.write(_bits(0, 22)); // spare
   sb.write(_bits(txrxMode.clamp(0, 3), 2));
   sb.write(_bits(interval.clamp(0, 15), 4));
   sb.write(_bits(quietTime.clamp(0, 15), 4));
@@ -673,45 +698,43 @@ String _binarySlotHead({
   return sb.toString();
 }
 
-/// Encodes a Type 25 single slot binary message (168 bits).
+/// Encodes a Type 25 single slot binary message (40-168 bits).
 String encodeSingleSlotBinary({
   required int mmsi,
   required List<int> data,
   int? destinationMmsi,
   (int, int)? applicationId,
 }) {
-  final sb = StringBuffer();
-  sb.write(
-    _binarySlotHead(
-      type: 25,
-      mmsi: mmsi,
-      destinationMmsi: destinationMmsi,
-      applicationId: applicationId,
-    ),
+  final head = _binarySlotHead(
+    type: 25,
+    mmsi: mmsi,
+    destinationMmsi: destinationMmsi,
+    applicationId: applicationId,
   );
-  sb.write(_bytesToBits(data));
-  return buildNmeaSentence(sb.toString().padRight(168, '0'));
+  final sb = StringBuffer(head);
+  sb.write(_binaryPayload(data, 168 - head.length));
+  return buildNmeaSentence(sb.toString());
 }
 
-/// Encodes a Type 26 multiple slot binary message (padded to 1064 bits).
+/// Encodes a Type 26 multiple slot binary message (60-1064 bits). The radio
+/// status is the last 20 bits of the message, so it is written after the
+/// data and never followed by padding.
 String encodeMultipleSlotBinary({
   required int mmsi,
   required List<int> data,
   int? destinationMmsi,
   (int, int)? applicationId,
 }) {
-  final sb = StringBuffer();
-  sb.write(
-    _binarySlotHead(
-      type: 26,
-      mmsi: mmsi,
-      destinationMmsi: destinationMmsi,
-      applicationId: applicationId,
-    ),
+  final head = _binarySlotHead(
+    type: 26,
+    mmsi: mmsi,
+    destinationMmsi: destinationMmsi,
+    applicationId: applicationId,
   );
-  sb.write(_bytesToBits(data));
+  final sb = StringBuffer(head);
+  sb.write(_binaryPayload(data, 1064 - head.length - 20));
   sb.write(_bits(0, 20)); // radio status
-  return buildNmeaSentence(sb.toString().padRight(1064, '0'));
+  return buildNmeaSentence(sb.toString());
 }
 
 /// Encodes a Type 27 long range AIS broadcast sentence (96 bits).

@@ -55,6 +55,16 @@ class AisNmeaDecoder {
   List<String> get lastRawSentences => _lastRawSentences;
 
   AISMessage? decode(String rawLine) {
+    if (!rawLine.contains('\n')) return _decodeLine(rawLine);
+    AISMessage? last;
+    for (final line in rawLine.split('\n')) {
+      final decoded = _decodeLine(line.trim());
+      if (decoded != null) last = decoded;
+    }
+    return last;
+  }
+
+  AISMessage? _decodeLine(String rawLine) {
     final sentence = NmeaSentence.tryParse(rawLine);
     if (sentence == null) {
       parseErrors++;
@@ -77,6 +87,7 @@ class AisNmeaDecoder {
         false,
         false,
         true,
+        fillBits: assembled.fillBits,
       );
       decodedCount++;
       _lastRawSentences = assembled.rawSentences;

@@ -116,34 +116,44 @@ class MultipleSlotBinaryMessage extends AISMessage {
   /// Decodes a six-bit-armored AIS payload string into a
   /// [MultipleSlotBinaryMessage].
   ///
-  /// [encoded] must be the payload field of a Type 26 NMEA sentence. The
-  /// string is zero-padded to 1064 bits before parsing. The data field bounds
-  /// and [radioStatus] position are computed dynamically from the actual
-  /// trimmed payload length because Type 26 is variable-length.
-  factory MultipleSlotBinaryMessage.fromEncoded(String encoded) {
-    String binary = encoded.padRight(1064, '0');
+  /// [encoded] must be the payload field of a Type 26 NMEA sentence and
+  /// [fillBits] the sentence's `fill` field (0-5). Type 26 is variable-length
+  /// and ends with a 20-bit radio status, so the data field and the radio
+  /// status must be located from the *exact* message length:
+  /// `encoded.length * 6 - fillBits`. Guessing the end from trailing zero
+  /// characters truncates any payload that ends with zero bits.
+  factory MultipleSlotBinaryMessage.fromEncoded(
+    String encoded, {
+    int fillBits = 0,
+  }) {
+    final totalBits = encoded.length * 6 - fillBits;
+    if (totalBits < 60 || fillBits < 0 || fillBits > 5) {
+      throw InvalidBinaryDataException(
+        'Type 26 payload has an invalid length ($totalBits bits, '
+        'fill $fillBits)',
+      );
+    }
 
     // common
-    int messageType = getUintDirect(binary, 0, 6);
-    int repeatIndicator = getUintDirect(binary, 6, 8);
-    int mmsi = getUintDirect(binary, 8, 38);
+    int messageType = getUintDirect(encoded, 0, 6);
+    int repeatIndicator = getUintDirect(encoded, 6, 8);
+    int mmsi = getUintDirect(encoded, 8, 38);
 
-    // type 25 specific
-    int destinationIndicator = getUintDirect(binary, 38, 39);
-    int binaryDataFlag = getUintDirect(binary, 39, 40);
+    // type 26 specific
+    int destinationIndicator = getUintDirect(encoded, 38, 39);
+    int binaryDataFlag = getUintDirect(encoded, 39, 40);
     int? destinationMmsi = destinationIndicator == 1
-        ? getUintDirect(binary, 40, 70)
+        ? getUintDirect(encoded, 40, 70)
         : null;
     // Extract applicationId from binary payload at destination-specific bit offset (70-86 or 40-56); null if not binary-encoded
     int? applicationId = destinationIndicator == 1 && binaryDataFlag == 1
-        ? getUintDirect(binary, 70, 86)
+        ? getUintDirect(encoded, 70, 86)
         : destinationIndicator == 0 && binaryDataFlag == 1
-        ? getUintDirect(binary, 40, 56)
+        ? getUintDirect(encoded, 40, 56)
         : null;
     int? dac = applicationId != null ? applicationId >> 6 : null;
     int? fid = applicationId != null ? applicationId & 0x3F : null;
 
-    // oh god
     int dataStart = destinationMmsi == null && applicationId == null
         ? 40
         : destinationMmsi != null && applicationId == null
@@ -152,17 +162,16 @@ class MultipleSlotBinaryMessage extends AISMessage {
         ? 56
         : 86;
 
-    Uint8List data = getBytesDirect(
-      binary,
-      dataStart,
-      binary.trimRight().length - 20,
-    );
+    final radioStart = totalBits - 20;
+    if (radioStart <= dataStart) {
+      throw InvalidBinaryDataException(
+        'Type 26 payload has no room for data and radio status '
+        '($totalBits bits, data starts at $dataStart)',
+      );
+    }
 
-    int radioStatus = getUintDirect(
-      binary,
-      binary.trimRight().length - 20,
-      binary.trimRight().length,
-    );
+    Uint8List data = getBytesDirect(encoded, dataStart, radioStart - dataStart);
+    int radioStatus = getUintDirect(encoded, radioStart, totalBits);
 
     return MultipleSlotBinaryMessage(
       messageType: messageType,

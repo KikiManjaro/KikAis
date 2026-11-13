@@ -419,6 +419,7 @@ List<FieldSpec> fieldsForType(int type) {
         ),
         const FieldSpec('txrxMode', 'Tx/Rx mode (0-3)', FieldKind.number, '0'),
         const FieldSpec('interval', 'Interval (0-15)', FieldKind.number, '0'),
+        const FieldSpec('shipType', 'Ship type', FieldKind.number, '0'),
       ];
     case 24:
       return [
@@ -788,6 +789,7 @@ String encodeMessage(
         swLongitude: _dv(values, 'swLongitude', 0),
         txrxMode: _iv(values, 'txrxMode', 0),
         interval: _iv(values, 'interval', 0),
+        shipType: _iv(values, 'shipType', 0),
       );
     case 24:
       return _iv(values, 'part', 0) == 1

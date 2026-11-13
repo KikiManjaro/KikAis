@@ -39,7 +39,21 @@ String computeNmeaChecksum(String body) {
 
 String _computeChecksum(String body) => computeNmeaChecksum(body);
 
-/// Builds a full NMEA sentence from a raw binary payload.
+/// Maximum payload characters per NMEA sentence. 62 keeps the framed line at
+/// 81 characters, inside the 82-character NMEA 0183 limit.
+const int kMaxAisPayloadChars = 62;
+
+/// Rotating 0-9 sequential message id used to tie the fragments of one
+/// multi-fragment message together, like a real AIS transponder does.
+int _sequentialMessageId = 0;
+
+/// Builds the NMEA sentence(s) carrying [binary].
+///
+/// Returns several `!AIVDM...` lines joined by `\n` when the payload needs
+/// more than one fragment: a real receiver rejects any sentence longer than
+/// 82 characters, so long messages (types 5, 6, 8, 12, 14, 17, 26...) must be
+/// split. The tag block, when requested, is repeated on every fragment so
+/// each sentence stays self-describing.
 String buildNmeaSentence(
   String binary, {
   String channel = 'A',
@@ -48,7 +62,26 @@ String buildNmeaSentence(
 }) {
   final payload = encodeBinaryToAis(binary);
   final fill = binary.length % 6 == 0 ? 0 : 6 - (binary.length % 6);
-  final body = '${talker}VDM,1,1,,$channel,$payload,$fill';
-  final framed = '!$body*${_computeChecksum(body)}';
-  return tagBlock == null ? framed : '${tagBlock.raw}$framed';
+  final fragments = <String>[];
+  for (var i = 0; i < payload.length; i += kMaxAisPayloadChars) {
+    final end = i + kMaxAisPayloadChars;
+    fragments.add(
+      payload.substring(i, end < payload.length ? end : payload.length),
+    );
+  }
+  if (fragments.isEmpty) fragments.add('');
+  final sequentialId = fragments.length > 1
+      ? '${_sequentialMessageId = (_sequentialMessageId + 1) % 10}'
+      : '';
+
+  final lines = <String>[];
+  for (var i = 0; i < fragments.length; i++) {
+    final isLast = i == fragments.length - 1;
+    final body =
+        '${talker}VDM,${fragments.length},${i + 1},$sequentialId,$channel,'
+        '${fragments[i]},${isLast ? fill : 0}';
+    final framed = '!$body*${_computeChecksum(body)}';
+    lines.add(tagBlock == null ? framed : '${tagBlock.raw}$framed');
+  }
+  return lines.join('\n');
 }

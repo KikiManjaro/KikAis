@@ -6,7 +6,11 @@ class AssembledPayload {
   final String payload;
   final List<String> rawSentences;
 
-  const AssembledPayload(this.payload, this.rawSentences);
+  /// Number of padding bits declared by the `fill` field of the last fragment.
+  /// Variable-length messages (type 26) need it to find their real end.
+  final int fillBits;
+
+  const AssembledPayload(this.payload, this.rawSentences, {this.fillBits = 0});
 }
 
 /// Reassembles multi-fragment AIS sentences (e.g. type 5 static data sent
@@ -38,7 +42,9 @@ class FragmentAssembler {
     dropped += before - _partials.length;
 
     if (sentence.fragmentCount <= 1) {
-      return AssembledPayload(sentence.payload, [sentence.raw]);
+      return AssembledPayload(sentence.payload, [
+        sentence.raw,
+      ], fillBits: sentence.fillBits);
     }
 
     fragmentsSeen++;
@@ -52,12 +58,21 @@ class FragmentAssembler {
     final partial = _partials[key];
     if (partial == null) {
       final created = _PartialMessage(sentence.fragmentCount);
-      created.add(sentence.fragmentNumber, sentence.payload, sentence.raw);
+      created.add(
+        sentence.fragmentNumber,
+        sentence.payload,
+        sentence.raw,
+        sentence.fillBits,
+      );
       created.lastUpdate = now;
       if (created.isComplete) {
         _partials.remove(key);
         multiPartCompleted++;
-        return AssembledPayload(created.payload, created.rawSentences);
+        return AssembledPayload(
+          created.payload,
+          created.rawSentences,
+          fillBits: created.fillBits,
+        );
       }
       _partials[key] = created;
       return null;
@@ -80,13 +95,22 @@ class FragmentAssembler {
       return null;
     }
 
-    partial.add(sentence.fragmentNumber, sentence.payload, sentence.raw);
+    partial.add(
+      sentence.fragmentNumber,
+      sentence.payload,
+      sentence.raw,
+      sentence.fillBits,
+    );
     partial.lastUpdate = now;
 
     if (partial.isComplete) {
       _partials.remove(key);
       multiPartCompleted++;
-      return AssembledPayload(partial.payload, partial.rawSentences);
+      return AssembledPayload(
+        partial.payload,
+        partial.rawSentences,
+        fillBits: partial.fillBits,
+      );
     }
     return null;
   }
@@ -107,16 +131,22 @@ class _PartialMessage {
   final int total;
   final Map<int, String> parts = {};
   final Map<int, String> raws = {};
+  final Map<int, int> fills = {};
   DateTime lastUpdate = DateTime.now();
 
   _PartialMessage(this.total);
 
-  void add(int index, String payload, String raw) {
+  void add(int index, String payload, String raw, int fill) {
     parts[index] = payload;
     raws[index] = raw;
+    fills[index] = fill;
   }
 
   bool get isComplete => parts.length == total;
+
+  /// Padding declared by the last fragment; the only one that carries data
+  /// past the previous fragment's 6-bit boundary.
+  int get fillBits => fills[total] ?? 0;
 
   String get payload {
     final indexes = parts.keys.toList()..sort();

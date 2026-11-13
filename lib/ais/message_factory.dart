@@ -6,13 +6,24 @@ import 'src/utils/convert_char_to_bin.dart';
 // ToDo: (Medium Priority) isPayload should be later moved into a separate function if any more parameters become necessary, fine for now - for later documentation: isPayload bypasses the String splitting via , and just passes the payload directly into encoded.
 
 class MessageFactory {
+  /// The `fill` field of a `!xxVDM` sentence: the number of padding bits
+  /// appended to the last payload character (0-5).
+  static int _fillBitsFrom(List<String> fields) {
+    if (fields.length < 7) return 0;
+    final raw = fields[6].split('*').first.trim();
+    final fill = int.tryParse(raw);
+    return fill != null && fill >= 0 && fill <= 5 ? fill : 0;
+  }
+
   static AISMessage create(
     String input,
     bool logging,
     bool legacy,
-    bool isPayload,
-  ) {
+    bool isPayload, {
+    int fillBits = 0,
+  }) {
     String encoded = '';
+    var fill = fillBits;
 
     //region sanitizing
 
@@ -35,6 +46,7 @@ class MessageFactory {
     // !ANVDM, ...) as well as the classic forms.
     if (RegExp(r'![A-Za-z0-9]{2}VD[MO],').hasMatch(input)) {
       List<String> fields = input.split(',');
+      fill = _fillBitsFrom(fields);
 
       // Legacy Mode:
       if (legacy) {
@@ -100,7 +112,7 @@ class MessageFactory {
           7 => BinaryAcknowledge.fromEncoded(encoded),
           8 => BinaryBroadcastMessage.fromEncoded(encoded),
           25 => SingleSlotBinaryMessage.fromEncoded(encoded),
-          26 => MultipleSlotBinaryMessage.fromEncoded(encoded),
+          26 => MultipleSlotBinaryMessage.fromEncoded(encoded, fillBits: fill),
 
           // Network messages
           15 => InterrogationMessage.fromEncoded(encoded),

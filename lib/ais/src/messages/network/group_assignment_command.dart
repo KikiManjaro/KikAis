@@ -169,7 +169,7 @@ class GroupAssignmentCommand extends AISMessage {
     int swLongitudeBin = getSignedIntDirect(binary, 75, 93);
     int swLatitudeBin = getSignedIntDirect(binary, 93, 110);
     int stationType = getUintDirect(binary, 110, 114);
-    int shipType = getUintDirect(binary, 114, 121);
+    int shipType = getUintDirect(binary, 114, 122);
     int txrxMode = getUintDirect(binary, 144, 146);
     int interval = getUintDirect(binary, 146, 150);
     int quietTime = getUintDirect(binary, 150, 154);

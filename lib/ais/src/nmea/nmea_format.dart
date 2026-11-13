@@ -47,6 +47,17 @@ String buildTagBlock({
 int msSinceUtcMidnight(DateTime now) =>
     now.difference(DateTime.utc(now.year, now.month, now.day)).inMilliseconds;
 
+/// Splits a blob that may carry several NMEA sentences into individual lines.
+///
+/// Multi-fragment messages are emitted as one sentence per line, so every
+/// consumer of an encoder result has to iterate over the lines instead of
+/// treating the whole string as a single frame.
+List<String> nmeaLines(String text) => text
+    .split('\n')
+    .map((line) => line.trim())
+    .where((line) => line.isNotEmpty)
+    .toList();
+
 /// Rewrites a frame according to [format]: passes it through, strips its tag
 /// block, or tags it with [sourceId] and the current time. Returns an empty
 /// string when the line contains no usable AIS sentence.
@@ -77,10 +88,20 @@ String applyNmeaFormat(String line, NmeaFormat format, {String? sourceId}) {
   };
 }
 
-/// Rewrites an encoded sentence to use [talker] (NMEA 4.0 talker ID) and
-/// optionally prefix a tag block, recomputing the checksum. The original
-/// checksum stays valid because the checksum is recalculated.
-String wrapNmea4(String sentence, {String talker = 'AI', String? tagBlock}) {
+/// Rewrites encoded sentences to use [talker] (NMEA 4.0 talker ID) and
+/// optionally prefix a tag block, recomputing the checksum. A multi-fragment
+/// message (one sentence per line) is rewritten fragment by fragment.
+String wrapNmea4(String sentence, {String talker = 'AI', String? tagBlock}) =>
+    sentence
+        .split('\n')
+        .map((line) => _wrapNmea4Line(line, talker: talker, tagBlock: tagBlock))
+        .join('\n');
+
+String _wrapNmea4Line(
+  String sentence, {
+  String talker = 'AI',
+  String? tagBlock,
+}) {
   final (_, base) = NmeaTagBlock.split(sentence);
   if (!base.startsWith('!')) return sentence;
   final star = base.lastIndexOf('*');

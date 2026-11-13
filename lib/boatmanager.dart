@@ -13,6 +13,7 @@ import 'ais/src/messages/position/position_message.dart';
 import 'ais/src/messages/position/sar_aircraft_position_report.dart';
 import 'ais/src/messages/specialized/aid_to_navigation.dart';
 import 'ais/src/messages/specialized/basestation_report.dart';
+import 'ais/src/nmea/nmea_format.dart' show nmeaLines;
 import 'ais/src/messages/static_data/static_data_report.dart';
 import 'ais/src/messages/static_data/static_voyage_data.dart';
 import 'ais/src/nmea/ais_decoder.dart';
@@ -179,6 +180,12 @@ class BoatManager extends ChangeNotifier {
   }
 
   Future<void> processMessage(String msg, {String? feed}) async {
+    for (final line in nmeaLines(msg)) {
+      _processLine(line, feed: feed);
+    }
+  }
+
+  void _processLine(String msg, {String? feed}) {
     if (_decoderSendPort != null) {
       final ts = DateTime.now().microsecondsSinceEpoch;
       PerfProbe.isolateSent++;
