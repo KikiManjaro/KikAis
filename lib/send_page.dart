@@ -8,6 +8,7 @@ import 'app_settings.dart';
 import 'forwarder_service.dart';
 import 'host_input_formatter.dart';
 import 'l10n_ext.dart';
+import 'l10n/generated/app_localizations.dart';
 import 'labels.dart';
 import 'port_input_formatter.dart';
 import 'target_config.dart';
@@ -64,132 +65,195 @@ class _SendPageState extends State<SendPage> {
     _upsert(target);
   }
 
+  /// One-line explanation of what the selected protocol actually does.
+  static String _modeHelp(AppLocalizations l10n, ForwardProtocol p) =>
+      switch (p) {
+        ForwardProtocol.udpServer => l10n.sendModeUdpListen,
+        ForwardProtocol.udpClient => l10n.sendModeUdpSend,
+        ForwardProtocol.tcpClient => l10n.sendModeTcpSend,
+        ForwardProtocol.tcpServer => l10n.sendModeTcpListen,
+      };
+
   Future<void> _showEditor({TargetConfig? existing}) async {
+    final isNew = existing == null;
     final nameController = TextEditingController(text: existing?.name ?? '');
-    final hostController = TextEditingController(text: existing?.host ?? '');
+    final hostController = TextEditingController(
+      text: existing?.host ?? (isNew ? '127.0.0.1' : ''),
+    );
     final portController = TextEditingController(
-      text: (existing?.port ?? 33333).toString(),
+      text: (existing?.port ?? 10110).toString(),
     );
     final tagSourceController = TextEditingController(
       text: existing?.tagSourceId ?? '',
     );
-    var protocol = existing?.protocol ?? ForwardProtocol.udpServer;
+    var protocol = existing?.protocol ?? ForwardProtocol.udpClient;
     var sendFormat = existing?.sendFormat ?? NmeaFormat.passthrough;
+
+    // A listening destination cannot share its port with another listener.
+    final settings = context.read<AppSettings>();
+    final usedPorts = {
+      for (final t in settings.targets)
+        if (t.id != existing?.id && _isListenProtocol(t.protocol)) t.port,
+    };
 
     final saved = await showDialog<bool>(
       context: context,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
-          title: Text(
-            existing == null
-                ? ctx.l10n.sendAddDestination
-                : ctx.l10n.sendEditDestination,
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(labelText: ctx.l10n.fieldName),
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<ForwardProtocol>(
-                  initialValue: protocol,
-                  mouseCursor: WidgetStateMouseCursor.clickable,
-                  decoration: InputDecoration(
-                    labelText: ctx.l10n.fieldProtocol,
+        builder: (ctx, setDialogState) {
+          final l10n = ctx.l10n;
+          final isListen = _isListenProtocol(protocol);
+          final port = int.tryParse(portController.text);
+          final portValid = port != null && port > 0 && port <= 65535;
+          final portTaken = isListen && portValid && usedPorts.contains(port);
+          final canSave =
+              nameController.text.trim().isNotEmpty &&
+              (isListen || hostController.text.trim().isNotEmpty) &&
+              portValid &&
+              !portTaken;
+          final scheme = Theme.of(ctx).colorScheme;
+
+          return AlertDialog(
+            title: Text(
+              isNew ? l10n.sendAddDestination : l10n.sendEditDestination,
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(labelText: l10n.fieldName),
+                    onChanged: (_) => setDialogState(() {}),
                   ),
-                  items: [
-                    for (final p in ForwardProtocol.values)
-                      DropdownMenuItem(
-                        value: p,
-                        child: Text(protocolLabelLocalized(p, ctx.l10n)),
-                      ),
-                  ],
-                  onChanged: (p) {
-                    if (p != null) setDialogState(() => protocol = p);
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: hostController,
-                  decoration: InputDecoration(labelText: ctx.l10n.fieldHost),
-                  inputFormatters: [HostInputFormatter()],
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: portController,
-                  decoration: InputDecoration(labelText: ctx.l10n.fieldPort),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    PortInputFormatter(),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<NmeaFormat>(
-                  initialValue: sendFormat,
-                  mouseCursor: WidgetStateMouseCursor.clickable,
-                  decoration: InputDecoration(labelText: ctx.l10n.sendFormat),
-                  items: [
-                    for (final f in NmeaFormat.values)
-                      DropdownMenuItem(
-                        value: f,
-                        child: Text(nmeaFormatLabelLocalized(f, ctx.l10n)),
-                      ),
-                  ],
-                  onChanged: (f) {
-                    if (f != null) setDialogState(() => sendFormat = f);
-                  },
-                ),
-                if (sendFormat == NmeaFormat.tag)
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<ForwardProtocol>(
+                    initialValue: protocol,
+                    mouseCursor: WidgetStateMouseCursor.clickable,
+                    decoration: InputDecoration(labelText: l10n.fieldProtocol),
+                    items: [
+                      for (final p in ForwardProtocol.values)
+                        DropdownMenuItem(
+                          value: p,
+                          child: Text(protocolLabelLocalized(p, l10n)),
+                        ),
+                    ],
+                    onChanged: (p) {
+                      if (p != null) setDialogState(() => protocol = p);
+                    },
+                  ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: TextField(
-                      controller: tagSourceController,
-                      decoration: InputDecoration(
-                        labelText: ctx.l10n.fieldTagSourceId,
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      _modeHelp(l10n, protocol),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: scheme.onSurfaceVariant,
                       ),
                     ),
                   ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(ctx.l10n.fieldCancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(
-                existing == null ? ctx.l10n.fieldAdd : ctx.l10n.sendSave,
+                  if (!isListen) ...[
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: hostController,
+                      decoration: InputDecoration(
+                        labelText: l10n.fieldRemoteHost,
+                      ),
+                      inputFormatters: [HostInputFormatter()],
+                      onChanged: (_) => setDialogState(() {}),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: portController,
+                    decoration: InputDecoration(
+                      labelText: isListen
+                          ? l10n.fieldListenPort
+                          : l10n.fieldRemotePort,
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      PortInputFormatter(),
+                    ],
+                    onChanged: (_) => setDialogState(() {}),
+                  ),
+                  if (portTaken)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(
+                        l10n.sendPortInUse,
+                        style: TextStyle(fontSize: 12, color: scheme.error),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<NmeaFormat>(
+                    initialValue: sendFormat,
+                    mouseCursor: WidgetStateMouseCursor.clickable,
+                    decoration: InputDecoration(labelText: l10n.sendFormat),
+                    items: [
+                      for (final f in NmeaFormat.values)
+                        DropdownMenuItem(
+                          value: f,
+                          child: Text(nmeaFormatLabelLocalized(f, l10n)),
+                        ),
+                    ],
+                    onChanged: (f) {
+                      if (f != null) setDialogState(() => sendFormat = f);
+                    },
+                  ),
+                  if (sendFormat == NmeaFormat.tag)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: TextField(
+                        controller: tagSourceController,
+                        decoration: InputDecoration(
+                          labelText: l10n.fieldTagSourceId,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-          ],
-        ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l10n.fieldCancel),
+              ),
+              FilledButton(
+                onPressed: canSave ? () => Navigator.pop(ctx, true) : null,
+                child: Text(isNew ? l10n.fieldAdd : l10n.sendSave),
+              ),
+            ],
+          );
+        },
       ),
     );
+
+    if (saved != true || !mounted) {
+      nameController.dispose();
+      hostController.dispose();
+      portController.dispose();
+      tagSourceController.dispose();
+      return;
+    }
+    final name = nameController.text.trim();
+    final host = hostController.text.trim();
+    final port = int.tryParse(portController.text) ?? 10110;
+    final tagSource = tagSourceController.text.trim();
 
     nameController.dispose();
     hostController.dispose();
     portController.dispose();
     tagSourceController.dispose();
 
-    if (saved != true || !mounted) return;
-    final name = nameController.text.trim();
-    final host = hostController.text.trim();
-    if (name.isEmpty || host.isEmpty) return;
-
-    final tagSource = tagSourceController.text.trim();
     await _upsert(
       TargetConfig(
         id: existing?.id ?? TargetConfig.newId(),
         name: name,
         protocol: protocol,
-        host: host,
-        port: int.tryParse(portController.text) ?? 33333,
+        // A listening target accepts every interface; the host is unused.
+        host: _isListenProtocol(protocol) ? '0.0.0.0' : host,
+        port: port,
         enabled: existing?.enabled ?? true,
         sendFormat: sendFormat,
         tagSourceId: tagSource.isEmpty ? null : tagSource,
@@ -275,6 +339,19 @@ class _SendPageState extends State<SendPage> {
   }
 }
 
+/// Whether [protocol] makes KikAis listen on its own port (server role)
+/// rather than connect out to a remote endpoint (client role).
+bool _isListenProtocol(ForwardProtocol protocol) =>
+    protocol == ForwardProtocol.udpServer ||
+    protocol == ForwardProtocol.tcpServer;
+
+/// Endpoint shown on a destination card: the listen port for a server role,
+/// the remote endpoint for a client role.
+String targetEndpointLabel(BuildContext context, TargetConfig target) =>
+    _isListenProtocol(target.protocol)
+    ? '${context.l10n.fieldListenPort} ${target.port}'
+    : '${target.host}:${target.port}';
+
 /// A single destination card. It watches only its own [TargetConfig] from
 /// [AppSettings] (via [context.select]), so toggling a switch rebuilds just
 /// this card instead of the whole page and the entire application.
@@ -326,8 +403,13 @@ class _TargetCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '${protocolLabelLocalized(target.protocol, context.l10n)} · '
-                    '${target.host}:${target.port} · '
                     '${nmeaFormatLabelLocalized(target.sendFormat, context.l10n)}',
+                    style: const TextStyle(fontSize: 12),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    targetEndpointLabel(context, target),
                     style: const TextStyle(fontSize: 12),
                     overflow: TextOverflow.ellipsis,
                   ),

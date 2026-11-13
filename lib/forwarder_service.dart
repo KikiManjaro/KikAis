@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'perf_probe.dart';
 
 import 'ais/ais_decoder.dart' show NmeaFormat, applyNmeaFormat;
+import 'ais/src/nmea/nmea_format.dart' show nmeaLines;
 import 'target_config.dart';
 
 enum ForwardProtocol { udpServer, tcpClient, udpClient, tcpServer }
@@ -71,6 +72,12 @@ class TargetSendQueue {
 
 typedef DataCallback =
     Future<void> Function(String feedName, String flag, String line);
+
+/// Time after which a silent UDP peer is forgotten.
+const Duration kUdpPeerTimeout = Duration(seconds: 60);
+
+/// Maximum number of simultaneous UDP peers a listening target remembers.
+const int kMaxUdpPeers = 32;
 
 class FeedStatus {
   final bool connecting;
@@ -214,18 +221,19 @@ class ForwarderService {
     _status(const LogMessage('stopped', {}, 'Forwarder stopped.'));
   }
 
-  /// Forwards a raw NMEA line to every connected target, applying each
-  /// target's configured frame format.
+  /// Forwards raw NMEA lines to every connected target, applying each
+  /// target's configured frame format. Multi-fragment messages arrive as
+  /// several lines and are forwarded one sentence at a time.
   Future<void> _send(String line) async {
-    final clean = line.trim();
-    if (clean.isEmpty) return;
-    for (final t in _targets.values) {
-      final out = applyNmeaFormat(
-        clean,
-        t.config.sendFormat,
-        sourceId: t.config.tagSourceId ?? t.config.name,
-      );
-      if (out.isNotEmpty) t.send(out);
+    for (final frame in nmeaLines(line)) {
+      for (final t in _targets.values) {
+        final out = applyNmeaFormat(
+          frame,
+          t.config.sendFormat,
+          sourceId: t.config.tagSourceId ?? t.config.name,
+        );
+        if (out.isNotEmpty) t.send(out);
+      }
     }
   }
 
@@ -341,28 +349,40 @@ class ForwarderService {
     final sw = Stopwatch()..start();
     PerfProbe.pendingHandleData++;
     try {
-      final normalized = applyNmeaFormat(
-        line,
-        importFormat,
-        sourceId: importTagSourceId,
-      );
-      if (normalized.isEmpty) return;
-
-      for (final t in _targets.values) {
-        final out = applyNmeaFormat(
-          normalized,
-          t.config.sendFormat,
-          sourceId: t.config.tagSourceId ?? t.config.name,
+      for (final frame in nmeaLines(line)) {
+        final normalized = applyNmeaFormat(
+          frame,
+          importFormat,
+          sourceId: importTagSourceId,
         );
-        if (out.isNotEmpty) t.send(out);
+        if (normalized.isEmpty) continue;
+
+        for (final t in _targets.values) {
+          final out = applyNmeaFormat(
+            normalized,
+            t.config.sendFormat,
+            sourceId: t.config.tagSourceId ?? t.config.name,
+          );
+          if (out.isNotEmpty) t.send(out);
+        }
+        onLog(normalized, flag, feedName);
       }
-      onLog(normalized, flag, feedName);
     } finally {
       sw.stop();
       PerfProbe.pendingHandleData--;
       PerfProbe.recordHandleData(sw.elapsedMicroseconds);
     }
   }
+}
+
+class _UdpPeer {
+  final InternetAddress address;
+  final int port;
+  DateTime lastSeen;
+
+  _UdpPeer(this.address, this.port, this.lastSeen);
+
+  String get label => '${address.address}:$port';
 }
 
 class _TargetConnection {
@@ -376,13 +396,47 @@ class _TargetConnection {
   final List<Socket> _clients = [];
   late final TargetSendQueue _sendQueue;
 
+  /// Peers that talked to a [ForwardProtocol.udpServer] target. A datagram TCP
+  /// client is unknown in advance, so the first datagram we receive from an
+  /// address registers it as a destination for the frames we forward.
+  final Map<String, _UdpPeer> _udpPeers = {};
+  Timer? _peerPurge;
+
   _TargetConnection(this.config, this.onLog, this.onStatus) {
     _sendQueue = TargetSendQueue(writer: _write);
   }
 
   Future<void> connect() async {
     switch (config.protocol) {
-      case ForwardProtocol.udpServer || ForwardProtocol.udpClient:
+      case ForwardProtocol.udpServer:
+        _udp = await RawDatagramSocket.bind(
+          InternetAddress.anyIPv4,
+          config.port,
+          // Exclusive bind: a port already taken must fail loudly instead of
+          // silently sharing the socket with another listener.
+          reuseAddress: false,
+        );
+        _udp!.listen(
+          _onUdpEvent,
+          onError: (Object e) => onStatus(
+            LogMessage('sendError', {
+              'name': config.name,
+              'error': '$e',
+            }, 'Target ${config.name} UDP socket error: $e'),
+          ),
+        );
+        _peerPurge = Timer.periodic(
+          const Duration(seconds: 30),
+          (_) => _purgePeers(),
+        );
+        onStatus(
+          LogMessage(
+            'udpListening',
+            {'name': config.name, 'port': config.port},
+            'Target ${config.name}: UDP listening on port ${config.port}',
+          ),
+        );
+      case ForwardProtocol.udpClient:
         _udp = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
       case ForwardProtocol.tcpClient:
         _tcp = await Socket.connect(config.host, config.port);
@@ -433,6 +487,57 @@ class _TargetConnection {
     }
   }
 
+  /// Registers or refreshes the peer that just sent us a datagram.
+  void _onUdpEvent(RawSocketEvent event) {
+    if (event != RawSocketEvent.read) return;
+    final datagram = _udp?.receive();
+    if (datagram == null) return;
+    final now = DateTime.now();
+    final key = '${datagram.address.address}:${datagram.port}';
+    final known = _udpPeers[key];
+    if (known != null) {
+      known.lastSeen = now;
+      return;
+    }
+    if (_udpPeers.length >= kMaxUdpPeers) {
+      final oldest = _udpPeers.values.reduce(
+        (a, b) => a.lastSeen.isBefore(b.lastSeen) ? a : b,
+      );
+      _udpPeers.remove(oldest.label);
+    }
+    final peer = _UdpPeer(datagram.address, datagram.port, now);
+    _udpPeers[key] = peer;
+    onStatus(
+      LogMessage(
+        'udpPeerAdded',
+        {
+          'name': config.name,
+          'address': peer.address.address,
+          'port': peer.port,
+        },
+        'Target ${config.name}: UDP peer ${peer.label} registered',
+      ),
+    );
+  }
+
+  void _purgePeers() {
+    final limit = DateTime.now().subtract(kUdpPeerTimeout);
+    for (final peer in List<_UdpPeer>.of(_udpPeers.values)) {
+      if (peer.lastSeen.isBefore(limit)) _dropPeer(peer);
+    }
+  }
+
+  void _dropPeer(_UdpPeer peer) {
+    if (_udpPeers.remove(peer.label) == null) return;
+    onStatus(
+      LogMessage('udpPeerRemoved', {
+        'name': config.name,
+        'address': peer.address.address,
+        'port': peer.port,
+      }, 'Target ${config.name}: UDP peer ${peer.label} dropped'),
+    );
+  }
+
   void send(String line) {
     _sendQueue.enqueue(line);
   }
@@ -440,7 +545,16 @@ class _TargetConnection {
   Future<void> _write(String line) async {
     try {
       switch (config.protocol) {
-        case ForwardProtocol.udpServer || ForwardProtocol.udpClient:
+        case ForwardProtocol.udpServer:
+          final limit = DateTime.now().subtract(kUdpPeerTimeout);
+          for (final peer in List<_UdpPeer>.of(_udpPeers.values)) {
+            if (peer.lastSeen.isBefore(limit)) {
+              _dropPeer(peer);
+              continue;
+            }
+            _udp?.send(line.codeUnits, peer.address, peer.port);
+          }
+        case ForwardProtocol.udpClient:
           _udp?.send(line.codeUnits, InternetAddress(config.host), config.port);
         case ForwardProtocol.tcpClient:
           _tcp?.write('$line\n');
@@ -485,6 +599,9 @@ class _TargetConnection {
   }
 
   Future<void> disconnect() async {
+    _peerPurge?.cancel();
+    _peerPurge = null;
+    _udpPeers.clear();
     for (final c in _clients) {
       c.destroy();
     }

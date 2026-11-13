@@ -92,7 +92,19 @@ void main() {
           'port': '3000',
         }, ''),
       ),
-      'Target Boat connected (TCP Client 1.2.3.4:3000).',
+      'Target Boat connected (TCP · send (client) 1.2.3.4:3000).',
+    );
+
+    expect(
+      logMessageText(
+        l10n,
+        const LogMessage('udpPeerAdded', {
+          'name': 'UDP out',
+          'address': '192.168.1.20',
+          'port': '40000',
+        }, ''),
+      ),
+      'Target UDP out: UDP peer 192.168.1.20:40000 registered.',
     );
   });
 }

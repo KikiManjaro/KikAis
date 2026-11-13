@@ -66,6 +66,20 @@ String logMessageText(AppLocalizations l10n, LogMessage m) => switch (m.key) {
     _s(m.args['error']),
     _s(m.args['name']),
   ),
+  'udpListening' => l10n.logUdpListening(
+    _s(m.args['name']),
+    _s(m.args['port']),
+  ),
+  'udpPeerAdded' => l10n.logUdpPeerAdded(
+    _s(m.args['address']),
+    _s(m.args['name']),
+    _s(m.args['port']),
+  ),
+  'udpPeerRemoved' => l10n.logUdpPeerRemoved(
+    _s(m.args['address']),
+    _s(m.args['name']),
+    _s(m.args['port']),
+  ),
   'sendError' => l10n.logSendError(_s(m.args['error']), _s(m.args['name'])),
   'rtlSdrOpening' => l10n.logRtlSdrOpening(_s(m.args['device'])),
   'rtlSdrConnected' => l10n.logRtlSdrConnected(

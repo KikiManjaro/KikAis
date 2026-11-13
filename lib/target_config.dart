@@ -79,8 +79,8 @@ class TargetConfig {
 }
 
 String protocolLabel(ForwardProtocol p) => switch (p) {
-  ForwardProtocol.udpServer => 'UDP Server',
-  ForwardProtocol.udpClient => 'UDP Client',
-  ForwardProtocol.tcpClient => 'TCP Client',
-  ForwardProtocol.tcpServer => 'TCP Server',
+  ForwardProtocol.udpServer => 'UDP listen (server)',
+  ForwardProtocol.udpClient => 'UDP send (client)',
+  ForwardProtocol.tcpClient => 'TCP send (client)',
+  ForwardProtocol.tcpServer => 'TCP listen (server)',
 };
