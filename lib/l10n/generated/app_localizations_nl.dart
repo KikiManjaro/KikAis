@@ -75,16 +75,16 @@ class AppLocalizationsNl extends AppLocalizations {
   String get tabDocs => 'Documentatie';
 
   @override
-  String get protocolUdpServer => 'UDP-server';
+  String get protocolUdpServer => 'UDP · luisteren (server)';
 
   @override
-  String get protocolUdpClient => 'UDP-client';
+  String get protocolUdpClient => 'UDP · verzenden (client)';
 
   @override
-  String get protocolTcpClient => 'TCP-client';
+  String get protocolTcpClient => 'TCP · verzenden (client)';
 
   @override
-  String get protocolTcpServer => 'TCP-server';
+  String get protocolTcpServer => 'TCP · luisteren (server)';
 
   @override
   String get formatPassthrough => 'Doorvoer';
@@ -112,6 +112,26 @@ class AppLocalizationsNl extends AppLocalizations {
       'Doorstuurder draait — bestemmingen zijn vergrendeld.';
 
   @override
+  String get sendModeUdpSend =>
+      'KikAis stuurt de frames naar deze externe host en poort.';
+
+  @override
+  String get sendModeUdpListen =>
+      'KikAis luistert op deze poort. Elke toepassing die er een datagram naartoe stuurt, ontvangt daarna de frames.';
+
+  @override
+  String get sendModeTcpSend =>
+      'KikAis maakt verbinding met deze externe host en poort en stuurt er de frames naartoe.';
+
+  @override
+  String get sendModeTcpListen =>
+      'KikAis luistert op deze poort. Elke verbonden TCP-client ontvangt de frames.';
+
+  @override
+  String get sendPortInUse =>
+      'Deze poort is al in gebruik door een andere bestemming.';
+
+  @override
   String get sendEmpty =>
       'Nog geen bestemming. Voeg er een toe om ontvangen AIS-frames door te sturen.';
 
@@ -126,6 +146,15 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get fieldPort => 'Poort';
+
+  @override
+  String get fieldRemoteHost => 'Externe host';
+
+  @override
+  String get fieldRemotePort => 'Externe poort';
+
+  @override
+  String get fieldListenPort => 'Luisterpoort';
 
   @override
   String get fieldTagSourceId => 'Tag-bron-id';
@@ -839,6 +868,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get checksumFix => 'Checksum corrigeren';
+
+  @override
+  String get checksumNoDeclared =>
+      'Geen checksum opgegeven - alleen de berekende waarde';
+
+  @override
+  String get checksumNotNmea => 'Geen NMEA-zin - XOR van de tekst';
 
   @override
   String get mmsiInputLabel => 'MMSI (9 cijfers)';
@@ -1658,6 +1694,21 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String logTcpListening(Object name, Object port) {
     return 'Doel $name: TCP-server luistert op poort $port';
+  }
+
+  @override
+  String logUdpListening(Object name, Object port) {
+    return 'Doel $name: UDP luistert op poort $port';
+  }
+
+  @override
+  String logUdpPeerAdded(Object address, Object name, Object port) {
+    return 'Doel $name: UDP-peer $address:$port geregistreerd';
+  }
+
+  @override
+  String logUdpPeerRemoved(Object address, Object name, Object port) {
+    return 'Doel $name: UDP-peer $address:$port verwijderd';
   }
 
   @override

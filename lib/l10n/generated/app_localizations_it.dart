@@ -75,16 +75,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get tabDocs => 'Documentazione';
 
   @override
-  String get protocolUdpServer => 'Server UDP';
+  String get protocolUdpServer => 'UDP · ascolto (server)';
 
   @override
-  String get protocolUdpClient => 'Client UDP';
+  String get protocolUdpClient => 'UDP · invio (client)';
 
   @override
-  String get protocolTcpClient => 'Client TCP';
+  String get protocolTcpClient => 'TCP · invio (client)';
 
   @override
-  String get protocolTcpServer => 'Server TCP';
+  String get protocolTcpServer => 'TCP · ascolto (server)';
 
   @override
   String get formatPassthrough => 'Pass-through';
@@ -112,6 +112,26 @@ class AppLocalizationsIt extends AppLocalizations {
       'Il forwarder è in esecuzione — le destinazioni sono bloccate.';
 
   @override
+  String get sendModeUdpSend =>
+      'KikAis invia i frame a questo host e a questa porta remoti.';
+
+  @override
+  String get sendModeUdpListen =>
+      'KikAis resta in ascolto su questa porta. Ogni applicazione che gli invia un datagramma riceve poi i frame.';
+
+  @override
+  String get sendModeTcpSend =>
+      'KikAis si connette a questo host e a questa porta remoti e gli invia i frame.';
+
+  @override
+  String get sendModeTcpListen =>
+      'KikAis resta in ascolto su questa porta. Ogni client TCP connesso riceve i frame.';
+
+  @override
+  String get sendPortInUse =>
+      'Questa porta è già usata da un\'altra destinazione.';
+
+  @override
   String get sendEmpty =>
       'Nessuna destinazione. Aggiungine una per inoltrare i frame AIS ricevuti.';
 
@@ -126,6 +146,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get fieldPort => 'Porta';
+
+  @override
+  String get fieldRemoteHost => 'Host remoto';
+
+  @override
+  String get fieldRemotePort => 'Porta remota';
+
+  @override
+  String get fieldListenPort => 'Porta di ascolto';
 
   @override
   String get fieldTagSourceId => 'ID sorgente tag';
@@ -840,6 +869,13 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get checksumFix => 'Correggi checksum';
+
+  @override
+  String get checksumNoDeclared =>
+      'Nessun checksum dichiarato - solo il valore calcolato';
+
+  @override
+  String get checksumNotNmea => 'Non è una frase NMEA - XOR del testo';
 
   @override
   String get mmsiInputLabel => 'MMSI (9 cifre)';
@@ -1660,6 +1696,21 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String logTcpListening(Object name, Object port) {
     return 'Target $name: server TCP in ascolto sulla porta $port';
+  }
+
+  @override
+  String logUdpListening(Object name, Object port) {
+    return 'Destinazione $name: ascolto UDP sulla porta $port';
+  }
+
+  @override
+  String logUdpPeerAdded(Object address, Object name, Object port) {
+    return 'Destinazione $name: peer UDP $address:$port registrato';
+  }
+
+  @override
+  String logUdpPeerRemoved(Object address, Object name, Object port) {
+    return 'Destinazione $name: peer UDP $address:$port rimosso';
   }
 
   @override

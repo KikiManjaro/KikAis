@@ -75,16 +75,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tabDocs => 'Справка';
 
   @override
-  String get protocolUdpServer => 'UDP-сервер';
+  String get protocolUdpServer => 'UDP · приём (сервер)';
 
   @override
-  String get protocolUdpClient => 'UDP-клиент';
+  String get protocolUdpClient => 'UDP · отправка (клиент)';
 
   @override
-  String get protocolTcpClient => 'TCP-клиент';
+  String get protocolTcpClient => 'TCP · отправка (клиент)';
 
   @override
-  String get protocolTcpServer => 'TCP-сервер';
+  String get protocolTcpServer => 'TCP · приём (сервер)';
 
   @override
   String get formatPassthrough => 'Без изменений';
@@ -112,6 +112,25 @@ class AppLocalizationsRu extends AppLocalizations {
       'Пересыльщик запущен — назначения заблокированы.';
 
   @override
+  String get sendModeUdpSend =>
+      'KikAis отправляет кадры на этот удалённый хост и порт.';
+
+  @override
+  String get sendModeUdpListen =>
+      'KikAis прослушивает этот порт. Любое приложение, отправившее ему датаграмму, затем получает кадры.';
+
+  @override
+  String get sendModeTcpSend =>
+      'KikAis подключается к этому удалённому хосту и порту и отправляет ему кадры.';
+
+  @override
+  String get sendModeTcpListen =>
+      'KikAis прослушивает этот порт. Каждый подключённый TCP-клиент получает кадры.';
+
+  @override
+  String get sendPortInUse => 'Этот порт уже используется другим назначением.';
+
+  @override
   String get sendEmpty =>
       'Назначений пока нет. Добавьте одно, чтобы пересылать принятые кадры AIS.';
 
@@ -126,6 +145,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get fieldPort => 'Порт';
+
+  @override
+  String get fieldRemoteHost => 'Удалённый хост';
+
+  @override
+  String get fieldRemotePort => 'Удалённый порт';
+
+  @override
+  String get fieldListenPort => 'Порт прослушивания';
 
   @override
   String get fieldTagSourceId => 'ID источника тега';
@@ -845,6 +873,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get checksumFix => 'Исправить сумму';
+
+  @override
+  String get checksumNoDeclared =>
+      'Контрольная сумма не указана - только вычисленное значение';
+
+  @override
+  String get checksumNotNmea => 'Это не предложение NMEA - XOR текста';
 
   @override
   String get mmsiInputLabel => 'MMSI (9 цифр)';
@@ -1665,6 +1700,21 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String logTcpListening(Object name, Object port) {
     return 'Назначение $name: TCP-сервер слушает порт $port';
+  }
+
+  @override
+  String logUdpListening(Object name, Object port) {
+    return 'Назначение $name: UDP прослушивает порт $port';
+  }
+
+  @override
+  String logUdpPeerAdded(Object address, Object name, Object port) {
+    return 'Назначение $name: UDP-пир $address:$port зарегистрирован';
+  }
+
+  @override
+  String logUdpPeerRemoved(Object address, Object name, Object port) {
+    return 'Назначение $name: UDP-пир $address:$port удалён';
   }
 
   @override

@@ -75,16 +75,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tabDocs => '文档';
 
   @override
-  String get protocolUdpServer => 'UDP 服务器';
+  String get protocolUdpServer => 'UDP · 监听（服务端）';
 
   @override
-  String get protocolUdpClient => 'UDP 客户端';
+  String get protocolUdpClient => 'UDP · 发送（客户端）';
 
   @override
-  String get protocolTcpClient => 'TCP 客户端';
+  String get protocolTcpClient => 'TCP · 发送（客户端）';
 
   @override
-  String get protocolTcpServer => 'TCP 服务器';
+  String get protocolTcpServer => 'TCP · 监听（服务端）';
 
   @override
   String get formatPassthrough => '直通';
@@ -111,6 +111,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sendLockedBanner => '转发器正在运行 — 目标已锁定。';
 
   @override
+  String get sendModeUdpSend => 'KikAis 将数据帧发送到此远程主机和端口。';
+
+  @override
+  String get sendModeUdpListen => 'KikAis 在此端口监听。任何向其发送数据报的应用程序随后都会收到这些数据帧。';
+
+  @override
+  String get sendModeTcpSend => 'KikAis 连接到此远程主机和端口并向其发送数据帧。';
+
+  @override
+  String get sendModeTcpListen => 'KikAis 在此端口监听。每个连接的 TCP 客户端都会收到这些数据帧。';
+
+  @override
+  String get sendPortInUse => '此端口已被另一个目的地使用。';
+
+  @override
   String get sendEmpty => '尚无目标。添加一个以转发接收到的 AIS 报文。';
 
   @override
@@ -124,6 +139,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get fieldPort => '端口';
+
+  @override
+  String get fieldRemoteHost => '远程主机';
+
+  @override
+  String get fieldRemotePort => '远程端口';
+
+  @override
+  String get fieldListenPort => '监听端口';
 
   @override
   String get fieldTagSourceId => '标签源 ID';
@@ -831,6 +855,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get checksumFix => '修复校验和';
+
+  @override
+  String get checksumNoDeclared => '未声明校验和 - 仅显示计算值';
+
+  @override
+  String get checksumNotNmea => '不是 NMEA 语句 - 文本的 XOR 值';
 
   @override
   String get mmsiInputLabel => 'MMSI（9 位数字）';
@@ -1646,6 +1676,21 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String logTcpListening(Object name, Object port) {
     return '目标 $name：TCP 服务器正在监听端口 $port';
+  }
+
+  @override
+  String logUdpListening(Object name, Object port) {
+    return '目标 $name：UDP 正在监听端口 $port';
+  }
+
+  @override
+  String logUdpPeerAdded(Object address, Object name, Object port) {
+    return '目标 $name：已登记 UDP 对端 $address:$port';
+  }
+
+  @override
+  String logUdpPeerRemoved(Object address, Object name, Object port) {
+    return '目标 $name：已移除 UDP 对端 $address:$port';
   }
 
   @override

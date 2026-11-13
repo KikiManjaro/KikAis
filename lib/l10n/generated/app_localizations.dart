@@ -249,25 +249,25 @@ abstract class AppLocalizations {
   /// No description provided for @protocolUdpServer.
   ///
   /// In en, this message translates to:
-  /// **'UDP Server'**
+  /// **'UDP · listen (server)'**
   String get protocolUdpServer;
 
   /// No description provided for @protocolUdpClient.
   ///
   /// In en, this message translates to:
-  /// **'UDP Client'**
+  /// **'UDP · send (client)'**
   String get protocolUdpClient;
 
   /// No description provided for @protocolTcpClient.
   ///
   /// In en, this message translates to:
-  /// **'TCP Client'**
+  /// **'TCP · send (client)'**
   String get protocolTcpClient;
 
   /// No description provided for @protocolTcpServer.
   ///
   /// In en, this message translates to:
-  /// **'TCP Server'**
+  /// **'TCP · listen (server)'**
   String get protocolTcpServer;
 
   /// No description provided for @formatPassthrough.
@@ -318,6 +318,36 @@ abstract class AppLocalizations {
   /// **'Forwarder is running — destinations are locked.'**
   String get sendLockedBanner;
 
+  /// No description provided for @sendModeUdpSend.
+  ///
+  /// In en, this message translates to:
+  /// **'KikAis sends the frames to this remote host and port.'**
+  String get sendModeUdpSend;
+
+  /// No description provided for @sendModeUdpListen.
+  ///
+  /// In en, this message translates to:
+  /// **'KikAis listens on this port. Any application that sends it a datagram then receives the frames.'**
+  String get sendModeUdpListen;
+
+  /// No description provided for @sendModeTcpSend.
+  ///
+  /// In en, this message translates to:
+  /// **'KikAis connects to this remote host and port and sends it the frames.'**
+  String get sendModeTcpSend;
+
+  /// No description provided for @sendModeTcpListen.
+  ///
+  /// In en, this message translates to:
+  /// **'KikAis listens on this port. Every TCP client that connects receives the frames.'**
+  String get sendModeTcpListen;
+
+  /// No description provided for @sendPortInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This port is already used by another destination.'**
+  String get sendPortInUse;
+
   /// No description provided for @sendEmpty.
   ///
   /// In en, this message translates to:
@@ -347,6 +377,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Port'**
   String get fieldPort;
+
+  /// No description provided for @fieldRemoteHost.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote host'**
+  String get fieldRemoteHost;
+
+  /// No description provided for @fieldRemotePort.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote port'**
+  String get fieldRemotePort;
+
+  /// No description provided for @fieldListenPort.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen port'**
+  String get fieldListenPort;
 
   /// No description provided for @fieldTagSourceId.
   ///
@@ -1685,6 +1733,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fix checksum'**
   String get checksumFix;
+
+  /// No description provided for @checksumNoDeclared.
+  ///
+  /// In en, this message translates to:
+  /// **'No checksum declared - computed value only'**
+  String get checksumNoDeclared;
+
+  /// No description provided for @checksumNotNmea.
+  ///
+  /// In en, this message translates to:
+  /// **'Not an NMEA sentence - XOR of the text'**
+  String get checksumNotNmea;
 
   /// No description provided for @mmsiInputLabel.
   ///
@@ -3225,6 +3285,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Target {name}: TCP server listening on port {port}'**
   String logTcpListening(Object name, Object port);
+
+  /// No description provided for @logUdpListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Target {name}: UDP listening on port {port}.'**
+  String logUdpListening(Object name, Object port);
+
+  /// No description provided for @logUdpPeerAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Target {name}: UDP peer {address}:{port} registered.'**
+  String logUdpPeerAdded(Object address, Object name, Object port);
+
+  /// No description provided for @logUdpPeerRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Target {name}: UDP peer {address}:{port} dropped.'**
+  String logUdpPeerRemoved(Object address, Object name, Object port);
 
   /// No description provided for @logTcpClientConnected.
   ///

@@ -75,16 +75,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tabDocs => 'ドキュメント';
 
   @override
-  String get protocolUdpServer => 'UDP サーバー';
+  String get protocolUdpServer => 'UDP · 受信（サーバー）';
 
   @override
-  String get protocolUdpClient => 'UDP クライアント';
+  String get protocolUdpClient => 'UDP · 送信（クライアント）';
 
   @override
-  String get protocolTcpClient => 'TCP クライアント';
+  String get protocolTcpClient => 'TCP · 送信（クライアント）';
 
   @override
-  String get protocolTcpServer => 'TCP サーバー';
+  String get protocolTcpServer => 'TCP · 受信（サーバー）';
 
   @override
   String get formatPassthrough => 'そのまま（パススルー）';
@@ -111,6 +111,23 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sendLockedBanner => 'フォワーダーが実行中です — 送信先はロックされています。';
 
   @override
+  String get sendModeUdpSend => 'KikAis はこのリモートホストとポートにフレームを送信します。';
+
+  @override
+  String get sendModeUdpListen =>
+      'KikAis はこのポートで待ち受けます。データグラムを送ってきたアプリケーションに、その後フレームを送信します。';
+
+  @override
+  String get sendModeTcpSend => 'KikAis はこのリモートホストとポートに接続し、フレームを送信します。';
+
+  @override
+  String get sendModeTcpListen =>
+      'KikAis はこのポートで待ち受けます。接続した各 TCP クライアントにフレームを送信します。';
+
+  @override
+  String get sendPortInUse => 'このポートは別の送信先で使用されています。';
+
+  @override
   String get sendEmpty => '送信先はまだありません。受信した AIS フレームを転送するには送信先を追加してください。';
 
   @override
@@ -124,6 +141,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get fieldPort => 'ポート';
+
+  @override
+  String get fieldRemoteHost => 'リモートホスト';
+
+  @override
+  String get fieldRemotePort => 'リモートポート';
+
+  @override
+  String get fieldListenPort => '待ち受けポート';
 
   @override
   String get fieldTagSourceId => 'タグのソース ID';
@@ -833,6 +859,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get checksumFix => 'チェックサムを修正';
+
+  @override
+  String get checksumNoDeclared => 'チェックサムが宣言されていません - 計算値のみ';
+
+  @override
+  String get checksumNotNmea => 'NMEA センテンスではありません - テキストの XOR';
 
   @override
   String get mmsiInputLabel => 'MMSI（9桁）';
@@ -1651,6 +1683,21 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String logTcpListening(Object name, Object port) {
     return 'ターゲット $name: TCP サーバーがポート $port で待機中';
+  }
+
+  @override
+  String logUdpListening(Object name, Object port) {
+    return '送信先 $name：UDP がポート $port で待ち受けています';
+  }
+
+  @override
+  String logUdpPeerAdded(Object address, Object name, Object port) {
+    return '送信先 $name：UDP ピア $address:$port を登録しました';
+  }
+
+  @override
+  String logUdpPeerRemoved(Object address, Object name, Object port) {
+    return '送信先 $name：UDP ピア $address:$port を削除しました';
   }
 
   @override
