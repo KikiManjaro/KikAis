@@ -38,6 +38,39 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('checksum tool survives free text and keeps every line', (
+    tester,
+  ) async {
+    await _pump(tester, const ChecksumTool());
+    await tester.enterText(find.byType(TextField), 'hello world');
+    await tester.pump();
+    expect(tester.takeException(), isNull, reason: 'free text must not crash');
+    expect(find.textContaining('Not an NMEA sentence'), findsOneWidget);
+  });
+
+  testWidgets('checksum tool fixes only the broken line', (tester) async {
+    await _pump(tester, const ChecksumTool());
+    final good = encodePositionReport(
+      mmsi: 226545000,
+      latitude: 48.85,
+      longitude: 1.05,
+      sog: 12.0,
+      cog: 250.0,
+      heading: 90.0,
+    );
+    final bad = good.replaceFirst(RegExp(r'\*..$'), '*00');
+    await tester.enterText(find.byType(TextField), '$good\n$bad');
+    await tester.pump();
+    await tester.tap(find.text('Fix checksum'));
+    await tester.pump();
+
+    final controller = tester
+        .widget<TextField>(find.byType(TextField))
+        .controller;
+    expect(controller!.text.split('\n'), [good, good]);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('mmsi lookup shows MID, country and station type', (
     tester,
   ) async {

@@ -71,6 +71,40 @@ void main() {
     expect(inspectChecksum('hello world'), isNull);
   });
 
+  test('checksumReport never returns null and XoRs free text', () {
+    final info = checksumReport('hello world');
+    expect(info.parsed, isFalse);
+    expect(info.declared, isNull);
+    expect(info.valid, isFalse);
+    expect(info.computed, computeNmeaChecksum('hello world'));
+  });
+
+  test('checksumReport accepts \$ talkers that AIS parsing rejects', () {
+    // Real GPS fix from the NMEA documentation.
+    const sentence =
+        r'$GPGGA,210230,3855.4487,N,09446.0071,W,1,07,1.1,370.5,M,-29.5,M,,*7A';
+    final info = checksumReport(sentence);
+    expect(info.parsed, isTrue);
+    expect(info.declared, '7A');
+    expect(info.valid, isTrue);
+  });
+
+  test('checksumReport reports a missing checksum as declared-free', () {
+    final info = checksumReport('!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0');
+    expect(info.parsed, isTrue);
+    expect(info.declared, isNull);
+    expect(info.computed, '5C');
+    expect(info.valid, isFalse);
+  });
+
+  test('fixChecksum repairs a \$ sentence', () {
+    const body = r'GPGGA,210230,3855.4487,N,09446.0071,W,1,07,1.1,370.5,M';
+    expect(
+      fixChecksum('\$$body*00'),
+      endsWith('*${computeNmeaChecksum(body)}'),
+    );
+  });
+
   test('fixChecksum repairs a broken sentence and keeps tag blocks', () {
     final parsed = NmeaSentence.tryParse(
       encodePositionReport(
