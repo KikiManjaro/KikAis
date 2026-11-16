@@ -8,15 +8,20 @@ import 'ais_editor_specs.dart';
 import 'asm_registry.dart';
 import 'boatmanager.dart';
 import 'l10n_ext.dart';
+import 'onboarding/onboarding_tour.dart';
 import 'sim_fleet.dart' show kSimTalkers;
 import 'themes.dart';
 import 'widgets.dart';
 
 class AisEditorPage extends StatefulWidget {
-  final Future<void> Function(String nmea)? onSendToTarget;
+  final Future<void> Function(String nmea)? onSimulateReception;
   final ValueListenable<bool> running;
 
-  const AisEditorPage({super.key, this.onSendToTarget, required this.running});
+  const AisEditorPage({
+    super.key,
+    this.onSimulateReception,
+    required this.running,
+  });
 
   @override
   State<AisEditorPage> createState() => _AisEditorPageState();
@@ -216,22 +221,22 @@ class _AisEditorPageState extends State<AisEditorPage> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.l10n.editorInjected),
+          content: Text(context.l10n.editorAddedToMap),
           duration: const Duration(seconds: 2),
         ),
       );
     }
   }
 
-  Future<void> _sendToTarget() async {
+  Future<void> _simulateReception() async {
     final sentence = _sentence;
-    final onSend = widget.onSendToTarget;
+    final onSend = widget.onSimulateReception;
     if (sentence == null || onSend == null) return;
     await onSend(sentence);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.l10n.editorSentToTarget),
+          content: Text(context.l10n.editorReceptionSimulated),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -600,74 +605,80 @@ class _AisEditorPageState extends State<AisEditorPage> {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                HoverTooltip(
-                  message: context.l10n.tooltipEditorInject,
-                  child: FilledButton.icon(
-                    onPressed: _sentence == null ? null : _inject,
-                    icon: const Icon(Icons.map),
-                    label: Text(context.l10n.editorInjectToMap),
+            onboardingStep(
+              context,
+              OnboardingStep.editorInject,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  HoverTooltip(
+                    message: context.l10n.tooltipEditorAddToMap,
+                    child: FilledButton.icon(
+                      onPressed: _sentence == null ? null : _inject,
+                      icon: const Icon(Icons.map),
+                      label: Text(context.l10n.editorAddToMap),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                ValueListenableBuilder<bool>(
-                  valueListenable: widget.running,
-                  builder: (context, running, _) {
-                    final enabled =
-                        _sentence != null &&
-                        widget.onSendToTarget != null &&
-                        running;
-                    return HoverTooltip(
-                      message: context.l10n.tooltipEditorSend,
-                      child: FilledButton.icon(
-                        onPressed: enabled ? _sendToTarget : null,
-                        icon: const Icon(Icons.send),
-                        label: Text(context.l10n.editorSendToTarget),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  HoverTooltip(
+                    message: context.l10n.tooltipEditorSimulate,
+                    // Works even while the forwarder is stopped: the log, the
+                    // statistics and the map are fed locally, only the
+                    // forwarding needs connected targets.
+                    child: FilledButton.icon(
+                      onPressed:
+                          _sentence == null ||
+                              widget.onSimulateReception == null
+                          ? null
+                          : _simulateReception,
+                      icon: const Icon(Icons.send),
+                      label: Text(context.l10n.editorSimulateReception),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
-            Card(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
+            onboardingStep(
+              context,
+              OnboardingStep.editorCompose,
+              Card(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            context.l10n.editorPreview,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const Spacer(),
+                          CopyIconButton(
+                            text: _sentence ?? '',
+                            message: context.l10n.editorNmeaCopied,
+                            padding: EdgeInsets.zero,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      SelectableText(
+                        _sentence ?? _error ?? '',
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      if (_error != null)
                         Text(
-                          context.l10n.editorPreview,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          _error!,
+                          style: const TextStyle(color: Colors.redAccent),
                         ),
-                        const Spacer(),
-                        CopyIconButton(
-                          text: _sentence ?? '',
-                          message: context.l10n.editorNmeaCopied,
-                          padding: EdgeInsets.zero,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    SelectableText(
-                      _sentence ?? _error ?? '',
-                      style: TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 12,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    if (_error != null)
-                      Text(
-                        _error!,
-                        style: const TextStyle(color: Colors.redAccent),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

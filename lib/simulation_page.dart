@@ -6,6 +6,7 @@ import 'boatmanager.dart';
 import 'l10n/country_names.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'l10n_ext.dart';
+import 'onboarding/onboarding_tour.dart';
 import 'sim_fleet.dart';
 import 'simulator_service.dart';
 import 'themes.dart';
@@ -986,42 +987,50 @@ class _SimulationPageState extends State<SimulationPage> {
             const SizedBox(height: 8),
             ListenableBuilder(
               listenable: sim,
-              builder: (context, _) => Row(
-                children: [
-                  HoverTooltip(
-                    message: context.l10n.tooltipSimApply,
-                    child: FilledButton.icon(
-                      onPressed: sim.generating ? null : _apply,
-                      icon: sim.generating
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.check),
-                      label: Text(
-                        sim.generating
-                            ? context.l10n.simGenerating
-                            : context.l10n.simApplyFleet,
+              builder: (context, _) => onboardingStep(
+                context,
+                OnboardingStep.simulationActions,
+                Row(
+                  children: [
+                    HoverTooltip(
+                      message: context.l10n.tooltipSimApply,
+                      child: FilledButton.icon(
+                        onPressed: sim.generating ? null : _apply,
+                        icon: sim.generating
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.check),
+                        label: Text(
+                          sim.generating
+                              ? context.l10n.simGenerating
+                              : context.l10n.simApplyFleet,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  HoverTooltip(
-                    message: context.l10n.tooltipSimGenerate,
-                    child: OutlinedButton.icon(
-                      onPressed: sim.generating ? null : _regenerate,
-                      icon: sim.generating
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.shuffle),
-                      label: Text(context.l10n.simRegenerateFleet),
+                    const SizedBox(width: 8),
+                    HoverTooltip(
+                      message: context.l10n.tooltipSimGenerate,
+                      child: OutlinedButton.icon(
+                        onPressed: sim.generating ? null : _regenerate,
+                        icon: sim.generating
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.shuffle),
+                        label: Text(context.l10n.simRegenerateFleet),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 16),

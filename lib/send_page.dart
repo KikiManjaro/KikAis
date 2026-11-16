@@ -8,6 +8,7 @@ import 'app_settings.dart';
 import 'forwarder_service.dart';
 import 'host_input_formatter.dart';
 import 'l10n_ext.dart';
+import 'onboarding/onboarding_tour.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'labels.dart';
 import 'port_input_formatter.dart';
@@ -28,10 +29,10 @@ class SendPage extends StatefulWidget {
   });
 
   @override
-  State<SendPage> createState() => _SendPageState();
+  State<SendPage> createState() => SendPageState();
 }
 
-class _SendPageState extends State<SendPage> {
+class SendPageState extends State<SendPage> {
   Future<void> _apply(List<TargetConfig> targets) async {
     final settings = context.read<AppSettings>();
     settings.setTargets(targets);
@@ -60,6 +61,10 @@ class _SendPageState extends State<SendPage> {
   void _editTarget(TargetConfig? target) {
     _showEditor(existing: target);
   }
+
+  /// Opens the destination dialog for the guided tour. The tour closes it
+  /// without saving; the state is public so the shell can reach it.
+  Future<void> openAddDestinationForTour() => _showEditor();
 
   void _toggleCard(TargetConfig target) {
     _upsert(target);
@@ -112,118 +117,124 @@ class _SendPageState extends State<SendPage> {
               !portTaken;
           final scheme = Theme.of(ctx).colorScheme;
 
-          return AlertDialog(
-            title: Text(
-              isNew ? l10n.sendAddDestination : l10n.sendEditDestination,
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(labelText: l10n.fieldName),
-                    onChanged: (_) => setDialogState(() {}),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<ForwardProtocol>(
-                    initialValue: protocol,
-                    mouseCursor: WidgetStateMouseCursor.clickable,
-                    decoration: InputDecoration(labelText: l10n.fieldProtocol),
-                    items: [
-                      for (final p in ForwardProtocol.values)
-                        DropdownMenuItem(
-                          value: p,
-                          child: Text(protocolLabelLocalized(p, l10n)),
-                        ),
-                    ],
-                    onChanged: (p) {
-                      if (p != null) setDialogState(() => protocol = p);
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      _modeHelp(l10n, protocol),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                  if (!isListen) ...[
-                    const SizedBox(height: 12),
+          return onboardingStep(
+            ctx,
+            OnboardingStep.sendDialog,
+            AlertDialog(
+              title: Text(
+                isNew ? l10n.sendAddDestination : l10n.sendEditDestination,
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     TextField(
-                      controller: hostController,
-                      decoration: InputDecoration(
-                        labelText: l10n.fieldRemoteHost,
-                      ),
-                      inputFormatters: [HostInputFormatter()],
+                      controller: nameController,
+                      decoration: InputDecoration(labelText: l10n.fieldName),
                       onChanged: (_) => setDialogState(() {}),
                     ),
-                  ],
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: portController,
-                    decoration: InputDecoration(
-                      labelText: isListen
-                          ? l10n.fieldListenPort
-                          : l10n.fieldRemotePort,
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<ForwardProtocol>(
+                      initialValue: protocol,
+                      mouseCursor: WidgetStateMouseCursor.clickable,
+                      decoration: InputDecoration(
+                        labelText: l10n.fieldProtocol,
+                      ),
+                      items: [
+                        for (final p in ForwardProtocol.values)
+                          DropdownMenuItem(
+                            value: p,
+                            child: Text(protocolLabelLocalized(p, l10n)),
+                          ),
+                      ],
+                      onChanged: (p) {
+                        if (p != null) setDialogState(() => protocol = p);
+                      },
                     ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      PortInputFormatter(),
-                    ],
-                    onChanged: (_) => setDialogState(() {}),
-                  ),
-                  if (portTaken)
                     Padding(
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(
-                        l10n.sendPortInUse,
-                        style: TextStyle(fontSize: 12, color: scheme.error),
+                        _modeHelp(l10n, protocol),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: scheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<NmeaFormat>(
-                    initialValue: sendFormat,
-                    mouseCursor: WidgetStateMouseCursor.clickable,
-                    decoration: InputDecoration(labelText: l10n.sendFormat),
-                    items: [
-                      for (final f in NmeaFormat.values)
-                        DropdownMenuItem(
-                          value: f,
-                          child: Text(nmeaFormatLabelLocalized(f, l10n)),
-                        ),
-                    ],
-                    onChanged: (f) {
-                      if (f != null) setDialogState(() => sendFormat = f);
-                    },
-                  ),
-                  if (sendFormat == NmeaFormat.tag)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: TextField(
-                        controller: tagSourceController,
+                    if (!isListen) ...[
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: hostController,
                         decoration: InputDecoration(
-                          labelText: l10n.fieldTagSourceId,
+                          labelText: l10n.fieldRemoteHost,
+                        ),
+                        inputFormatters: [HostInputFormatter()],
+                        onChanged: (_) => setDialogState(() {}),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: portController,
+                      decoration: InputDecoration(
+                        labelText: isListen
+                            ? l10n.fieldListenPort
+                            : l10n.fieldRemotePort,
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        PortInputFormatter(),
+                      ],
+                      onChanged: (_) => setDialogState(() {}),
+                    ),
+                    if (portTaken)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Text(
+                          l10n.sendPortInUse,
+                          style: TextStyle(fontSize: 12, color: scheme.error),
                         ),
                       ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<NmeaFormat>(
+                      initialValue: sendFormat,
+                      mouseCursor: WidgetStateMouseCursor.clickable,
+                      decoration: InputDecoration(labelText: l10n.sendFormat),
+                      items: [
+                        for (final f in NmeaFormat.values)
+                          DropdownMenuItem(
+                            value: f,
+                            child: Text(nmeaFormatLabelLocalized(f, l10n)),
+                          ),
+                      ],
+                      onChanged: (f) {
+                        if (f != null) setDialogState(() => sendFormat = f);
+                      },
                     ),
-                ],
+                    if (sendFormat == NmeaFormat.tag)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: TextField(
+                          controller: tagSourceController,
+                          decoration: InputDecoration(
+                            labelText: l10n.fieldTagSourceId,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: Text(l10n.fieldCancel),
+                ),
+                FilledButton(
+                  onPressed: canSave ? () => Navigator.pop(ctx, true) : null,
+                  child: Text(isNew ? l10n.fieldAdd : l10n.sendSave),
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(l10n.fieldCancel),
-              ),
-              FilledButton(
-                onPressed: canSave ? () => Navigator.pop(ctx, true) : null,
-                child: Text(isNew ? l10n.fieldAdd : l10n.sendSave),
-              ),
-            ],
           );
         },
       ),
@@ -275,11 +286,15 @@ class _SendPageState extends State<SendPage> {
         actions: [
           ValueListenableBuilder<bool>(
             valueListenable: widget.running,
-            builder: (context, running, _) => HoverTooltip(
-              message: context.l10n.tooltipSendAdd,
-              child: IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: running ? null : () => _showEditor(),
+            builder: (context, running, _) => onboardingStep(
+              context,
+              OnboardingStep.sendAdd,
+              HoverTooltip(
+                message: context.l10n.tooltipSendAdd,
+                child: IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: running ? null : () => _showEditor(),
+                ),
               ),
             ),
           ),

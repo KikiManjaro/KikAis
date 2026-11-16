@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'decoder_tools.dart';
 import 'l10n_ext.dart';
+import 'onboarding/onboarding_tour.dart';
 import 'themes.dart';
 import 'tools/binary_inspector_tool.dart';
 import 'tools/checksum_tool.dart';
@@ -40,9 +41,13 @@ class DecoderPageState extends State<DecoderPage> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _ToolRail(
-            selected: _tool,
-            onSelected: (t) => setState(() => _tool = t),
+          onboardingStep(
+            context,
+            OnboardingStep.toolsRail,
+            _ToolRail(
+              selected: _tool,
+              onSelected: (t) => setState(() => _tool = t),
+            ),
           ),
           const VerticalDivider(width: 1),
           Expanded(

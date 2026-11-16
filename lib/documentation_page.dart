@@ -7,6 +7,7 @@ import 'documentation_widgets.dart';
 import 'l10n/country_names.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'l10n_ext.dart';
+import 'onboarding/onboarding_tour.dart';
 import 'mid_countries.dart';
 import 'nmea_field_breakdown.dart';
 import 'themes.dart';
@@ -216,13 +217,17 @@ class _DocumentationPageState extends State<DocumentationPage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(12),
-                  child: TextField(
-                    onChanged: (v) =>
-                        setState(() => _query = v.trim().toLowerCase()),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      prefixIcon: const Icon(Icons.search, size: 18),
-                      labelText: l10n.docSearchChapters,
+                  child: onboardingStep(
+                    context,
+                    OnboardingStep.docsSearch,
+                    TextField(
+                      onChanged: (v) =>
+                          setState(() => _query = v.trim().toLowerCase()),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        prefixIcon: const Icon(Icons.search, size: 18),
+                        labelText: l10n.docSearchChapters,
+                      ),
                     ),
                   ),
                 ),

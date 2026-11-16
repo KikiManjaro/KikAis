@@ -306,6 +306,306 @@ abstract class AppLocalizations {
   /// **'Send format'**
   String get sendFormat;
 
+  /// No description provided for @onboardingWorkflowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'KikAis in three steps'**
+  String get onboardingWorkflowTitle;
+
+  /// No description provided for @onboardingWorkflowBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The workflow has three steps: 1) pick a data source, 2) press Start, 3) read the map. The next steps walk through them live.'**
+  String get onboardingWorkflowBody;
+
+  /// No description provided for @onboardingSimulationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Try it without any hardware'**
+  String get onboardingSimulationTitle;
+
+  /// No description provided for @onboardingSimulationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'1) The source, offline: tick Simulation to generate a fake fleet. No network, no antenna, nothing to install.'**
+  String get onboardingSimulationBody;
+
+  /// No description provided for @onboardingStartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start reception'**
+  String get onboardingStartTitle;
+
+  /// No description provided for @onboardingStartBody.
+  ///
+  /// In en, this message translates to:
+  /// **'2) Start: this button opens the ticked sources and feeds the map, the log and the statistics. Nothing arrives before you press it.'**
+  String get onboardingStartBody;
+
+  /// No description provided for @onboardingNetworkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive real data'**
+  String get onboardingNetworkTitle;
+
+  /// No description provided for @onboardingNetworkBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The same step with real data: the built-in feeds are public AIS sources, and + adds your own receiver (RTL-SDR, serial, file).'**
+  String get onboardingNetworkBody;
+
+  /// No description provided for @onboardingTabsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The eight tabs'**
+  String get onboardingTabsTitle;
+
+  /// No description provided for @onboardingTabsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Reception (sources and log), Send (forwarding), Map, Editor (build a frame), Tools (decode, checksums, converters), Stats, Simulation, Docs (the full reference).'**
+  String get onboardingTabsBody;
+
+  /// No description provided for @onboardingMapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The map'**
+  String get onboardingMapTitle;
+
+  /// No description provided for @onboardingMapBody.
+  ///
+  /// In en, this message translates to:
+  /// **'3) The map: received vessels appear live. The filters narrow by type, status, country or speed, and trails show the recent course.'**
+  String get onboardingMapBody;
+
+  /// No description provided for @onboardingSendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward to another program'**
+  String get onboardingSendTitle;
+
+  /// No description provided for @onboardingSendBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a destination to send frames to a plotter or OpenCPN. Send connects out to a peer; Listen opens a port and serves the clients that connect to it.'**
+  String get onboardingSendBody;
+
+  /// No description provided for @onboardingEditorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a frame'**
+  String get onboardingEditorTitle;
+
+  /// No description provided for @onboardingEditorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The editor builds a complete AIS message: pick the type, fill the fields (or an ASM preset) and the NMEA sentence appears below, ready to copy.'**
+  String get onboardingEditorBody;
+
+  /// No description provided for @onboardingToolsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Decode and verify'**
+  String get onboardingToolsTitle;
+
+  /// No description provided for @onboardingToolsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Eight tools share this tab: the NMEA decoder (paste a sentence and read every field), checksum, MMSI lookup, speed converter, binary inspector, ETA calculator, radio range and text-to-binary.'**
+  String get onboardingToolsBody;
+
+  /// No description provided for @onboardingDocsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The reference'**
+  String get onboardingDocsTitle;
+
+  /// No description provided for @onboardingDocsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The reference: search the chapters, browse the catalogue of the 26 message types (fields, bit layout, decoded example), the six-bit tables, the glossary of AIS terms and the known pitfalls. “Open in decoder” sends any sample straight to the Tools tab.'**
+  String get onboardingDocsBody;
+
+  /// No description provided for @onboardingIntroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to KikAis'**
+  String get onboardingIntroTitle;
+
+  /// No description provided for @onboardingIntroBody.
+  ///
+  /// In en, this message translates to:
+  /// **'KikAis is an AIS hub: it receives NMEA streams from the network, files, serial ports or an RTL-SDR dongle, decodes them, plots the vessels and can forward everything to another program. This tour walks through the whole app - skip it whenever you want, and replay it from the title bar.'**
+  String get onboardingIntroBody;
+
+  /// No description provided for @onboardingAddSourceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your own source here: public AIS feeds, a recorded file, a serial receiver or an RTL-SDR dongle. Each type has its own settings and its own port.'**
+  String get onboardingAddSourceBody;
+
+  /// No description provided for @onboardingAddSourceDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The dialog adapts to the type: host/port and an optional watch header for network feeds, path and speed for a file, port and baud rate for serial, device, gain and channels for the SDR. Nothing is added until you confirm.'**
+  String get onboardingAddSourceDialogBody;
+
+  /// No description provided for @onboardingReceptionOptionsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'How incoming frames are normalised: keep them as received, strip NMEA 4.0 tag blocks, or add your own source tag. Just below, the switch enables checksum validation.'**
+  String get onboardingReceptionOptionsBody;
+
+  /// No description provided for @onboardingLogAreaBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The live log: every frame, colour-coded by channel, with its source, timestamp and a copy button on each line.'**
+  String get onboardingLogAreaBody;
+
+  /// No description provided for @onboardingLogToolbarBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the session to a text file, clear the log, and filter what it shows: icons, timestamps, feed names, or hide the status lines.'**
+  String get onboardingLogToolbarBody;
+
+  /// No description provided for @onboardingMapSearchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Search a vessel by MMSI or name and jump straight to it on the map.'**
+  String get onboardingMapSearchBody;
+
+  /// No description provided for @onboardingMapFiltersBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Narrow the map down: vessel type, navigation status, country and speed range.'**
+  String get onboardingMapFiltersBody;
+
+  /// No description provided for @onboardingMapFiltersDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters combine: pick a ship type, a status, a country or a speed window. Reset clears all of them at once.'**
+  String get onboardingMapFiltersDialogBody;
+
+  /// No description provided for @onboardingMapTrailsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Trails draw each vessel\'s recent course; the cluster button groups the markers when the area gets crowded.'**
+  String get onboardingMapTrailsBody;
+
+  /// No description provided for @onboardingMapSendToMapBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the received vessels on the map. Handy when decoding is done by an external tool and KikAis only forwards.'**
+  String get onboardingMapSendToMapBody;
+
+  /// No description provided for @onboardingSendAddBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A destination is where the frames are forwarded: a chart plotter, OpenCPN, another hub. Add one per receiving program.'**
+  String get onboardingSendAddBody;
+
+  /// No description provided for @onboardingSendDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the role: “send” connects to a remote host and port; “listen” opens a port and serves the clients that connect. Each destination can rewrite the frames with a tag block.'**
+  String get onboardingSendDialogBody;
+
+  /// No description provided for @onboardingEditorInjectBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to the map only decodes the frame locally. Simulate a reception feeds it through the real pipeline: log, statistics, map and forwarding to the destinations.'**
+  String get onboardingEditorInjectBody;
+
+  /// No description provided for @onboardingStatsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Message rate, breakdown by type and by feed, error counters and one minute of history. The eye pauses decoding; the circular arrow resets every counter.'**
+  String get onboardingStatsBody;
+
+  /// No description provided for @onboardingSimulationActionsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a fake fleet: how many vessels, which types, the area, the speeds and the messages they emit. Apply rebuilds it now; the shuffle button regenerates it while the simulation runs.'**
+  String get onboardingSimulationActionsBody;
+
+  /// No description provided for @onboardingDocsSearchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Search the chapters, then read the message catalogue, the bit layouts, the glossary and the known pitfalls. The help icon in the title bar replays this tour.'**
+  String get onboardingDocsSearchBody;
+
+  /// No description provided for @onboardingAddSourceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your own source'**
+  String get onboardingAddSourceTitle;
+
+  /// No description provided for @onboardingLogToolsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log tools'**
+  String get onboardingLogToolsTitle;
+
+  /// No description provided for @onboardingMapFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter the map'**
+  String get onboardingMapFilterTitle;
+
+  /// No description provided for @onboardingTestFrameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Test the frame'**
+  String get onboardingTestFrameTitle;
+
+  /// No description provided for @onboardingReplayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay the tour'**
+  String get onboardingReplayTitle;
+
+  /// No description provided for @onboardingReplayBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This icon in the title bar replays the whole tour whenever you want. It never starts by itself again, not even after an update, so you can explore at your own pace.'**
+  String get onboardingReplayBody;
+
+  /// No description provided for @onboardingFinaleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enjoy KikAis!'**
+  String get onboardingFinaleTitle;
+
+  /// No description provided for @onboardingFinaleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'KikAis is ready. Have fun!'**
+  String get onboardingFinaleBody;
+
+  /// No description provided for @onboardingFinaleClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get onboardingFinaleClose;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip the tour'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingReplayTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay the guided tour'**
+  String get onboardingReplayTooltip;
+
   /// No description provided for @sendSave.
   ///
   /// In en, this message translates to:
@@ -2729,17 +3029,17 @@ abstract class AppLocalizations {
   /// **'Source ID'**
   String get editorSourceId;
 
-  /// No description provided for @editorInjectToMap.
+  /// No description provided for @editorAddToMap.
   ///
   /// In en, this message translates to:
-  /// **'Inject to map'**
-  String get editorInjectToMap;
+  /// **'Add to the map only'**
+  String get editorAddToMap;
 
-  /// No description provided for @editorSendToTarget.
+  /// No description provided for @editorSimulateReception.
   ///
   /// In en, this message translates to:
-  /// **'Send to target'**
-  String get editorSendToTarget;
+  /// **'Simulate a reception'**
+  String get editorSimulateReception;
 
   /// No description provided for @editorPreview.
   ///
@@ -2753,17 +3053,17 @@ abstract class AppLocalizations {
   /// **'NMEA copied'**
   String get editorNmeaCopied;
 
-  /// No description provided for @editorInjected.
+  /// No description provided for @editorAddedToMap.
   ///
   /// In en, this message translates to:
-  /// **'Message injected'**
-  String get editorInjected;
+  /// **'Frame added to the map'**
+  String get editorAddedToMap;
 
-  /// No description provided for @editorSentToTarget.
+  /// No description provided for @editorReceptionSimulated.
   ///
   /// In en, this message translates to:
-  /// **'Message sent to target'**
-  String get editorSentToTarget;
+  /// **'Reception simulated: logged and forwarded'**
+  String get editorReceptionSimulated;
 
   /// No description provided for @editorNavStatus0_15.
   ///
@@ -6586,17 +6886,17 @@ abstract class AppLocalizations {
   /// **'Opens this section in its own tab.'**
   String get tooltipDocOpenTab;
 
-  /// No description provided for @tooltipEditorInject.
+  /// No description provided for @tooltipEditorAddToMap.
   ///
   /// In en, this message translates to:
-  /// **'Injects the composed message into the decoder as if it had been received.'**
-  String get tooltipEditorInject;
+  /// **'Decodes the frame and adds it to the map. No log entry, no statistics, no forwarding.'**
+  String get tooltipEditorAddToMap;
 
-  /// No description provided for @tooltipEditorSend.
+  /// No description provided for @tooltipEditorSimulate.
   ///
   /// In en, this message translates to:
-  /// **'Sends the composed message to every enabled send destination.'**
-  String get tooltipEditorSend;
+  /// **'Feeds the frame through the reception pipeline: log, statistics, map and forwarding to the destinations (only when the forwarder is running).'**
+  String get tooltipEditorSimulate;
 
   /// No description provided for @tooltipCopy.
   ///

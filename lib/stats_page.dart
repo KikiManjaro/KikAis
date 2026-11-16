@@ -8,6 +8,7 @@ import 'boatmanager.dart';
 import 'feed_def.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'l10n_ext.dart';
+import 'onboarding/onboarding_tour.dart';
 import 'message_stats.dart';
 import 'themes.dart';
 import 'widgets.dart';
@@ -110,19 +111,23 @@ class _StatsPageState extends State<StatsPage> {
         actions: [
           HoverTooltip(
             message: context.l10n.tooltipStatsDecode,
-            child: IconButton(
-              icon: Icon(
-                boatManager.decodeEnabled ? Icons.track_changes : Icons.pause,
-                color: boatManager.decodeEnabled
-                    ? Theme.of(context).colorScheme.primary
-                    : null,
+            child: onboardingStep(
+              context,
+              OnboardingStep.statsActions,
+              IconButton(
+                icon: Icon(
+                  boatManager.decodeEnabled ? Icons.track_changes : Icons.pause,
+                  color: boatManager.decodeEnabled
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                onPressed: () {
+                  final next = !boatManager.decodeEnabled;
+                  boatManager.setDecodeEnabled(next);
+                  settings.decodeEnabled = next;
+                  settings.save();
+                },
               ),
-              onPressed: () {
-                final next = !boatManager.decodeEnabled;
-                boatManager.setDecodeEnabled(next);
-                settings.decodeEnabled = next;
-                settings.save();
-              },
             ),
           ),
           HoverTooltip(

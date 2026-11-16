@@ -54,6 +54,7 @@ dependencies:
   http: ^1.2.0
   archive: ^3.6.0
   crypto: ^3.0.0
+  showcaseview: ^5.1.0
 
 dev_dependencies:
   flutter_test:

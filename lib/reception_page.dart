@@ -17,6 +17,7 @@ import 'file_feed_player.dart';
 import 'forwarder_service.dart';
 import 'host_input_formatter.dart';
 import 'l10n_ext.dart';
+import 'onboarding/onboarding_tour.dart';
 import 'labels.dart';
 import 'message_stats.dart';
 import 'nmea_log_text.dart';
@@ -669,10 +670,18 @@ class ReceptionPageState extends State<ReceptionPage>
     }
   }
 
+  /// Opens the add-source dialog for the guided tour. The tour closes it
+  /// without adding anything.
+  Future<void> openAddSourceForTour() => _showAddFeedDialog();
+
   Future<void> _showAddFeedDialog() async {
     final feed = await showDialog<FeedDef>(
       context: context,
-      builder: (_) => const _AddFeedDialog(),
+      builder: (ctx) => onboardingStep(
+        ctx,
+        OnboardingStep.addSourceDialog,
+        const _AddFeedDialog(),
+      ),
     );
 
     if (feed == null || !mounted) return;
@@ -724,30 +733,11 @@ class ReceptionPageState extends State<ReceptionPage>
     _syncFeedSettings();
   }
 
-  /// Sends a raw NMEA sentence to all enabled targets (used by the AIS
-  /// message editor page) and logs it with the "KikAis" source.
-  void sendRaw(String nmea) {
-    forwarderService.sendRaw(nmea);
-    final frame = nmea.trim();
-    if (frame.startsWith('!')) {
-      _archiveFrame(frame, 'KikAis', null);
-    }
-    setState(() {
-      logEntries.add(
-        LogEntry(
-          message: nmea.trim(),
-          starter: "KikAis",
-          name: null,
-          time: DateTime.now(),
-        ),
-      );
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      }
-    });
-  }
+  /// Feeds [nmea] through the reception pipeline as if a feed had just received
+  /// it: import format, journal, statistics, decoding (map) and forwarding to
+  /// the enabled destinations. Used by the editor's "simulate a reception".
+  Future<void> injectReception(String nmea) =>
+      forwarderService.ingest('KikAis', 'KikAis', nmea);
 
   Widget feedIcon(FeedDef feed) {
     if (feed.type == FeedType.serial) {
@@ -800,26 +790,30 @@ class ReceptionPageState extends State<ReceptionPage>
   }
 
   Widget _buildSimFeedTile() {
-    return CheckboxListTile(
-      dense: true,
-      title: Row(
-        children: [
-          Expanded(
-            child: Text(
-              context.l10n.tabSimulation,
-              overflow: TextOverflow.ellipsis,
+    return onboardingStep(
+      context,
+      OnboardingStep.simulationFeed,
+      CheckboxListTile(
+        dense: true,
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                context.l10n.tabSimulation,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-          _FeedStatusDot(
-            statusSource: sim,
-            tick: _statusTick,
-            statusOf: _simFeedStatus,
-          ),
-        ],
+            _FeedStatusDot(
+              statusSource: sim,
+              tick: _statusTick,
+              statusOf: _simFeedStatus,
+            ),
+          ],
+        ),
+        value: feedEnabled[kSimulationFeedKey] ?? false,
+        onChanged: (val) => toggleSimFeed(val ?? false),
+        secondary: const Icon(Icons.science, size: 30),
       ),
-      value: feedEnabled[kSimulationFeedKey] ?? false,
-      onChanged: (val) => toggleSimFeed(val ?? false),
-      secondary: const Icon(Icons.science, size: 30),
     );
   }
 
@@ -976,20 +970,28 @@ class ReceptionPageState extends State<ReceptionPage>
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: SectionHeader(
-                icon: Icons.rss_feed,
-                title: context.l10n.receptionFeeds,
-                trailing: HoverTooltip(
-                  message: context.l10n.tooltipReceptionAddSource,
-                  child: IconButton(
-                    icon: const Icon(Icons.add, size: 18),
-                    visualDensity: VisualDensity.compact,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(
-                      minWidth: 32,
-                      minHeight: 32,
+              child: onboardingStep(
+                context,
+                OnboardingStep.workflow,
+                SectionHeader(
+                  icon: Icons.rss_feed,
+                  title: context.l10n.receptionFeeds,
+                  trailing: HoverTooltip(
+                    message: context.l10n.tooltipReceptionAddSource,
+                    child: onboardingStep(
+                      context,
+                      OnboardingStep.addSourceButton,
+                      IconButton(
+                        icon: const Icon(Icons.add, size: 18),
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
+                        onPressed: _showAddFeedDialog,
+                      ),
                     ),
-                    onPressed: _showAddFeedDialog,
                   ),
                 ),
               ),
@@ -1067,27 +1069,31 @@ class ReceptionPageState extends State<ReceptionPage>
                   const Spacer(),
                   HoverTooltip(
                     message: context.l10n.tooltipReceptionImportFormat,
-                    child: DropdownButton<NmeaFormat>(
-                      value: _importFormat,
-                      mouseCursor: WidgetStateMouseCursor.clickable,
-                      isDense: true,
-                      underline: const SizedBox.shrink(),
-                      items: [
-                        for (final f in NmeaFormat.values)
-                          DropdownMenuItem(
-                            value: f,
-                            child: Text(
-                              nmeaFormatLabelLocalized(f, context.l10n),
-                              style: const TextStyle(fontSize: 12),
+                    child: onboardingStep(
+                      context,
+                      OnboardingStep.receptionOptions,
+                      DropdownButton<NmeaFormat>(
+                        value: _importFormat,
+                        mouseCursor: WidgetStateMouseCursor.clickable,
+                        isDense: true,
+                        underline: const SizedBox.shrink(),
+                        items: [
+                          for (final f in NmeaFormat.values)
+                            DropdownMenuItem(
+                              value: f,
+                              child: Text(
+                                nmeaFormatLabelLocalized(f, context.l10n),
+                                style: const TextStyle(fontSize: 12),
+                              ),
                             ),
-                          ),
-                      ],
-                      onChanged: (f) {
-                        if (f == null) return;
-                        setState(() => _importFormat = f);
-                        forwarderService.importFormat = f;
-                        settings.setImportFormat(f, _importTagSource);
-                      },
+                        ],
+                        onChanged: (f) {
+                          if (f == null) return;
+                          setState(() => _importFormat = f);
+                          forwarderService.importFormat = f;
+                          settings.setImportFormat(f, _importTagSource);
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -1114,36 +1120,42 @@ class ReceptionPageState extends State<ReceptionPage>
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) {
-                    return ScaleTransition(scale: animation, child: child);
-                  },
-                  child: HoverTooltip(
-                    message: isRunning
-                        ? context.l10n.tooltipReceptionStop
-                        : context.l10n.tooltipReceptionStart,
-                    child: ElevatedButton.icon(
-                      key: ValueKey(isRunning),
-                      icon: Icon(isRunning ? Icons.stop : Icons.play_arrow),
-                      label: Text(
-                        isRunning
-                            ? context.l10n.receptionStop
-                            : context.l10n.receptionStart,
+                onboardingStep(
+                  context,
+                  OnboardingStep.startButton,
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (child, animation) {
+                      return ScaleTransition(scale: animation, child: child);
+                    },
+                    child: HoverTooltip(
+                      message: isRunning
+                          ? context.l10n.tooltipReceptionStop
+                          : context.l10n.tooltipReceptionStart,
+                      child: ElevatedButton.icon(
+                        key: ValueKey(isRunning),
+                        icon: Icon(isRunning ? Icons.stop : Icons.play_arrow),
+                        label: Text(
+                          isRunning
+                              ? context.l10n.receptionStop
+                              : context.l10n.receptionStart,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isRunning
+                              ? Colors.red
+                              : Colors.green,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: () {
+                          if (isRunning) {
+                            stopForwarder();
+                            widget.boat.stop();
+                          } else {
+                            startForwarder();
+                            widget.boat.start();
+                          }
+                        },
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isRunning ? Colors.red : Colors.green,
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: () {
-                        if (isRunning) {
-                          stopForwarder();
-                          widget.boat.stop();
-                        } else {
-                          startForwarder();
-                          widget.boat.start();
-                        }
-                      },
                     ),
                   ),
                 ),
@@ -1156,183 +1168,197 @@ class ReceptionPageState extends State<ReceptionPage>
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: Row(
-                      children: [
-                        Text(context.l10n.receptionLogs),
-                        if (settings.logHideStatus && logEntries.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 6),
-                            child: Text(
-                              '(${_visibleLogEntries.length}/${logEntries.length})',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
+                    child: onboardingStep(
+                      context,
+                      OnboardingStep.logToolbar,
+                      Row(
+                        children: [
+                          Text(context.l10n.receptionLogs),
+                          if (settings.logHideStatus && logEntries.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 6),
+                              child: Text(
+                                '(${_visibleLogEntries.length}/${logEntries.length})',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
                               ),
                             ),
+                          const Spacer(),
+                          // Filters
+                          MenuAnchor(
+                            builder: (ctx, controller, child) => HoverTooltip(
+                              message: 'Filtres logs',
+                              child: IconButton(
+                                icon: const Icon(Icons.filter_list),
+                                iconSize: 18,
+                                visualDensity: VisualDensity.compact,
+                                color:
+                                    (settings.logHideStatus ||
+                                        !settings.logShowFeedNames ||
+                                        !settings.logShowTimestamp ||
+                                        !settings.logShowIcons)
+                                    ? Theme.of(context).colorScheme.primary
+                                    : null,
+                                onPressed: () => controller.isOpen
+                                    ? controller.close()
+                                    : controller.open(),
+                              ),
+                            ),
+                            menuChildren: [
+                              CheckboxListTile(
+                                dense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                title: const Text(
+                                  'Afficher icônes',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                subtitle: const Text(
+                                  'drapeaux, simulation…',
+                                  style: TextStyle(fontSize: 10),
+                                ),
+                                value: settings.logShowIcons,
+                                onChanged: (v) {
+                                  if (v == null) return;
+                                  setState(() => settings.setLogShowIcons(v));
+                                },
+                              ),
+                              CheckboxListTile(
+                                dense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                title: const Text(
+                                  'Afficher timestamps',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                value: settings.logShowTimestamp,
+                                onChanged: (v) {
+                                  if (v == null) return;
+                                  setState(
+                                    () => settings.setLogShowTimestamp(v),
+                                  );
+                                },
+                              ),
+                              CheckboxListTile(
+                                dense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                title: const Text(
+                                  'Afficher noms feeds',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                value: settings.logShowFeedNames,
+                                onChanged: (v) {
+                                  if (v == null) return;
+                                  setState(
+                                    () => settings.setLogShowFeedNames(v),
+                                  );
+                                },
+                              ),
+                              CheckboxListTile(
+                                dense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                title: const Text(
+                                  'Masquer états connexion',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                subtitle: const Text(
+                                  'n\'affiche que les trames',
+                                  style: TextStyle(fontSize: 10),
+                                ),
+                                value: settings.logHideStatus,
+                                onChanged: (v) {
+                                  if (v == null) return;
+                                  setState(() => settings.setLogHideStatus(v));
+                                },
+                              ),
+                            ],
                           ),
-                        const Spacer(),
-                        // Filters
-                        MenuAnchor(
-                          builder: (ctx, controller, child) => HoverTooltip(
-                            message: 'Filtres logs',
+                          HoverTooltip(
+                            message: context.l10n.tooltipReceptionSaveLogs,
                             child: IconButton(
-                              icon: const Icon(Icons.filter_list),
+                              icon: const Icon(Icons.save_outlined),
                               iconSize: 18,
                               visualDensity: VisualDensity.compact,
-                              color:
-                                  (settings.logHideStatus ||
-                                      !settings.logShowFeedNames ||
-                                      !settings.logShowTimestamp ||
-                                      !settings.logShowIcons)
-                                  ? Theme.of(context).colorScheme.primary
-                                  : null,
-                              onPressed: () => controller.isOpen
-                                  ? controller.close()
-                                  : controller.open(),
+                              onPressed: saveLogs,
                             ),
                           ),
-                          menuChildren: [
-                            CheckboxListTile(
-                              dense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              title: const Text(
-                                'Afficher icônes',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              subtitle: const Text(
-                                'drapeaux, simulation…',
-                                style: TextStyle(fontSize: 10),
-                              ),
-                              value: settings.logShowIcons,
-                              onChanged: (v) {
-                                if (v == null) return;
-                                setState(() => settings.setLogShowIcons(v));
+                          HoverTooltip(
+                            message: context.l10n.tooltipReceptionClearLogs,
+                            child: IconButton(
+                              icon: const Icon(Icons.delete_outline),
+                              iconSize: 18,
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () async {
+                                await clearLogs();
+                                if (_scrollController.hasClients) {
+                                  _scrollController.jumpTo(0);
+                                }
                               },
                             ),
-                            CheckboxListTile(
-                              dense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              title: const Text(
-                                'Afficher timestamps',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              value: settings.logShowTimestamp,
-                              onChanged: (v) {
-                                if (v == null) return;
-                                setState(() => settings.setLogShowTimestamp(v));
-                              },
-                            ),
-                            CheckboxListTile(
-                              dense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              title: const Text(
-                                'Afficher noms feeds',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              value: settings.logShowFeedNames,
-                              onChanged: (v) {
-                                if (v == null) return;
-                                setState(() => settings.setLogShowFeedNames(v));
-                              },
-                            ),
-                            CheckboxListTile(
-                              dense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              title: const Text(
-                                'Masquer états connexion',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              subtitle: const Text(
-                                'n\'affiche que les trames',
-                                style: TextStyle(fontSize: 10),
-                              ),
-                              value: settings.logHideStatus,
-                              onChanged: (v) {
-                                if (v == null) return;
-                                setState(() => settings.setLogHideStatus(v));
-                              },
-                            ),
-                          ],
-                        ),
-                        HoverTooltip(
-                          message: context.l10n.tooltipReceptionSaveLogs,
-                          child: IconButton(
-                            icon: const Icon(Icons.save_outlined),
-                            iconSize: 18,
-                            visualDensity: VisualDensity.compact,
-                            onPressed: saveLogs,
                           ),
-                        ),
-                        HoverTooltip(
-                          message: context.l10n.tooltipReceptionClearLogs,
-                          child: IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            iconSize: 18,
-                            visualDensity: VisualDensity.compact,
-                            onPressed: () async {
-                              await clearLogs();
-                              if (_scrollController.hasClients) {
-                                _scrollController.jumpTo(0);
-                              }
-                            },
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   Expanded(
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Builder(
-                          builder: (context) {
-                            final visible = _visibleLogEntries;
-                            return ListView.builder(
-                              controller: _scrollController,
-                              padding: const EdgeInsets.only(right: 14),
-                              addAutomaticKeepAlives: false,
-                              addRepaintBoundaries: true,
-                              itemCount: visible.length,
-                              itemBuilder: (context, index) {
-                                final entry = visible[index];
-                                return Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (settings.logShowIcons)
-                                      _buildStarterWidget(entry),
-                                    if (settings.logShowIcons)
-                                      const SizedBox(width: 5),
-                                    Expanded(
-                                      child: NmeaLogText(
-                                        entry: entry,
-                                        showProvider: settings.logShowFeedNames,
-                                        showTimestamp:
-                                            settings.logShowTimestamp,
+                    child: onboardingStep(
+                      context,
+                      OnboardingStep.logArea,
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Builder(
+                            builder: (context) {
+                              final visible = _visibleLogEntries;
+                              return ListView.builder(
+                                controller: _scrollController,
+                                padding: const EdgeInsets.only(right: 14),
+                                addAutomaticKeepAlives: false,
+                                addRepaintBoundaries: true,
+                                itemCount: visible.length,
+                                itemBuilder: (context, index) {
+                                  final entry = visible[index];
+                                  return Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (settings.logShowIcons)
+                                        _buildStarterWidget(entry),
+                                      if (settings.logShowIcons)
+                                        const SizedBox(width: 5),
+                                      Expanded(
+                                        child: NmeaLogText(
+                                          entry: entry,
+                                          showProvider:
+                                              settings.logShowFeedNames,
+                                          showTimestamp:
+                                              settings.logShowTimestamp,
+                                        ),
                                       ),
-                                    ),
-                                    if (entry.message.startsWith('!') ||
-                                        entry.message.contains('!'))
-                                      CopyIconButton(
-                                        text: entry.message,
-                                        message:
-                                            context.l10n.receptionFrameCopied,
-                                        padding: EdgeInsets.zero,
-                                      ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
+                                      if (entry.message.startsWith('!') ||
+                                          entry.message.contains('!'))
+                                        CopyIconButton(
+                                          text: entry.message,
+                                          message:
+                                              context.l10n.receptionFrameCopied,
+                                          padding: EdgeInsets.zero,
+                                        ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),

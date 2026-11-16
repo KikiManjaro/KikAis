@@ -105,6 +105,184 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendFormat => 'Send format';
 
   @override
+  String get onboardingWorkflowTitle => 'KikAis in three steps';
+
+  @override
+  String get onboardingWorkflowBody =>
+      'The workflow has three steps: 1) pick a data source, 2) press Start, 3) read the map. The next steps walk through them live.';
+
+  @override
+  String get onboardingSimulationTitle => 'Try it without any hardware';
+
+  @override
+  String get onboardingSimulationBody =>
+      '1) The source, offline: tick Simulation to generate a fake fleet. No network, no antenna, nothing to install.';
+
+  @override
+  String get onboardingStartTitle => 'Start reception';
+
+  @override
+  String get onboardingStartBody =>
+      '2) Start: this button opens the ticked sources and feeds the map, the log and the statistics. Nothing arrives before you press it.';
+
+  @override
+  String get onboardingNetworkTitle => 'Receive real data';
+
+  @override
+  String get onboardingNetworkBody =>
+      'The same step with real data: the built-in feeds are public AIS sources, and + adds your own receiver (RTL-SDR, serial, file).';
+
+  @override
+  String get onboardingTabsTitle => 'The eight tabs';
+
+  @override
+  String get onboardingTabsBody =>
+      'Reception (sources and log), Send (forwarding), Map, Editor (build a frame), Tools (decode, checksums, converters), Stats, Simulation, Docs (the full reference).';
+
+  @override
+  String get onboardingMapTitle => 'The map';
+
+  @override
+  String get onboardingMapBody =>
+      '3) The map: received vessels appear live. The filters narrow by type, status, country or speed, and trails show the recent course.';
+
+  @override
+  String get onboardingSendTitle => 'Forward to another program';
+
+  @override
+  String get onboardingSendBody =>
+      'Add a destination to send frames to a plotter or OpenCPN. Send connects out to a peer; Listen opens a port and serves the clients that connect to it.';
+
+  @override
+  String get onboardingEditorTitle => 'Build a frame';
+
+  @override
+  String get onboardingEditorBody =>
+      'The editor builds a complete AIS message: pick the type, fill the fields (or an ASM preset) and the NMEA sentence appears below, ready to copy.';
+
+  @override
+  String get onboardingToolsTitle => 'Decode and verify';
+
+  @override
+  String get onboardingToolsBody =>
+      'Eight tools share this tab: the NMEA decoder (paste a sentence and read every field), checksum, MMSI lookup, speed converter, binary inspector, ETA calculator, radio range and text-to-binary.';
+
+  @override
+  String get onboardingDocsTitle => 'The reference';
+
+  @override
+  String get onboardingDocsBody =>
+      'The reference: search the chapters, browse the catalogue of the 26 message types (fields, bit layout, decoded example), the six-bit tables, the glossary of AIS terms and the known pitfalls. “Open in decoder” sends any sample straight to the Tools tab.';
+
+  @override
+  String get onboardingIntroTitle => 'Welcome to KikAis';
+
+  @override
+  String get onboardingIntroBody =>
+      'KikAis is an AIS hub: it receives NMEA streams from the network, files, serial ports or an RTL-SDR dongle, decodes them, plots the vessels and can forward everything to another program. This tour walks through the whole app - skip it whenever you want, and replay it from the title bar.';
+
+  @override
+  String get onboardingAddSourceBody =>
+      'Add your own source here: public AIS feeds, a recorded file, a serial receiver or an RTL-SDR dongle. Each type has its own settings and its own port.';
+
+  @override
+  String get onboardingAddSourceDialogBody =>
+      'The dialog adapts to the type: host/port and an optional watch header for network feeds, path and speed for a file, port and baud rate for serial, device, gain and channels for the SDR. Nothing is added until you confirm.';
+
+  @override
+  String get onboardingReceptionOptionsBody =>
+      'How incoming frames are normalised: keep them as received, strip NMEA 4.0 tag blocks, or add your own source tag. Just below, the switch enables checksum validation.';
+
+  @override
+  String get onboardingLogAreaBody =>
+      'The live log: every frame, colour-coded by channel, with its source, timestamp and a copy button on each line.';
+
+  @override
+  String get onboardingLogToolbarBody =>
+      'Save the session to a text file, clear the log, and filter what it shows: icons, timestamps, feed names, or hide the status lines.';
+
+  @override
+  String get onboardingMapSearchBody =>
+      'Search a vessel by MMSI or name and jump straight to it on the map.';
+
+  @override
+  String get onboardingMapFiltersBody =>
+      'Narrow the map down: vessel type, navigation status, country and speed range.';
+
+  @override
+  String get onboardingMapFiltersDialogBody =>
+      'Filters combine: pick a ship type, a status, a country or a speed window. Reset clears all of them at once.';
+
+  @override
+  String get onboardingMapTrailsBody =>
+      'Trails draw each vessel\'s recent course; the cluster button groups the markers when the area gets crowded.';
+
+  @override
+  String get onboardingMapSendToMapBody =>
+      'Show the received vessels on the map. Handy when decoding is done by an external tool and KikAis only forwards.';
+
+  @override
+  String get onboardingSendAddBody =>
+      'A destination is where the frames are forwarded: a chart plotter, OpenCPN, another hub. Add one per receiving program.';
+
+  @override
+  String get onboardingSendDialogBody =>
+      'Pick the role: “send” connects to a remote host and port; “listen” opens a port and serves the clients that connect. Each destination can rewrite the frames with a tag block.';
+
+  @override
+  String get onboardingEditorInjectBody =>
+      'Add to the map only decodes the frame locally. Simulate a reception feeds it through the real pipeline: log, statistics, map and forwarding to the destinations.';
+
+  @override
+  String get onboardingStatsBody =>
+      'Message rate, breakdown by type and by feed, error counters and one minute of history. The eye pauses decoding; the circular arrow resets every counter.';
+
+  @override
+  String get onboardingSimulationActionsBody =>
+      'Build a fake fleet: how many vessels, which types, the area, the speeds and the messages they emit. Apply rebuilds it now; the shuffle button regenerates it while the simulation runs.';
+
+  @override
+  String get onboardingDocsSearchBody =>
+      'Search the chapters, then read the message catalogue, the bit layouts, the glossary and the known pitfalls. The help icon in the title bar replays this tour.';
+
+  @override
+  String get onboardingAddSourceTitle => 'Add your own source';
+
+  @override
+  String get onboardingLogToolsTitle => 'Log tools';
+
+  @override
+  String get onboardingMapFilterTitle => 'Filter the map';
+
+  @override
+  String get onboardingTestFrameTitle => 'Test the frame';
+
+  @override
+  String get onboardingReplayTitle => 'Replay the tour';
+
+  @override
+  String get onboardingReplayBody =>
+      'This icon in the title bar replays the whole tour whenever you want. It never starts by itself again, not even after an update, so you can explore at your own pace.';
+
+  @override
+  String get onboardingFinaleTitle => 'Enjoy KikAis!';
+
+  @override
+  String get onboardingFinaleBody => 'KikAis is ready. Have fun!';
+
+  @override
+  String get onboardingFinaleClose => 'Close';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingSkip => 'Skip the tour';
+
+  @override
+  String get onboardingReplayTooltip => 'Replay the guided tour';
+
+  @override
   String get sendSave => 'Save';
 
   @override
@@ -1397,10 +1575,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editorSourceId => 'Source ID';
 
   @override
-  String get editorInjectToMap => 'Inject to map';
+  String get editorAddToMap => 'Add to the map only';
 
   @override
-  String get editorSendToTarget => 'Send to target';
+  String get editorSimulateReception => 'Simulate a reception';
 
   @override
   String get editorPreview => 'NMEA preview';
@@ -1409,10 +1587,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editorNmeaCopied => 'NMEA copied';
 
   @override
-  String get editorInjected => 'Message injected';
+  String get editorAddedToMap => 'Frame added to the map';
 
   @override
-  String get editorSentToTarget => 'Message sent to target';
+  String get editorReceptionSimulated =>
+      'Reception simulated: logged and forwarded';
 
   @override
   String get editorNavStatus0_15 => 'Nav status (0-15)';
@@ -3595,12 +3774,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tooltipDocOpenTab => 'Opens this section in its own tab.';
 
   @override
-  String get tooltipEditorInject =>
-      'Injects the composed message into the decoder as if it had been received.';
+  String get tooltipEditorAddToMap =>
+      'Decodes the frame and adds it to the map. No log entry, no statistics, no forwarding.';
 
   @override
-  String get tooltipEditorSend =>
-      'Sends the composed message to every enabled send destination.';
+  String get tooltipEditorSimulate =>
+      'Feeds the frame through the reception pipeline: log, statistics, map and forwarding to the destinations (only when the forwarder is running).';
 
   @override
   String get tooltipCopy => 'Copies the selection to the clipboard.';

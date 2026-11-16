@@ -105,6 +105,184 @@ class AppLocalizationsNl extends AppLocalizations {
   String get sendFormat => 'Verzendindeling';
 
   @override
+  String get onboardingWorkflowTitle => 'KikAis in drie stappen';
+
+  @override
+  String get onboardingWorkflowBody =>
+      'De workflow heeft drie stappen: 1) een databron kiezen, 2) op Start drukken, 3) de kaart lezen. De volgende stappen lopen er live doorheen.';
+
+  @override
+  String get onboardingSimulationTitle => 'Proberen zonder hardware';
+
+  @override
+  String get onboardingSimulationBody =>
+      '1) De bron, offline: vink Simulatie aan voor een fictieve vloot. Geen netwerk, geen antenne, niets te installeren.';
+
+  @override
+  String get onboardingStartTitle => 'Ontvangst starten';
+
+  @override
+  String get onboardingStartBody =>
+      '2) Start: deze knop opent de aangevinkte bronnen en vult de kaart, het logboek en de statistieken. Zonder hem komt er niets binnen.';
+
+  @override
+  String get onboardingNetworkTitle => 'Echte data ontvangen';
+
+  @override
+  String get onboardingNetworkBody =>
+      'Dezelfde stap met echte data: de ingebouwde feeds zijn publieke AIS-bronnen, en + voegt je eigen ontvanger toe (RTL-SDR, serieel, bestand).';
+
+  @override
+  String get onboardingTabsTitle => 'De acht tabbladen';
+
+  @override
+  String get onboardingTabsBody =>
+      'Ontvangst (bronnen en logboek), Verzenden (doorsturen), Kaart, Editor (frame maken), Gereedschap (decoderen, checksums, omrekeningen), Statistieken, Simulatie, Docs (de referentie).';
+
+  @override
+  String get onboardingMapTitle => 'De kaart';
+
+  @override
+  String get onboardingMapBody =>
+      '3) De kaart: ontvangen schepen verschijnen live. De filters beperken op type, status, land of snelheid, en sporen tonen de recente koers.';
+
+  @override
+  String get onboardingSendTitle => 'Doorsturen naar een ander programma';
+
+  @override
+  String get onboardingSendBody =>
+      'Voeg een bestemming toe om frames naar een plotter of OpenCPN te sturen. ‘Verzenden’ verbindt met een peer; ‘Luisteren’ opent een poort en bedient verbonden clients.';
+
+  @override
+  String get onboardingEditorTitle => 'Een frame maken';
+
+  @override
+  String get onboardingEditorBody =>
+      'De editor bouwt een volledig AIS-bericht: kies het type, vul de velden (of een ASM-preset) en de NMEA-zin verschijnt eronder, klaar om te kopiëren.';
+
+  @override
+  String get onboardingToolsTitle => 'Decoderen en controleren';
+
+  @override
+  String get onboardingToolsBody =>
+      'Acht gereedschappen delen dit tabblad: de NMEA-decoder (plak een zin en lees elk veld), checksum, MMSI-zoeken, snelheidsomzetter, binaire inspecteur, ETA-berekening, radiobereik en tekst naar binair.';
+
+  @override
+  String get onboardingDocsTitle => 'De referentie';
+
+  @override
+  String get onboardingDocsBody =>
+      'De referentie: doorzoek de hoofdstukken, bekijk de catalogus van de 26 berichttypes (velden, bitindeling, gedecodeerd voorbeeld), de zes-bittabellen, de AIS-woordenlijst en bekende valkuilen. ‘Openen in decoder’ stuurt een voorbeeld naar Gereedschap.';
+
+  @override
+  String get onboardingIntroTitle => 'Welkom bij KikAis';
+
+  @override
+  String get onboardingIntroBody =>
+      'KikAis is een AIS-hub: hij ontvangt NMEA-stromen van het netwerk, bestanden, seriële poorten of een RTL-SDR-dongle, decodeert ze, zet de schepen op een kaart en kan alles doorsturen naar een ander programma. Deze rondleiding toont de hele app - sla hem over wanneer je wilt en start hem opnieuw vanuit de titelbalk.';
+
+  @override
+  String get onboardingAddSourceBody =>
+      'Voeg hier je eigen bron toe: publieke AIS-feeds, een opgenomen bestand, een seriële ontvanger of een RTL-SDR-dongle. Elk type heeft eigen instellingen en een eigen poort.';
+
+  @override
+  String get onboardingAddSourceDialogBody =>
+      'Het venster past zich aan: host/poort en optionele header voor netwerk, pad en snelheid voor een bestand, poort en baudrate voor serieel, apparaat, gain en kanalen voor de SDR. Niets wordt toegevoegd voor je bevestigt.';
+
+  @override
+  String get onboardingReceptionOptionsBody =>
+      'Hoe inkomende frames worden genormaliseerd: ongewijzigd, zonder NMEA 4.0-tagblok, of met je eigen brontag. Direct daaronder schakelt de knop de checksumcontrole in.';
+
+  @override
+  String get onboardingLogAreaBody =>
+      'Het live logboek: elk frame, gekleurd per kanaal, met bron, tijdstip en een kopieerknop per regel.';
+
+  @override
+  String get onboardingLogToolbarBody =>
+      'Sla de sessie op als tekstbestand, wis het logboek en filter de weergave: pictogrammen, tijdstip, feednamen of statusregels.';
+
+  @override
+  String get onboardingMapSearchBody =>
+      'Zoek een schip op MMSI of naam en spring er direct naartoe op de kaart.';
+
+  @override
+  String get onboardingMapFiltersBody =>
+      'Beperk de kaart: scheepstype, vaarstatus, land en snelheidsbereik.';
+
+  @override
+  String get onboardingMapFiltersDialogBody =>
+      'Filters combineren: type, status, land of snelheidsvenster. Reset wist ze allemaal.';
+
+  @override
+  String get onboardingMapTrailsBody =>
+      'Sporen tekenen de recente koers van elk schip; de clusterknop bundelt de markers bij drukte.';
+
+  @override
+  String get onboardingMapSendToMapBody =>
+      'Toont de ontvangen schepen op de kaart. Handig als een extern programma decodeert en KikAis alleen doorstuurt.';
+
+  @override
+  String get onboardingSendAddBody =>
+      'Een bestemming is waar frames naartoe gaan: een plotter, OpenCPN, een andere hub. Eén per ontvangend programma.';
+
+  @override
+  String get onboardingSendDialogBody =>
+      'Kies de rol: ‘verzenden’ verbindt met een host en poort; ‘luisteren’ opent een poort en bedient clients. Elke bestemming kan de frames herschrijven met een tagblok.';
+
+  @override
+  String get onboardingEditorInjectBody =>
+      '‘Alleen aan de kaart toevoegen’ decodeert het frame lokaal. ‘Ontvangst simuleren’ stuurt het door de echte pijplijn: logboek, statistieken, kaart en doorsturen.';
+
+  @override
+  String get onboardingStatsBody =>
+      'Berichtsnelheid, verdeling per type en feed, foutentellers en een minuut historiek. Het oog pauzeert het decoderen; de ronde pijl zet de tellers op nul.';
+
+  @override
+  String get onboardingSimulationActionsBody =>
+      'Bouw een fictieve vloot: aantal schepen, types, gebied, snelheden en verzonden berichten. Toepassen bouwt direct opnieuw; de shuffle-knop vernieuwt tijdens de simulatie.';
+
+  @override
+  String get onboardingDocsSearchBody =>
+      'Doorzoek de hoofdstukken en lees de berichtcatalogus, bitindelingen, woordenlijst en bekende valkuilen. Het help-icoon start deze tour opnieuw.';
+
+  @override
+  String get onboardingAddSourceTitle => 'Eigen bron toevoegen';
+
+  @override
+  String get onboardingLogToolsTitle => 'Logboekgereedschap';
+
+  @override
+  String get onboardingMapFilterTitle => 'Kaart filteren';
+
+  @override
+  String get onboardingTestFrameTitle => 'Frame testen';
+
+  @override
+  String get onboardingReplayTitle => 'Rondleiding opnieuw';
+
+  @override
+  String get onboardingReplayBody =>
+      'Dit pictogram in de titelbalk start de hele rondleiding wanneer je wilt. Hij begint nooit vanzelf opnieuw, ook niet na een update - verken op je eigen tempo.';
+
+  @override
+  String get onboardingFinaleTitle => 'Veel plezier met KikAis!';
+
+  @override
+  String get onboardingFinaleBody => 'KikAis is klaar. Veel plezier!';
+
+  @override
+  String get onboardingFinaleClose => 'Sluiten';
+
+  @override
+  String get onboardingNext => 'Volgende';
+
+  @override
+  String get onboardingSkip => 'Tour overslaan';
+
+  @override
+  String get onboardingReplayTooltip => 'Rondleiding opnieuw starten';
+
+  @override
   String get sendSave => 'Opslaan';
 
   @override
@@ -1398,10 +1576,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get editorSourceId => 'Bron-id';
 
   @override
-  String get editorInjectToMap => 'In kaart injecteren';
+  String get editorAddToMap => 'Alleen aan de kaart toevoegen';
 
   @override
-  String get editorSendToTarget => 'Naar doel verzenden';
+  String get editorSimulateReception => 'Ontvangst simuleren';
 
   @override
   String get editorPreview => 'NMEA-voorbeeld';
@@ -1410,10 +1588,11 @@ class AppLocalizationsNl extends AppLocalizations {
   String get editorNmeaCopied => 'NMEA gekopieerd';
 
   @override
-  String get editorInjected => 'Bericht geïnjecteerd';
+  String get editorAddedToMap => 'Frame aan de kaart toegevoegd';
 
   @override
-  String get editorSentToTarget => 'Bericht naar doel verzonden';
+  String get editorReceptionSimulated =>
+      'Ontvangst gesimuleerd: gelogd en doorgestuurd';
 
   @override
   String get editorNavStatus0_15 => 'Navigatiestatus (0-15)';
@@ -3605,12 +3784,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get tooltipDocOpenTab => 'Deze sectie in een eigen tabblad openen.';
 
   @override
-  String get tooltipEditorInject =>
-      'Het samengestelde bericht in de decoder injecteren alsof het is ontvangen.';
+  String get tooltipEditorAddToMap =>
+      'Decodeert het frame en zet het op de kaart. Geen logboek, geen statistieken, geen doorsturen.';
 
   @override
-  String get tooltipEditorSend =>
-      'Het samengestelde bericht naar elk ingeschakeld verzenddoel sturen.';
+  String get tooltipEditorSimulate =>
+      'Stuurt het frame door de echte ontvangst: logboek, statistieken, kaart en doorsturen naar de bestemmingen (alleen als de forwarder loopt).';
 
   @override
   String get tooltipCopy => 'Naar het klembord kopiëren.';

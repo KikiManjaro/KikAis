@@ -105,6 +105,184 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sendFormat => 'Формат отправки';
 
   @override
+  String get onboardingWorkflowTitle => 'KikAis за три шага';
+
+  @override
+  String get onboardingWorkflowBody =>
+      'Работа состоит из трёх шагов: 1) выбрать источник данных, 2) нажать «Старт», 3) смотреть карту. Следующие шаги показывают это вживую.';
+
+  @override
+  String get onboardingSimulationTitle => 'Попробовать без оборудования';
+
+  @override
+  String get onboardingSimulationBody =>
+      '1) Источник без сети: отметьте «Симуляция», чтобы создать фиктивный флот. Ни сети, ни антенны, ничего не нужно устанавливать.';
+
+  @override
+  String get onboardingStartTitle => 'Запустить приём';
+
+  @override
+  String get onboardingStartBody =>
+      '2) Старт: кнопка открывает отмеченные источники и питает карту, журнал и статистику. Пока её не нажать, данные не поступают.';
+
+  @override
+  String get onboardingNetworkTitle => 'Получать реальные данные';
+
+  @override
+  String get onboardingNetworkBody =>
+      'Тот же шаг с реальными данными: встроенные потоки - публичные источники AIS, а + добавляет свой приёмник (RTL-SDR, порт, файл).';
+
+  @override
+  String get onboardingTabsTitle => 'Восемь вкладок';
+
+  @override
+  String get onboardingTabsBody =>
+      'Приём (источники и журнал), Отправка (пересылка), Карта, Редактор (собрать кадр), Инструменты (декодирование, контрольные суммы, пересчёт), Статистика, Симуляция, Документация (справочник).';
+
+  @override
+  String get onboardingMapTitle => 'Карта';
+
+  @override
+  String get onboardingMapBody =>
+      '3) Карта: принятые суда показываются в реальном времени. Фильтры ограничивают по типу, статусу, стране или скорости, треки показывают недавний курс.';
+
+  @override
+  String get onboardingSendTitle => 'Пересылка в другую программу';
+
+  @override
+  String get onboardingSendBody =>
+      'Добавьте назначение, чтобы отправлять кадры в плоттер или OpenCPN. «Отправка» подключается к узлу; «Прослушивание» открывает порт и обслуживает подключившихся клиентов.';
+
+  @override
+  String get onboardingEditorTitle => 'Собрать кадр';
+
+  @override
+  String get onboardingEditorBody =>
+      'Редактор собирает полное сообщение AIS: выберите тип, заполните поля (или ASM-пресет), и ниже появится готовый к копированию NMEA.';
+
+  @override
+  String get onboardingToolsTitle => 'Декодировать и проверить';
+
+  @override
+  String get onboardingToolsBody =>
+      'В этой вкладке восемь инструментов: декодер NMEA (вставьте предложение и посмотрите все поля), контрольная сумма, поиск MMSI, перевод скорости, бинарный инспектор, расчёт ETA, дальность радиосвязи и текст в двоичный код.';
+
+  @override
+  String get onboardingDocsTitle => 'Справочник';
+
+  @override
+  String get onboardingDocsBody =>
+      'Справочник: поиск по главам, каталог 26 типов сообщений (поля, битовая раскладка, пример декодирования), шестибитные таблицы, глоссарий AIS и известные подводные камни. «Открыть в декодере» отправляет пример во вкладку Инструменты.';
+
+  @override
+  String get onboardingIntroTitle => 'Добро пожаловать в KikAis';
+
+  @override
+  String get onboardingIntroBody =>
+      'KikAis - это AIS-хаб: принимает потоки NMEA из сети, из файлов, с последовательных портов или с RTL-SDR, декодирует их, показывает суда на карте и может пересылать всё в другую программу. Этот тур показывает всё приложение - его можно пропустить в любой момент и запустить снова из заголовка окна.';
+
+  @override
+  String get onboardingAddSourceBody =>
+      'Здесь добавляется свой источник: публичные AIS-потоки, записанный файл, последовательный приёмник или RTL-SDR. У каждого типа свои настройки и порт.';
+
+  @override
+  String get onboardingAddSourceDialogBody =>
+      'Окно меняется по типу: хост/порт и необязательный заголовок для сети, путь и скорость для файла, порт и скорость для последовательного, устройство, усиление и каналы для SDR. Ничего не добавляется до подтверждения.';
+
+  @override
+  String get onboardingReceptionOptionsBody =>
+      'Как нормализуются входящие кадры: как есть, без тег-блока NMEA 4.0 или со своим тегом источника. Ниже переключатель включает проверку контрольных сумм.';
+
+  @override
+  String get onboardingLogAreaBody =>
+      'Живой журнал: каждый кадр, окрашенный по каналу, с источником, временем и кнопкой копирования в строке.';
+
+  @override
+  String get onboardingLogToolbarBody =>
+      'Сохранить сеанс в текстовый файл, очистить журнал и настроить показ: значки, время, имена потоков или скрыть строки состояния.';
+
+  @override
+  String get onboardingMapSearchBody =>
+      'Найдите судно по MMSI или имени и сразу перейдите к нему на карте.';
+
+  @override
+  String get onboardingMapFiltersBody =>
+      'Сузьте карту: тип судна, навигационный статус, страна и диапазон скорости.';
+
+  @override
+  String get onboardingMapFiltersDialogBody =>
+      'Фильтры складываются: тип, статус, страна или диапазон скорости. «Сброс» очищает всё сразу.';
+
+  @override
+  String get onboardingMapTrailsBody =>
+      'Треки рисуют недавний курс каждого судна; кнопка кластеризации объединяет маркеры при большом числе.';
+
+  @override
+  String get onboardingMapSendToMapBody =>
+      'Показывает принятые суда на карте. Полезно, когда декодирует внешний инструмент, а KikAis только пересылает.';
+
+  @override
+  String get onboardingSendAddBody =>
+      'Назначение - куда уходят кадры: плоттер, OpenCPN, другой хаб. По одному на принимающую программу.';
+
+  @override
+  String get onboardingSendDialogBody =>
+      'Выберите роль: «отправка» подключается к хосту и порту; «прослушивание» открывает порт и обслуживает клиентов. Каждое назначение может переписывать кадры тег-блоком.';
+
+  @override
+  String get onboardingEditorInjectBody =>
+      '«Только добавить на карту» декодирует кадр локально. «Смоделировать приём» пропускает его через настоящий конвейер: журнал, статистика, карта и пересылка.';
+
+  @override
+  String get onboardingStatsBody =>
+      'Скорость сообщений, разбивка по типам и потокам, счётчики ошибок и минута истории. Глаз приостанавливает декодирование, круглая стрелка сбрасывает счётчики.';
+
+  @override
+  String get onboardingSimulationActionsBody =>
+      'Соберите фиктивный флот: число судов, типы, зона, скорости и отправляемые сообщения. «Применить» пересобирает сразу, кнопка перемешивания - во время симуляции.';
+
+  @override
+  String get onboardingDocsSearchBody =>
+      'Ищите по главам и читайте каталог сообщений, битовые раскладки, глоссарий и известные подводные камни. Значок помощи перезапускает тур.';
+
+  @override
+  String get onboardingAddSourceTitle => 'Добавить свой источник';
+
+  @override
+  String get onboardingLogToolsTitle => 'Инструменты журнала';
+
+  @override
+  String get onboardingMapFilterTitle => 'Фильтр карты';
+
+  @override
+  String get onboardingTestFrameTitle => 'Проверить кадр';
+
+  @override
+  String get onboardingReplayTitle => 'Повторить тур';
+
+  @override
+  String get onboardingReplayBody =>
+      'Этот значок в заголовке окна запускает весь тур заново когда угодно. Сам он больше не запускается, даже после обновления - изучайте в своём темпе.';
+
+  @override
+  String get onboardingFinaleTitle => 'Приятной работы с KikAis!';
+
+  @override
+  String get onboardingFinaleBody => 'KikAis готов. Приятной работы!';
+
+  @override
+  String get onboardingFinaleClose => 'Закрыть';
+
+  @override
+  String get onboardingNext => 'Далее';
+
+  @override
+  String get onboardingSkip => 'Пропустить тур';
+
+  @override
+  String get onboardingReplayTooltip => 'Повторить обучение';
+
+  @override
   String get sendSave => 'Сохранить';
 
   @override
@@ -1403,10 +1581,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get editorSourceId => 'ID источника';
 
   @override
-  String get editorInjectToMap => 'Ввести на карту';
+  String get editorAddToMap => 'Только добавить на карту';
 
   @override
-  String get editorSendToTarget => 'Отправить в назначение';
+  String get editorSimulateReception => 'Смоделировать приём';
 
   @override
   String get editorPreview => 'Предпросмотр NMEA';
@@ -1415,10 +1593,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get editorNmeaCopied => 'NMEA скопировано';
 
   @override
-  String get editorInjected => 'Сообщение введено';
+  String get editorAddedToMap => 'Кадр добавлен на карту';
 
   @override
-  String get editorSentToTarget => 'Сообщение отправлено в назначение';
+  String get editorReceptionSimulated =>
+      'Приём смоделирован: записан в журнал и переслан';
 
   @override
   String get editorNavStatus0_15 => 'Нав. статус (0-15)';
@@ -3608,12 +3787,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tooltipDocOpenTab => 'Открыть этот раздел в отдельной вкладке.';
 
   @override
-  String get tooltipEditorInject =>
-      'Вставить составленное сообщение в декодер, как если бы оно было получено.';
+  String get tooltipEditorAddToMap =>
+      'Декодирует кадр и добавляет его на карту. Без журнала, статистики и пересылки.';
 
   @override
-  String get tooltipEditorSend =>
-      'Отправить составленное сообщение на каждый включённый пункт назначения.';
+  String get tooltipEditorSimulate =>
+      'Пропускает кадр через настоящий приём: журнал, статистика, карта и пересылка назначениям (только при запущенном форвардере).';
 
   @override
   String get tooltipCopy => 'Скопировать в буфер обмена.';

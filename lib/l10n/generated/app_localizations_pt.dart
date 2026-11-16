@@ -105,6 +105,184 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sendFormat => 'Formato de envio';
 
   @override
+  String get onboardingWorkflowTitle => 'KikAis em três passos';
+
+  @override
+  String get onboardingWorkflowBody =>
+      'O fluxo tem três passos: 1) escolher uma fonte de dados, 2) carregar em Iniciar, 3) ler o mapa. Os passos seguintes percorrem-no em direto.';
+
+  @override
+  String get onboardingSimulationTitle => 'Experimentar sem hardware';
+
+  @override
+  String get onboardingSimulationBody =>
+      '1) A fonte, offline: marque Simulação para gerar uma frota fictícia. Sem rede, sem antena, nada a instalar.';
+
+  @override
+  String get onboardingStartTitle => 'Iniciar a receção';
+
+  @override
+  String get onboardingStartBody =>
+      '2) Iniciar: este botão abre as fontes marcadas e alimenta o mapa, o registo e as estatísticas. Sem ele nada chega.';
+
+  @override
+  String get onboardingNetworkTitle => 'Receber dados reais';
+
+  @override
+  String get onboardingNetworkBody =>
+      'O mesmo passo com dados reais: os fluxos integrados são fontes AIS públicas, e + acrescenta o seu próprio recetor (RTL-SDR, série, ficheiro).';
+
+  @override
+  String get onboardingTabsTitle => 'Os oito separadores';
+
+  @override
+  String get onboardingTabsBody =>
+      'Receção (fontes e registo), Envio (reencaminhamento), Mapa, Editor (criar uma trama), Ferramentas (descodificar, somas, conversões), Estatísticas, Simulação, Docs (a referência).';
+
+  @override
+  String get onboardingMapTitle => 'O mapa';
+
+  @override
+  String get onboardingMapBody =>
+      '3) O mapa: os navios recebidos aparecem em direto. Os filtros restringem por tipo, estado, país ou velocidade, e os rastos mostram o rumo recente.';
+
+  @override
+  String get onboardingSendTitle => 'Reencaminhar para outro programa';
+
+  @override
+  String get onboardingSendBody =>
+      'Adicione um destino para enviar as tramas a um plotter ou OpenCPN. «Envio» liga-se a um par; «Escuta» abre uma porta e serve os clientes que se ligam.';
+
+  @override
+  String get onboardingEditorTitle => 'Criar uma trama';
+
+  @override
+  String get onboardingEditorBody =>
+      'O editor compõe uma mensagem AIS completa: escolha o tipo, preencha os campos (ou um preset ASM) e a frase NMEA aparece abaixo, pronta a copiar.';
+
+  @override
+  String get onboardingToolsTitle => 'Descodificar e verificar';
+
+  @override
+  String get onboardingToolsBody =>
+      'Oito ferramentas partilham este separador: o descodificador NMEA (cole uma frase e leia cada campo), soma de verificação, pesquisa de MMSI, conversor de velocidade, inspetor binário, cálculo de ETA, alcance rádio e texto para binário.';
+
+  @override
+  String get onboardingDocsTitle => 'A referência';
+
+  @override
+  String get onboardingDocsBody =>
+      'A referência: pesquise nos capítulos, explore o catálogo dos 26 tipos de mensagem (campos, disposição binária, exemplo descodificado), as tabelas de seis bits, o glossário AIS e as armadilhas conhecidas. «Abrir no descodificador» envia um exemplo para Ferramentas.';
+
+  @override
+  String get onboardingIntroTitle => 'Bem-vindo ao KikAis';
+
+  @override
+  String get onboardingIntroBody =>
+      'O KikAis é um hub AIS: recebe fluxos NMEA da rede, de ficheiros, de portas série ou de um RTL-SDR, descodifica-os, coloca os navios num mapa e pode reencaminhar tudo para outro programa. Este tutorial percorre toda a app - ignora-o quando quiseres e repete-o a partir da barra de título.';
+
+  @override
+  String get onboardingAddSourceBody =>
+      'Adicione aqui a sua fonte: fluxos AIS públicos, um ficheiro gravado, um recetor série ou um RTL-SDR. Cada tipo tem as suas definições e a sua porta.';
+
+  @override
+  String get onboardingAddSourceDialogBody =>
+      'A janela adapta-se ao tipo: host/porta e cabeçalho opcional na rede, caminho e velocidade num ficheiro, porta e baudrate no série, dispositivo, ganho e canais no SDR. Nada é adicionado antes de confirmar.';
+
+  @override
+  String get onboardingReceptionOptionsBody =>
+      'Como as tramas recebidas são normalizadas: tal como chegam, sem bloco de tag NMEA 4.0, ou com a sua própria tag de origem. Logo abaixo, o interruptor ativa a verificação de somas.';
+
+  @override
+  String get onboardingLogAreaBody =>
+      'O registo em direto: cada trama, colorida por canal, com a origem, a hora e um botão de cópia em cada linha.';
+
+  @override
+  String get onboardingLogToolbarBody =>
+      'Guarde a sessão num ficheiro de texto, limpe o registo e filtre o que aparece: ícones, hora, nomes de fluxo ou linhas de estado.';
+
+  @override
+  String get onboardingMapSearchBody =>
+      'Procure um navio por MMSI ou nome e salte diretamente para ele no mapa.';
+
+  @override
+  String get onboardingMapFiltersBody =>
+      'Restrinja o mapa: tipo de navio, estado de navegação, país e intervalo de velocidade.';
+
+  @override
+  String get onboardingMapFiltersDialogBody =>
+      'Os filtros combinam-se: tipo, estado, país ou janela de velocidade. Repor limpa todos.';
+
+  @override
+  String get onboardingMapTrailsBody =>
+      'Os rastos desenham o rumo recente de cada navio; o botão de agrupamento junta os marcadores quando há muita densidade.';
+
+  @override
+  String get onboardingMapSendToMapBody =>
+      'Mostra no mapa os navios recebidos. Útil quando a descodificação é feita por outra ferramenta e o KikAis só reencaminha.';
+
+  @override
+  String get onboardingSendAddBody =>
+      'Um destino é para onde vão as tramas: um plotter, o OpenCPN, outro hub. Adicione um por programa recetor.';
+
+  @override
+  String get onboardingSendDialogBody =>
+      'Escolha o papel: «envio» liga-se a um host e porta remotos; «escuta» abre uma porta e serve os clientes que se ligam. Cada destino pode reescrever as tramas com uma tag.';
+
+  @override
+  String get onboardingEditorInjectBody =>
+      '«Apenas adicionar ao mapa» descodifica a trama localmente. «Simular uma receção» fá-la passar pelo processo real: registo, estatísticas, mapa e envio.';
+
+  @override
+  String get onboardingStatsBody =>
+      'Débito de mensagens, repartição por tipo e por fluxo, contadores de erros e um minuto de histórico. O olho pausa a descodificação; a seta circular repõe os contadores.';
+
+  @override
+  String get onboardingSimulationActionsBody =>
+      'Crie uma frota fictícia: número de navios, tipos, zona, velocidades e mensagens emitidas. Aplicar reconstrói já; o botão shuffle regenera durante a simulação.';
+
+  @override
+  String get onboardingDocsSearchBody =>
+      'Pesquise nos capítulos e leia o catálogo de mensagens, os campos binários, o glossário e as armadilhas conhecidas. O ícone de ajuda relança este tutorial.';
+
+  @override
+  String get onboardingAddSourceTitle => 'Adicionar a sua própria fonte';
+
+  @override
+  String get onboardingLogToolsTitle => 'Ferramentas do registo';
+
+  @override
+  String get onboardingMapFilterTitle => 'Filtrar o mapa';
+
+  @override
+  String get onboardingTestFrameTitle => 'Testar a trama';
+
+  @override
+  String get onboardingReplayTitle => 'Repetir o tutorial';
+
+  @override
+  String get onboardingReplayBody =>
+      'Este ícone da barra de título repete o tutorial quando quiser. Nunca recomeça sozinho, nem após uma atualização: explore ao seu ritmo.';
+
+  @override
+  String get onboardingFinaleTitle => 'Divirta-se com o KikAis!';
+
+  @override
+  String get onboardingFinaleBody => 'O KikAis está pronto. Divirta-se!';
+
+  @override
+  String get onboardingFinaleClose => 'Fechar';
+
+  @override
+  String get onboardingNext => 'Seguinte';
+
+  @override
+  String get onboardingSkip => 'Ignorar o tutorial';
+
+  @override
+  String get onboardingReplayTooltip => 'Repetir o tutorial guiado';
+
+  @override
   String get sendSave => 'Guardar';
 
   @override
@@ -1402,10 +1580,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get editorSourceId => 'ID de origem';
 
   @override
-  String get editorInjectToMap => 'Injetar no mapa';
+  String get editorAddToMap => 'Apenas adicionar ao mapa';
 
   @override
-  String get editorSendToTarget => 'Enviar para o destino';
+  String get editorSimulateReception => 'Simular uma receção';
 
   @override
   String get editorPreview => 'Pré-visualização NMEA';
@@ -1414,10 +1592,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get editorNmeaCopied => 'NMEA copiado';
 
   @override
-  String get editorInjected => 'Mensagem injetada';
+  String get editorAddedToMap => 'Trama adicionada ao mapa';
 
   @override
-  String get editorSentToTarget => 'Mensagem enviada para o destino';
+  String get editorReceptionSimulated =>
+      'Receção simulada: registada e reencaminhada';
 
   @override
   String get editorNavStatus0_15 => 'Estado de nav (0-15)';
@@ -3612,12 +3791,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tooltipDocOpenTab => 'Abrir esta secção no seu próprio separador.';
 
   @override
-  String get tooltipEditorInject =>
-      'Injetar a mensagem composta no descodificador como se tivesse sido recebida.';
+  String get tooltipEditorAddToMap =>
+      'Descodifica a trama e adiciona-a ao mapa. Sem registo, sem estatísticas, sem envio.';
 
   @override
-  String get tooltipEditorSend =>
-      'Enviar a mensagem composta para cada destino de envio ativado.';
+  String get tooltipEditorSimulate =>
+      'Faz passar a trama pela receção real: registo, estatísticas, mapa e envio para os destinos (só com o forwarder a correr).';
 
   @override
   String get tooltipCopy => 'Copiar para a área de transferência.';

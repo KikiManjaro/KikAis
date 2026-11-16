@@ -15,37 +15,38 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Send to target is disabled while the forwarder is stopped', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(1400, 1000);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.reset);
-    final running = ValueNotifier<bool>(false);
-    String? sent;
-    await tester.pumpWidget(
-      withLocalizations(
-        AisEditorPage(running: running, onSendToTarget: (s) async => sent = s),
-      ),
-    );
+  testWidgets(
+    'simulate a reception works even while the forwarder is stopped',
+    (tester) async {
+      tester.view.physicalSize = const Size(1400, 1000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      final running = ValueNotifier<bool>(false);
+      String? sent;
+      await tester.pumpWidget(
+        withLocalizations(
+          AisEditorPage(
+            running: running,
+            onSimulateReception: (s) async => sent = s,
+          ),
+        ),
+      );
 
-    final button = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, 'Send to target'),
-    );
-    expect(button.onPressed, isNull);
+      // The pipeline is fed locally (log, statistics, map); only the forwarding
+      // needs the forwarder, so the button must stay usable while stopped.
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Simulate a reception'),
+      );
+      expect(button.onPressed, isNotNull);
 
-    running.value = true;
-    await tester.pumpAndSettle();
-    final enabled = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, 'Send to target'),
-    );
-    expect(enabled.onPressed, isNotNull);
-
-    await tester.tap(find.widgetWithText(FilledButton, 'Send to target'));
-    await tester.pumpAndSettle();
-    expect(sent, isNotNull);
-    expect(sent, contains('!AIVDM'));
-  });
+      await tester.tap(
+        find.widgetWithText(FilledButton, 'Simulate a reception'),
+      );
+      await tester.pumpAndSettle();
+      expect(sent, isNotNull);
+      expect(sent, contains('!AIVDM'));
+    },
+  );
 
   testWidgets('manual DAC/FID entry (Custom) hides the ASM fields', (
     tester,

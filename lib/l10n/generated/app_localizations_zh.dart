@@ -105,6 +105,179 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sendFormat => '发送格式';
 
   @override
+  String get onboardingWorkflowTitle => 'KikAis 三步上手';
+
+  @override
+  String get onboardingWorkflowBody =>
+      '流程分三步：1) 选择数据源，2) 点击“开始”，3) 查看地图。接下来的步骤会依次演示。';
+
+  @override
+  String get onboardingSimulationTitle => '无需硬件即可试用';
+
+  @override
+  String get onboardingSimulationBody =>
+      '1) 离线数据源：勾选“模拟”即可生成虚拟船队。无需网络、无需天线、无需安装。';
+
+  @override
+  String get onboardingStartTitle => '开始接收';
+
+  @override
+  String get onboardingStartBody =>
+      '2) 开始：此按钮打开已勾选的来源，并驱动地图、日志和统计。未点击前不会收到任何数据。';
+
+  @override
+  String get onboardingNetworkTitle => '接收真实数据';
+
+  @override
+  String get onboardingNetworkBody =>
+      '同一步骤，真实数据：内置数据源是公开的 AIS 源，用 + 可添加自己的接收机（RTL-SDR、串口、文件）。';
+
+  @override
+  String get onboardingTabsTitle => '八个标签页';
+
+  @override
+  String get onboardingTabsBody =>
+      '接收（数据源与日志）、发送（转发）、地图、编辑器（构造报文）、工具（解码、校验和、换算）、统计、模拟、文档（完整参考）。';
+
+  @override
+  String get onboardingMapTitle => '地图';
+
+  @override
+  String get onboardingMapBody =>
+      '3) 地图：收到的船舶实时显示。筛选器可按类型、状态、国家或速度过滤，航迹显示最近的航向。';
+
+  @override
+  String get onboardingSendTitle => '转发到其他程序';
+
+  @override
+  String get onboardingSendBody =>
+      '添加目标即可把报文发送到绘图软件或 OpenCPN。“发送”会连接一个对端；“监听”会打开端口并为接入的客户端提供服务。';
+
+  @override
+  String get onboardingEditorTitle => '构造报文';
+
+  @override
+  String get onboardingEditorBody =>
+      '编辑器会组装完整的 AIS 报文：选择类型、填写字段（或 ASM 预设），NMEA 语句就会显示在下方，可直接复制。';
+
+  @override
+  String get onboardingToolsTitle => '解码与校验';
+
+  @override
+  String get onboardingToolsBody =>
+      '此标签页包含八个工具：NMEA 解码器（粘贴语句查看每个字段）、校验和、MMSI 查询、速度换算、二进制检查器、ETA 计算、作用距离、文本转二进制。';
+
+  @override
+  String get onboardingDocsTitle => '参考文档';
+
+  @override
+  String get onboardingDocsBody =>
+      '参考：搜索章节，浏览 26 种报文目录（字段、位布局、解码示例）、六位表、AIS 术语表和已知陷阱。“在解码器中打开”会把示例直接送到工具页。';
+
+  @override
+  String get onboardingIntroTitle => '欢迎使用 KikAis';
+
+  @override
+  String get onboardingIntroBody =>
+      'KikAis 是一个 AIS 中枢：从网络、文件、串口或 RTL-SDR 接收 NMEA 流，解码后把船舶显示在地图上，并可转发到其他程序。本教程会走遍整个应用——随时可跳过，也能从标题栏重新播放。';
+
+  @override
+  String get onboardingAddSourceBody =>
+      '在这里添加自己的数据源：公开 AIS 源、录制文件、串口接收机或 RTL-SDR。每种类型的设置和端口各不相同。';
+
+  @override
+  String get onboardingAddSourceDialogBody =>
+      '窗口会随类型变化：网络用主机/端口和可选请求头，文件用路径和速度，串口用端口和波特率，SDR 用设备、增益和通道。确认前不会添加任何内容。';
+
+  @override
+  String get onboardingReceptionOptionsBody =>
+      '接收帧的格式化方式：原样保留、去掉 NMEA 4.0 标签块，或加上自己的来源标签。下方开关用于校验和检查。';
+
+  @override
+  String get onboardingLogAreaBody => '实时日志：每一帧按信道着色，带来源、时间戳，每行都有复制按钮。';
+
+  @override
+  String get onboardingLogToolbarBody =>
+      '把会话保存为文本、清空日志，并过滤显示内容：图标、时间戳、数据源名称，或隐藏状态行。';
+
+  @override
+  String get onboardingMapSearchBody => '按 MMSI 或名称搜索船舶，并在地图上直接定位。';
+
+  @override
+  String get onboardingMapFiltersBody => '缩小地图范围：船舶类型、航行状态、国家和速度区间。';
+
+  @override
+  String get onboardingMapFiltersDialogBody =>
+      '筛选器可组合使用：船型、状态、国家或速度区间。重置会一次清空。';
+
+  @override
+  String get onboardingMapTrailsBody => '航迹显示每艘船最近的航向；拥挤时用聚合按钮把标记合并。';
+
+  @override
+  String get onboardingMapSendToMapBody =>
+      '在地图上显示收到的船舶。当解码由外部工具完成、KikAis 只做转发时很有用。';
+
+  @override
+  String get onboardingSendAddBody => '目标是帧的去处：绘图仪、OpenCPN 或另一个中枢。每个接收程序添加一个。';
+
+  @override
+  String get onboardingSendDialogBody =>
+      '选择角色：“发送”连接远程主机和端口；“监听”打开端口并为接入的客户端服务。每个目标都可以用标签块重写帧。';
+
+  @override
+  String get onboardingEditorInjectBody =>
+      '“仅添加到地图”只在本地解码；“模拟接收”让报文走真实流程：日志、统计、地图和转发。';
+
+  @override
+  String get onboardingStatsBody =>
+      '消息速率、按类型和数据源的分布、错误计数以及一分钟历史。眼睛图标暂停解码，环形箭头清零所有计数。';
+
+  @override
+  String get onboardingSimulationActionsBody =>
+      '构建虚拟船队：船舶数量、类型、区域、速度以及发送的报文。“应用”立即重建，随机按钮在模拟过程中重新生成。';
+
+  @override
+  String get onboardingDocsSearchBody =>
+      '搜索章节，并阅读报文目录、位布局、术语表和已知陷阱。标题栏的帮助图标可重新播放本教程。';
+
+  @override
+  String get onboardingAddSourceTitle => '添加自己的数据源';
+
+  @override
+  String get onboardingLogToolsTitle => '日志工具';
+
+  @override
+  String get onboardingMapFilterTitle => '筛选地图';
+
+  @override
+  String get onboardingTestFrameTitle => '测试报文';
+
+  @override
+  String get onboardingReplayTitle => '重新播放教程';
+
+  @override
+  String get onboardingReplayBody =>
+      '标题栏中的此图标可随时重新播放整个教程。它不会自行重启，更新后也不会，你可以按自己的节奏探索。';
+
+  @override
+  String get onboardingFinaleTitle => '尽情使用 KikAis！';
+
+  @override
+  String get onboardingFinaleBody => 'KikAis 已就绪。玩得开心！';
+
+  @override
+  String get onboardingFinaleClose => '关闭';
+
+  @override
+  String get onboardingNext => '下一步';
+
+  @override
+  String get onboardingSkip => '跳过教程';
+
+  @override
+  String get onboardingReplayTooltip => '重新播放引导教程';
+
+  @override
   String get sendSave => '保存';
 
   @override
@@ -1380,10 +1553,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editorSourceId => '源 ID';
 
   @override
-  String get editorInjectToMap => '注入地图';
+  String get editorAddToMap => '仅添加到地图';
 
   @override
-  String get editorSendToTarget => '发送到目标';
+  String get editorSimulateReception => '模拟接收';
 
   @override
   String get editorPreview => 'NMEA 预览';
@@ -1392,10 +1565,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editorNmeaCopied => 'NMEA 已复制';
 
   @override
-  String get editorInjected => '报文已注入';
+  String get editorAddedToMap => '报文已添加到地图';
 
   @override
-  String get editorSentToTarget => '报文已发送到目标';
+  String get editorReceptionSimulated => '已模拟接收：写入日志并转发';
 
   @override
   String get editorNavStatus0_15 => '航行状态（0-15）';
@@ -3449,10 +3622,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tooltipDocOpenTab => '在自己的标签页中打开此部分。';
 
   @override
-  String get tooltipEditorInject => '将组成的消息注入解码器，就像它被接收到一样。';
+  String get tooltipEditorAddToMap => '解码报文并添加到地图。不写日志、不计入统计、不转发。';
 
   @override
-  String get tooltipEditorSend => '将组成的消息发送到每个已启用的发送目标。';
+  String get tooltipEditorSimulate => '让报文走真实接收流程：日志、统计、地图，并在转发器运行时发送到目的地。';
 
   @override
   String get tooltipCopy => '复制到剪贴板。';

@@ -105,6 +105,182 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sendFormat => '送信形式';
 
   @override
+  String get onboardingWorkflowTitle => 'KikAis は 3 ステップ';
+
+  @override
+  String get onboardingWorkflowBody =>
+      'ワークフローは 3 ステップです。1) データソースを選ぶ、2)「開始」を押す、3) 地図を見る。次のステップで実際にたどります。';
+
+  @override
+  String get onboardingSimulationTitle => 'ハードウェアなしで試す';
+
+  @override
+  String get onboardingSimulationBody =>
+      '1) オフラインのソース：「シミュレーション」をチェックすると架空の船団を生成します。ネットワークもアンテナも不要です。';
+
+  @override
+  String get onboardingStartTitle => '受信を開始';
+
+  @override
+  String get onboardingStartBody =>
+      '2) 開始：このボタンがチェックしたソースを開き、地図・ログ・統計にデータを流します。押すまで何も届きません。';
+
+  @override
+  String get onboardingNetworkTitle => '実際のデータを受信';
+
+  @override
+  String get onboardingNetworkBody =>
+      '同じ手順を実データで：内蔵フィードは公開 AIS ソースです。+ で自分の受信機（RTL-SDR・シリアル・ファイル）を追加できます。';
+
+  @override
+  String get onboardingTabsTitle => '8 つのタブ';
+
+  @override
+  String get onboardingTabsBody =>
+      '受信（ソースとログ）、送信（転送）、地図、エディター（フレーム作成）、ツール（デコード・チェックサム・換算）、統計、シミュレーション、ドキュメント（リファレンス）。';
+
+  @override
+  String get onboardingMapTitle => '地図';
+
+  @override
+  String get onboardingMapBody =>
+      '3) 地図：受信した船舶がリアルタイムで表示されます。フィルターで種類・状態・国・速度を絞り込め、航跡で最近の針路が分かります。';
+
+  @override
+  String get onboardingSendTitle => '他のプログラムへ転送';
+
+  @override
+  String get onboardingSendBody =>
+      '出力先を追加すると、プロッターや OpenCPN にフレームを送れます。「送信」は相手に接続し、「待ち受け」はポートを開いて接続してきたクライアントに配信します。';
+
+  @override
+  String get onboardingEditorTitle => 'フレームを作る';
+
+  @override
+  String get onboardingEditorBody =>
+      'エディターは完全な AIS メッセージを組み立てます。種類を選び、項目（または ASM プリセット）を入力すると、コピーできる NMEA 文が下に表示されます。';
+
+  @override
+  String get onboardingToolsTitle => 'デコードと検証';
+
+  @override
+  String get onboardingToolsBody =>
+      'このタブには 8 つのツールがあります：NMEA デコーダー（文を貼り付けて各フィールドを確認）、チェックサム、MMSI 検索、速度換算、バイナリ検査、ETA 計算、通信距離、テキスト→バイナリ。';
+
+  @override
+  String get onboardingDocsTitle => 'リファレンス';
+
+  @override
+  String get onboardingDocsBody =>
+      'リファレンス：章を検索し、26 種類のメッセージ一覧（フィールド・ビット配置・デコード例）、6 ビット表、AIS 用語集、既知の落とし穴を参照できます。「デコーダーで開く」で例をツールタブへ送れます。';
+
+  @override
+  String get onboardingIntroTitle => 'KikAis へようこそ';
+
+  @override
+  String get onboardingIntroBody =>
+      'KikAis は AIS ハブです。ネットワーク・ファイル・シリアルポート・RTL-SDR から NMEA を受信し、デコードして船舶を地図に表示し、他のプログラムへ転送できます。このツアーではアプリ全体を案内します。いつでもスキップでき、タイトルバーから再実行できます。';
+
+  @override
+  String get onboardingAddSourceBody =>
+      'ここから自分のソースを追加できます：公開 AIS、録音ファイル、シリアル受信機、RTL-SDR。種類ごとに設定とポートが異なります。';
+
+  @override
+  String get onboardingAddSourceDialogBody =>
+      '種類に応じて項目が変わります：ネットワークはホスト/ポートと任意ヘッダー、ファイルはパスと速度、シリアルはポートとボーレート、SDR はデバイス・ゲイン・チャンネル。確定するまで追加されません。';
+
+  @override
+  String get onboardingReceptionOptionsBody =>
+      '受信フレームの整形方法：そのまま、NMEA 4.0 タグブロックを削除、独自のソースタグを付与。すぐ下のスイッチでチェックサム検証を有効にします。';
+
+  @override
+  String get onboardingLogAreaBody =>
+      'ライブ履歴：各フレームをチャンネル別に色分けし、ソース・時刻・行ごとのコピーボタンを表示します。';
+
+  @override
+  String get onboardingLogToolbarBody =>
+      'セッションをテキスト保存し、ログを消去し、表示を絞り込みます：アイコン・時刻・フィード名・状態行の非表示。';
+
+  @override
+  String get onboardingMapSearchBody => 'MMSI または名前で船舶を検索し、地図上ですぐに表示します。';
+
+  @override
+  String get onboardingMapFiltersBody => '地図を絞り込みます：船種、航行状態、国、速度範囲。';
+
+  @override
+  String get onboardingMapFiltersDialogBody =>
+      'フィルターは組み合わせ可能：船種・状態・国・速度範囲。「リセット」ですべて解除します。';
+
+  @override
+  String get onboardingMapTrailsBody =>
+      '航跡は各船の最近の針路を描きます。混雑時はクラスターボタンでまとめられます。';
+
+  @override
+  String get onboardingMapSendToMapBody =>
+      '受信した船舶を地図に表示します。外部ツールがデコードし、KikAis は転送のみの場合に便利です。';
+
+  @override
+  String get onboardingSendAddBody =>
+      '出力先はフレームの送り先です：プロッター、OpenCPN、別のハブ。受信するプログラムごとに 1 つ追加します。';
+
+  @override
+  String get onboardingSendDialogBody =>
+      '役割を選びます：「送信」はリモートのホストとポートに接続し、「待ち受け」はポートを開いて接続したクライアントに配信します。各出力先はタグブロックでフレームを書き換えられます。';
+
+  @override
+  String get onboardingEditorInjectBody =>
+      '「地図に追加のみ」はローカルでデコードするだけです。「受信をシミュレート」は実際の経路に流します：ログ・統計・地図・転送。';
+
+  @override
+  String get onboardingStatsBody =>
+      'メッセージレート、種類別・フィード別の内訳、エラー件数、1 分間の履歴。目のアイコンでデコードを一時停止、円形の矢印でカウンターをリセットします。';
+
+  @override
+  String get onboardingSimulationActionsBody =>
+      '仮想船団を作ります：隻数・種類・範囲・速度・送出するメッセージ。「適用」で即時再構築、シャッフルでシミュレーション中に再生成します。';
+
+  @override
+  String get onboardingDocsSearchBody =>
+      '章を検索し、メッセージ一覧・ビット配置・用語集・既知の落とし穴を読めます。タイトルバーのヘルプアイコンでツアーを再実行できます。';
+
+  @override
+  String get onboardingAddSourceTitle => '自分のソースを追加';
+
+  @override
+  String get onboardingLogToolsTitle => 'ログの操作';
+
+  @override
+  String get onboardingMapFilterTitle => '地図を絞り込む';
+
+  @override
+  String get onboardingTestFrameTitle => 'フレームを試す';
+
+  @override
+  String get onboardingReplayTitle => 'ツアーを再実行';
+
+  @override
+  String get onboardingReplayBody =>
+      'タイトルバーのこのアイコンで、いつでもツアー全体を再生できます。アップデート後も自動では再開しません。自分のペースで試してください。';
+
+  @override
+  String get onboardingFinaleTitle => 'KikAis をお楽しみください！';
+
+  @override
+  String get onboardingFinaleBody => 'KikAis の準備ができました。お楽しみください！';
+
+  @override
+  String get onboardingFinaleClose => '閉じる';
+
+  @override
+  String get onboardingNext => '次へ';
+
+  @override
+  String get onboardingSkip => 'ツアーをスキップ';
+
+  @override
+  String get onboardingReplayTooltip => 'ガイドツアーを再実行';
+
+  @override
   String get sendSave => '保存';
 
   @override
@@ -1387,10 +1563,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get editorSourceId => 'ソース ID';
 
   @override
-  String get editorInjectToMap => '地図に注入';
+  String get editorAddToMap => '地図に追加のみ';
 
   @override
-  String get editorSendToTarget => '送信先に送信';
+  String get editorSimulateReception => '受信をシミュレート';
 
   @override
   String get editorPreview => 'NMEA プレビュー';
@@ -1399,10 +1575,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get editorNmeaCopied => 'NMEA をコピーしました';
 
   @override
-  String get editorInjected => 'メッセージを注入しました';
+  String get editorAddedToMap => 'フレームを地図に追加しました';
 
   @override
-  String get editorSentToTarget => 'メッセージを送信先に送信しました';
+  String get editorReceptionSimulated => '受信をシミュレートしました：ログ記録と転送';
 
   @override
   String get editorNavStatus0_15 => '航行状態（0-15）';
@@ -3498,10 +3674,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tooltipDocOpenTab => 'このセクションを独自のタブで開きます。';
 
   @override
-  String get tooltipEditorInject => '作成したメッセージを受信したかのようにデコーダーに注入します。';
+  String get tooltipEditorAddToMap => 'フレームをデコードして地図に追加します。ログ・統計・転送は行いません。';
 
   @override
-  String get tooltipEditorSend => '作成したメッセージを有効な各送信先へ送信します。';
+  String get tooltipEditorSimulate =>
+      'フレームを実際の受信経路に流します：ログ・統計・地図、転送が動作中なら送信先へも送ります。';
 
   @override
   String get tooltipCopy => 'クリップボードにコピーします。';

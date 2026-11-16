@@ -33,6 +33,7 @@ class AppSettings extends ChangeNotifier {
   static const _kLogHideStatus = 'logHideStatus';
   static const _kLogShowTimestamp = 'logShowTimestamp';
   static const _kLogShowIcons = 'logShowIcons';
+  static const _kOnboardingVersion = 'onboardingVersion';
 
   bool mapClusterEnabled = true;
   bool sendToMap = false;
@@ -65,6 +66,10 @@ class AppSettings extends ChangeNotifier {
   bool logHideStatus = false;
   bool logShowTimestamp = true;
   bool logShowIcons = true;
+
+  /// Version of the guided tour the user has already seen (0 = never).
+  /// See `kOnboardingVersion` in `lib/onboarding/onboarding_tour.dart`.
+  int onboardingVersion = 0;
 
   void setImportFormat(NmeaFormat format, String tagSource) {
     if (nmeaImportFormat == format && nmeaImportTagSource == tagSource) {
@@ -198,6 +203,7 @@ class AppSettings extends ChangeNotifier {
     logHideStatus = prefs.getBool(_kLogHideStatus) ?? false;
     logShowTimestamp = prefs.getBool(_kLogShowTimestamp) ?? true;
     logShowIcons = prefs.getBool(_kLogShowIcons) ?? true;
+    onboardingVersion = prefs.getInt(_kOnboardingVersion) ?? 0;
 
     notifyListeners();
   }
@@ -249,6 +255,14 @@ class AppSettings extends ChangeNotifier {
   Future<void> saveShowVectors(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kShowVectors, value);
+  }
+
+  /// Records that the guided tour has been seen. Granular on purpose: it is
+  /// called from the tour flow and must not rewrite every preference.
+  Future<void> saveOnboardingVersion(int value) async {
+    onboardingVersion = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_kOnboardingVersion, value);
   }
 
   Future<void> saveMapClusterEnabled(bool value) async {

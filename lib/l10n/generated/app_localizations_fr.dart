@@ -105,6 +105,184 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sendFormat => 'Format d\'envoi';
 
   @override
+  String get onboardingWorkflowTitle => 'KikAis en trois temps';
+
+  @override
+  String get onboardingWorkflowBody =>
+      'Le workflow tient en trois temps : 1) choisir une source de données, 2) appuyer sur Démarrer, 3) lire la carte. Les étapes suivantes le déroulent en direct.';
+
+  @override
+  String get onboardingSimulationTitle => 'Essayer sans matériel';
+
+  @override
+  String get onboardingSimulationBody =>
+      '1) La source, hors ligne : cochez Simulation pour générer une flotte fictive. Aucun réseau, aucune antenne, rien à installer.';
+
+  @override
+  String get onboardingStartTitle => 'Démarrer la réception';
+
+  @override
+  String get onboardingStartBody =>
+      '2) Démarrer : ce bouton ouvre les sources cochées et alimente la carte, le journal et les statistiques. Rien n\'arrive avant.';
+
+  @override
+  String get onboardingNetworkTitle => 'Recevoir de vraies données';
+
+  @override
+  String get onboardingNetworkBody =>
+      'La même étape avec de vraies données : les flux intégrés sont des sources AIS publiques, et + ajoute votre propre récepteur (RTL-SDR, série, fichier).';
+
+  @override
+  String get onboardingTabsTitle => 'Les huit onglets';
+
+  @override
+  String get onboardingTabsBody =>
+      'Réception (sources et journal), Envoi (rediffusion), Carte, Éditeur (fabriquer une trame), Outils (décoder, sommes, conversions), Stats, Simulation, Docs (la référence).';
+
+  @override
+  String get onboardingMapTitle => 'La carte';
+
+  @override
+  String get onboardingMapBody =>
+      '3) La carte : les navires reçus s\'affichent en direct. Les filtres restreignent par type, statut, pays ou vitesse, et les traînées montrent la route récente.';
+
+  @override
+  String get onboardingSendTitle => 'Rediffuser vers un autre logiciel';
+
+  @override
+  String get onboardingSendBody =>
+      'Ajoutez une destination pour envoyer les trames à un plotter ou OpenCPN. « Envoi » se connecte à un pair ; « Écoute » ouvre un port et sert les clients qui s\'y connectent.';
+
+  @override
+  String get onboardingEditorTitle => 'Fabriquer une trame';
+
+  @override
+  String get onboardingEditorBody =>
+      'L\'éditeur compose un message AIS complet : choisissez le type, remplissez les champs (ou un preset ASM) et la phrase NMEA apparaît en dessous, prête à copier.';
+
+  @override
+  String get onboardingToolsTitle => 'Décoder et vérifier';
+
+  @override
+  String get onboardingToolsBody =>
+      'Huit outils partagent cet onglet : le décodeur NMEA (collez une phrase et lisez chaque champ), la somme de contrôle, la recherche MMSI, le convertisseur de vitesse, l\'inspecteur binaire, le calcul d\'ETA, la portée radio et texte vers binaire.';
+
+  @override
+  String get onboardingDocsTitle => 'La référence';
+
+  @override
+  String get onboardingDocsBody =>
+      'La référence : cherchez dans les chapitres, parcourez le catalogue des 26 types de messages (champs, disposition binaire, exemple décodé), les tables six bits, le glossaire AIS et les pièges connus. « Ouvrir dans le décodeur » envoie un exemple directement dans l\'onglet Outils.';
+
+  @override
+  String get onboardingIntroTitle => 'Bienvenue dans KikAis';
+
+  @override
+  String get onboardingIntroBody =>
+      'KikAis est un hub AIS : il reçoit des flux NMEA du réseau, de fichiers, de ports série ou d\'une clé RTL-SDR, les décode, place les navires sur une carte et peut tout rediffuser vers un autre logiciel. Ce tutoriel parcourt toute l\'app - passe-le quand tu veux, et relance-le depuis la barre de titre.';
+
+  @override
+  String get onboardingAddSourceBody =>
+      'Ajoutez ici votre propre source : flux AIS publics, fichier enregistré, récepteur série ou clé RTL-SDR. Chaque type a ses réglages et son port.';
+
+  @override
+  String get onboardingAddSourceDialogBody =>
+      'La fenêtre s\'adapte au type : hôte/port et en-tête de veille optionnel pour le réseau, chemin et vitesse pour un fichier, port et débit pour le série, périphérique, gain et canaux pour le SDR. Rien n\'est ajouté avant validation.';
+
+  @override
+  String get onboardingReceptionOptionsBody =>
+      'Comment les trames reçues sont normalisées : telles quelles, sans bloc de tag NMEA 4.0, ou avec votre propre tag de source. Juste en dessous, l\'interrupteur active la vérification des sommes de contrôle.';
+
+  @override
+  String get onboardingLogAreaBody =>
+      'Le journal en direct : chaque trame, colorée par canal, avec sa source, son horodatage et un bouton de copie sur chaque ligne.';
+
+  @override
+  String get onboardingLogToolbarBody =>
+      'Enregistrez la session dans un fichier texte, videz le journal et filtrez son affichage : icônes, horodatage, noms de flux, ou masquer les lignes de statut.';
+
+  @override
+  String get onboardingMapSearchBody =>
+      'Recherchez un navire par MMSI ou par nom et sautez directement dessus sur la carte.';
+
+  @override
+  String get onboardingMapFiltersBody =>
+      'Restreignez la carte : type de navire, statut de navigation, pays et plage de vitesse.';
+
+  @override
+  String get onboardingMapFiltersDialogBody =>
+      'Les filtres se combinent : type de navire, statut, pays ou fenêtre de vitesse. Réinitialiser les efface tous d\'un coup.';
+
+  @override
+  String get onboardingMapTrailsBody =>
+      'Les traînées dessinent la route récente de chaque navire ; le bouton de regroupement rassemble les marqueurs quand la zone se charge.';
+
+  @override
+  String get onboardingMapSendToMapBody =>
+      'Affiche les navires reçus sur la carte. Utile quand le décodage est fait par un outil externe et que KikAis ne fait que rediffuser.';
+
+  @override
+  String get onboardingSendAddBody =>
+      'Une destination, c\'est là où partent les trames : un traceur, OpenCPN, un autre concentrateur. Ajoutez-en une par logiciel destinataire.';
+
+  @override
+  String get onboardingSendDialogBody =>
+      'Choisissez le rôle : « envoi » se connecte à un hôte et un port distants ; « écoute » ouvre un port et sert les clients qui s\'y connectent. Chaque destination peut réécrire les trames avec un bloc de tag.';
+
+  @override
+  String get onboardingEditorInjectBody =>
+      '« Ajouter à la carte seulement » décode la trame localement. « Simuler une réception » la fait passer par le vrai pipeline : journal, statistiques, carte et envoi aux destinations.';
+
+  @override
+  String get onboardingStatsBody =>
+      'Débit de messages, répartition par type et par flux, compteurs d\'erreurs et une minute d\'historique. L\'œil met le décodage en pause ; la flèche circulaire remet tous les compteurs à zéro.';
+
+  @override
+  String get onboardingSimulationActionsBody =>
+      'Construisez une flotte fictive : nombre de navires, types, zone, vitesses et messages émis. Appliquer la reconstruit tout de suite ; le bouton shuffle la régénère pendant la simulation.';
+
+  @override
+  String get onboardingDocsSearchBody =>
+      'Cherchez dans les chapitres, puis lisez le catalogue des messages, les champs binaires, le glossaire et les pièges connus. L\'icône d\'aide de la barre de titre relance ce tutoriel.';
+
+  @override
+  String get onboardingAddSourceTitle => 'Ajouter votre propre source';
+
+  @override
+  String get onboardingLogToolsTitle => 'Outils du journal';
+
+  @override
+  String get onboardingMapFilterTitle => 'Filtrer la carte';
+
+  @override
+  String get onboardingTestFrameTitle => 'Tester la trame';
+
+  @override
+  String get onboardingReplayTitle => 'Relancer le tutoriel';
+
+  @override
+  String get onboardingReplayBody =>
+      'Cette icône de la barre de titre relance tout le tutoriel quand vous voulez. Il ne redémarre jamais tout seul, même après une mise à jour : vous pouvez explorer à votre rythme.';
+
+  @override
+  String get onboardingFinaleTitle => 'À vous de jouer !';
+
+  @override
+  String get onboardingFinaleBody => 'KikAis est prêt. Amusez-vous bien !';
+
+  @override
+  String get onboardingFinaleClose => 'Fermer';
+
+  @override
+  String get onboardingNext => 'Suivant';
+
+  @override
+  String get onboardingSkip => 'Passer le tutoriel';
+
+  @override
+  String get onboardingReplayTooltip => 'Relancer le tutoriel guidé';
+
+  @override
   String get sendSave => 'Enregistrer';
 
   @override
@@ -1401,10 +1579,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get editorSourceId => 'ID de source';
 
   @override
-  String get editorInjectToMap => 'Injecter dans la carte';
+  String get editorAddToMap => 'Ajouter à la carte seulement';
 
   @override
-  String get editorSendToTarget => 'Envoyer vers la cible';
+  String get editorSimulateReception => 'Simuler une réception';
 
   @override
   String get editorPreview => 'Aperçu NMEA';
@@ -1413,10 +1591,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get editorNmeaCopied => 'NMEA copié';
 
   @override
-  String get editorInjected => 'Message injecté';
+  String get editorAddedToMap => 'Trame ajoutée à la carte';
 
   @override
-  String get editorSentToTarget => 'Message envoyé à la cible';
+  String get editorReceptionSimulated =>
+      'Réception simulée : trame journalisée et diffusée';
 
   @override
   String get editorNavStatus0_15 => 'État de nav (0-15)';
@@ -3617,12 +3796,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tooltipDocOpenTab => 'Ouvre cette section dans son propre onglet.';
 
   @override
-  String get tooltipEditorInject =>
-      'Injecte le message composé dans le décodeur comme s\'il avait été reçu.';
+  String get tooltipEditorAddToMap =>
+      'Décode la trame et l\'ajoute à la carte. Pas de journal, pas de statistiques, pas d\'envoi.';
 
   @override
-  String get tooltipEditorSend =>
-      'Envoie le message composé à chaque destination d\'envoi activée.';
+  String get tooltipEditorSimulate =>
+      'Fait entrer la trame comme une réception réelle : journal, statistiques, carte et envoi aux destinations (seulement si la réception est démarrée).';
 
   @override
   String get tooltipCopy => 'Copie la sélection dans le presse-papiers.';

@@ -12,6 +12,7 @@ import 'boatmanager.dart';
 import 'bubble_boat.dart';
 import 'l10n/country_names.dart';
 import 'l10n_ext.dart';
+import 'onboarding/onboarding_tour.dart';
 import 'mid_countries.dart';
 import 'themes.dart';
 import 'widgets.dart';
@@ -40,10 +41,10 @@ class WorldMapPage extends StatefulWidget {
   const WorldMapPage({super.key, this.tileProvider});
 
   @override
-  State<WorldMapPage> createState() => _WorldMapPageState();
+  State<WorldMapPage> createState() => WorldMapPageState();
 }
 
-class _WorldMapPageState extends State<WorldMapPage> {
+class WorldMapPageState extends State<WorldMapPage> {
   final MapController _mapController = MapController();
   double _zoom = 5.0;
   bool clusterEnabled = true;
@@ -243,6 +244,10 @@ class _WorldMapPageState extends State<WorldMapPage> {
     });
   }
 
+  /// Opens the filter dialog for the guided tour. The tour closes it without
+  /// applying anything.
+  Future<void> openFiltersForTour() => _showFiltersDialog();
+
   Future<void> _showFiltersDialog() async {
     final manager = context.read<BoatManager>();
 
@@ -303,98 +308,102 @@ class _WorldMapPageState extends State<WorldMapPage> {
             );
           }
 
-          return AlertDialog(
-            title: Text(ctx.l10n.mapFilters),
-            content: SizedBox(
-              width: 420,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    buildDropdown<String>(
-                      label: ctx.l10n.mapVesselType,
-                      options: types,
-                      value: draft.vesselType,
-                      labelOf: (t) => t,
-                      onChanged: (v) => draft.vesselType = v,
-                    ),
-                    const SizedBox(height: 12),
-                    buildDropdown<String>(
-                      label: ctx.l10n.mapNavigationStatus,
-                      options: statuses,
-                      value: draft.navigationStatus,
-                      labelOf: (t) => t,
-                      onChanged: (v) => draft.navigationStatus = v,
-                    ),
-                    const SizedBox(height: 12),
-                    buildDropdown<String>(
-                      label: ctx.l10n.mapCountry,
-                      options: countries,
-                      value: draft.country,
-                      labelOf: (t) => localizedCountryName(t, ctx),
-                      onChanged: (v) => draft.country = v,
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: minSogController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: ctx.l10n.mapMinSog,
+          return onboardingStep(
+            ctx,
+            OnboardingStep.mapFiltersDialog,
+            AlertDialog(
+              title: Text(ctx.l10n.mapFilters),
+              content: SizedBox(
+                width: 420,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      buildDropdown<String>(
+                        label: ctx.l10n.mapVesselType,
+                        options: types,
+                        value: draft.vesselType,
+                        labelOf: (t) => t,
+                        onChanged: (v) => draft.vesselType = v,
+                      ),
+                      const SizedBox(height: 12),
+                      buildDropdown<String>(
+                        label: ctx.l10n.mapNavigationStatus,
+                        options: statuses,
+                        value: draft.navigationStatus,
+                        labelOf: (t) => t,
+                        onChanged: (v) => draft.navigationStatus = v,
+                      ),
+                      const SizedBox(height: 12),
+                      buildDropdown<String>(
+                        label: ctx.l10n.mapCountry,
+                        options: countries,
+                        value: draft.country,
+                        labelOf: (t) => localizedCountryName(t, ctx),
+                        onChanged: (v) => draft.country = v,
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: minSogController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: ctx.l10n.mapMinSog,
+                              ),
+                              onChanged: (_) => setDialogState(() {}),
                             ),
-                            onChanged: (_) => setDialogState(() {}),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextField(
-                            controller: maxSogController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: ctx.l10n.mapMaxSog,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextField(
+                              controller: maxSogController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: ctx.l10n.mapMaxSog,
+                              ),
+                              onChanged: (_) => setDialogState(() {}),
                             ),
-                            onChanged: (_) => setDialogState(() {}),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(ctx.l10n.mapOnlyNamed),
-                      value: draft.onlyNamed,
-                      onChanged: (v) =>
-                          setDialogState(() => draft.onlyNamed = v),
-                    ),
-                  ],
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(ctx.l10n.mapOnlyNamed),
+                        value: draft.onlyNamed,
+                        onChanged: (v) =>
+                            setDialogState(() => draft.onlyNamed = v),
+                      ),
+                    ],
+                  ),
                 ),
               ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    draft = MapFilters();
+                    minSogController.clear();
+                    maxSogController.clear();
+                    setDialogState(() {});
+                  },
+                  child: Text(ctx.l10n.mapReset),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(ctx.l10n.fieldCancel),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    draft.minSog = double.tryParse(minSogController.text);
+                    draft.maxSog = double.tryParse(maxSogController.text);
+                    Navigator.pop(ctx);
+                  },
+                  child: Text(ctx.l10n.mapApply),
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  draft = MapFilters();
-                  minSogController.clear();
-                  maxSogController.clear();
-                  setDialogState(() {});
-                },
-                child: Text(ctx.l10n.mapReset),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(ctx.l10n.fieldCancel),
-              ),
-              FilledButton(
-                onPressed: () {
-                  draft.minSog = double.tryParse(minSogController.text);
-                  draft.maxSog = double.tryParse(maxSogController.text);
-                  Navigator.pop(ctx);
-                },
-                child: Text(ctx.l10n.mapApply),
-              ),
-            ],
           );
         },
       ),
@@ -433,23 +442,31 @@ class _WorldMapPageState extends State<WorldMapPage> {
       appBar: AppBar(
         title: Text(context.l10n.tabMap),
         actions: [
-          HoverTooltip(
-            message: context.l10n.tooltipMapSearch,
-            child: IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: _handleSearch,
+          onboardingStep(
+            context,
+            OnboardingStep.mapSearch,
+            HoverTooltip(
+              message: context.l10n.tooltipMapSearch,
+              child: IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: _handleSearch,
+              ),
             ),
           ),
-          HoverTooltip(
-            message: context.l10n.tooltipMapFilters,
-            child: IconButton(
-              icon: Icon(
-                Icons.filter_list,
-                color: _filters.active
-                    ? Theme.of(context).colorScheme.primary
-                    : null,
+          onboardingStep(
+            context,
+            OnboardingStep.mapFilters,
+            HoverTooltip(
+              message: context.l10n.tooltipMapFilters,
+              child: IconButton(
+                icon: Icon(
+                  Icons.filter_list,
+                  color: _filters.active
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                onPressed: _showFiltersDialog,
               ),
-              onPressed: _showFiltersDialog,
             ),
           ),
           HoverTooltip(
@@ -461,16 +478,20 @@ class _WorldMapPageState extends State<WorldMapPage> {
               onPressed: toggleMarkers,
             ),
           ),
-          HoverTooltip(
-            message: context.l10n.tooltipMapTrails,
-            child: IconButton(
-              icon: Icon(
-                settings.showTrails ? Icons.route : Icons.route_outlined,
-                color: settings.showTrails
-                    ? Theme.of(context).colorScheme.primary
-                    : null,
+          onboardingStep(
+            context,
+            OnboardingStep.mapTrails,
+            HoverTooltip(
+              message: context.l10n.tooltipMapTrails,
+              child: IconButton(
+                icon: Icon(
+                  settings.showTrails ? Icons.route : Icons.route_outlined,
+                  color: settings.showTrails
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                onPressed: () => _settings.setShowTrails(!settings.showTrails),
               ),
-              onPressed: () => _settings.setShowTrails(!settings.showTrails),
             ),
           ),
           HoverTooltip(
@@ -485,15 +506,19 @@ class _WorldMapPageState extends State<WorldMapPage> {
               onPressed: () => _settings.setShowVectors(!settings.showVectors),
             ),
           ),
-          HoverTooltip(
-            message: context.l10n.tooltipMapSendToMap,
-            child: IconButton(
-              icon: Icon(
-                boatManager.sendToMap
-                    ? Icons.directions_boat
-                    : Icons.hide_source_rounded,
+          onboardingStep(
+            context,
+            OnboardingStep.mapSendToMap,
+            HoverTooltip(
+              message: context.l10n.tooltipMapSendToMap,
+              child: IconButton(
+                icon: Icon(
+                  boatManager.sendToMap
+                      ? Icons.directions_boat
+                      : Icons.hide_source_rounded,
+                ),
+                onPressed: toggleCompute,
               ),
-              onPressed: toggleCompute,
             ),
           ),
           HoverTooltip(

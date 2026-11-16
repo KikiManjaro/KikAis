@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import 'ais_editor_page.dart';
 import 'app_settings.dart';
@@ -9,6 +12,9 @@ import 'boat_animation.dart';
 import 'decoder_page.dart';
 import 'documentation_page.dart';
 import 'l10n_ext.dart';
+import 'onboarding/onboarding_finale.dart';
+import 'onboarding/onboarding_tour.dart';
+import 'onboarding/tour_cursor.dart';
 import 'reception_page.dart';
 import 'send_page.dart';
 import 'simulation_page.dart';
@@ -34,6 +40,25 @@ class _SwipperUiState extends State<SwipperUi> {
   final GlobalKey<ReceptionPageState> _receptionKey =
       GlobalKey<ReceptionPageState>();
   final GlobalKey<DecoderPageState> _decoderKey = GlobalKey<DecoderPageState>();
+  final GlobalKey<SendPageState> _sendKey = GlobalKey<SendPageState>();
+  final GlobalKey<WorldMapPageState> _mapKey = GlobalKey<WorldMapPageState>();
+
+  /// Drives the guided tour; see [OnboardingController].
+  late final OnboardingController _onboarding = OnboardingController(
+    onTabRequested: _switchTabForTour,
+    onFinished: _onboardingFinished,
+    openDialog: _openTourDialog,
+    closeDialog: _closeTourDialog,
+  );
+  bool _onboardingRegistered = false;
+
+  /// One key per navigation destination: the tour "clicks" them for real so the
+  /// tab-bar animation is visible between two steps.
+  final List<GlobalKey> _tabKeys = List.generate(
+    8,
+    (i) => GlobalKey(debugLabel: 'tab-$i'),
+  );
+  int _syntheticPointer = 9000;
   late final BoatAnimation boat;
   late final ReceptionPage receptionPage;
   late final SendPage sendPage;
@@ -56,14 +81,15 @@ class _SwipperUiState extends State<SwipperUi> {
       running: forwarderRunning,
     );
     sendPage = SendPage(
+      key: _sendKey,
       serviceGetter: () => _receptionKey.currentState?.forwarderService,
       running: forwarderRunning,
     );
-    mapPage = WorldMapPage(key: const PageStorageKey('world_map'));
+    mapPage = WorldMapPage(key: _mapKey);
     editorPage = AisEditorPage(
       running: forwarderRunning,
-      onSendToTarget: (sentence) async {
-        _receptionKey.currentState?.sendRaw(sentence);
+      onSimulateReception: (sentence) async {
+        await _receptionKey.currentState?.injectReception(sentence);
       },
     );
     decoderPage = DecoderPage(key: _decoderKey);
@@ -83,10 +109,193 @@ class _SwipperUiState extends State<SwipperUi> {
 
   @override
   void dispose() {
+    unregisterOnboardingShowcase();
+    _onboarding.dispose();
     boatController.dispose();
     forwarderRunning.dispose();
     _pageController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_onboardingRegistered) return;
+    _onboardingRegistered = true;
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    registerOnboardingShowcase(
+      onComplete: () => _onboarding.advance(),
+      onDismiss: () {
+        // A dismissal that the controller triggered itself is a transition,
+        // not the user skipping the tour.
+        if (_onboarding.isSwitching) return;
+        _onboarding.finish();
+      },
+      actions: [
+        // "Skip" sits on the left of the tooltip, "Next" on the right. Keeping
+        // both inside the bubble avoids the floating button masking the text
+        // when the tooltip is parked at the bottom of the window.
+        TooltipActionButton(
+          type: TooltipDefaultActionType.skip,
+          name: l10n.onboardingSkip,
+          onTap: () => _onboarding.finish(),
+          backgroundColor: scheme.surfaceContainerHighest,
+          textStyle: TextStyle(
+            color: scheme.onSurfaceVariant,
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        ),
+        TooltipActionButton(
+          type: TooltipDefaultActionType.next,
+          name: l10n.onboardingNext,
+          // Drive the sequence ourselves: the package advances a single-key run
+          // by dismissing it, while the tour needs to switch tabs first.
+          onTap: () => _onboarding.advance(),
+          backgroundColor: scheme.primary,
+          textStyle: TextStyle(
+            color: scheme.onPrimary,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 9),
+          tailIcon: ActionButtonIcon(
+            icon: Icon(Icons.arrow_forward, size: 16, color: scheme.onPrimary),
+          ),
+        ),
+      ],
+      actionConfig: TooltipActionConfig(
+        position: TooltipActionPosition.inside,
+        alignment: MainAxisAlignment.spaceBetween,
+        actionGap: 16,
+        gapBetweenContentAndAction: 14,
+      ),
+    );
+
+    // First run only: the flag is independent of the app version, so an update
+    // never replays the tour. The title-bar button replays it on demand.
+    if (context.read<AppSettings>().onboardingVersion >= kOnboardingVersion) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // The bitsdojo window is shown in `doWhenWindowReady`; measuring the
+      // targets before that would produce an overlay on an unmapped window.
+      Future<void>.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) _onboarding.start();
+      });
+    });
+  }
+
+  Future<void> _onboardingFinished(bool completed) async {
+    if (!mounted) return;
+    final settings = context.read<AppSettings>();
+    if (settings.onboardingVersion < kOnboardingVersion) {
+      await settings.saveOnboardingVersion(kOnboardingVersion);
+    }
+    if (!completed || !mounted) return;
+    setState(() => _currentIndex = 0);
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    showOnboardingFinale(context);
+  }
+
+  /// Opens one of the app's real dialogs so the tour can show it. Nothing is
+  /// applied: the tour closes it with [Navigator.pop].
+  Future<void> _openTourDialog(OnboardingDialog dialog) async {
+    switch (dialog) {
+      case OnboardingDialog.addSource:
+        unawaited(
+          _receptionKey.currentState?.openAddSourceForTour() ??
+              Future<void>.value(),
+        );
+      case OnboardingDialog.mapFilters:
+        unawaited(
+          _mapKey.currentState?.openFiltersForTour() ?? Future<void>.value(),
+        );
+      case OnboardingDialog.sendDestination:
+        unawaited(
+          _sendKey.currentState?.openAddDestinationForTour() ??
+              Future<void>.value(),
+        );
+      case OnboardingDialog.none:
+        return;
+    }
+    // Let the route be pushed and laid out before the step is measured.
+    await WidgetsBinding.instance.endOfFrame;
+    await WidgetsBinding.instance.endOfFrame;
+  }
+
+  Future<void> _closeTourDialog() async {
+    if (!mounted) return;
+    final navigator = Navigator.of(context, rootNavigator: true);
+    if (navigator.canPop()) navigator.pop();
+    await WidgetsBinding.instance.endOfFrame;
+  }
+
+  /// Switches the visible page for the tour the way a user would: by tapping
+  /// the real destination, so the tab-bar indicator animates instead of the
+  /// page snapping to the new index.
+  ///
+  /// Falls back to a direct index change when the destination cannot be
+  /// located or the synthetic tap does not land (the tour must never stall).
+  Future<void> _switchTabForTour(int index) async {
+    if (!mounted || index == _currentIndex) return;
+    // The previous overlay was dismissed by the controller; wait for its
+    // removal to reach the render tree, otherwise the tap hits its barrier.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+
+    // Show the click: glide the cursor onto the tab, pulse, then press it.
+    final rect = _tabRect(index);
+    if (rect != null) {
+      _onboarding.cursor.moveTo(rect.center);
+      await Future<void>.delayed(const Duration(milliseconds: 420));
+      if (!mounted) return;
+      _onboarding.cursor.click();
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+      if (!mounted) return;
+    }
+
+    if (!_tapTabDestination(index)) {
+      setState(() => _currentIndex = index);
+      return;
+    }
+    // Let the tap resolve before the next step measures its target.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    if (_currentIndex != index) setState(() => _currentIndex = index);
+  }
+
+  Rect? _tabRect(int index) {
+    if (index < 0 || index >= _tabKeys.length) return null;
+    final box = _tabKeys[index].currentContext?.findRenderObject();
+    if (box is! RenderBox || !box.hasSize) return null;
+    return box.localToGlobal(Offset.zero) & box.size;
+  }
+
+  bool _tapTabDestination(int index) {
+    final rect = _tabRect(index);
+    if (rect == null) return false;
+    final binding = GestureBinding.instance;
+    final pointer = _syntheticPointer++;
+    final center = rect.center;
+    binding.handlePointerEvent(
+      PointerDownEvent(
+        pointer: pointer,
+        position: center,
+        kind: PointerDeviceKind.touch,
+      ),
+    );
+    binding.handlePointerEvent(
+      PointerUpEvent(
+        pointer: pointer,
+        position: center,
+        kind: PointerDeviceKind.touch,
+      ),
+    );
+    return true;
   }
 
   @override
@@ -107,42 +316,51 @@ class _SwipperUiState extends State<SwipperUi> {
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           children: [
+            // Zero-size host for the tour's fake cursor overlay.
+            TourCursorHost(
+              controller: _onboarding.cursor,
+              canDragWindow: () => !_onboarding.isTitleBarStep,
+            ),
             WindowTitleBarBox(
               child: Row(
                 children: [
-                  Row(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(4.0),
-                        child: ImageIcon(
-                          AssetImage("resources/FireBoat2.png"),
-                          size: 26,
+                  onboardingStep(
+                    context,
+                    OnboardingStep.intro,
+                    Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(4.0),
+                          child: ImageIcon(
+                            AssetImage("resources/FireBoat2.png"),
+                            size: 26,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "KikAis",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: onSurface,
-                          decoration: TextDecoration.none,
+                        Text(
+                          "KikAis",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: onSurface,
+                            decoration: TextDecoration.none,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      if (update.updateAvailable)
-                        _UpdateBadge(
-                          version: update.availableVersion,
-                          onPressed: () => update.checkForUpdates(),
+                        const SizedBox(width: 8),
+                        if (update.updateAvailable)
+                          _UpdateBadge(
+                            version: update.availableVersion,
+                            onPressed: () => update.checkForUpdates(),
+                          ),
+                        Text(
+                          'v${widget.version}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: onSurface.withValues(alpha: 0.6),
+                            decoration: TextDecoration.none,
+                          ),
                         ),
-                      Text(
-                        'v${widget.version}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: onSurface.withValues(alpha: 0.6),
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   Expanded(child: Stack(children: [boat, MoveWindow()])),
                   if (update.updatesSupported)
@@ -193,6 +411,25 @@ class _SwipperUiState extends State<SwipperUi> {
                               ),
                             ),
                     ),
+                  Material(
+                    type: MaterialType.transparency,
+                    child: onboardingStep(
+                      context,
+                      OnboardingStep.replayTour,
+                      HoverTooltip(
+                        message: context.l10n.onboardingReplayTooltip,
+                        child: IconButton(
+                          icon: const Icon(Icons.school_outlined, size: 18),
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 4,
+                          ),
+                          onPressed: () => _onboarding.start(),
+                        ),
+                      ),
+                    ),
+                  ),
                   Material(
                     type: MaterialType.transparency,
                     child: PopupMenuButton<String?>(
@@ -316,52 +553,64 @@ class _SwipperUiState extends State<SwipperUi> {
                     ],
                   ),
                 ),
-                bottomNavigationBar: NavigationBar(
-                  selectedIndex: _currentIndex,
-                  onDestinationSelected: (index) =>
-                      setState(() => _currentIndex = index),
-                  destinations: [
-                    NavigationDestination(
-                      icon: const Icon(Icons.radio_outlined),
-                      selectedIcon: const Icon(Icons.radio),
-                      label: context.l10n.tabReception,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.outbox_outlined),
-                      selectedIcon: const Icon(Icons.outbox),
-                      label: context.l10n.tabSend,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.map_outlined),
-                      selectedIcon: const Icon(Icons.map),
-                      label: context.l10n.tabMap,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.edit_note_outlined),
-                      selectedIcon: const Icon(Icons.edit_note),
-                      label: context.l10n.tabEditor,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.manage_search_outlined),
-                      selectedIcon: const Icon(Icons.manage_search),
-                      label: context.l10n.tabTools,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.bar_chart_outlined),
-                      selectedIcon: const Icon(Icons.bar_chart),
-                      label: context.l10n.tabStats,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.bubble_chart_outlined),
-                      selectedIcon: const Icon(Icons.bubble_chart),
-                      label: context.l10n.tabSimulation,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.menu_book_outlined),
-                      selectedIcon: const Icon(Icons.menu_book),
-                      label: context.l10n.tabDocs,
-                    ),
-                  ],
+                bottomNavigationBar: onboardingStep(
+                  context,
+                  OnboardingStep.tabs,
+                  NavigationBar(
+                    selectedIndex: _currentIndex,
+                    onDestinationSelected: (index) =>
+                        setState(() => _currentIndex = index),
+                    destinations: [
+                      NavigationDestination(
+                        key: _tabKeys[0],
+                        icon: const Icon(Icons.radio_outlined),
+                        selectedIcon: const Icon(Icons.radio),
+                        label: context.l10n.tabReception,
+                      ),
+                      NavigationDestination(
+                        key: _tabKeys[1],
+                        icon: const Icon(Icons.outbox_outlined),
+                        selectedIcon: const Icon(Icons.outbox),
+                        label: context.l10n.tabSend,
+                      ),
+                      NavigationDestination(
+                        key: _tabKeys[2],
+                        icon: const Icon(Icons.map_outlined),
+                        selectedIcon: const Icon(Icons.map),
+                        label: context.l10n.tabMap,
+                      ),
+                      NavigationDestination(
+                        key: _tabKeys[3],
+                        icon: const Icon(Icons.edit_note_outlined),
+                        selectedIcon: const Icon(Icons.edit_note),
+                        label: context.l10n.tabEditor,
+                      ),
+                      NavigationDestination(
+                        key: _tabKeys[4],
+                        icon: const Icon(Icons.manage_search_outlined),
+                        selectedIcon: const Icon(Icons.manage_search),
+                        label: context.l10n.tabTools,
+                      ),
+                      NavigationDestination(
+                        key: _tabKeys[5],
+                        icon: const Icon(Icons.bar_chart_outlined),
+                        selectedIcon: const Icon(Icons.bar_chart),
+                        label: context.l10n.tabStats,
+                      ),
+                      NavigationDestination(
+                        key: _tabKeys[6],
+                        icon: const Icon(Icons.bubble_chart_outlined),
+                        selectedIcon: const Icon(Icons.bubble_chart),
+                        label: context.l10n.tabSimulation,
+                      ),
+                      NavigationDestination(
+                        key: _tabKeys[7],
+                        icon: const Icon(Icons.menu_book_outlined),
+                        selectedIcon: const Icon(Icons.menu_book),
+                        label: context.l10n.tabDocs,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
