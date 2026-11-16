@@ -1,4 +1,4 @@
-import 'package:kik_ais/ais/ais_decoder.dart';
+import '../../../ais_decoder.dart';
 import '../../utils/get_int.dart';
 
 /// ITU-R M.1371 Message Type 10 — UTC/Date Inquiry.

@@ -1,5 +1,5 @@
-import 'package:kik_ais/ais/ais_decoder.dart';
-import 'package:kik_ais/ais/src/utils/coordinate_utils.dart';
+import '../../../ais_decoder.dart';
+import '../../utils/coordinate_utils.dart';
 import '../../utils/binary_conversion.dart';
 import '../../utils/get_int.dart';
 

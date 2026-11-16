@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:kik_ais/ais/ais_decoder.dart';
+import 'ais/ais_decoder.dart';
 
 import 'ais_editor_specs.dart' show editorMessageTypeLabel;
 import 'l10n/generated/app_localizations.dart';

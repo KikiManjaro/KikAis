@@ -1,5 +1,5 @@
-import 'package:kik_ais/ais/ais_decoder.dart' show NmeaFormat;
-import 'package:kik_ais/forwarder_service.dart'
+import 'ais/ais_decoder.dart' show NmeaFormat;
+import 'forwarder_service.dart'
     show ForwardProtocol, LogMessage;
 
 import 'l10n/generated/app_localizations.dart';

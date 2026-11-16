@@ -1,4 +1,4 @@
-import 'package:kik_ais/ais/src/utils/get_int.dart';
+import '../../utils/get_int.dart';
 
 import '../../../ais_decoder.dart';
 import '../../utils/binary_conversion.dart';

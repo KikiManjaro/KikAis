@@ -3,7 +3,7 @@ import 'get_int.dart';
 class BinaryConverter {
   //region ROT
   /// Get the ROT of the Vessel
-  @Deprecated("Superseded by getRateOfTurnDirect")
+  @Deprecated('Superseded by getRateOfTurnDirect')
   double getRateOfTurn(String binaryRateOfTurn) {
     return getRateOfTurnDirect(int.parse(binaryRateOfTurn, radix: 2));
   }
@@ -72,7 +72,7 @@ class BinaryConverter {
   //endregion
 
   //region TextBased
-  @Deprecated("Use getTextFromSixBitCharacters instead")
+  @Deprecated('Use getTextFromSixBitCharacters instead')
   String getVesselCallSign(String binaryCallSign) {
     if (binaryCallSign.length % 6 != 0) {
       throw Exception(
@@ -89,7 +89,7 @@ class BinaryConverter {
       segments.add(binaryCallSign.substring(i, i + 6));
     }
 
-    String result = "";
+    String result = '';
 
     for (String segment in segments) {
       int decimalValue = int.parse(segment, radix: 2);
@@ -103,7 +103,7 @@ class BinaryConverter {
   }
 
   ///Get the Name of the Vessel.
-  @Deprecated("Use getTextFromSixBitCharacters instead")
+  @Deprecated('Use getTextFromSixBitCharacters instead')
   String getVesselName(String binaryVesselName) {
     if (binaryVesselName.length % 6 != 0) {
       throw Exception(
@@ -120,7 +120,7 @@ class BinaryConverter {
       segments.add(binaryVesselName.substring(i, i + 6));
     }
 
-    String result = "";
+    String result = '';
 
     for (String segment in segments) {
       int decimalValue = int.parse(segment, radix: 2);
@@ -134,7 +134,7 @@ class BinaryConverter {
   }
 
   ///Function to get the Destination of the Vessel.
-  @Deprecated("Use getTextFromSixBitCharacters instead")
+  @Deprecated('Use getTextFromSixBitCharacters instead')
   String getDestination(String binaryString) {
     // Function to convert a 6-bit binary string to its corresponding ASCII character
     String ais6BitToAscii(String bits) {
@@ -163,7 +163,7 @@ class BinaryConverter {
   }
 
   ///Get the vendorId of the Vessel -> 3 six-bit characters.
-  @Deprecated("Use getTextFromSixBitCharacters instead")
+  @Deprecated('Use getTextFromSixBitCharacters instead')
   String getVendorId(String binaryVendorId) {
     if (binaryVendorId.length % 6 != 0) {
       throw Exception(
@@ -180,7 +180,7 @@ class BinaryConverter {
       segments.add(binaryVendorId.substring(i, i + 6));
     }
 
-    String result = "";
+    String result = '';
 
     for (String segment in segments) {
       int decimalValue = int.parse(segment, radix: 2);
@@ -196,7 +196,7 @@ class BinaryConverter {
 
   //region AISVersion
   ///Function to get the AIS Version of the used System.
-  @Deprecated("Use getAISVersionDirect instead")
+  @Deprecated('Use getAISVersionDirect instead')
   String getAISVersion(String binaryAISVersion) {
     return getAISVersionDirect(int.parse(binaryAISVersion, radix: 2));
   }
@@ -204,9 +204,9 @@ class BinaryConverter {
   ///Function to get the AIS Version of the used System.
   String getAISVersionDirect(int aisVersion) {
     if (aisVersion == 0) {
-      return "ITU1371";
+      return 'ITU1371';
     } else {
-      return "Unknown AIS Version";
+      return 'Unknown AIS Version';
     }
   }
   //endregion
@@ -227,7 +227,7 @@ class BinaryConverter {
 
   //region Vessel Type
   ///Get the Vessel Type.
-  @Deprecated("Superseded by getVesselTypeDirect")
+  @Deprecated('Superseded by getVesselTypeDirect')
   String getVesselType(String binaryVesselType) {
     return getVesselTypeDirect(int.parse(binaryVesselType, radix: 2));
   }
@@ -405,7 +405,7 @@ class BinaryConverter {
 
   //region EPDF Fix Type
   ///Get the EPDF Fix Type.
-  @Deprecated("Superseded by getEPFDFixTypeDirect")
+  @Deprecated('Superseded by getEPFDFixTypeDirect')
   String getEPFDFixType(String binaryEPFDFixType) {
     return getEPFDFixTypeDirect(int.parse(binaryEPFDFixType, radix: 2));
   }
@@ -414,46 +414,46 @@ class BinaryConverter {
   String getEPFDFixTypeDirect(int ePFDFixType) {
     switch (ePFDFixType) {
       case (0):
-        return "Undefined (default)";
+        return 'Undefined (default)';
       case (1):
-        return "GPS";
+        return 'GPS';
       case (2):
-        return "GLONASS";
+        return 'GLONASS';
       case (3):
-        return "Combined GPS/GLONASS";
+        return 'Combined GPS/GLONASS';
       case (4):
-        return "Loran-C";
+        return 'Loran-C';
       case (5):
-        return "Chayka";
+        return 'Chayka';
       case (6):
-        return "Integrated Navigation System";
+        return 'Integrated Navigation System';
       case (7):
-        return "Surveyed";
+        return 'Surveyed';
       case (8):
-        return "Galileo";
+        return 'Galileo';
       case (9):
-        return "Reserved";
+        return 'Reserved';
       case (10):
-        return "Reserved";
+        return 'Reserved';
       case (11):
-        return "Reserved";
+        return 'Reserved';
       case (12):
-        return "Reserved";
+        return 'Reserved';
       case (13):
-        return "Reserved";
+        return 'Reserved';
       case (14):
-        return "Reserved";
+        return 'Reserved';
       case (15):
-        return "Internal GNSS";
+        return 'Internal GNSS';
       default:
-        return "Unknown (not sent)";
+        return 'Unknown (not sent)';
     }
   }
   //endregion
 
   //region Draught
   ///Calculates the Draught of the Vessel.
-  @Deprecated("Superseded by calculateDraughtDirect")
+  @Deprecated('Superseded by calculateDraughtDirect')
   double calculateDraught(String binaryDraught) {
     return calculateDraughtDirect(int.parse(binaryDraught, radix: 2));
   }
@@ -466,7 +466,7 @@ class BinaryConverter {
 
   //region DTE
   ///Checks if DTE is ready.
-  @Deprecated("Superseded by getDTEFunctionDirect")
+  @Deprecated('Superseded by getDTEFunctionDirect')
   String getDTEFunction(String binaryDTE) {
     return getDTEFunctionDirect(int.parse(binaryDTE));
   }
@@ -474,9 +474,9 @@ class BinaryConverter {
   ///Checks if DTE is ready.
   String getDTEFunctionDirect(int dte) {
     if (dte == 1) {
-      return "Data Terminal not Ready (Default)";
+      return 'Data Terminal not Ready (Default)';
     } else {
-      return "Data Terminal Ready";
+      return 'Data Terminal Ready';
     }
   }
   //endregion
@@ -491,68 +491,68 @@ class BinaryConverter {
   String? messageTypeInfoDirect(int messageType) {
     switch (messageType) {
       case (1):
-        return "Position Report Class A";
+        return 'Position Report Class A';
       case (2):
-        return "Position Report Class A (Assigned Schedule)";
+        return 'Position Report Class A (Assigned Schedule)';
       case (3):
-        return "Position Report Class A (Response to interrogation)";
+        return 'Position Report Class A (Response to interrogation)';
       case (4):
-        return "Base Station Report";
+        return 'Base Station Report';
       case (5):
-        return "Static and Voyage Related Data";
+        return 'Static and Voyage Related Data';
       case (6):
-        return "Binary Addressed Message";
+        return 'Binary Addressed Message';
       case (7):
-        return "Binary Acknowledgement";
+        return 'Binary Acknowledgement';
       case (8):
-        return "Binary Broadcast Message";
+        return 'Binary Broadcast Message';
       case (9):
-        return "Standard SAR Aircraft Position Report";
+        return 'Standard SAR Aircraft Position Report';
       case (10):
-        return "UTC and Date Inquiry";
+        return 'UTC and Date Inquiry';
       case (11):
-        return "UTC and Date Response";
+        return 'UTC and Date Response';
       case (12):
-        return "Addressed Safety Related Message";
+        return 'Addressed Safety Related Message';
       case (13):
-        return "Safety Related Acknowledgement";
+        return 'Safety Related Acknowledgement';
       case (14):
-        return "Safety Related Broadcast Message";
+        return 'Safety Related Broadcast Message';
       case (15):
-        return "Interrogation";
+        return 'Interrogation';
       case (16):
-        return "Assignment Mode Command";
+        return 'Assignment Mode Command';
       case (17):
-        return "DGNSS Binary Broadcast Message";
+        return 'DGNSS Binary Broadcast Message';
       case (18):
-        return "Standard Class B CS Position Report";
+        return 'Standard Class B CS Position Report';
       case (19):
-        return "Extended Class B Equipment Position Report";
+        return 'Extended Class B Equipment Position Report';
       case (20):
-        return "Data Link Management";
+        return 'Data Link Management';
       case (21):
-        return "Aid-to-Navigation Report";
+        return 'Aid-to-Navigation Report';
       case (22):
-        return "Channel Management";
+        return 'Channel Management';
       case (23):
-        return "Group Assignment Command";
+        return 'Group Assignment Command';
       case (24):
-        return "Static Data Report";
+        return 'Static Data Report';
       case (25):
-        return "Single Slot Binary Message";
+        return 'Single Slot Binary Message';
       case (26):
-        return "Multiple Slot Binary Message With Communications State";
+        return 'Multiple Slot Binary Message With Communications State';
       case (27):
-        return "Position Report For Long-Range Applications";
+        return 'Position Report For Long-Range Applications';
       default:
-        return "Unknown";
+        return 'Unknown';
     }
   }
   //endregion
 
   //region Nav Status Info
   ///Convert the Binary Navigation Status to a String to interpret later or show the client.
-  @Deprecated("Superseded by navigationStatusInfoDirect")
+  @Deprecated('Superseded by navigationStatusInfoDirect')
   String? navigationStatusInfo(String binaryNavigationStatus) {
     return navigationStatusInfoDirect(
       int.parse(binaryNavigationStatus, radix: 2),
@@ -563,46 +563,46 @@ class BinaryConverter {
   String? navigationStatusInfoDirect(int navigationStatus) {
     switch (navigationStatus) {
       case (0):
-        return "Under way using engine";
+        return 'Under way using engine';
       case (1):
-        return "At anchor";
+        return 'At anchor';
       case (2):
-        return "Not under command";
+        return 'Not under command';
       case (3):
-        return "Restricted manoeuvrability";
+        return 'Restricted manoeuvrability';
       case (4):
-        return "Constrained by her draught";
+        return 'Constrained by her draught';
       case (5):
-        return "Moored";
+        return 'Moored';
       case (6):
-        return "Aground";
+        return 'Aground';
       case (7):
-        return "Engaged in Fishing";
+        return 'Engaged in Fishing';
       case (8):
-        return "Under way sailing";
+        return 'Under way sailing';
       case (9):
-        return "Reserved for future amendment of Navigational Status for HSC";
+        return 'Reserved for future amendment of Navigational Status for HSC';
       case (10):
-        return "Reserved for future amendment of Navigational Status for WIG";
+        return 'Reserved for future amendment of Navigational Status for WIG';
       case (11):
-        return "Power-driven vessel towing astern (regional)";
+        return 'Power-driven vessel towing astern (regional)';
       case (12):
-        return "Power-driven vessel pushing ahead or towing alongside (regional)";
+        return 'Power-driven vessel pushing ahead or towing alongside (regional)';
       case (13):
-        return "No official terminology (Error in transmission)";
+        return 'No official terminology (Error in transmission)';
       case (14):
-        return "AIS-SART is active";
+        return 'AIS-SART is active';
       case (15):
-        return "Undefined (Not transmitted)";
+        return 'Undefined (Not transmitted)';
       default:
-        return "Unknown";
+        return 'Unknown';
     }
   }
   //endregion
 
   //region Turn Info
   ///Convert the Binary Turn Information to a String to interpret later or show the client.
-  @Deprecated("Superseded by turnInformationInfoDirect")
+  @Deprecated('Superseded by turnInformationInfoDirect')
   String? turnInformationInfo(String binaryTurnInformation) {
     return turnInformationInfoDirect(
       int.parse(binaryTurnInformation, radix: 2),
@@ -612,31 +612,31 @@ class BinaryConverter {
   ///Convert the Binary Turn Information to a String to interpret later or show the client.
   String? turnInformationInfoDirect(int turnInformation) {
     if (turnInformation == 0) {
-      return "Not turning";
+      return 'Not turning';
     }
     if (turnInformation >= 1 && turnInformation <= 126) {
-      return "Turning right at up to 708 deg. per minute or higher";
+      return 'Turning right at up to 708 deg. per minute or higher';
     }
     if (turnInformation <= 1 && turnInformation >= -126) {
-      return "Turning left at up to 708 deg. per minute or higher";
+      return 'Turning left at up to 708 deg. per minute or higher';
     }
     if (turnInformation == 127) {
-      return "turning right at more than 5deg/30s (No TI available)";
+      return 'turning right at more than 5deg/30s (No TI available)';
     }
     if (turnInformation == -127) {
-      return "turning left at more than 5deg/30s (No TI available)";
+      return 'turning left at more than 5deg/30s (No TI available)';
     }
     if (turnInformation == 128) {
-      return "No information available (not sent)";
+      return 'No information available (not sent)';
     } else {
-      return "Unknown";
+      return 'Unknown';
     }
   }
   //endregion
 
   //region SOG Info
   ///Convert the Binary Speed Information to a String which shows the speed of the vessel in knots.
-  @Deprecated("Superseded by speedOverGroundInfoDirect")
+  @Deprecated('Superseded by speedOverGroundInfoDirect')
   String? speedOverGroundInfo(String binarySpeedOverGround) {
     return speedOverGroundInfoDirect(
       int.parse(binarySpeedOverGround, radix: 2).floorToDouble() / 10,
@@ -646,9 +646,9 @@ class BinaryConverter {
   ///Convert the Binary Speed Information to a String which shows the speed of the vessel in knots. Important its the binary int but divided by 10 to get a double!
   String? speedOverGroundInfoDirect(double speedOverGround) {
     if (speedOverGround == 102.3) {
-      return "Speed not Available (not sent)";
+      return 'Speed not Available (not sent)';
     } else if (speedOverGround == 102.2) {
-      return "Speed over 102.2 knots";
+      return 'Speed over 102.2 knots';
     } else {
       return speedOverGround.toString();
     }
@@ -666,12 +666,12 @@ class BinaryConverter {
   ///Convert the Binary Position Accuracy to a String which tells more about the position accuracy.
   String? positionAccuracyInfoDirect(int positionAccuracy) {
     if (positionAccuracy == 0) {
-      return "Accuracy < 10ms";
+      return 'Accuracy < 10ms';
     }
     if (positionAccuracy == 1) {
-      return "Accuracy > 10ms";
+      return 'Accuracy > 10ms';
     } else {
-      return "Error please Contact: ";
+      return 'Error please Contact: ';
     }
   }
   //endregion
@@ -687,7 +687,7 @@ class BinaryConverter {
   ///Convert the Binary Course Over Ground to a String which represents the Course Over Ground to interpret later or show the client. Important binary String always divided by 10 to get Double!
   String? courseOverGroundInfoDirect(double courseOverGround) {
     if (courseOverGround == 360.0) {
-      return "Data not available (not sent)";
+      return 'Data not available (not sent)';
     } else {
       return courseOverGround.toString();
     }
@@ -696,7 +696,7 @@ class BinaryConverter {
 
   //region True Heading Info
   ///Convert the Binary True Heading to a String which represents the True Heading of the vessel to interpret later or show the client.
-  @Deprecated("Superseded by trueHeadingInfoDirect")
+  @Deprecated('Superseded by trueHeadingInfoDirect')
   String? trueHeadingInfo(String binaryTrueHeading) {
     return trueHeadingInfoDirect(int.parse(binaryTrueHeading, radix: 2));
   }
@@ -704,7 +704,7 @@ class BinaryConverter {
   ///Convert the Binary True Heading to a String which represents the True Heading of the vessel to interpret later or show the client.
   String? trueHeadingInfoDirect(int trueHeading) {
     if (trueHeading == 360) {
-      return "Not available (not sent)";
+      return 'Not available (not sent)';
     } else {
       return trueHeading.toString();
     }
@@ -713,7 +713,7 @@ class BinaryConverter {
 
   //region TimeStamp Info
   ///Convert the Binary Time Stamp to a String which represents the Time Stamp to interpret later or show the user, or gives out the reason why it isn't available/special.
-  @Deprecated("Superseded by timeStampInfoDirect")
+  @Deprecated('Superseded by timeStampInfoDirect')
   String? timeStampInfo(String binaryTimeStamp) {
     return timeStampInfoDirect(int.parse(binaryTimeStamp, radix: 2));
   }
@@ -721,16 +721,16 @@ class BinaryConverter {
   ///Convert the Binary Time Stamp to a String which represents the Time Stamp to interpret later or show the user, or gives out the reason why it isn't available/special.
   String? timeStampInfoDirect(int timeStamp) {
     if (timeStamp == 60) {
-      return "Not available (not sent)";
+      return 'Not available (not sent)';
     }
     if (timeStamp == 61) {
-      return "Positioning System is in manual mode";
+      return 'Positioning System is in manual mode';
     }
     if (timeStamp == 62) {
-      return "Electronic Position Fixing System operates in estimated (dead reckoning) mode";
+      return 'Electronic Position Fixing System operates in estimated (dead reckoning) mode';
     }
     if (timeStamp == 63) {
-      return "Positioning System inoperative";
+      return 'Positioning System inoperative';
     } else {
       return timeStamp.toString();
     }
@@ -739,19 +739,19 @@ class BinaryConverter {
 
   //region Maneuver Indicator Info
   ///Convert the Maneuver Indicator to a String which identifies the current maneuver of the vessel to interpret later or show the client.
-  @Deprecated("Superseded by maneuverIndicatorInfoDirect")
+  @Deprecated('Superseded by maneuverIndicatorInfoDirect')
   String? maneuverIndicatorInfo(String binaryManeuverIndicator) {
     int maneuverIndicator = int.parse(binaryManeuverIndicator, radix: 2);
 
     switch (maneuverIndicator) {
       case (0):
-        return "Not available (Default)";
+        return 'Not available (Default)';
       case (1):
-        return "No Special Maneuver";
+        return 'No Special Maneuver';
       case (2):
-        return "Special Maneuver in Progress";
+        return 'Special Maneuver in Progress';
       default:
-        return "Unknown";
+        return 'Unknown';
     }
   }
 
@@ -759,20 +759,20 @@ class BinaryConverter {
   String? maneuverIndicatorInfoDirect(int maneuverIndicator) {
     switch (maneuverIndicator) {
       case (0):
-        return "Not available (Default)";
+        return 'Not available (Default)';
       case (1):
-        return "No Special Maneuver";
+        return 'No Special Maneuver';
       case (2):
-        return "Special Maneuver in Progress";
+        return 'Special Maneuver in Progress';
       default:
-        return "Unknown";
+        return 'Unknown';
     }
   }
   //endregion
 
   //region RAIM Info
   ///Check if RAIM (Receiver Autonomous Integrity Monitoring) is enabled.
-  @Deprecated("Superseded by raimInfoDirect")
+  @Deprecated('Superseded by raimInfoDirect')
   String? raimInfo(String binaryRAIMFlag) {
     return raimInfoDirect(int.parse(binaryRAIMFlag, radix: 2));
   }
@@ -780,12 +780,12 @@ class BinaryConverter {
   ///Check if RAIM (Receiver Autonomous Integrity Monitoring) is enabled.
   String? raimInfoDirect(int raimFlag) {
     if (raimFlag == 0) {
-      return "RAIM not enabled (default)";
+      return 'RAIM not enabled (default)';
     }
     if (raimFlag == 1) {
-      return "RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)";
+      return 'RAIM enabled (read more under: https://en.wikipedia.org/wiki/Receiver_autonomous_integrity_monitoring)';
     } else {
-      return "Unknown (Please Contact: )";
+      return 'Unknown (Please Contact: )';
     }
   }
   //endregion
@@ -795,71 +795,71 @@ class BinaryConverter {
   String? navigationAidInfoDirect(int navigationAidCode) {
     switch (navigationAidCode) {
       case (0):
-        return "Not available (Default)";
+        return 'Not available (Default)';
       case (1):
-        return "Reference Point";
+        return 'Reference Point';
       case (2):
-        return "RACON";
+        return 'RACON';
       case (3):
-        return "Fixed structure off shore (Oil Platform, Windfarm etc)";
+        return 'Fixed structure off shore (Oil Platform, Windfarm etc)';
       case (4):
-        return "Spare, Reserved for future use";
+        return 'Spare, Reserved for future use';
       case (5):
-        return "Light, without sectors";
+        return 'Light, without sectors';
       case (6):
-        return "Light, with sectors";
+        return 'Light, with sectors';
       case (7):
-        return "Leading Light Front";
+        return 'Leading Light Front';
       case (8):
-        return "Leading Light Rear";
+        return 'Leading Light Rear';
       case (9):
-        return "Beacon, Cardinal N";
+        return 'Beacon, Cardinal N';
       case (10):
-        return "Beacon, Cardinal E";
+        return 'Beacon, Cardinal E';
       case (11):
-        return "Beacon, Cardinal S";
+        return 'Beacon, Cardinal S';
       case (12):
-        return "Beacon, Cardinal W";
+        return 'Beacon, Cardinal W';
       case (13):
-        return "Beacon, Port hand";
+        return 'Beacon, Port hand';
       case (14):
-        return "Beacon, Starboard hand";
+        return 'Beacon, Starboard hand';
       case (15):
-        return "Beacon, Preferred Channel port hand";
+        return 'Beacon, Preferred Channel port hand';
       case (16):
-        return "Beacon, Preferred Channel starboard hand";
+        return 'Beacon, Preferred Channel starboard hand';
       case (17):
-        return "Beacon, Isolated danger";
+        return 'Beacon, Isolated danger';
       case (18):
-        return "Beacon, Safe water";
+        return 'Beacon, Safe water';
       case (19):
-        return "Beacon, Special mark";
+        return 'Beacon, Special mark';
       case (20):
-        return "Cardinal Mark N";
+        return 'Cardinal Mark N';
       case (21):
-        return "Cardinal Mark E";
+        return 'Cardinal Mark E';
       case (22):
-        return "Cardinal Mark S";
+        return 'Cardinal Mark S';
       case (23):
-        return "Cardinal Mark W";
+        return 'Cardinal Mark W';
       case (24):
-        return "Port hand Mark";
+        return 'Port hand Mark';
       case (25):
-        return "Starboard hand Mark";
+        return 'Starboard hand Mark';
       case (26):
-        return "Preferred Channel Port hand";
+        return 'Preferred Channel Port hand';
       case (27):
-        return "Preferred Channel Starboard hand";
+        return 'Preferred Channel Starboard hand';
       case (28):
-        return "Isolated danger";
+        return 'Isolated danger';
       case (29):
-        return "Safe Water";
+        return 'Safe Water';
       case (30):
-        return "Special Mark";
+        return 'Special Mark';
       case (31):
-        return "Light Vessel / LANBY / Rigs";
+        return 'Light Vessel / LANBY / Rigs';
       default:
-        return "Unknown";
+        return 'Unknown';
     }
   }
   //endregion
@@ -868,11 +868,11 @@ class BinaryConverter {
   /// Get an info on the Transmit mode type - used in ais type 22 & 23.
   String? transmitModeInfoDirect(int transmitMode) {
     return switch (transmitMode) {
-      0 => "TxA/TxB, RxA/RxB",
-      1 => "TxA, RxA/RxB",
-      2 => "TxB, RxA/RxB",
-      3 => "Reserved for Future Use",
-      _ => "Unknown",
+      0 => 'TxA/TxB, RxA/RxB',
+      1 => 'TxA, RxA/RxB',
+      2 => 'TxB, RxA/RxB',
+      3 => 'Reserved for Future Use',
+      _ => 'Unknown',
     };
   }
   //endregion
@@ -881,15 +881,15 @@ class BinaryConverter {
   /// Get an info on the Transmit mode type - used in ais type 22 & 23.
   String? stationTypeInfoDirect(int stationType) {
     return switch (stationType) {
-      0 => "All types of mobiles (default)",
-      1 => "Reserved for Future Use",
-      2 => "All types of Class B mobile stations",
-      3 => "SAR airborne mobile station",
-      4 => "Aid to Navigation station",
-      5 => "Class B shipborne mobile station (IEC62287 only)",
-      6 || 7 || 8 || 9 => "Regional use and inland waterways",
-      10 || 11 || 12 || 13 || 14 || 15 => "Reserved for future use",
-      _ => "Unknown",
+      0 => 'All types of mobiles (default)',
+      1 => 'Reserved for Future Use',
+      2 => 'All types of Class B mobile stations',
+      3 => 'SAR airborne mobile station',
+      4 => 'Aid to Navigation station',
+      5 => 'Class B shipborne mobile station (IEC62287 only)',
+      6 || 7 || 8 || 9 => 'Regional use and inland waterways',
+      10 || 11 || 12 || 13 || 14 || 15 => 'Reserved for future use',
+      _ => 'Unknown',
     };
   }
   //endregion
@@ -898,19 +898,19 @@ class BinaryConverter {
   /// Get an info on the Interval of the station data sent - used in ais type 22 & 23.
   String? stationIntervalInfo(int stationInterval) {
     return switch (stationInterval) {
-      0 => "As given by the autonomous mode",
-      1 => "10 Minutes",
-      2 => "6 Minutes",
-      3 => "3 Minutes",
-      4 => "1 Minute",
-      5 => "30 Seconds",
-      6 => "15 Seconds",
-      7 => "10 Seconds",
-      8 => "5 Seconds",
-      9 => "Next Shorter Reporting Interval",
-      10 => "Next Longer Reporting Interval",
-      11 || 12 || 13 || 14 || 15 => "Reserved for future use",
-      _ => "Unknown",
+      0 => 'As given by the autonomous mode',
+      1 => '10 Minutes',
+      2 => '6 Minutes',
+      3 => '3 Minutes',
+      4 => '1 Minute',
+      5 => '30 Seconds',
+      6 => '15 Seconds',
+      7 => '10 Seconds',
+      8 => '5 Seconds',
+      9 => 'Next Shorter Reporting Interval',
+      10 => 'Next Longer Reporting Interval',
+      11 || 12 || 13 || 14 || 15 => 'Reserved for future use',
+      _ => 'Unknown',
     };
   }
 

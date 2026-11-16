@@ -700,7 +700,7 @@ class _FeedConnection {
             statusNotifier.value.connected &&
             DateTime.now().difference(last) > _silentTimeout) {
           debugPrint(
-            "[FEED] $name: silent for ${DateTime.now().difference(last).inSeconds}s, forcing reconnect",
+            '[FEED] $name: silent for ${DateTime.now().difference(last).inSeconds}s, forcing reconnect',
           );
           try {
             _socket?.destroy();
@@ -759,7 +759,7 @@ class _FeedConnection {
     statusNotifier.value = next;
     if (prev.connected != next.connected || prev.error != next.error) {
       debugPrint(
-        "[FEED] $name: connected=${next.connected} error=${next.error} msgs=${next.messageCount}",
+        '[FEED] $name: connected=${next.connected} error=${next.error} msgs=${next.messageCount}',
       );
     }
   }
