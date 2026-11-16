@@ -169,6 +169,11 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 ### Improvements
 
 #### Done
+- **Guided onboarding tour** (24 steps): app intro, every tab, the reception workflow, the real add-source / map-filters / destination dialogs (opened and closed without applying), a fake cursor that shows the click, and a confetti finale with a replay button in the title bar.
+- **Conformant NMEA encoding** (validated against pyais + libais): long messages are fragmented to stay under the 82-character limit, variable-length types are no longer padded with zeros, and the type 23 / 14 / 26 field layouts are fixed. Type 26 decoding now uses the sentence fill bits.
+- **Real UDP listening target**: `udpServer` binds its port and serves every peer that sends it a datagram; the UI labels now say who listens ("UDP · listen (server)" vs "UDP · send (client)").
+- **Checksum tool**: no longer crashes on free text, accepts `$` sentences, and only rewrites the line being fixed.
+- **Editor**: "simulate a reception" feeds the frame through the real pipeline (log, statistics, map, forwarding) instead of forwarding only.
 - **In-app RTL-SDR reception** (replaces the "research other AIS input ways" item): integrates [AIS-catcher](https://github.com/jvde-github/AIS-catcher) as an external process — auto-downloaded on first use, with auto-gain and both VHF channels by default. Validated end-to-end on a **physical RTL-SDR Blog V4 dongle**.
 - **Add-source popup tooltips** (see the HoverTooltip workaround above).
 - **RTL-SDR lifecycle logs** in the Reception console (opening / connected with frequency, sample rate, gain and channels / errors / stream closed / disconnected), matching the network feeds.
@@ -176,14 +181,19 @@ During a crash/performance investigation (Flutter 3.41 → 3.44.9), the followin
 - Add colors to log (to visually split provider, nmea 4.0 tags, sentance, payload etc)
 
 #### Backlog
+- CI is red: `flutter analyze` treats the ~720 lint infos as fatal (`prefer_single_quotes`, `prefer_relative_imports`, …). Decide between `dart fix --apply` and relaxing those rules.
+- Reception log is never trimmed: restore the documented 2000-entry cap and bound the pending flush queue.
+- Session archive writes one file per AIS frame (open/write/close, up to 300/s): buffer or batch it.
+- `AppSettings.save()` rewrites ~20 keys on feed toggles and on the stats decode switch: use the granular savers.
+- `BoatManager._applyReport` notifies on every message whenever a counter changes, bypassing the 200 ms throttle.
+- `AppSettings.load()` is unguarded: a corrupted preferences JSON prevents the app from starting.
+- `ForwarderService` has no `dispose()` and the RTL-SDR isolate has no kill fallback: both can outlive their page.
 - Logs processing for NMEA sentences and connection state are in the same pipeline causing some issues between them since there is only one processor — this should be reworked
 - Add the ability to filter what is forwarded (by message type, geographic zone, vessel, etc.)
 - Improve compatibility with other platforms (macOS, iOS and Android)
 - Make verification for memory leaks and performances
 - Continuous replay validation of real AIS recordings (extend `tool/ais_replay.dart`) as a regression harness
-- Test created ais sentences with external tool such as ais-decoder
 - Compact/minified mode always-on-top pin (top bar, FFI Win32 `SetWindowPos` / `window_manager`)
-- Look at why generated frame have a bunch of 0 at the end
 - Minified mode
 - Improve log viewport perf for large receptions (variable-height virtualisation, memoised NMEA spans, adaptive cacheExtent / fade for very long frames) and throttle reception burst (chunked simulator emission, batched isolate decode, batched feedStatuses notify)
 
